@@ -1,0 +1,182 @@
+{
+  "kind": "tm:sys:provision:provisioncollectionstate",
+  "selfLink": "https://localhost/mgmt/tm/sys/provision?ver=15.1.0.1",
+  "items": [
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "afm",
+      "fullPath": "afm",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/afm?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "am",
+      "fullPath": "am",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/am?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "apm",
+      "fullPath": "apm",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/apm?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "asm",
+      "fullPath": "asm",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/asm?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "avr",
+      "fullPath": "avr",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/avr?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "cgnat",
+      "fullPath": "cgnat",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/cgnat?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "dos",
+      "fullPath": "dos",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/dos?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "fps",
+      "fullPath": "fps",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/fps?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "gtm",
+      "fullPath": "gtm",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/gtm?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "ilx",
+      "fullPath": "ilx",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/ilx?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "lc",
+      "fullPath": "lc",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/lc?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "ltm",
+      "fullPath": "ltm",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/ltm?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "nominal",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "pem",
+      "fullPath": "pem",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/pem?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "sslo",
+      "fullPath": "sslo",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/sslo?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "swg",
+      "fullPath": "swg",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/swg?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    },
+    {
+      "kind": "tm:sys:provision:provisionstate",
+      "name": "urldb",
+      "fullPath": "urldb",
+      "generation": 1,
+      "selfLink": "https://localhost/mgmt/tm/sys/provision/urldb?ver=15.1.0.1",
+      "cpuRatio": 0,
+      "diskRatio": 0,
+      "level": "none",
+      "memoryRatio": 0
+    }
+  ]
+}

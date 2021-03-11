@@ -1,0 +1,17 @@
+{
+  "available": true,
+  "managementAddress": "10.1.1.1",
+  "hostname": "local.bigiq.lab.com",
+  "providers": [
+    {
+      "link": "https://localhost/mgmt/cm/system/authn/providers/local/login",
+      "name": "local"
+    },
+    {
+      "link": "https://localhost/mgmt/cm/system/authn/providers/radius/15633ac8-362c-4b05-b1f9-f77f3cd8921e/login",
+      "name": "RadiusServer",
+      "isHidden": false
+    }
+  ],
+  "systemStarted": true
+}

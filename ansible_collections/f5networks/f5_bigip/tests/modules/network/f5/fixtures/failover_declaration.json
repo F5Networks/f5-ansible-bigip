@@ -1,0 +1,10 @@
+{
+  "class": "Cloud_Failover",
+  "environment": "aws",
+  "externalStorage": {
+    "scopingTags": {
+      "4est": "4est"
+    }
+  },
+  "schemaVersion": "1.4.0"
+}

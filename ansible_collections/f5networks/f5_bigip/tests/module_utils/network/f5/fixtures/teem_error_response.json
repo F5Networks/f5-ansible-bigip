@@ -1,0 +1,10 @@
+{
+  "errors": [
+    {
+      "id": "5b26d040-bc74-11ea-a12c-efb44ca2c609",
+      "code": "bad-request",
+      "code2": "",
+      "message": "Invalid request: epochTime must be a number"
+    }
+  ]
+}

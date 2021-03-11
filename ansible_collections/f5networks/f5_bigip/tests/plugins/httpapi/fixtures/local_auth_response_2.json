@@ -1,0 +1,47 @@
+{
+    "username": "admin",
+    "loginReference": {
+        "link": "https://localhost/mgmt/cm/system/authn/providers/local/login"
+    },
+    "loginProviderName": "local",
+    "token": {
+        "token": "eyJraWQiOiJkMzExNjIxNC1hOWRkLTQ4NTYtODI0MC05MDY1OTZjZWFkOTgiLCJhbGciOiJSUzM4NCJ9.eyJpc3MiOiJCSUctSVEiLCJqdGkiOiJnTkNUd2VxLVFkS1ZMNzFraVN4OUZ3Iiwic3ViIjoiYWRtaW4iLCJhdWQiOiIxNzIuMTguMTYxLjQ3IiwiaWF0IjoxNjE0ODU5NjM4LCJleHAiOjE2MTQ4NTk5MzgsInVzZXJOYW1lIjoiYWRtaW4iLCJhdXRoUHJvdmlkZXJOYW1lIjoibG9jYWwiLCJ1c2VyIjoiaHR0cHM6Ly9sb2NhbGhvc3QvbWdtdC9zaGFyZWQvYXV0aHovdXNlcnMvYWRtaW4iLCJ0eXBlIjoiQUNDRVNTIiwidGltZW91dCI6MzAwLCJncm91cFJlZmVyZW5jZXMiOltdfQ.FWZZ7w0vCH39mleCnMFvMuvCrX2l4eaH0sqINdeR7g1cv5_sFKvaJJcjA0UEYc0JjCbqC-k06mbu0dn3NxwDqpsimz_7MVwoKAYjuIz3KXIjokUPpCka_hrF5uZLpj53VHKp8vN2GQvSxVbftdqBw0jBrpLFJNWqitnEf8Ie_MDgMmX6SMuZRwM0jU7Xlf3eTJq529gmeZoN6u2haAcA0jyuvK0lvWXspRqtmY1c-BHch4nix92L7jXWSe-s60jBuJn3A5dgRCUEYARMnjWXB5Xinj21cc8HQWv6i924NFuqMFZAkSMjJImFmroK5ng8uaTBC0dtV3szmozAS96LWGkSqPhevW9TuU0FS3EVbMftlneoSj_d0FUscrR_1QR5zACUKQ-CEEL_thWt4-BoQiksMsP-FoQU2eCkapYurKUp8Ya8YnTz-fAVDQXghlVBr2ideEm08i7mncGsyn-rMLu1uq4eBaAayDWq6gUOm45WdzTwAgdhoAyVKur2MtSs",
+        "userName": "admin",
+        "authProviderName": "local",
+        "user": {
+            "link": "https://localhost/mgmt/shared/authz/users/admin"
+        },
+        "groupReferences": [],
+        "timeout": 300,
+        "address": "172.18.161.47",
+        "type": "ACCESS",
+        "jti": "gNCTweq-QdKVL71kiSx9Fw",
+        "exp": 1614859938,
+        "iat": 1614859638,
+        "generation": 1,
+        "lastUpdateMicros": 1614859638588418,
+        "kind": "shared:authz:tokens:authtokenitemstate",
+        "selfLink": "https://localhost/mgmt/shared/authz/tokens/eyJraWQiOiJkMzExNjIxNC1hOWRkLTQ4NTYtODI0MC05MDY1OTZjZWFkOTgiLCJhbGciOiJSUzM4NCJ9.eyJpc3MiOiJCSUctSVEiLCJqdGkiOiJnTkNUd2VxLVFkS1ZMNzFraVN4OUZ3Iiwic3ViIjoiYWRtaW4iLCJhdWQiOiIxNzIuMTguMTYxLjQ3IiwiaWF0IjoxNjE0ODU5NjM4LCJleHAiOjE2MTQ4NTk5MzgsInVzZXJOYW1lIjoiYWRtaW4iLCJhdXRoUHJvdmlkZXJOYW1lIjoibG9jYWwiLCJ1c2VyIjoiaHR0cHM6Ly9sb2NhbGhvc3QvbWdtdC9zaGFyZWQvYXV0aHovdXNlcnMvYWRtaW4iLCJ0eXBlIjoiQUNDRVNTIiwidGltZW91dCI6MzAwLCJncm91cFJlZmVyZW5jZXMiOltdfQ.FWZZ7w0vCH39mleCnMFvMuvCrX2l4eaH0sqINdeR7g1cv5_sFKvaJJcjA0UEYc0JjCbqC-k06mbu0dn3NxwDqpsimz_7MVwoKAYjuIz3KXIjokUPpCka_hrF5uZLpj53VHKp8vN2GQvSxVbftdqBw0jBrpLFJNWqitnEf8Ie_MDgMmX6SMuZRwM0jU7Xlf3eTJq529gmeZoN6u2haAcA0jyuvK0lvWXspRqtmY1c-BHch4nix92L7jXWSe-s60jBuJn3A5dgRCUEYARMnjWXB5Xinj21cc8HQWv6i924NFuqMFZAkSMjJImFmroK5ng8uaTBC0dtV3szmozAS96LWGkSqPhevW9TuU0FS3EVbMftlneoSj_d0FUscrR_1QR5zACUKQ-CEEL_thWt4-BoQiksMsP-FoQU2eCkapYurKUp8Ya8YnTz-fAVDQXghlVBr2ideEm08i7mncGsyn-rMLu1uq4eBaAayDWq6gUOm45WdzTwAgdhoAyVKur2MtSs"
+    },
+    "refreshToken": {
+        "token": "eyJraWQiOiJkMzExNjIxNC1hOWRkLTQ4NTYtODI0MC05MDY1OTZjZWFkOTgiLCJhbGciOiJSUzM4NCJ9.eyJpc3MiOiJCSUctSVEiLCJqdGkiOiJzSG45dVkzcnhKRGtVbTRVTmthRUxnIiwic3ViIjoiYWRtaW4iLCJhdWQiOiIxNzIuMTguMTYxLjQ3IiwiaWF0IjoxNjE0ODU5NjM4LCJleHAiOjE2MTQ4OTU2MzgsInVzZXJOYW1lIjoiYWRtaW4iLCJhdXRoUHJvdmlkZXJOYW1lIjoibG9jYWwiLCJ1c2VyIjoiaHR0cHM6Ly9sb2NhbGhvc3QvbWdtdC9zaGFyZWQvYXV0aHovdXNlcnMvYWRtaW4iLCJ0eXBlIjoiUkVGUkVTSCIsInRpbWVvdXQiOjM2MDAwLCJncm91cFJlZmVyZW5jZXMiOltdfQ.MrRkh9U9ufsoHNYaArflbLjGhFt3hINeex_6vgvCUFJAeVEhEqnNVvQk9TGBZGw3hT6pNCPIeXJGaK9huFAn7Yq0wwuWaZykPmhBAhUASMJBijOBMkcLF3LmdNS7tl-xzM6pwlcmSf2aPy3qvcJM5BlwSuDFj6JoV64woEDE8pjIrBcU9onj-AMSNnvSpRzgVjE47aGs91Fx4cgWjd1LZti42TG3HBK9KNQ9WJbgWkN1ocNM2scFs_IiqrhmTjAjWv7ddVFYYVnVSLkz1z46FWSKeLWsXgMfJAbRLiDk8nmFq77QZGW-N9ct2ouz2xsLeS3_s0Ck4o432ZZUvWmlFxKyRNNJ8csj_RCYoIemP4iLfpMmSsODoMl2Tc32aFIILhbV7QgkqBIhWEgUDhPYRk8vsv18Hf81qMIrqsKNJaNoTYVtJMt6IR2slzHd0IAmrQsum03JfcD-5CUWD0kQYeEDCjlPMnC_pnBgXnj21zWCdkCQ_UnFoKTirkthjOY0",
+        "userName": "admin",
+        "authProviderName": "local",
+        "user": {
+            "link": "https://localhost/mgmt/shared/authz/users/admin"
+        },
+        "groupReferences": [],
+        "timeout": 36000,
+        "address": "172.18.161.47",
+        "type": "REFRESH",
+        "jti": "sHn9uY3rxJDkUm4UNkaELg",
+        "exp": 1614895638,
+        "iat": 1614859638,
+        "generation": 2,
+        "lastUpdateMicros": 1614859638598509,
+        "kind": "shared:authz:tokens:authtokenitemstate",
+        "selfLink": "https://localhost/mgmt/shared/authz/tokens/eyJraWQiOiJkMzExNjIxNC1hOWRkLTQ4NTYtODI0MC05MDY1OTZjZWFkOTgiLCJhbGciOiJSUzM4NCJ9.eyJpc3MiOiJCSUctSVEiLCJqdGkiOiJzSG45dVkzcnhKRGtVbTRVTmthRUxnIiwic3ViIjoiYWRtaW4iLCJhdWQiOiIxNzIuMTguMTYxLjQ3IiwiaWF0IjoxNjE0ODU5NjM4LCJleHAiOjE2MTQ4OTU2MzgsInVzZXJOYW1lIjoiYWRtaW4iLCJhdXRoUHJvdmlkZXJOYW1lIjoibG9jYWwiLCJ1c2VyIjoiaHR0cHM6Ly9sb2NhbGhvc3QvbWdtdC9zaGFyZWQvYXV0aHovdXNlcnMvYWRtaW4iLCJ0eXBlIjoiUkVGUkVTSCIsInRpbWVvdXQiOjM2MDAwLCJncm91cFJlZmVyZW5jZXMiOltdfQ.MrRkh9U9ufsoHNYaArflbLjGhFt3hINeex_6vgvCUFJAeVEhEqnNVvQk9TGBZGw3hT6pNCPIeXJGaK9huFAn7Yq0wwuWaZykPmhBAhUASMJBijOBMkcLF3LmdNS7tl-xzM6pwlcmSf2aPy3qvcJM5BlwSuDFj6JoV64woEDE8pjIrBcU9onj-AMSNnvSpRzgVjE47aGs91Fx4cgWjd1LZti42TG3HBK9KNQ9WJbgWkN1ocNM2scFs_IiqrhmTjAjWv7ddVFYYVnVSLkz1z46FWSKeLWsXgMfJAbRLiDk8nmFq77QZGW-N9ct2ouz2xsLeS3_s0Ck4o432ZZUvWmlFxKyRNNJ8csj_RCYoIemP4iLfpMmSsODoMl2Tc32aFIILhbV7QgkqBIhWEgUDhPYRk8vsv18Hf81qMIrqsKNJaNoTYVtJMt6IR2slzHd0IAmrQsum03JfcD-5CUWD0kQYeEDCjlPMnC_pnBgXnj21zWCdkCQ_UnFoKTirkthjOY0"
+    },
+    "generation": 1,
+    "lastUpdateMicros": 1614859638599066
+}

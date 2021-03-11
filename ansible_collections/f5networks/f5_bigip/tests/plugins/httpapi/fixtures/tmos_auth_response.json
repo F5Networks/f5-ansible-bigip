@@ -1,0 +1,27 @@
+{
+  "generation": 0 ,
+  "lastUpdateMicros": 0 ,
+  "loginProviderName": "tmos" ,
+  "loginReference": {
+    "link": "https://localhost/mgmt/cm/system/authn/providers/tmos/1f44a60e-11a7-3c51-a49f-82983026b41b/login"
+  } ,
+  "token": {
+    "token": "P42ZHJN5HS5DH4KM4ENK3AFCLP" ,
+    "name": "P42ZHJN5HS5DH4KM4ENK3AFCLP" ,
+    "userName": "foo" ,
+    "authProviderName": "tmos" ,
+    "user": {
+      "link": "https://localhost/mgmt/shared/authz/users/admin"
+    } ,
+    "timeout": 1200 ,
+    "startTime": "2020-06-25T17:49:47.671+0000" ,
+    "address": "192.168.1.1" ,
+    "partition": "[All]" ,
+    "generation": 1 ,
+    "lastUpdateMicros": 1593107387671112 ,
+    "expirationMicros": 1593108587671000 ,
+    "kind": "shared:authz:tokens:authtokenitemstate" ,
+    "selfLink": "https://localhost/mgmt/shared/authz/tokens/P42ZHJN5HS5DH4KM4ENK3AFCLP"
+  } ,
+  "username": "foo"
+}

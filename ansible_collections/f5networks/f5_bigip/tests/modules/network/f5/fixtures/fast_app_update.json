@@ -1,0 +1,6 @@
+{
+  "server_port": 8881,
+  "server_addresses": [
+    "192.1.1.1"
+  ]
+}

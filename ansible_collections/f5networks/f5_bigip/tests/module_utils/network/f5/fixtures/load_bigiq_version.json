@@ -1,0 +1,11 @@
+{
+  "items": [
+    {
+      "version": "7.1.0"
+    }
+  ],
+  "generation": 2,
+  "kind": "shared:resolver:device-groups:devicegroupdevicecollectionstate",
+  "lastUpdateMicros": 1592963716614158,
+  "selfLink": "https://localhost/mgmt/shared/resolver/device-groups/cm-shared-all-big-iqs/devices"
+}

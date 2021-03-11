@@ -1,0 +1,261 @@
+{
+  "kind": "tm:sys:syscollectionstate",
+  "selfLink": "https://localhost/mgmt/tm/sys?ver=15.1.0.1",
+  "items": [
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/application?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/crypto?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/daemon-log-settings?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/diags?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/disk?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/dynad?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/ecm?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/file?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/fpga?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/icall?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/ipfix?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/log-config?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/pfman?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/sflow?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/software?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/turboflex?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/url-db?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/aom?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/autoscale-group?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/cluster?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/config?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/core?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/daemon-ha?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/datastor?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/db?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/dns?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/feature-module?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/folder?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/global-settings?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/ha-group?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/httpd?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/icontrol-soap?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/internal-proxy?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/log-rotate?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/management-dhcp?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/management-ip?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/management-ovsdb?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/management-proxy-config?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/management-route?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/ntp?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/outbound-smtp?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/provision?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/scriptd?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/service?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/smtp-server?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/snmp?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/sshd?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/state-mirroring?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/syslog?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/telemd?ver=15.1.0.1"
+      }
+    },
+    {
+      "reference": {
+        "link": "https://localhost/mgmt/tm/sys/ucs?ver=15.1.0.1"
+      }
+    }
+  ]
+}

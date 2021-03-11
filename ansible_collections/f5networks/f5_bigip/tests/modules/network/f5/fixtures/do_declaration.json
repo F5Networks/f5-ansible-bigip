@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0.0",
+  "class": "Device",
+  "async": true,
+  "webhook": "https://example.com/myHook",
+  "label": "my BIG-IP declaration for declarative onboarding",
+  "Common": {
+    "class": "Tenant",
+    "hostname": "bigip.example.com",
+    "myDns": {
+      "class": "DNS",
+      "nameServers": [
+        "8.8.8.8",
+        "2001:4860:4860::8844"
+      ],
+      "search": [
+        "f5.com"
+      ]
+    },
+    "myNtp": {
+      "class": "NTP",
+      "servers": [
+        "0.pool.ntp.org",
+        "1.pool.ntp.org",
+        "2.pool.ntp.org"
+      ],
+      "timezone": "UTC"
+    }
+  }
+}

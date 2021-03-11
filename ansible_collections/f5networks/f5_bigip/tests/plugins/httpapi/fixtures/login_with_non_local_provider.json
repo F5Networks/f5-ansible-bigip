@@ -1,0 +1,46 @@
+{
+  "username": "baz",
+  "loginReference": {
+    "link": "https://localhost/mgmt/cm/system/authn/providers/radius/15633ac8-362c-4b05-b1f9-f77f3cd8921e/login"
+  },
+  "token": {
+    "token": "eyJraWQiOiJhZmExZDliOC1jN2NiLTQ2NWMtOTE0Yy00MWNkODgwZjM1YjEiLCJhbGciOiJSUzM4NCJ9.eyJpc3MiOiJCSUctSVEiLCJqdGkiOiJFNkhKdnZOUnpwSnNQenB4MVRYSjN3Iiwic3ViIjoicGF1bGEiLCJhdWQiOiIxNzIuMTguNy41NSIsImlhdCI6MTU5MzE4ODg1MywiZXhwIjoxNTkzMTg5MTUzLCJ1c2VyTmFtZSI6InBhdWxhIiwiYXV0aFByb3ZpZGVyTmFtZSI6IlJhZGl1c1NlcnZlciIsInVzZXIiOiJodHRwczovL2xvY2FsaG9zdC9tZ210L2NtL3N5c3RlbS9hdXRobi9wcm92aWRlcnMvcmFkaXVzLzE1NjMzYWM4LTM2MmMtNGIwNS1iMWY5LWY3N2YzY2Q4OTIxZS91c2Vycy8xYjIwNzQ2NS1lYWM4LTNiNWQtOGIxMi1lMzM1ZmFhMGI1M2EiLCJ0eXBlIjoiQUNDRVNTIiwidGltZW91dCI6MzAwLCJncm91cFJlZmVyZW5jZXMiOltdfQ.IESe2HpLfZOMZJ5dS1U90jAPDB8gvmJXNNVkcYcL0WTFmJ9XdSTnuw7NbGddZPXBwH-VmA7v0lPLymb_RmQqDoSQ1nnD692oSlRVpC9Zg3S1zA-6Ela3ChuIpnQU3ZY0XBDhCKGF_L-9ryC5QPrsCcwLYX-1u579yJlUzGPxxRU4CSp7Gz7-HpUqFVvCOzc5_mJbQD_td0z2bbOUnl3m7IbTEBrB8q_svvCONleiGk15bTyLyP-KZKblSzF1Ypr73F5EHbJUS75zhLls6Zqm7XKPA_5ZXq9_YO-sXsKYOBnGurYieXDF_o0EdmUFqNypUr0bJxlSv4IAbZRJFi-kNKcsRrUm-t5c2UBXITKyQsCx2dsAS6zSAxMGLEF87kahTlQuRZ9NCs3bokAz1cmuntWhLq0GxOwcJf45_F70lmu5192DXUlbiz13CLMzWHHA4lpcgwrwrUl1zqnT5arb7vOeAXFUNK1Eiu2OFnbAgItx634fj8EJCQWjIelvgm6y",
+    "userName": "baz",
+    "authProviderName": "RadiusServer",
+    "user": {
+      "link": "https://localhost/mgmt/cm/system/authn/providers/radius/15633ac8-362c-4b05-b1f9-f77f3cd8921e/users/1b207465-eac8-3b5d-8b12-e335faa0b53a"
+    },
+    "groupReferences": [],
+    "timeout": 300,
+    "address": "192.168.1.1",
+    "type": "ACCESS",
+    "jti": "E6HJvvNRzpJsPzpx1TXJ3w",
+    "exp": 1593189153,
+    "iat": 1593188853,
+    "generation": 220,
+    "lastUpdateMicros": 1593188853705924,
+    "kind": "shared:authz:tokens:authtokenitemstate",
+    "selfLink": "https://localhost/mgmt/shared/authz/tokens/eyJraWQiOiJhZmExZDliOC1jN2NiLTQ2NWMtOTE0Yy00MWNkODgwZjM1YjEiLCJhbGciOiJSUzM4NCJ9.eyJpc3MiOiJCSUctSVEiLCJqdGkiOiJFNkhKdnZOUnpwSnNQenB4MVRYSjN3Iiwic3ViIjoicGF1bGEiLCJhdWQiOiIxNzIuMTguNy41NSIsImlhdCI6MTU5MzE4ODg1MywiZXhwIjoxNTkzMTg5MTUzLCJ1c2VyTmFtZSI6InBhdWxhIiwiYXV0aFByb3ZpZGVyTmFtZSI6IlJhZGl1c1NlcnZlciIsInVzZXIiOiJodHRwczovL2xvY2FsaG9zdC9tZ210L2NtL3N5c3RlbS9hdXRobi9wcm92aWRlcnMvcmFkaXVzLzE1NjMzYWM4LTM2MmMtNGIwNS1iMWY5LWY3N2YzY2Q4OTIxZS91c2Vycy8xYjIwNzQ2NS1lYWM4LTNiNWQtOGIxMi1lMzM1ZmFhMGI1M2EiLCJ0eXBlIjoiQUNDRVNTIiwidGltZW91dCI6MzAwLCJncm91cFJlZmVyZW5jZXMiOltdfQ.IESe2HpLfZOMZJ5dS1U90jAPDB8gvmJXNNVkcYcL0WTFmJ9XdSTnuw7NbGddZPXBwH-VmA7v0lPLymb_RmQqDoSQ1nnD692oSlRVpC9Zg3S1zA-6Ela3ChuIpnQU3ZY0XBDhCKGF_L-9ryC5QPrsCcwLYX-1u579yJlUzGPxxRU4CSp7Gz7-HpUqFVvCOzc5_mJbQD_td0z2bbOUnl3m7IbTEBrB8q_svvCONleiGk15bTyLyP-KZKblSzF1Ypr73F5EHbJUS75zhLls6Zqm7XKPA_5ZXq9_YO-sXsKYOBnGurYieXDF_o0EdmUFqNypUr0bJxlSv4IAbZRJFi-kNKcsRrUm-t5c2UBXITKyQsCx2dsAS6zSAxMGLEF87kahTlQuRZ9NCs3bokAz1cmuntWhLq0GxOwcJf45_F70lmu5192DXUlbiz13CLMzWHHA4lpcgwrwrUl1zqnT5arb7vOeAXFUNK1Eiu2OFnbAgItx634fj8EJCQWjIelvgm6y"
+  },
+  "refreshToken": {
+    "token": "eyJraWQiOiJhZmExZDliOC1jN2NiLTQ2NWMtOTE0Yy00MWNkODgwZjM1YjEiLCJhbGciOiJSUzM4NCJ9.eyJpc3MiOiJCSUctSVEiLCJqdGkiOiJsZ0wwU1FpSGVsZDBlTFVHQkREUENnIiwic3ViIjoicGF1bGEiLCJhdWQiOiIxNzIuMTguNy41NSIsImlhdCI6MTU5MzE4ODg1MywiZXhwIjoxNTkzMjI0ODUzLCJ1c2VyTmFtZSI6InBhdWxhIiwiYXV0aFByb3ZpZGVyTmFtZSI6IlJhZGl1c1NlcnZlciIsInVzZXIiOiJodHRwczovL2xvY2FsaG9zdC9tZ210L2NtL3N5c3RlbS9hdXRobi9wcm92aWRlcnMvcmFkaXVzLzE1NjMzYWM4LTM2MmMtNGIwNS1iMWY5LWY3N2YzY2Q4OTIxZS91c2Vycy8xYjIwNzQ2NS1lYWM4LTNiNWQtOGIxMi1lMzM1ZmFhMGI1M2EiLCJ0eXBlIjoiUkVGUkVTSCIsInRpbWVvdXQiOjM2MDAwLCJncm91cFJlZmVyZW5jZXMiOltdfQ.OIGhcUBeaF5vD78y-tyNhxgfVUsto9UcuC6DhGmA5amNse9pQqXiTkmx3HiqPL8BcbzDaw3jbIAZb6_EXsEeQ8xlkp9LdwnozRy_fanWrnfjuikR6v2fHotLA97sSDCp-JT876A-e1H-3_H7TvGPTeSzejnoq00xPrt49OkWbeFPnkisvmcDdqo1LEmIBn0WR0ly2xuWBq-CWC-kiy5iBRhJyjxxTqRq7wiYgXS-YLw4noujcpHn5Em0v-JIVMu4vM4XipODMOUm-DAdxOoYngO8MAij10U2fDHjv2iWNzVv_OQCA34y52y-wYftqQVqh0U4ddT_l89ib592JwAKOg13hsE4NKjtyJt0ZcGlWB2oJ-YLA2ZvuG2aoNbAit8dA31iaIDBPPMkE-SIUTIjvG--aibSFVeH-V4OgbNtX2hFKd58gF76khzBCboyG7xP-aV0qBZg2rQEzzgC4MjRL1-Eyz-ORDGts_LnnzAWoI1DBTKW22xwwpgFly3kmBBj",
+    "userName": "baz",
+    "authProviderName": "RadiusServer",
+    "user": {
+      "link": "https://localhost/mgmt/cm/system/authn/providers/radius/15633ac8-362c-4b05-b1f9-f77f3cd8921e/users/1b207465-eac8-3b5d-8b12-e335faa0b53a"
+    },
+    "groupReferences": [],
+    "timeout": 36000,
+    "address": "192.168.1.1",
+    "type": "REFRESH",
+    "jti": "lgL0SQiHeld0eLUGBDDPCg",
+    "exp": 1593224853,
+    "iat": 1593188853,
+    "generation": 221,
+    "lastUpdateMicros": 1593188853710970,
+    "kind": "shared:authz:tokens:authtokenitemstate",
+    "selfLink": "https://localhost/mgmt/shared/authz/tokens/eyJraWQiOiJhZmExZDliOC1jN2NiLTQ2NWMtOTE0Yy00MWNkODgwZjM1YjEiLCJhbGciOiJSUzM4NCJ9.eyJpc3MiOiJCSUctSVEiLCJqdGkiOiJsZ0wwU1FpSGVsZDBlTFVHQkREUENnIiwic3ViIjoicGF1bGEiLCJhdWQiOiIxNzIuMTguNy41NSIsImlhdCI6MTU5MzE4ODg1MywiZXhwIjoxNTkzMjI0ODUzLCJ1c2VyTmFtZSI6InBhdWxhIiwiYXV0aFByb3ZpZGVyTmFtZSI6IlJhZGl1c1NlcnZlciIsInVzZXIiOiJodHRwczovL2xvY2FsaG9zdC9tZ210L2NtL3N5c3RlbS9hdXRobi9wcm92aWRlcnMvcmFkaXVzLzE1NjMzYWM4LTM2MmMtNGIwNS1iMWY5LWY3N2YzY2Q4OTIxZS91c2Vycy8xYjIwNzQ2NS1lYWM4LTNiNWQtOGIxMi1lMzM1ZmFhMGI1M2EiLCJ0eXBlIjoiUkVGUkVTSCIsInRpbWVvdXQiOjM2MDAwLCJncm91cFJlZmVyZW5jZXMiOltdfQ.OIGhcUBeaF5vD78y-tyNhxgfVUsto9UcuC6DhGmA5amNse9pQqXiTkmx3HiqPL8BcbzDaw3jbIAZb6_EXsEeQ8xlkp9LdwnozRy_fanWrnfjuikR6v2fHotLA97sSDCp-JT876A-e1H-3_H7TvGPTeSzejnoq00xPrt49OkWbeFPnkisvmcDdqo1LEmIBn0WR0ly2xuWBq-CWC-kiy5iBRhJyjxxTqRq7wiYgXS-YLw4noujcpHn5Em0v-JIVMu4vM4XipODMOUm-DAdxOoYngO8MAij10U2fDHjv2iWNzVv_OQCA34y52y-wYftqQVqh0U4ddT_l89ib592JwAKOg13hsE4NKjtyJt0ZcGlWB2oJ-YLA2ZvuG2aoNbAit8dA31iaIDBPPMkE-SIUTIjvG--aibSFVeH-V4OgbNtX2hFKd58gF76khzBCboyG7xP-aV0qBZg2rQEzzgC4MjRL1-Eyz-ORDGts_LnnzAWoI1DBTKW22xwwpgFly3kmBBj"
+  },
+  "generation": 146,
+  "lastUpdateMicros": 1593188853711155
+}
