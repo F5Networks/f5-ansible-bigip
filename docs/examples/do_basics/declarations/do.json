@@ -1,0 +1,22 @@
+{
+    "async": true,
+    "schemaVersion": "1.0.0",
+    "class": "Device",
+    "Common": {
+        "class": "Tenant",
+        "hostname": "example.local",
+        "dbvars": {
+            "class": "DbVariables",
+            "ui.advisory.enabled": true,
+            "ui.advisory.color": "green",
+            "ui.advisory.text": "DO Through Ansible",
+            "restjavad.useextramb": true,
+            "provision.extramb": "500"
+        },
+        "myProvisioning": {
+            "afm": "nominal",
+            "ltm": "nominal",
+            "class": "Provision"
+        }
+    }
+}

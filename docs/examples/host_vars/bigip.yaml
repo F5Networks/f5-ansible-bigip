@@ -1,0 +1,16 @@
+# HTTPAPI Connection
+ansible_host: bigip-hostname
+ansible_user: admin
+ansible_httpapi_password: SuperSecret
+ansible_httpapi_port: 443
+ansible_network_os: f5networks.f5_bigip.bigip
+ansible_httpapi_use_ssl: yes
+ansible_httpapi_validate_certs: no
+
+# Local Connection
+provider:
+  server: bigip-hostname
+  server_port: 443
+  user: admin
+  password: SuperSecret
+  validate_certs: false
