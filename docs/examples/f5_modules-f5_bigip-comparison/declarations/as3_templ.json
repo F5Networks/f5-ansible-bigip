@@ -1,0 +1,47 @@
+{
+  "class": "AS3",
+  "action": "deploy",
+  "persist": true,
+  "declaration": {
+    "class": "ADC",
+    "schemaVersion": "3.22.0",
+    "id": "id",
+    "label": "WebApp",
+    "{{ partition }}": {
+      "class": "Tenant",
+      {% set comma = joiner(",") %}
+      {% for app in apps %}
+      {{comma()}}
+      "{{ app['name'] }}": {
+        "class": "Application",
+        "{{ app['name'] }}": {
+          "class": "Service_HTTP",
+          "virtualAddresses": [ "{{app['vsip']}}" ],
+          "virtualPort": {{app['vsport']}},
+          "pool": "{{ app['poolname'] }}"
+        },
+        "{{ app['poolname'] }}": {
+          "class": "Pool",
+          "monitors": [{"use": "http_mon"}],
+          "members": [
+            {
+              "servicePort": {{ app['memberport'] }},
+              "serverAddresses": [
+                {% set comma2 = joiner(",") %}
+                {% for mem in app['members'] %}
+                    {{comma2()}} "{{  mem  }}"
+                {% endfor %}
+              ]
+            }
+          ]
+        },
+        "http_mon": {
+            "class": "Monitor",
+            "monitorType": "http",
+            "receive": "I AM UP"
+        }
+      }
+      {% endfor %}
+    }
+  }
+}

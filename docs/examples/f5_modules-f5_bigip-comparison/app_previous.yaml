@@ -1,0 +1,118 @@
+- name: App Collection f5_modules
+  hosts: bigip
+  connection: local
+  gather_facts: false
+
+  vars:
+    app:
+      partition: ColPrevious
+      name: web
+      vsip: 10.39.1.1
+      vsport: 80
+      memberport: 8080
+      poolname: web_pool
+      members:
+        - 10.39.1.2
+        - 10.39.1.3
+        - 10.39.1.4
+    state: present
+
+  tasks:
+
+    - name: Create
+      block:
+
+        - name: Create partition
+          f5networks.f5_modules.bigip_partition:
+            name: "{{ app['partition'] }}"
+            provider: "{{ provider }}"
+          delegate_to: localhost
+
+        - name: Create HTTP Monitor
+          f5networks.f5_modules.bigip_monitor_http:
+            state: "{{ state }}"
+            name: http_mon
+            receive: "I AM UP"
+            partition: "{{ app['partition'] }}"
+            provider: "{{ provider }}"
+          delegate_to: localhost
+
+        - name: Create Pool
+          f5networks.f5_modules.bigip_pool:
+            state: "{{ state }}"
+            name: "{{ app['poolname'] }}"
+            partition: "{{ app['partition'] }}"
+            monitors:
+              - http_mon
+            provider: "{{ provider }}"
+          delegate_to: localhost
+
+        - name: Add pool members
+          f5networks.f5_modules.bigip_pool_member:
+            state: "{{ state }}"
+            pool: "{{ app['poolname'] }}"
+            partition: "{{ app['partition'] }}"
+            host: "{{ item }}"
+            port: "{{ app['memberport'] }}"
+            provider: "{{ provider }}"
+          delegate_to: localhost
+          loop: "{{ app['members'] }}"
+
+        - name: Add virtual server
+          f5networks.f5_modules.bigip_virtual_server:
+            state: "{{ state }}"
+            partition: "{{ app['partition'] }}"
+            name: "{{ app['name'] }}"
+            destination: "{{ app['vsip'] }}"
+            port: "{{ app['vsport'] }}"
+            pool: "{{ app['poolname'] }}"
+            profiles:
+              - http
+            provider: "{{ provider }}"
+          delegate_to: localhost
+
+      rescue: # BACKOUT LOGIC
+
+        - set_fact:
+            state: absent
+
+        - name: Delete virtual server
+          f5networks.f5_modules.bigip_virtual_server:
+            state: "{{ state }}"
+            partition: "{{ app['partition'] }}"
+            name: "{{ app['name'] }}"
+            destination: "{{ app['vsip'] }}"
+            port: "{{ app['vsport'] }}"
+            pool: "{{ app['poolname'] }}"
+            profiles:
+              - http
+            provider: "{{ provider }}"
+          delegate_to: localhost
+
+        - name: Delete Pool
+          f5networks.f5_modules.bigip_pool:
+            state: "{{ state }}"
+            name: "{{ app['poolname'] }}"
+            partition: "{{ app['partition'] }}"
+            monitors:
+              - http_mon
+            provider: "{{ provider }}"
+          delegate_to: localhost
+
+        - name: Delete HTTP Monitor
+          f5networks.f5_modules.bigip_monitor_http:
+            state: "{{ state }}"
+            name: http_mon
+            receive: "I AM UP"
+            partition: "{{ app['partition'] }}"
+            provider: "{{ provider }}"
+          delegate_to: localhost
+
+        - name: Delete partition
+          f5networks.f5_modules.bigip_partition:
+            name: "{{ app['partition'] }}"
+            provider: "{{ provider }}"
+          delegate_to: localhost
+
+
+
