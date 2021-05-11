@@ -55,11 +55,15 @@ class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
-        self.patcher1 = patch('time.sleep')
-        self.patcher1.start()
+        self.p1 = patch('time.sleep')
+        self.p1.start()
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_lx_package.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = True
 
     def tearDown(self):
-        self.patcher1.stop()
+        self.p1.stop()
+        self.p2.stop()
 
     def test_upload_rpm_package(self, *args):
         package_name = os.path.join(fixture_path, 'MyApp-0.1.0-0001.noarch.rpm')

@@ -77,10 +77,14 @@ class TestManager(unittest.TestCase):
         self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_device_discovery.bigiq_version')
         self.m1 = self.p1.start()
         self.m1.return_value = '6.1.0'
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_device_discovery.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = True
 
     def tearDown(self):
         self.patcher1.stop()
         self.p1.stop()
+        self.p2.stop()
 
     def test_create(self, *args):
         set_module_args(dict(

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2017, F5 Networks Inc.
+# Copyright: (c) 2021, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -78,6 +78,8 @@ notes:
     should be aware of how these Ansible products execute jobs in restricted
     environments. More information can be found here
     https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/module-usage-with-tower.html
+  - Some longer running tasks might cause the REST interface on BIG-IP to time out, to avoid this adjust the timers as
+    per this KB article https://support.f5.com/csp/article/K94602685
 author:
   - Wojciech Wypior (@wojtek0806)
 '''

@@ -64,6 +64,16 @@ class TestF5ClientBIGIP(TestCase):
         expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json'}
         self.connection.send.assert_called_once_with('/testlink', None, method='GET', headers=expected_header)
 
+    def test_GET_header_update_with_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+        self.client.transact = 'tr1234567'
+        self.client.get('/testlink', headers={'CUSTOM': 'HEADER'})
+        expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
+        self.connection.send.assert_called_once_with('/testlink', None, method='GET', headers=expected_header)
+
     def test_GET_header_update_without_additional_headers(self):
         self.connection.send.return_value = connection_response(
             {'FOO': 'BAR', 'BAZ': 'FOO'}
@@ -71,6 +81,16 @@ class TestF5ClientBIGIP(TestCase):
 
         self.client.get('/testlink')
         self.connection.send.assert_called_once_with('/testlink', None, method='GET', headers=BASE_HEADERS)
+
+    def test_GET_header_update_without_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+        self.client.transact = 'tr1234567'
+        self.client.get('/testlink')
+        expected_header = {'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
+        self.connection.send.assert_called_once_with('/testlink', None, method='GET', headers=expected_header)
 
     def test_POST_header_update_with_additional_headers(self):
         self.connection.send.return_value = connection_response(
@@ -81,6 +101,20 @@ class TestF5ClientBIGIP(TestCase):
 
         self.client.post('/testlink', data=payload, headers={'CUSTOM': 'HEADER'})
         expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json'}
+        self.connection.send.assert_called_once_with(
+            '/testlink', '{"Test": "Payload"}', headers=expected_header, method='POST'
+        )
+
+    def test_POST_header_update_with_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+
+        payload = {'Test': 'Payload'}
+        self.client.transact = 'tr1234567'
+        self.client.post('/testlink', data=payload, headers={'CUSTOM': 'HEADER'})
+        expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
         self.connection.send.assert_called_once_with(
             '/testlink', '{"Test": "Payload"}', headers=expected_header, method='POST'
         )
@@ -97,6 +131,21 @@ class TestF5ClientBIGIP(TestCase):
             '/testlink', '{"Test": "Payload"}', headers=BASE_HEADERS, method='POST'
         )
 
+    def test_POST_header_update_without_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+
+        payload = {'Test': 'Payload'}
+        self.client.transact = 'tr1234567'
+
+        self.client.post('/testlink', data=payload)
+        expected_header = {'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
+        self.connection.send.assert_called_once_with(
+            '/testlink', '{"Test": "Payload"}', headers=expected_header, method='POST'
+        )
+
     def test_PUT_header_update_with_additional_headers(self):
         self.connection.send.return_value = connection_response(
             {'FOO': 'BAR', 'BAZ': 'FOO'}
@@ -106,6 +155,20 @@ class TestF5ClientBIGIP(TestCase):
 
         self.client.put('/testlink', data=payload, headers={'CUSTOM': 'HEADER'})
         expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json'}
+        self.connection.send.assert_called_once_with(
+            '/testlink', '{"Test": "Payload"}', headers=expected_header, method='PUT'
+        )
+
+    def test_PUT_header_update_with_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+
+        payload = {'Test': 'Payload'}
+        self.client.transact = 'tr1234567'
+        self.client.put('/testlink', data=payload, headers={'CUSTOM': 'HEADER'})
+        expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
         self.connection.send.assert_called_once_with(
             '/testlink', '{"Test": "Payload"}', headers=expected_header, method='PUT'
         )
@@ -122,6 +185,21 @@ class TestF5ClientBIGIP(TestCase):
             '/testlink', '{"Test": "Payload"}', headers=BASE_HEADERS, method='PUT'
         )
 
+    def test_PUT_header_update_without_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+
+        payload = {'Test': 'Payload'}
+        self.client.transact = 'tr1234567'
+
+        self.client.put('/testlink', data=payload)
+        expected_header = {'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
+        self.connection.send.assert_called_once_with(
+            '/testlink', '{"Test": "Payload"}', headers=expected_header, method='PUT'
+        )
+
     def test_PATCH_header_update_with_additional_headers(self):
         self.connection.send.return_value = connection_response(
             {'FOO': 'BAR', 'BAZ': 'FOO'}
@@ -131,6 +209,21 @@ class TestF5ClientBIGIP(TestCase):
 
         self.client.patch('/testlink', data=payload, headers={'CUSTOM': 'HEADER'})
         expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json'}
+        self.connection.send.assert_called_once_with(
+            '/testlink', '{"Test": "Payload"}', headers=expected_header, method='PATCH'
+        )
+
+    def test_PATCH_header_update_with_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+
+        payload = {'Test': 'Payload'}
+        self.client.transact = 'tr1234567'
+
+        self.client.patch('/testlink', data=payload, headers={'CUSTOM': 'HEADER'})
+        expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
         self.connection.send.assert_called_once_with(
             '/testlink', '{"Test": "Payload"}', headers=expected_header, method='PATCH'
         )
@@ -147,13 +240,37 @@ class TestF5ClientBIGIP(TestCase):
             '/testlink', '{"Test": "Payload"}', headers=BASE_HEADERS, method='PATCH'
         )
 
-    def test_DELTE_header_update_with_additional_headers(self):
+    def test_PATCH_header_update_without_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+
+        payload = {'Test': 'Payload'}
+        self.client.transact = 'tr1234567'
+        self.client.patch('/testlink', data=payload)
+        expected_header = {'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
+        self.connection.send.assert_called_once_with(
+            '/testlink', '{"Test": "Payload"}', headers=expected_header, method='PATCH'
+        )
+
+    def test_DELETE_header_update_with_additional_headers(self):
         self.connection.send.return_value = connection_response(
             {'FOO': 'BAR', 'BAZ': 'FOO'}
         )
 
         self.client.delete('/testlink', headers={'CUSTOM': 'HEADER'})
         expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json'}
+        self.connection.send.assert_called_once_with('/testlink', None, method='DELETE', headers=expected_header)
+
+    def test_DELETE_header_update_with_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+        self.client.transact = 'tr1234567'
+        self.client.delete('/testlink', headers={'CUSTOM': 'HEADER'})
+        expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
         self.connection.send.assert_called_once_with('/testlink', None, method='DELETE', headers=expected_header)
 
     def test_DELETE_header_update_without_additional_headers(self):
@@ -163,6 +280,16 @@ class TestF5ClientBIGIP(TestCase):
 
         self.client.delete('/testlink')
         self.connection.send.assert_called_once_with('/testlink', None, method='DELETE', headers=BASE_HEADERS)
+
+    def test_DELETE_header_update_without_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+        self.client.transact = 'tr1234567'
+        self.client.delete('/testlink')
+        expected_header = {'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
+        self.connection.send.assert_called_once_with('/testlink', None, method='DELETE', headers=expected_header)
 
     def test_get_platform(self):
         self.connection.send.return_value = connection_response(
@@ -192,6 +319,16 @@ class TestF5ClientBIGIQ(TestCase):
         expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json'}
         self.connection.send.assert_called_once_with('/testlink', None, method='GET', headers=expected_header)
 
+    def test_GET_header_update_with_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+        self.client.transact = 'tr1234567'
+        self.client.get('/testlink', headers={'CUSTOM': 'HEADER'})
+        expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
+        self.connection.send.assert_called_once_with('/testlink', None, method='GET', headers=expected_header)
+
     def test_GET_header_update_without_additional_headers(self):
         self.connection.send.return_value = connection_response(
             {'FOO': 'BAR', 'BAZ': 'FOO'}
@@ -199,6 +336,16 @@ class TestF5ClientBIGIQ(TestCase):
 
         self.client.get('/testlink')
         self.connection.send.assert_called_once_with('/testlink', None, method='GET', headers=BASE_HEADERS)
+
+    def test_GET_header_update_without_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+        self.client.transact = 'tr1234567'
+        self.client.get('/testlink')
+        expected_header = {'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
+        self.connection.send.assert_called_once_with('/testlink', None, method='GET', headers=expected_header)
 
     def test_POST_header_update_with_additional_headers(self):
         self.connection.send.return_value = connection_response(
@@ -209,6 +356,21 @@ class TestF5ClientBIGIQ(TestCase):
 
         self.client.post('/testlink', data=payload, headers={'CUSTOM': 'HEADER'})
         expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json'}
+        self.connection.send.assert_called_once_with(
+            '/testlink', '{"Test": "Payload"}', headers=expected_header, method='POST'
+        )
+
+    def test_POST_header_update_with_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+
+        payload = {'Test': 'Payload'}
+        self.client.transact = 'tr1234567'
+
+        self.client.post('/testlink', data=payload, headers={'CUSTOM': 'HEADER'})
+        expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
         self.connection.send.assert_called_once_with(
             '/testlink', '{"Test": "Payload"}', headers=expected_header, method='POST'
         )
@@ -225,6 +387,21 @@ class TestF5ClientBIGIQ(TestCase):
             '/testlink', '{"Test": "Payload"}', headers=BASE_HEADERS, method='POST'
         )
 
+    def test_POST_header_update_without_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+
+        payload = {'Test': 'Payload'}
+        self.client.transact = 'tr1234567'
+
+        self.client.post('/testlink', data=payload)
+        expected_header = {'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
+        self.connection.send.assert_called_once_with(
+            '/testlink', '{"Test": "Payload"}', headers=expected_header, method='POST'
+        )
+
     def test_PUT_header_update_with_additional_headers(self):
         self.connection.send.return_value = connection_response(
             {'FOO': 'BAR', 'BAZ': 'FOO'}
@@ -234,6 +411,21 @@ class TestF5ClientBIGIQ(TestCase):
 
         self.client.put('/testlink', data=payload, headers={'CUSTOM': 'HEADER'})
         expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json'}
+        self.connection.send.assert_called_once_with(
+            '/testlink', '{"Test": "Payload"}', headers=expected_header, method='PUT'
+        )
+
+    def test_PUT_header_update_with_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+
+        payload = {'Test': 'Payload'}
+        self.client.transact = 'tr1234567'
+
+        self.client.put('/testlink', data=payload, headers={'CUSTOM': 'HEADER'})
+        expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
         self.connection.send.assert_called_once_with(
             '/testlink', '{"Test": "Payload"}', headers=expected_header, method='PUT'
         )
@@ -250,6 +442,21 @@ class TestF5ClientBIGIQ(TestCase):
             '/testlink', '{"Test": "Payload"}', headers=BASE_HEADERS, method='PUT'
         )
 
+    def test_PUT_header_update_without_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+
+        payload = {'Test': 'Payload'}
+        self.client.transact = 'tr1234567'
+
+        self.client.put('/testlink', data=payload)
+        expected_header = {'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
+        self.connection.send.assert_called_once_with(
+            '/testlink', '{"Test": "Payload"}', headers=expected_header, method='PUT'
+        )
+
     def test_PATCH_header_update_with_additional_headers(self):
         self.connection.send.return_value = connection_response(
             {'FOO': 'BAR', 'BAZ': 'FOO'}
@@ -259,6 +466,21 @@ class TestF5ClientBIGIQ(TestCase):
 
         self.client.patch('/testlink', data=payload, headers={'CUSTOM': 'HEADER'})
         expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json'}
+        self.connection.send.assert_called_once_with(
+            '/testlink', '{"Test": "Payload"}', headers=expected_header, method='PATCH'
+        )
+
+    def test_PATCH_header_update_with_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+
+        payload = {'Test': 'Payload'}
+        self.client.transact = 'tr1234567'
+
+        self.client.patch('/testlink', data=payload, headers={'CUSTOM': 'HEADER'})
+        expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
         self.connection.send.assert_called_once_with(
             '/testlink', '{"Test": "Payload"}', headers=expected_header, method='PATCH'
         )
@@ -275,13 +497,38 @@ class TestF5ClientBIGIQ(TestCase):
             '/testlink', '{"Test": "Payload"}', headers=BASE_HEADERS, method='PATCH'
         )
 
-    def test_DELTE_header_update_with_additional_headers(self):
+    def test_PATCH_header_update_without_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+
+        payload = {'Test': 'Payload'}
+        self.client.transact = 'tr1234567'
+
+        self.client.patch('/testlink', data=payload)
+        expected_header = {'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
+        self.connection.send.assert_called_once_with(
+            '/testlink', '{"Test": "Payload"}', headers=expected_header, method='PATCH'
+        )
+
+    def test_DELETE_header_update_with_additional_headers(self):
         self.connection.send.return_value = connection_response(
             {'FOO': 'BAR', 'BAZ': 'FOO'}
         )
 
         self.client.delete('/testlink', headers={'CUSTOM': 'HEADER'})
         expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json'}
+        self.connection.send.assert_called_once_with('/testlink', None, method='DELETE', headers=expected_header)
+
+    def test_DELETE_header_update_with_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+        self.client.transact = 'tr1234567'
+        self.client.delete('/testlink', headers={'CUSTOM': 'HEADER'})
+        expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
         self.connection.send.assert_called_once_with('/testlink', None, method='DELETE', headers=expected_header)
 
     def test_DELETE_header_update_without_additional_headers(self):
@@ -291,6 +538,16 @@ class TestF5ClientBIGIQ(TestCase):
 
         self.client.delete('/testlink')
         self.connection.send.assert_called_once_with('/testlink', None, method='DELETE', headers=BASE_HEADERS)
+
+    def test_DELETE_header_update_without_additional_headers_and_transaction(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+        self.client.transact = 'tr1234567'
+        self.client.delete('/testlink')
+        expected_header = {'Content-Type': 'application/json',
+                           'X-F5-REST-Coordination-Id': 'tr1234567'}
+        self.connection.send.assert_called_once_with('/testlink', None, method='DELETE', headers=expected_header)
 
     def test_get_platform(self):
         self.connection.send.return_value = connection_response(

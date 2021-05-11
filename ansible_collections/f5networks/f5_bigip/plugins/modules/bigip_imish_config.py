@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2018, F5 Networks Inc.
+# Copyright: (c) 2021, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -210,9 +210,7 @@ options:
     default: 'no'
     version_added: "1.2.0"
 notes:
-  - Abbreviated commands are NOT idempotent, see
-    L(Network FAQ,../network/user_guide/faq.html#why-do-the-config-modules-always-return-changed-true-with-
-    abbreviated-commands).
+  - Abbreviated commands are NOT idempotent
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -547,6 +545,8 @@ class ModuleManager(object):
         return result['changed']
 
     def load_config(self, commands):
+        # Add space to command list so that it won't chop last character from last command
+        commands = ['{0} '.format(x) for x in commands]
         file = tempfile.NamedTemporaryFile()
         content = "\n".join(commands)
 

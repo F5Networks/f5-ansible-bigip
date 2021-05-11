@@ -60,6 +60,15 @@ class TestV1Manager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
+        self.p1 = patch('time.sleep')
+        self.p1.start()
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_ucs_fetch.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = True
+
+    def tearDown(self):
+        self.p1.stop()
+        self.p2.stop()
 
     def test_create(self, *args):
         set_module_args(dict(

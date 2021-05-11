@@ -65,11 +65,15 @@ class TestParameters(unittest.TestCase):
 class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
-        self.patcher1 = patch('time.sleep')
-        self.patcher1.start()
+        self.p1 = patch('time.sleep')
+        self.p1.start()
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_regkey_license.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = True
 
     def tearDown(self):
-        self.patcher1.stop()
+        self.p1.stop()
+        self.p2.stop()
 
     def test_create(self, *args):
         set_module_args(dict(

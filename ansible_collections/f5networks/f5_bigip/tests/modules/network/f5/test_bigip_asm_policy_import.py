@@ -58,20 +58,16 @@ class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
         self.policy = os.path.join(fixture_path, 'fake_policy.xml')
-        self.patcher1 = patch('time.sleep')
-        self.patcher1.start()
-        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_asm_policy_import.module_provisioned')
-        self.m1 = self.p1.start()
-        self.m1.return_value = True
-        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_asm_policy_import.tmos_version')
-        self.p3 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_asm_policy_import.send_teem')
+        self.p1 = patch('time.sleep')
+        self.p1.start()
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_asm_policy_import.module_provisioned')
         self.m2 = self.p2.start()
-        self.m2.return_value = '14.1.0'
+        self.m2.return_value = True
+        self.p3 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_asm_policy_import.send_teem')
         self.m3 = self.p3.start()
         self.m3.return_value = True
 
     def tearDown(self):
-        self.patcher1.stop()
         self.p1.stop()
         self.p2.stop()
         self.p3.stop()

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2020, F5 Networks Inc.
+# Copyright: (c) 2021, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -15,10 +15,11 @@ description:
   - This HttpApi plugin provides methods to connect to BIG-IQ
     devices over a HTTP(S)-based api.
 options:
-  provider:
+  bigiq_provider:
     description:
     - The login provider used in communicating with BIG-IQ devices when the API connection
       is first established.
+    - The provider can be either a name as configured on BIG-IQ or its corresponding UUID.
     - If the provider is not specified, the default C(local) value is assumed.
     default: local
     ini:
@@ -36,7 +37,7 @@ options:
     - section: defaults
       key: f5_telemetry
     env:
-      - name: F5_TELEMETRY
+      - name: F5_TELEMETRY_OFF
     vars:
       - name: f5_telemetry
 version_added: "1.0"
@@ -66,7 +67,7 @@ class HttpApi(HttpApiBase):
         self.refresh_token = None
 
     def login(self, username, password):
-        provider = self.get_option("provider")
+        provider = self.get_option("bigiq_provider")
 
         if username and password:
             payload = {
@@ -105,9 +106,11 @@ class HttpApi(HttpApiBase):
             # Other codes will be raised by underlying connection plugin.
             return exc
         if exc.code == 401:
-            self.connection._auth = None
-            self.token_refresh()
-            return True
+            if self.connection._auth is not None:
+                # only attempt to refresh token if we were connected before not when we get 401 on first attempt
+                self.connection._auth = None
+                self.token_refresh()
+                return True
         return False
 
     def token_refresh(self):
@@ -175,29 +178,29 @@ class HttpApi(HttpApiBase):
         info = self._read_providers_on_device()
         uuids = [os.path.basename(os.path.dirname(x['link'])) for x in info['providers'] if '-' in x['link']]
         if provider in uuids:
-            name = self._get_name_of_provider_id(info, provider)
-            if not name:
+            link = self._get_login_ref_by_id(info, provider)
+            if not link:
                 raise F5ModuleError(
-                    "No name found for the provider '{0}'".format(provider)
+                    "Provider with the UUID {0} was not found.".format(provider)
                 )
             return dict(
                 loginReference=dict(
-                    link="https://localhost/mgmt/cm/system/authn/providers/{0}/{1}/login".format(name, provider)
+                    link=link
                 )
             )
         names = [os.path.basename(os.path.dirname(x['link'])) for x in info['providers'] if '-' in x['link']]
         if names.count(provider) > 1:
             raise F5ModuleError(
-                "Ambiguous auth_provider provided. Please specify a specific provider ID."
+                "Ambiguous bigiq_provider name provided. Please specify a specific provider name or UUID."
             )
-        uuid = self._get_id_of_provider_name(info, provider)
-        if not uuid:
+        link = self._get_login_ref_by_name(info, provider)
+        if not link:
             raise F5ModuleError(
-                "No name found for the provider '{0}'".format(provider)
+                "Provider with the name '{0}' was not found.".format(provider)
             )
         return dict(
             loginReference=dict(
-                link="https://localhost/mgmt/cm/system/authn/providers/{0}/{1}/login".format(provider, uuid)
+                link=link
             )
         )
 
@@ -212,18 +215,15 @@ class HttpApi(HttpApiBase):
         return self.connection._network_os
 
     @staticmethod
-    def _get_name_of_provider_id(info, provider):
-        # Add slashes to the provider name so that it specifically finds the provider
-        # as part of the URL and not a part of another substring
+    def _get_login_ref_by_id(info, provider):
         provider = '/' + provider + '/'
         for x in info['providers']:
             if x['link'].find(provider) > -1:
-                return x['name']
-        return None
+                return x['link']
 
     @staticmethod
-    def _get_id_of_provider_name(info, provider):
+    def _get_login_ref_by_name(info, provider):
         for x in info['providers']:
             if x['name'] == provider:
-                return os.path.basename(os.path.dirname(x['link']))
+                return x['link']
         return None

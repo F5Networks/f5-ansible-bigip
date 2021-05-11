@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2020 F5 Networks Inc.
+# Copyright (c) 2021 F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -123,11 +123,14 @@ RETURN = r'''
 
 import re
 import time
+from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import Connection
 
-from ..module_utils.client import F5Client
+from ..module_utils.client import (
+    F5Client, send_teem
+)
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters
 )
@@ -400,6 +403,7 @@ class ModuleManager(object):
         return False
 
     def exec_module(self):
+        start = datetime.now().isoformat()
         changed = False
         result = dict()
         state = self.want.state
@@ -414,6 +418,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(self.client, start)
         return result
 
     def _announce_deprecations(self, result):

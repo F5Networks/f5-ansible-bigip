@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2020, F5 Networks Inc.
+# Copyright: (c) 2021, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -88,14 +88,14 @@ common_name:
 '''
 
 import os
-
+from datetime import datetime
 from distutils.version import LooseVersion
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
-    F5Client, tmos_version
+    F5Client, tmos_version, send_teem
 )
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters
@@ -200,6 +200,7 @@ class ModuleManager(object):
             )
 
     def exec_module(self):
+        start = datetime.now().isoformat()
         if self.version_is_less_than_14():
             raise F5ModuleError(
                 "This module requires TMOS version 14.x and above."
@@ -218,6 +219,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(self.client, start)
         return result
 
     def version_is_less_than_14(self):

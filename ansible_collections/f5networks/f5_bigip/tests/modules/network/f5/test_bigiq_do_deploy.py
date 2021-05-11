@@ -58,15 +58,23 @@ class TestManager(unittest.TestCase):
         self.spec = ArgumentSpec()
         self.patcher1 = patch('time.sleep')
         self.patcher1.start()
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_do_deploy.bigiq_version')
+        self.m1 = self.p1.start()
+        self.m1.return_value = '6.1.0'
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_do_deploy.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = True
 
     def tearDown(self):
         self.patcher1.stop()
+        self.p1.stop()
+        self.p2.stop()
 
     def test_upsert_declaration(self, *args):
         declaration = load_fixture('do_declaration.json')
         set_module_args(dict(
             content=declaration,
-            timeout=600,
+            async_timeout=600,
             provider=dict(
                 server='localhost',
                 password='password',
@@ -86,4 +94,4 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert mm.want.timeout == (6, 100)
+        assert mm.want.async_timeout == (6.0, 100)

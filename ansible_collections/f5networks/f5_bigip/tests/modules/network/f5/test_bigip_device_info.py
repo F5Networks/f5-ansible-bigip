@@ -66,9 +66,13 @@ class TestManager(unittest.TestCase):
         self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_device_info.modules_provisioned')
         self.m1 = self.p1.start()
         self.m1.return_value = ['ltm', 'gtm', 'asm']
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_device_info.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = True
 
     def tearDown(self):
         self.p1.stop()
+        self.p2.stop()
 
     def test_get_trunk_facts(self, *args):
         set_module_args(dict(

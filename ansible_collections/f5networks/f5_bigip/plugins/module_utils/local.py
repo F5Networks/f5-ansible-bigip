@@ -58,6 +58,11 @@ f5_provider_spec = {
         default='yes',
         fallback=(env_fallback, ['F5_VALIDATE_CERTS'])
     ),
+    'no_f5_teem': dict(
+        type='bool',
+        default='no',
+        fallback=(env_fallback, ['F5_TELEMETRY_OFF'])
+    ),
     'timeout': dict(type='int'),
     'auth_provider': dict(),
 }
@@ -114,6 +119,7 @@ class F5BaseClient(object):
         self.merge_provider_auth_provider_param(result, provider)
         self.merge_provider_user_param(result, provider)
         self.merge_provider_password_param(result, provider)
+        self.merge_provider_no_f5_teem_param(result, provider)
 
         return result
 
@@ -187,6 +193,19 @@ class F5BaseClient(object):
             result['password'] = os.environ.get('ANSIBLE_NET_PASSWORD')
         else:
             result['password'] = None
+
+    def merge_provider_no_f5_teem_param(self, result, provider):
+        if self.validate_params('no_f5_teem', provider):
+            result['no_f5_teem'] = provider['no_f5_teem']
+        elif self.validate_params('F5_TELEMETRY_OFF', os.environ):
+            result['no_f5_teem'] = os.environ['F5_TELEMETRY_OFF']
+        else:
+            result['no_f5_teem'] = False
+
+        if result['no_f5_teem'] in BOOLEANS_TRUE:
+            result['no_f5_teem'] = True
+        else:
+            result['no_f5_teem'] = False
 
 
 class Response(object):
@@ -353,129 +372,6 @@ class iControlRestSession(object):
             pass
 
 
-def download_asm_file(client, url, dest, file_size):
-    """Download a large ASM file from the remote device
-
-    This method handles issues with ASM file endpoints that allow
-    downloads of ASM objects on the BIG-IP, as well as handles
-    chunking of large files.
-
-    Arguments:
-        client (object): The F5RestClient connection object.
-        url (string): The URL to download.
-        dest (string): The location on (Ansible controller) disk to store the file.
-        file_size (integer): The size of the remote file.
-
-    Returns:
-        bool: No response on success. Fail otherwise.
-    """
-
-    with open(dest, 'wb') as fileobj:
-        chunk_size = 512 * 1024
-        start = 0
-        end = chunk_size - 1
-        size = file_size
-        # current_bytes = 0
-
-        while True:
-            content_range = "%s-%s/%s" % (start, end, size)
-            headers = {
-                'Content-Range': content_range,
-                'Content-Type': 'application/json'
-            }
-            data = {
-                'headers': headers,
-                'verify': False,
-                'stream': False
-            }
-
-            response = client.api.get(url, headers=headers, json=data)
-            if response.status == 200:
-                if 'Content-Length' not in response.headers:
-                    error_message = "The Content-Length header is not present."
-                    raise F5ModuleError(error_message)
-                length = response.headers['Content-Length']
-                if int(length) > 0:
-                    fileobj.write(response.content)
-                else:
-                    error = "Invalid Content-Length value returned: %s ," \
-                            "the value should be greater than 0" % length
-                    raise F5ModuleError(error)
-                # fileobj.write(response.raw_content)
-            if end == size:
-                break
-            start += chunk_size
-            if start >= size:
-                break
-            if (end + chunk_size) > size:
-                end = size - 1
-            else:
-                end = start + chunk_size - 1
-
-
-def download_file(client, url, dest):
-    """Download a file from the remote device
-
-    This method handles the chunking needed to download a file from
-    a given URL on the BIG-IP.
-
-    Arguments:
-        client (object): The F5RestClient connection object.
-        url (string): The URL to download.
-        dest (string): The location on (Ansible controller) disk to store the file.
-
-    Returns:
-        bool: True on success. False otherwise.
-    """
-    with open(dest, 'wb') as fileobj:
-        chunk_size = 512 * 1024
-        start = 0
-        end = chunk_size - 1
-        size = 0
-        current_bytes = 0
-
-        while True:
-            content_range = "%s-%s/%s" % (start, end, size)
-            headers = {
-                'Content-Range': content_range,
-                'Content-Type': 'application/octet-stream'
-            }
-            data = {
-                'headers': headers,
-                'verify': False,
-                'stream': False
-            }
-            response = client.api.get(url, headers=headers, json=data)
-            if response.status == 200:
-                # If the size is zero, then this is the first time through
-                # the loop and we don't want to write data because we
-                # haven't yet figured out the total size of the file.
-                if size > 0:
-                    current_bytes += chunk_size
-                    fileobj.write(response.raw_content)
-            # Once we've downloaded the entire file, we can break out of
-            # the loop
-            if end == size:
-                break
-            crange = response.headers['Content-Range']
-            # Determine the total number of bytes to read.
-            if size == 0:
-                size = int(crange.split('/')[-1]) - 1
-                # If the file is smaller than the chunk_size, the BigIP
-                # will return an HTTP 400. Adjust the chunk_size down to
-                # the total file size...
-                if chunk_size > size:
-                    end = size
-                # ...and pass on the rest of the code.
-                continue
-            start += chunk_size
-            if (current_bytes + chunk_size) > size:
-                end = size
-            else:
-                end = start + chunk_size - 1
-    return True
-
-
 def tmos_version(client):
     uri = "https://{0}:{1}/mgmt/tm/sys/".format(
         client.provider['server'],
@@ -536,3 +432,32 @@ def modules_provisioned(client):
     if 'items' not in response:
         return []
     return [x['name'] for x in response['items'] if x['level'] != 'none']
+
+
+def bigiq_version(client):
+    uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-shared-all-big-iqs/devices".format(
+        client.provider['server'],
+        client.provider['server_port'],
+    )
+    query = "?$select=version"
+
+    resp = client.api.get(uri + query)
+
+    try:
+        response = resp.json()
+    except ValueError as ex:
+        raise F5ModuleError(str(ex))
+
+    if 'code' in response and response['code'] in [400, 403]:
+        if 'message' in response:
+            raise F5ModuleError(response['message'])
+        else:
+            raise F5ModuleError(resp.content)
+
+    if 'items' in response:
+        version = response['items'][0]['version']
+        return version
+
+    raise F5ModuleError(
+        'Failed to retrieve BIG-IQ version information.'
+    )
