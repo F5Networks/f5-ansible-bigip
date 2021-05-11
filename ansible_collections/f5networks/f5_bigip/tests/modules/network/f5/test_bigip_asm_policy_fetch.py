@@ -69,21 +69,20 @@ class TestManager(unittest.TestCase):
         self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_asm_policy_fetch.module_provisioned')
         self.m1 = self.p1.start()
         self.m1.return_value = True
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_asm_policy_fetch.send_teem')
+        self.m2 = self.p2.start()
+        self.m2.return_value = True
 
     def tearDown(self):
         self.patcher1.stop()
         self.p1.stop()
+        self.p2.stop()
 
     def test_create(self, *args):
         set_module_args(dict(
             name='fake_policy',
             file='foobar.xml',
-            dest='/tmp/foobar.xml',
-            provider=dict(
-                server='localhost',
-                password='password',
-                user='admin'
-            )
+            dest='/tmp/foobar.xml'
         ))
 
         module = AnsibleModule(

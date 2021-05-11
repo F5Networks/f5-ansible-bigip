@@ -137,6 +137,17 @@ def flatten_boolean(value):
         return 'no'
 
 
+def merge_two_dicts(x, y):
+    """ Merge any two dicts passed to the function
+        This does not do a deep copy, just a shallow
+        copy. However, it does create a new object,
+        so there's that.
+    """
+    z = x.copy()
+    z.update(y)
+    return z
+
+
 def is_valid_hostname(host):
     """Reasonable attempt at validating a hostname
 

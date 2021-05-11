@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2020, F5 Networks Inc.
+# Copyright: (c) 2021, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -279,6 +279,7 @@ modules:
 '''
 
 import time
+from datetime import datetime
 from distutils.version import LooseVersion
 
 from ansible.module_utils.basic import AnsibleModule
@@ -287,7 +288,9 @@ from ansible.module_utils.connection import Connection
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, flatten_boolean
 )
-from ..module_utils.client import F5Client, bigiq_version
+from ..module_utils.client import (
+    F5Client, bigiq_version, send_teem
+)
 from ..module_utils.ipaddress import is_valid_ip
 
 
@@ -658,6 +661,7 @@ class ModuleManager(object):
             )
 
     def exec_module(self):
+        start = datetime.now().isoformat()
         self.check_bigiq_version(bigiq_version(self.client))
         changed = False
         result = dict()
@@ -673,6 +677,7 @@ class ModuleManager(object):
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(self.client, start)
         return result
 
     def present(self):

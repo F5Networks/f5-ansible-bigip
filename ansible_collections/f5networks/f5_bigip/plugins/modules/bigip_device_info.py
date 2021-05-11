@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2020, F5 Networks Inc.
+# Copyright: (c) 2021, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -7371,6 +7371,7 @@ import time
 
 from collections import namedtuple
 from distutils.version import LooseVersion
+from ipaddress import ip_interface
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import Connection
@@ -7378,10 +7379,9 @@ from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.six import (
     iteritems, string_types
 )
-from ansible_collections.ansible.netcommon.plugins.module_utils.compat.ipaddress import ip_interface
 
 from ..module_utils.client import (
-    F5Client, tmos_version, modules_provisioned
+    F5Client, tmos_version, modules_provisioned, send_teem
 )
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, flatten_boolean, fq_name
@@ -7421,11 +7421,13 @@ class BaseManager(object):
         self.provisioned_modules = []
 
     def exec_module(self):
+        start = datetime.datetime.now().isoformat()
         results = []
         facts = self.read_facts()
         for item in facts:
             attrs = item.to_return()
             results.append(attrs)
+        send_teem(self.client, start)
         return results
 
 

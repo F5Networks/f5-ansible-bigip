@@ -13,41 +13,51 @@ from .teem import TeemClient
 from ..module_utils.constants import BASE_HEADERS
 
 
+def header(method):
+    def wrap(self, *args, **kwargs):
+        if 'headers' not in kwargs:
+            if self.transact is not None:
+                kwargs['headers'] = {'X-F5-REST-Coordination-Id': self.transact}
+                kwargs['headers'].update(BASE_HEADERS)
+                return method(self, *args, **kwargs)
+            kwargs['headers'] = BASE_HEADERS
+            return method(self, *args, **kwargs)
+        else:
+            if self.transact is not None:
+                kwargs['headers'].update({'X-F5-REST-Coordination-Id': self.transact})
+                kwargs['headers'].update(BASE_HEADERS)
+                return method(self, *args, **kwargs)
+            kwargs['headers'].update(BASE_HEADERS)
+            return method(self, *args, **kwargs)
+    return wrap
+
+
 class F5Client:
     def __init__(self, *args, **kwargs):
         self.params = kwargs
         self.module = kwargs.get('module', None)
         self.plugin = kwargs.get('client', None)
+        self.transact = None
 
-    def delete(self, url, headers=None, **kwargs):
-        if headers:
-            headers.update(BASE_HEADERS)
-            return self.plugin.send_request(url, method='DELETE', headers=headers, **kwargs)
-        return self.plugin.send_request(url, method='DELETE', headers=BASE_HEADERS, **kwargs)
+    @header
+    def delete(self, url, **kwargs):
+        return self.plugin.send_request(url, method='DELETE', **kwargs)
 
-    def get(self, url, headers=None, **kwargs):
-        if headers:
-            headers.update(BASE_HEADERS)
-            return self.plugin.send_request(url, method='GET', headers=headers, **kwargs)
-        return self.plugin.send_request(url, method='GET', headers=BASE_HEADERS, **kwargs)
+    @header
+    def get(self, url, **kwargs):
+        return self.plugin.send_request(url, method='GET', **kwargs)
 
-    def patch(self, url, data=None, headers=None, **kwargs):
-        if headers:
-            headers.update(BASE_HEADERS)
-            return self.plugin.send_request(url, method='PATCH', data=data, headers=headers, **kwargs)
-        return self.plugin.send_request(url, method='PATCH', data=data, headers=BASE_HEADERS, **kwargs)
+    @header
+    def patch(self, url, data=None, **kwargs):
+        return self.plugin.send_request(url, method='PATCH', data=data, **kwargs)
 
-    def post(self, url, data=None, headers=None, **kwargs):
-        if headers:
-            headers.update(BASE_HEADERS)
-            return self.plugin.send_request(url, method='POST', data=data, headers=headers, **kwargs)
-        return self.plugin.send_request(url, method='POST', data=data, headers=BASE_HEADERS, **kwargs)
+    @header
+    def post(self, url, data=None, **kwargs):
+        return self.plugin.send_request(url, method='POST', data=data, **kwargs)
 
-    def put(self, url, data=None, headers=None, **kwargs):
-        if headers:
-            headers.update(BASE_HEADERS)
-            return self.plugin.send_request(url, method='PUT', data=data, headers=headers, **kwargs)
-        return self.plugin.send_request(url, method='PUT', data=data, headers=BASE_HEADERS, **kwargs)
+    @header
+    def put(self, url, data=None, **kwargs):
+        return self.plugin.send_request(url, method='PUT', data=data, **kwargs)
 
     @property
     def platform(self):
@@ -129,3 +139,33 @@ def send_teem(client, start_time):
         teem.send()
     else:
         return False
+
+
+class TransactionContextManager(object):
+    def __init__(self, client, validate_only=False):
+        self.client = client
+        self.validate_only = validate_only
+        self.transid = None
+
+    def __enter__(self):
+        uri = "/mgmt/tm/transaction/"
+        response = self.client.post(uri, data={})
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        self.transid = response['contents']['transId']
+        self.client.transact = self.transid
+        return self.client
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        self.client.transact = None
+        if exc_tb is None:
+            uri = "/mgmt/tm/transaction/{0}".format(self.transid)
+            params = dict(
+                state="VALIDATING",
+                validateOnly=self.validate_only
+            )
+            response = self.client.patch(uri, data=params)
+            if response['code'] not in [200, 201, 202]:
+                raise F5ModuleError(response['contents'])

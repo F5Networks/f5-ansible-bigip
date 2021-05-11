@@ -10,16 +10,21 @@ This collection is not currently published to Galaxy while feedback is collected
 
 |
 
-**Note that this Collection is not currently intended to replace the existing |f5_modules| Collection.**
+**Note that this Collection is not currently intended to replace the existing** |f5_modules| **Collection.**
 
+Collections Daily Build
+-----------------------
 
-Install from Github
-~~~~~~~~~~~~~~~~~~~
+We offer a daily build of our most recent collection |dailybuild|. Please use this Collection to test the most
+recent Ansible module updates between releases.
 
-``ansible-galaxy collection install git+https://github.com/f5devcentral/f5-ansible-bigip.git#ansible_collections/f5networks/f5_bigip``
+Installing the Daily Build
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. code:: shell
 
-|repoinstall|
-
+    ansible-galaxy collection install <collection name> -p ./collections
+    e.g.
+    ansible-galaxy collection install f5networks-f5_bigip-devel.tar.gz -p ./collections
 
 .. note::
 
@@ -58,7 +63,7 @@ If you've got the time, consider sending an email that introduces yourself and w
 Copyright
 ---------
 
-Copyright 2020 F5 Networks Inc.
+Copyright 2021 F5 Networks Inc.
 
 
 License
@@ -71,6 +76,10 @@ This License does not grant permission to use the trade names, trademarks, servi
 
 See `License`_.
 
+Contributor License Agreement
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Individuals or business entities who contribute to this project must complete and submit the `F5 Contributor License Agreement <http://clouddocs.f5.com/products/orchestration/ansible/devel/usage/contributor.html>`_ to Ansible_CLA@f5.com prior to their code submission being included in this project.
+
 .. |repoinstall| raw:: html
 
    <a href="https://docs.ansible.com/ansible/latest/user_guide/collections_using.html#installing-a-collection-from-a-git-repository" target="_blank">Git Install Docs</a>
@@ -78,5 +87,9 @@ See `License`_.
 .. |f5_modules| raw:: html
 
    <a href="https://galaxy.ansible.com/f5networks/f5_modules" target="_blank">f5_modules</a>
+
+.. |dailybuild| raw:: html
+
+   <a href="https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_bigip-devel.tar.gz" target="_blank">here</a>
 
 .. _License: https://github.com/f5devcentral/f5-ansible-bigip/blob/master/COPYING

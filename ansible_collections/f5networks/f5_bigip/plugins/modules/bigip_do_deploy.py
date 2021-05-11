@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2020, F5 Networks Inc.
+# Copyright: (c) 2021, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -76,15 +76,20 @@ content:
 
 '''
 import time
+from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import string_types
 
 from ..module_utils.bigip_local import F5RestClient
-from ..module_utils.local import f5_argument_spec
+from ..module_utils.local import (
+    f5_argument_spec, tmos_version
+)
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters,
 )
+
+from ..module_utils.teem_local import send_teem
 
 try:
     import json
@@ -173,12 +178,15 @@ class ModuleManager(object):
             )
 
     def exec_module(self):
+        start = datetime.now().isoformat()
+        version = tmos_version(self.client)
         result = dict()
 
         changed = self.upsert()
 
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
+        send_teem(start, self.client, self.module, version)
         return result
 
     def upsert(self):

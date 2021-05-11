@@ -1,0 +1,16 @@
+- name: TS
+  hosts: bigip
+  connection: httpapi
+  gather_facts: false
+
+  tasks:   
+
+    - name: Deploy TS Declaration
+      f5networks.f5_bigip.bigip_ts_deploy:
+          content: "{{ lookup('file', 'declarations/ts.json') }}"
+      tags: [ deploy ]
+
+    - name: Clear Declaration
+      f5networks.f5_bigip.bigip_ts_deploy:
+          state: absent
+      tags: [ never, delete ]

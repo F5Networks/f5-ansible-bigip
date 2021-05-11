@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2020, F5 Networks Inc.
+# Copyright: (c) 2021, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -24,10 +24,10 @@ PLATFORM = {
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 # This collection version needs to be updated at each release
-CURRENT_COLL_VERSION = '1.0'
+CURRENT_COLL_VERSION = '0.7.0-preview'
 
 
 TEEM_ENDPOINT = 'product.apis.f5.com',
 TEEM_KEY = 'mmhJU2sCd63BznXAXDh4kxLIyfIMm3Ar'
 TEEM_TIMEOUT = 10
-TEEM_VERIFY = True
+TEEM_VERIFY = False

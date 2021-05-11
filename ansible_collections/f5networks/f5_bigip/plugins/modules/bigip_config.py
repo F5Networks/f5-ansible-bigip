@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2020, F5 Networks Inc.
+# Copyright: (c) 2021, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -104,11 +104,14 @@ stdout_lines:
 
 import os
 import tempfile
+from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import Connection
 
-from ..module_utils.client import F5Client
+from ..module_utils.client import (
+    F5Client, send_teem
+)
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters
 )
@@ -150,12 +153,14 @@ class ModuleManager(object):
         return lines
 
     def exec_module(self):
+        start = datetime.now().isoformat()
         result = {}
 
         changed = self.execute()
 
         result.update(**self.changes.to_return())
         result.update(dict(changed=changed))
+        send_teem(self.client, start)
         return result
 
     def execute(self):
@@ -175,7 +180,8 @@ class ModuleManager(object):
         if self.want.save:
             response = self.save()
             responses.append(response)
-        self._detect_errors(responses)
+        if not self.module.check_mode:
+            self._detect_errors(responses)
         changes = {
             'stdout': responses,
             'stdout_lines': self._to_lines(responses)

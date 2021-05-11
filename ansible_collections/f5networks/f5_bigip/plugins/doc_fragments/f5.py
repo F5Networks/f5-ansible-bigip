@@ -56,6 +56,12 @@ options:
             for either connecting or sending commands.
           - If the timeout is exceeded before the operation is completed, the module will error.
         type: int
+      no_f5_teem:
+        description:
+          - If C(yes), TEEM telemetry data is not sent to F5.
+          - You may omit this option by setting the environment variable C(F5_TELEMETRY_OFF).
+        default: no
+        type: bool
       auth_provider:
         description:
           - Configures the auth provider for to obtain authentication tokens from the remote device.

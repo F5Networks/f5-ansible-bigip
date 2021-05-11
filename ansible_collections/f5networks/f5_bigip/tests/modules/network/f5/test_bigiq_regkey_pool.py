@@ -15,7 +15,7 @@ from ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_regkey_pool i
     ArgumentSpec, ModuleManager, ModuleParameters, ApiParameters
 )
 from ansible_collections.f5networks.f5_bigip.tests.compat import unittest
-from ansible_collections.f5networks.f5_bigip.tests.compat.mock import Mock
+from ansible_collections.f5networks.f5_bigip.tests.compat.mock import Mock, patch
 from ansible_collections.f5networks.f5_bigip.tests.modules.utils import set_module_args
 
 
@@ -61,6 +61,12 @@ class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_regkey_pool.send_teem')
+        self.m1 = self.p1.start()
+        self.m1.return_value = True
+
+    def tearDown(self):
+        self.p1.stop()
 
     def test_create(self, *args):
         set_module_args(dict(

@@ -1,0 +1,23 @@
+- name: AS3
+  hosts: bigip
+  connection: httpapi
+  gather_facts: false
+
+  tasks:   
+
+    - name: Deploy or Update
+      f5networks.f5_bigip.bigip_as3_deploy:
+          content: "{{ lookup('file', 'declarations/as3.json') }}"
+      tags: [ deploy ]
+
+    - name: Delete Specified Tenant
+      f5networks.f5_bigip.bigip_as3_deploy:
+          state: absent
+          tenant: ansible
+      tags: [ never, delete ]
+
+    - name: Delete All Tenants
+      f5networks.f5_bigip.bigip_as3_deploy:
+          state: absent
+          tenant: all
+      tags: [ never, delete_all ]

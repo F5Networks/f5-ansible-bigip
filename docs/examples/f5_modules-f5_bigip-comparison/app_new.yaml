@@ -1,0 +1,33 @@
+- name: App Collection f5_bigip
+  hosts: bigip
+  connection: httpapi
+  gather_facts: false
+
+  vars:
+    partition: ColNew
+    apps:
+      - name: web
+        vsip: 10.39.2.1
+        vsport: 80
+        memberport: 8080
+        poolname: web_pool
+        members:
+          - 10.39.2.2
+          - 10.39.2.3
+          - 10.39.2.4
+      - name: api
+        vsip: 10.39.3.1
+        vsport: 3000
+        memberport: 3000
+        poolname: api_pool
+        members:
+          - 10.39.3.2
+          - 10.39.3.3
+          - 10.39.3.4
+  
+
+  tasks:   
+
+    - name: AS3
+      f5networks.f5_bigip.bigip_as3_deploy:
+          content: "{{ lookup('template', 'declarations/as3_templ.json') }}"
