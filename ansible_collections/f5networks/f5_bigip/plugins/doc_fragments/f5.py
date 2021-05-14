@@ -64,8 +64,8 @@ options:
         type: bool
       auth_provider:
         description:
-          - Configures the auth provider for to obtain authentication tokens from the remote device.
-          - This option is really used when working with BIG-IQ devices.
+          - Configures the auth provider for obtaining authentication tokens from the remote device.
+          - This option is typically used when working with BIG-IQ devices.
         type: str
 notes:
   - For more information on using Ansible to manage F5 Networks devices see U(https://www.ansible.com/integrations/networks/f5).

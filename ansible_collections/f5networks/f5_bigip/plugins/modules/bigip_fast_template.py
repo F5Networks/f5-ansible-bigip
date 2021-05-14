@@ -19,8 +19,9 @@ options:
   name:
     description:
       - The name of the FAST template set to create or remove.
-      - When C(present) the name must correspond to the basename of uploaded zip file without the file extension.
-      - Parameter is optional when C(state) is C(present), name will be derived from basename of the uploaded zip file.
+      - When C(present) the name must correspond to the basename of the uploaded zip file without the file extension.
+      - Parameter is optional when C(state) is C(present), the name will be derived from the basename of the uploaded
+        zip file.
       - Parameter is mandatory when C(state) is C(absent), and disregarded when C(state) is C(purge).
     type: str
   source:
@@ -36,9 +37,9 @@ options:
     type: bool
   state:
     description:
-      - When C(state) is C(present), FAST template set is uploaded and created on device.
+      - When C(state) is C(present), the FAST template set is uploaded and created on the device.
       - When C(state) is C(absent), ensures the existing FAST template set is removed.
-      - When C(state) is C(purge), ensures the all FAST templates are removed from device.
+      - When C(state) is C(purge), ensures all the FAST templates are removed from the device.
     type: str
     choices:
       - present
