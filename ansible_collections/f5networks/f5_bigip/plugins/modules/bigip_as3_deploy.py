@@ -340,7 +340,7 @@ class ModuleManager(object):
         if response['code'] not in [200, 201, 202, 204, 207]:
             raise F5ModuleError(response['contents'])
 
-        task = self.wait_for_task("/mgmt/shared/appsvcs/task/{0}".format(response['contents']['id']), period, interval)
+        task = self.wait_for_task("/mgmt/shared/appsvcs/task/{0}".format(response['contents']['id']), interval, period)
         if task:
             return any(msg.get('message', None) != 'no change' for msg in task['results'])
 
