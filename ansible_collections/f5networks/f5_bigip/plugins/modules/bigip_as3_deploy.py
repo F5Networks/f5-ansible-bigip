@@ -329,7 +329,7 @@ class ModuleManager(object):
         return True
 
     def remove_from_device(self):
-        interval, period = self.want.timeout
+        delay, period = self.want.timeout
         if self.want.tenant == 'all':
             uri = "/mgmt/shared/appsvcs/declare?async=true"
         else:
@@ -340,7 +340,7 @@ class ModuleManager(object):
         if response['code'] not in [200, 201, 202, 204, 207]:
             raise F5ModuleError(response['contents'])
 
-        task = self.wait_for_task("/mgmt/shared/appsvcs/task/{0}".format(response['contents']['id']), period, interval)
+        task = self.wait_for_task("/mgmt/shared/appsvcs/task/{0}".format(response['contents']['id']), delay, period)
         if task:
             return any(msg.get('message', None) != 'no change' for msg in task['results'])
 
