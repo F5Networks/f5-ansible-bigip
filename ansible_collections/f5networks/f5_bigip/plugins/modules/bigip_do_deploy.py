@@ -32,6 +32,12 @@ options:
         the purpose of that filter is to format the JSON to be human-readable and this process
         includes inserting "extra characters that break JSON validators.
     type: raw
+  task_id:
+    description:
+      - The id of async task as returned by the system in previous module run.
+      - Used to query the status of the task on device, useful with longer running operations that require restart of
+        services.
+    type: str
   timeout:
     description:
       - The amount of time in seconds to wait for the DO async interface to complete its task.
@@ -39,10 +45,9 @@ options:
       - If the device needs to restart the defined timeout will be extended.
       - The hard timeout to wait for device reboot is 1800 seconds.
     type: int
-    default: 150
+    default: 300
 notes:
   - Due to limitations of the DO package, the module is not idempotent.
-extends_documentation_fragment: f5networks.f5_bigip.f5
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -51,45 +56,58 @@ EXAMPLES = r'''
 - hosts: all
   collections:
     - f5networks.f5_bigip
-  connection: local
+  connection: httpapi
 
-  environment:
-    F5_SERVER: "{{ ansible_host }}"
-    F5_USER: "{{ ansible_user }}"
-    F5_PASSWORD: "{{ ansible_httpapi_password }}"
-    F5_SERVER_PORT: "{{ ansible_httpapi_port }}"
-    F5_VALIDATE_CERTS: "{{ ansible_httpapi_validate_certs }}"
+  vars:
+    ansible_host: "lb.mydomain.com"
+    ansible_user: "admin"
+    ansible_httpapi_password: "secret"
+    ansible_network_os: f5networks.f5_bigip.bigip
+    ansible_httpapi_use_ssl: yes
 
   tasks:
     - name: Simple declaration no restart
       bigip_do_deploy:
         content: "{{ lookup('file', 'do_simple_no_restart.json') }}"
+
+    - name: Check for DO task status
+      bigip_do_deploy:
+        task_id: "4b97a754-022f-430c-85d6-35c32190c104"
+        timeout: 500
 '''
 
 RETURN = r'''
-
 content:
   description: The declaration sent to the system.
   returned: changed
   type: dict
   sample: hash/dictionary of values
-
+task_id:
+  description: The task id returned by the system.
+  returned: changed
+  type: dict
+  sample: hash/dictionary of values
+message:
+  description: Informative message of the task status.
+  returned: changed
+  type: dict
+  sample: hash/dictionary of values
 '''
 import time
 from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.connection import (
+    Connection, ConnectionError
+)
 from ansible.module_utils.six import string_types
 
-from ..module_utils.bigip_local import F5RestClient
-from ..module_utils.local import (
-    f5_argument_spec, tmos_version
+from ..module_utils.client import (
+    F5Client, send_teem
 )
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters,
 )
-
-from ..module_utils.teem_local import send_teem
 
 try:
     import json
@@ -135,6 +153,12 @@ class ModuleParameters(Parameters):
 
 
 class Changes(Parameters):
+    returnables = [
+        'task_id',
+        'content',
+        'message',
+    ]
+
     def to_return(self):
         result = {}
         try:
@@ -157,7 +181,8 @@ class ReportableChanges(Changes):
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
-        self.client = F5RestClient(**self.module.params)
+        self.connection = kwargs.get('connection', None)
+        self.client = F5Client(module=self.module, client=self.connection)
         self.want = ModuleParameters(params=self.module.params)
         self.changes = UsableChanges()
 
@@ -179,23 +204,28 @@ class ModuleManager(object):
 
     def exec_module(self):
         start = datetime.now().isoformat()
-        version = tmos_version(self.client)
         result = dict()
 
         changed = self.upsert()
 
+        reportable = ReportableChanges(params=self.changes.to_return())
+        changes = reportable.to_return()
+        result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
-        send_teem(start, self.client, self.module, version)
+        send_teem(self.client, start)
         return result
 
     def upsert(self):
         self._set_changed_options()
         if self.module.check_mode:
             return True
+        if self.want.task_id:
+            return self.query_task()
         task = self.upsert_on_device()
-        result = self.async_wait(task)
-        return result
+        self.changes.update({'task_id': task})
+        self.changes.update({'message': 'DO async task started with id: {0}'.format(task)})
+        return True
 
     def _get_errors_from_response(self, message):
         results = []
@@ -206,56 +236,44 @@ class ModuleManager(object):
         return results
 
     def upsert_on_device(self):
-        uri = "https://{0}:{1}/mgmt/shared/declarative-onboarding/declare".format(
-            self.client.provider['server'],
-            self.client.provider['server_port']
-        )
-        resp = self.client.api.post(uri, json=self.want.content)
+        uri = "/mgmt/shared/declarative-onboarding/declare"
+        response = self.client.post(uri, data=self.want.content)
 
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
+        if response['code'] not in [200, 201, 202, 204, 207]:
+            raise F5ModuleError(response['contents'])
+        return response['contents']['id']
 
-        if resp.status not in [200, 201, 202] or 'code' in response and response['code'] not in [200, 201, 202]:
-            raise F5ModuleError(resp.content)
-        return response['id']
-
-    def async_wait(self, task_id):
+    def query_task(self):
         delay, period = self.want.timeout
-        task = self.wait_for_task(task_id, delay, period)
+        task = self.wait_for_task(self.want.task_id, delay, period)
         if task:
             if 'message' in task['result'] and task['result']['message'] == 'success':
                 return True
-            return False
         return False
 
     def _check_task_on_device(self, task):
-        uri = "https://{0}:{1}/mgmt/shared/declarative-onboarding/task/{2}".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-            task
-        )
-        resp = self.client.api.get(uri)
+        uri = "/mgmt/shared/declarative-onboarding/task/{0}".format(task)
         try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status == 422:
-            errors = self._get_errors_from_response(response)
-            if errors:
-                message = "{0}".format('. '.join(errors))
-                raise F5ModuleError(message)
-
-        return resp.status, response
+            response = self.client.get(uri)
+            if response['code'] == 422:
+                errors = self._get_errors_from_response(response['contents'])
+                if errors:
+                    message = "{0}".format('. '.join(errors))
+                    raise F5ModuleError(message)
+            return response['code'], response['contents']
+        except ConnectionError:
+            return 400, None
 
     def wait_for_task(self, task, delay, period):
         for x in range(0, period):
             code, response = self._check_task_on_device(task)
             if code not in [200, 201, 202]:
-                ready = self.wait_for_device_reboot()
-                if ready:
+                ready = self.device_is_ready()
+                if not ready:
+                    self.changes.update({'task_id': task})
+                    self.changes.update({'message': 'Device is restarting services, unable to check task status.'})
+                    return
+                else:
                     code, response = self._check_task_on_device(task)
             if code in [200, 201, 202]:
                 if response['result']['status'] != 'RUNNING':
@@ -266,36 +284,15 @@ class ModuleManager(object):
             "please increase the timeout parameter for long lived actions."
         )
 
-    def _check_if_device_is_ready(self):
-        uri = "https://{0}:{1}/mgmt/shared/declarative-onboarding/available".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-        )
-        resp = self.client.api.get(uri)
+    def device_is_ready(self):
+        uri = "/mgmt/shared/declarative-onboarding/available"
         try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
-
-        if resp.status not in [200, 201, 202] or 'code' in response and response['code'] not in [200, 201, 202]:
-            raise F5ModuleError(resp.content)
-
-        return True
-
-    def wait_for_device_reboot(self):
-        for x in range(0, 360):
-            time.sleep(5)
-            try:
-                self.client.reconnect()
-                ready = self._check_if_device_is_ready()
-                if ready is True:
-                    return ready
-            except F5ModuleError:
-                # Handle all exceptions because if the system is offline (for a
-                # reboot) the REST client will raise exceptions about
-                # connections
-                pass
-        raise F5ModuleError('Reboot wait timeout limit exceeded 1800 seconds.')
+            response = self.client.get(uri)
+            if response['code'] in [200, 201, 202]:
+                return True
+            return False
+        except ConnectionError:
+            return False
 
 
 class ArgumentSpec(object):
@@ -303,14 +300,17 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             content=dict(type='raw'),
+            task_id=dict(),
             timeout=dict(
                 type='int',
-                default=150
+                default=300
             ),
         )
         self.argument_spec = {}
-        self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
+        self.mutually_exclusive = [
+            ['task_id', 'content']
+        ]
 
 
 def main():
@@ -319,10 +319,11 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
+        mutually_exclusive=spec.mutually_exclusive
     )
 
     try:
-        mm = ModuleManager(module=module)
+        mm = ModuleManager(module=module, connection=Connection(module._socket_path))
         results = mm.exec_module()
         module.exit_json(**results)
     except F5ModuleError as ex:
