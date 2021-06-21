@@ -102,6 +102,10 @@ options:
       - virtual-servers
       - vlans
       - "!all"
+      - "!as3"
+      - "!do"
+      - "!ts"
+      - "!cfe"
       - "!monitors"
       - "!profiles"
       - "!apm-access-profiles"
@@ -360,6 +364,14 @@ asm_policies:
       returned: queried
       type: list
       sample: ['/Common/foo_VS/']
+    manual_virtual_servers:
+      description:
+        - Virtual servers that have manual configuration (Advanced) LTM policy configuration which, in turn,
+          have rule(s) built with ASM control actions enabled.
+        - That config is in fact maintained under a field called C(manualVirtualServers).
+      returned: queried
+      type: list
+      sample: ['/Common/test_VS/']
     allowed_response_codes:
       description:
         - Lists the response status codes between 400 and 599 that the security profile considers legal.
@@ -1356,7 +1368,7 @@ fasthttp_profiles:
       returned: queried
       type: int
       sample: 300
-    insert_x_forwarded_for:
+    insert_xforwarded_for:
       description:
         - Whether the system inserts the X-Forwarded-For header in an HTTP request with the
           client IP address, to use with connection pooling.
@@ -2857,7 +2869,7 @@ http_profiles:
       returned: queried
       type: bool
       sample: yes
-    insert_x_forwarded_for:
+    insert_xforwarded_for:
       description:
         - When C(yes), specifies the system inserts an X-Forwarded-For header in
           an HTTP request with the client IP address, to use with connection pooling.
@@ -3877,6 +3889,48 @@ ltm_policies:
             http_uri:
               description:
                 - This condition matches on an HTTP URI.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            datagroup:
+              description:
+                - This condition matches on an HTTP URI.
+              returned: when defined in the condition.
+              type: str
+              sample: /Common/policy_using_datagroup
+            tcp:
+              description:
+                - This condition matches on an tcp parameters.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            address:
+              description:
+                - This condition matches on an tcp address.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            matches:
+              description:
+                - This condition matches on an address.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            proxy_connect:
+              description:
+                - Specifies the value matched on is proxyConnect.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            proxy_request:
+              description:
+                - Specifies the value matched on is proxyRequest.
+              returned: when defined in the condition.
+              type: bool
+              sample: no
+            remote:
+              description:
+                - Specifies the value matched on is remote.
               returned: when defined in the condition.
               type: bool
               sample: no
@@ -7381,7 +7435,7 @@ from ansible.module_utils.six import (
 )
 
 from ..module_utils.client import (
-    F5Client, tmos_version, modules_provisioned, send_teem
+    F5Client, tmos_version, modules_provisioned, send_teem, packages_installed
 )
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, flatten_boolean, fq_name
@@ -7419,6 +7473,16 @@ class BaseManager(object):
         # This list is provided to the specific fact manager by the
         # master ModuleManager of this module.
         self.provisioned_modules = []
+        # A list of packages currently installed on the device.
+        #
+        # This list is used by different fact managers to check to see
+        # if they should even attempt to gather information. If the package is
+        # not provisioned, then it is likely that the REST API will not
+        # return valid data.
+        #
+        # This list is provided to the specific fact manager by the
+        # master ModuleManager of this module.
+        self.installed_packages = []
 
     def exec_module(self):
         start = datetime.datetime.now().isoformat()
@@ -7523,7 +7587,7 @@ class ApmAccessProfileFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -7577,7 +7641,7 @@ class ApmAccessPolicyFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -7602,6 +7666,8 @@ class As3FactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'as3' not in self.installed_packages:
+            return []
         facts = self.read_facts()
         return facts
 
@@ -7614,13 +7680,16 @@ class As3FactManager(BaseManager):
         uri = "/mgmt/shared/appsvcs/declare"
         response = self.client.get(uri)
 
+        if response['code'] == 204:
+            return []
+
         if response['code'] not in [200, 201]:
             raise F5ModuleError(response['contents'])
 
-        if 'class' not in response:
+        if 'class' not in response['contents']:
             return []
 
-        result['declaration'] = response
+        result['declaration'] = response['contents']
         return result
 
 
@@ -7748,7 +7817,7 @@ class AsmPolicyStatsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
         return dict(
-            policies=response['items']
+            policies=response['contents']['items']
         )
 
 
@@ -7758,6 +7827,7 @@ class AsmPolicyFactParameters(BaseParameters):
         'protocolIndependent': 'protocol_independent',
         'virtualServers': 'virtual_servers',
         'allowedResponseCodes': 'allowed_response_codes',
+        'manualVirtualServers': 'manual_virtual_servers',
         'learningMode': 'learning_mode',
         'enforcementMode': 'enforcement_mode',
         'customXffHeaders': 'custom_xff_headers',
@@ -7840,6 +7910,13 @@ class AsmPolicyFactParameters(BaseParameters):
         if self._values['id'] is None:
             return None
         return self._values['id']
+
+    @property
+    def manual_virtual_servers(self):
+        if 'manual_virtual_servers' in self._values:
+            if self._values['manual_virtual_servers'] is None:
+                return None
+            return self._values['manual_virtual_servers']
 
     @property
     def signature_staging(self):
@@ -8169,7 +8246,7 @@ class AsmPolicyFactManagerV12(AsmPolicyFactManager):
 
         if 'items' not in response:
             return []
-        return response['items']
+        return response['contents']['items']
 
 
 class AsmPolicyFactManagerV13(AsmPolicyFactManager):
@@ -8194,7 +8271,7 @@ class AsmPolicyFactManagerV13(AsmPolicyFactManager):
 
         if 'items' not in response:
             return []
-        return response['items']
+        return response['contents']['items']
 
 
 class AsmServerTechnologyFactParameters(BaseParameters):
@@ -8258,7 +8335,7 @@ class AsmServerTechnologyFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -8359,7 +8436,7 @@ class AsmSignatureSetsFactManager(BaseManager):
         if 'items' not in response:
             return None
 
-        return response['items']
+        return response['contents']['items']
 
 
 class ClientSslProfilesParameters(BaseParameters):
@@ -8667,7 +8744,7 @@ class ClientSslProfilesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -8692,6 +8769,8 @@ class CFEFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'cfe' not in self.installed_packages:
+            return []
         facts = self.read_facts()
         return facts
 
@@ -8813,7 +8892,7 @@ class DeviceGroupsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -8963,7 +9042,7 @@ class DevicesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -8988,6 +9067,8 @@ class DOFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'do' not in self.installed_packages:
+            return []
         facts = self.read_facts()
         return facts
 
@@ -9095,7 +9176,7 @@ class ExternalMonitorsFactManager(BaseManager):
             raise F5ModuleError(response['contents'])
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -9114,7 +9195,7 @@ class FastHttpProfilesParameters(BaseParameters):
         'headerInsert': 'request_header_insert',
         'http_11CloseWorkarounds': 'http_1_1_close_workarounds',
         'idleTimeout': 'idle_timeout',
-        'insertXforwardedFor': 'insert_x_forwarded_for',
+        'insertXforwardedFor': 'insert_xforwarded_for',
         'maxHeaderSize': 'maximum_header_size',
         'maxRequests': 'maximum_requests',
         'mssOverride': 'maximum_segment_size_override',
@@ -9142,7 +9223,7 @@ class FastHttpProfilesParameters(BaseParameters):
         'request_header_insert',
         'http_1_1_close_workarounds',
         'idle_timeout',
-        'insert_x_forwarded_for',
+        'insert_xforwarded_for',
         'maximum_header_size',
         'maximum_requests',
         'maximum_segment_size_override',
@@ -9173,8 +9254,8 @@ class FastHttpProfilesParameters(BaseParameters):
         return flatten_boolean(self._values['reset_on_timeout'])
 
     @property
-    def insert_x_forwarded_for(self):
-        return flatten_boolean(self._values['insert_x_forwarded_for'])
+    def insert_xforwarded_for(self):
+        return flatten_boolean(self._values['insert_xforwarded_for'])
 
     @property
     def http_1_1_close_workarounds(self):
@@ -9236,7 +9317,7 @@ class FastHttpProfilesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -9555,7 +9636,7 @@ class FastL4ProfilesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -9647,7 +9728,7 @@ class GatewayIcmpMonitorsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -9880,7 +9961,7 @@ class GtmAPoolsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -9924,7 +10005,7 @@ class GtmAaaaPoolsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -9968,7 +10049,7 @@ class GtmCnamePoolsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -10012,7 +10093,7 @@ class GtmMxPoolsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -10056,7 +10137,7 @@ class GtmNaptrPoolsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -10100,7 +10181,7 @@ class GtmSrvPoolsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -10345,7 +10426,7 @@ class GtmServersFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -10462,7 +10543,7 @@ class GtmAWideIpsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -10505,7 +10586,7 @@ class GtmAaaaWideIpsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -10548,7 +10629,7 @@ class GtmCnameWideIpsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -10591,7 +10672,7 @@ class GtmMxWideIpsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -10634,7 +10715,7 @@ class GtmNaptrWideIpsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -10677,7 +10758,7 @@ class GtmSrvWideIpsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -10759,7 +10840,7 @@ class GtmTopologyRegionFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -10863,7 +10944,7 @@ class HttpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -10969,7 +11050,7 @@ class HttpsMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -10979,7 +11060,7 @@ class HttpProfilesParameters(BaseParameters):
         'defaultsFrom': 'parent',
         'acceptXff': 'accept_xff',
         'explicitProxy': 'explicit_proxy',
-        'insertXforwardedFor': 'insert_x_forwarded_for',
+        'insertXforwardedFor': 'insert_xforwarded_for',
         'lwsWidth': 'lws_max_columns',
         'oneconnectTransformations': 'onconnect_transformations',
         'proxyType': 'proxy_mode',
@@ -11012,7 +11093,7 @@ class HttpProfilesParameters(BaseParameters):
         'default_connect_handling',
         'hsts_include_subdomains',
         'hsts_enabled',
-        'insert_x_forwarded_for',
+        'insert_xforwarded_for',
         'lws_max_columns',
         'onconnect_transformations',
         'proxy_mode',
@@ -11149,10 +11230,10 @@ class HttpProfilesParameters(BaseParameters):
         return self._values['hsts']['maximumAge']
 
     @property
-    def insert_x_forwarded_for(self):
-        if self._values['insert_x_forwarded_for'] is None:
+    def insert_xforwarded_for(self):
+        if self._values['insert_xforwarded_for'] is None:
             return None
-        return flatten_boolean(self._values['insert_x_forwarded_for'])
+        return flatten_boolean(self._values['insert_xforwarded_for'])
 
     @property
     def onconnect_transformations(self):
@@ -11214,7 +11295,7 @@ class HttpProfilesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -11305,7 +11386,7 @@ class IappServicesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -11479,7 +11560,7 @@ class IcmpMonitorsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -11591,7 +11672,7 @@ class InterfacesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -11645,7 +11726,7 @@ class InternalDataGroupsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -11735,7 +11816,7 @@ class IrulesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -12097,7 +12178,7 @@ class LtmPoolsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
     def read_member_from_device(self, full_path):
@@ -12111,7 +12192,7 @@ class LtmPoolsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
     def read_stats_from_device(self, full_path):
@@ -12159,6 +12240,15 @@ class LtmPolicyParameters(BaseParameters):
             tmp['external'] = flatten_boolean(condition.pop('external', None))
             tmp['http_basic_auth'] = flatten_boolean(condition.pop('httpBasicAuth', None))
             tmp['http_host'] = flatten_boolean(condition.pop('httpHost', None))
+            tmp['datagroup'] = condition.pop('datagroup', None)
+            tmp['tcp'] = flatten_boolean(condition.pop('tcp', None))
+            tmp['remote'] = flatten_boolean(condition.pop('remote', None))
+            tmp['matches'] = flatten_boolean(condition.pop('matches', None))
+            tmp['address'] = flatten_boolean(condition.pop('address', None))
+            tmp['present'] = flatten_boolean(condition.pop('present', None))
+            tmp['proxy_connect'] = flatten_boolean(condition.pop('proxyConnect', None))
+            tmp['proxy_request'] = flatten_boolean(condition.pop('proxyRequest', None))
+            tmp['host'] = flatten_boolean(condition.pop('host', None))
             tmp['http_uri'] = flatten_boolean(condition.pop('httpUri', None))
             tmp['request'] = flatten_boolean(condition.pop('request', None))
             tmp['username'] = flatten_boolean(condition.pop('username', None))
@@ -12232,7 +12322,7 @@ class LtmPolicyFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -12358,7 +12448,7 @@ class NodesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
     def read_stats_from_device(self, full_path):
@@ -12463,7 +12553,7 @@ class OneConnectProfilesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -12525,7 +12615,7 @@ class PartitionFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -12584,7 +12674,7 @@ class ProvisionInfoFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -12667,7 +12757,7 @@ class RouteDomainFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -12772,7 +12862,7 @@ class SelfIpsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -13069,7 +13159,7 @@ class ServerSslProfilesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -13148,7 +13238,7 @@ class SoftwareVolumesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -13207,7 +13297,7 @@ class SoftwareHotfixesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -13325,7 +13415,7 @@ class SoftwareImagesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -13415,7 +13505,7 @@ class SslCertificatesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -13484,7 +13574,7 @@ class SslKeysFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -13643,7 +13733,7 @@ class SystemDbFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -14072,6 +14162,8 @@ class TSFactManager(BaseManager):
         return result
 
     def _exec_module(self):
+        if 'ts' not in self.installed_packages:
+            return []
         facts = self.read_facts()
         return facts
 
@@ -14188,7 +14280,7 @@ class TcpMonitorsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -14267,7 +14359,7 @@ class TcpHalfOpenMonitorsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -14683,7 +14775,7 @@ class TcpProfilesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -14780,7 +14872,7 @@ class TrafficGroupsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
     def read_stats_from_device(self, full_path):
@@ -14890,7 +14982,7 @@ class TrunksFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
     def read_stats_from_device(self, full_path):
@@ -14978,7 +15070,7 @@ class UsersFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -15081,7 +15173,7 @@ class UdpProfilesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -15164,7 +15256,7 @@ class VcmpGuestsFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -15269,7 +15361,7 @@ class VirtualAddressesFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -15682,7 +15774,7 @@ class VirtualServersParameters(BaseParameters):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        result = [x['name'] for x in response['items']]
+        result = [x['name'] for x in response['contents']['items']]
         return result
 
     def _read_sip_profiles_from_device(self):
@@ -15692,7 +15784,7 @@ class VirtualServersParameters(BaseParameters):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        result = [x['name'] for x in response['items']]
+        result = [x['name'] for x in response['contents']['items']]
         return result
 
     def _read_current_fastl4_profiles_from_device(self):
@@ -15702,7 +15794,7 @@ class VirtualServersParameters(BaseParameters):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        result = [x['name'] for x in response['items']]
+        result = [x['name'] for x in response['contents']['items']]
         return result
 
     def _read_current_fasthttp_profiles_from_device(self):
@@ -15712,7 +15804,7 @@ class VirtualServersParameters(BaseParameters):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        result = [x['name'] for x in response['items']]
+        result = [x['name'] for x in response['contents']['items']]
         return result
 
     @property
@@ -15997,7 +16089,7 @@ class VirtualServersFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
     def read_stats_from_device(self, full_path):
@@ -16145,7 +16237,7 @@ class VlansFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
     def read_stats_from_device(self, full_path):
@@ -16217,7 +16309,7 @@ class ManagementRouteFactManager(BaseManager):
 
         if 'items' not in response:
             return []
-        result = response['items']
+        result = response['contents']['items']
         return result
 
 
@@ -16465,8 +16557,10 @@ class ModuleManager(object):
         results = dict()
         client = F5Client(module=self.module, client=self.connection)
         prov = modules_provisioned(client)
+        rpm = packages_installed(client)
         for manager in managers:
             manager.provisioned_modules = prov
+            manager.installed_packages = rpm
             result = manager.exec_module()
             results.update(result)
         return results
@@ -16583,6 +16677,10 @@ class ArgumentSpec(object):
                     # Negations of non-meta-choices
                     '!apm-access-profiles',
                     '!apm-access-policies',
+                    '!as3',
+                    '!do',
+                    '!ts',
+                    '!cfe',
                     '!asm-policy-stats',
                     '!asm-policies',
                     '!asm-server-technologies',
