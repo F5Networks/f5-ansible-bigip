@@ -58,28 +58,19 @@ class TestManager(unittest.TestCase):
         self.spec = ArgumentSpec()
         self.p1 = patch('time.sleep')
         self.p1.start()
-        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_do_deploy.tmos_version')
         self.p3 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_do_deploy.send_teem')
-        self.m2 = self.p2.start()
-        self.m2.return_value = '14.1.0'
         self.m3 = self.p3.start()
         self.m3.return_value = True
 
     def tearDown(self):
         self.p1.stop()
-        self.p2.stop()
         self.p3.stop()
 
-    def test_upsert_declaration(self, *args):
+    def test_start_declaration_task(self, *args):
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
         declaration = load_fixture('do_declaration.json')
         set_module_args(dict(
             content=declaration,
-            timeout=600,
-            provider=dict(
-                server='localhost',
-                password='password',
-                user='admin'
-            )
         ))
 
         module = AnsibleModule(
@@ -89,9 +80,51 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(module=module)
 
         # Override methods to force specific logic in the module to happen
-        mm.upsert_on_device = Mock(return_value=True)
-        mm.async_wait = Mock(return_value=True)
+        mm.upsert_on_device = Mock(return_value="e7550a12-994b-483f-84ee-761eb9af6750")
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert mm.want.timeout == (6, 100)
+        assert results['task_id'] == uuid
+        assert results['message'] == "DO async task started with id: {0}".format(uuid)
+
+    def test_check_declaration_task_status(self, *args):
+        response = (200, {"result": {"status": "FINISHED", "message": "success"}})
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
+        set_module_args(dict(
+            task_id=uuid,
+            timeout=500
+        ))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+        # Override methods to force specific logic in the module to happen
+        mm._check_task_on_device = Mock(return_value=response)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert mm.want.timeout == (5.0, 100)
+
+    def test_check_declaration_task_status_unit_restarts(self, *args):
+        response = (400, None)
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
+        set_module_args(dict(
+            task_id=uuid,
+            timeout=500
+        ))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+        # Override methods to force specific logic in the module to happen
+        mm._check_task_on_device = Mock(return_value=response)
+        mm.device_is_ready = Mock(return_value=False)
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        assert results['task_id'] == uuid
+        assert results['message'] == "Device is restarting services, unable to check task status."
+        assert mm.want.timeout == (5, 100)

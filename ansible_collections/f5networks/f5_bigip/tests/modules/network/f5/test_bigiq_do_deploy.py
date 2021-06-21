@@ -58,28 +58,19 @@ class TestManager(unittest.TestCase):
         self.spec = ArgumentSpec()
         self.patcher1 = patch('time.sleep')
         self.patcher1.start()
-        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_do_deploy.bigiq_version')
-        self.m1 = self.p1.start()
-        self.m1.return_value = '6.1.0'
         self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_do_deploy.send_teem')
         self.m2 = self.p2.start()
         self.m2.return_value = True
 
     def tearDown(self):
         self.patcher1.stop()
-        self.p1.stop()
         self.p2.stop()
 
-    def test_upsert_declaration(self, *args):
+    def test_start_declaration_task(self, *args):
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
         declaration = load_fixture('do_declaration.json')
         set_module_args(dict(
             content=declaration,
-            async_timeout=600,
-            provider=dict(
-                server='localhost',
-                password='password',
-                user='admin'
-            )
         ))
 
         module = AnsibleModule(
@@ -89,9 +80,29 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(module=module)
 
         # Override methods to force specific logic in the module to happen
-        mm.upsert_on_device = Mock(return_value=True)
-        mm.async_wait = Mock(return_value=True)
+        mm.upsert_on_device = Mock(return_value="e7550a12-994b-483f-84ee-761eb9af6750")
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert mm.want.async_timeout == (6.0, 100)
+        assert results['task_id'] == uuid
+        assert results['message'] == "DO async task started with id: {0}".format(uuid)
+
+    def test_check_declaration_task_status(self, *args):
+        response = (200, {"result": {"status": "FINISHED", "message": "success"}})
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
+        set_module_args(dict(
+            task_id=uuid,
+            timeout=500
+        ))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+        # Override methods to force specific logic in the module to happen
+        mm._check_task_on_device = Mock(return_value=response)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert mm.want.timeout == (5.0, 100)

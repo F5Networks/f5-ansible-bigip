@@ -422,7 +422,7 @@ class ModuleManager(object):
 
     def exists(self):
         uri = "/mgmt/tm/asm/policies/"
-        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,partition".format(
+        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,partition".format(
             self.want.name, self.want.partition
         )
         response = self.client.get(uri + query)
@@ -446,7 +446,7 @@ class ModuleManager(object):
 
     def _get_policy_link(self):
         uri = "/mgmt/tm/asm/policies/"
-        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,partition".format(
+        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,partition".format(
             self.want.name, self.want.partition
         )
         response = self.client.get(uri + query)

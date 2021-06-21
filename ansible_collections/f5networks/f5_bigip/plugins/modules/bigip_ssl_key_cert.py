@@ -20,16 +20,16 @@ version_added: "1.0.0"
 options:
   key_content:
     description:
-      - Sets the contents of a key directly to the specified value. This is
-        used with lookup plugins, or for anything with formatting or templating.
-        This must be provided when C(state) is C(present).
+      - Sets the contents of a key directly to the specified value, used with lookup plugins,
+        or for anything with formatting or templating.
+      - Parameter must be provided when C(state) is C(present).
     type: str
   state:
     description:
       - When C(present), ensures the key and/or cert is uploaded to the
-        device. When C(absent), ensures the key and/or cert is removed
-        from the device. If the key and/or cert is currently in use, the module
-        will not be able to remove the key.
+        device.
+      - When C(absent), ensures the key and/or cert is removed from the device.
+        If the key and/or cert is currently in use, the module will not be able to remove the key.
     type: str
     choices:
       - present
@@ -45,9 +45,9 @@ options:
     type: str
   cert_content:
     description:
-      - Sets the contents of a certificate directly to the specified value.
-        This is used with lookup plugins or for anything with formatting or
-      - C(content) must be provided when C(state) is C(present).
+      - Sets the contents of a certificate directly to the specified value, used with lookup plugins,
+        or for anything with formatting or templating.
+      - Parameter must be provided when C(state) is C(present).
     type: str
   cert_name:
     description:
