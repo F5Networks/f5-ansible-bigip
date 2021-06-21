@@ -1,0 +1,106 @@
+ancestor: null
+releases:
+  1.0.0:
+    modules:
+    - description: Exports the APM policy or APM access profile from remote nodes.
+      name: bigip_apm_policy_fetch
+      namespace: ''
+    - description: Manage BIG-IP APM policy or APM access profile imports
+      name: bigip_apm_policy_import
+      namespace: ''
+    - description: Manages AS3 declarations sent to BIG-IP
+      name: bigip_as3_deploy
+      namespace: ''
+    - description: Exports the ASM policy from remote nodes.
+      name: bigip_asm_policy_fetch
+      namespace: ''
+    - description: Manage BIG-IP ASM policy imports
+      name: bigip_asm_policy_import
+      namespace: ''
+    - description: Manages CFE declarations sent to BIG-IP
+      name: bigip_cfe_deploy
+      namespace: ''
+    - description: Run TMSH and BASH commands on F5 devices
+      name: bigip_command
+      namespace: ''
+    - description: Manage BIG-IP configuration sections
+      name: bigip_config
+      namespace: ''
+    - description: Perform different actions related to config-sync
+      name: bigip_configsync_action
+      namespace: ''
+    - description: Collect information from F5 BIG-IP devices
+      name: bigip_device_info
+      namespace: ''
+    - description: Manages DO declarations sent to BIG-IP
+      name: bigip_do_deploy
+      namespace: ''
+    - description: Manages FAST application declarations sent to BIG-IP
+      name: bigip_fast_application
+      namespace: ''
+    - description: Manages FAST template sets on BIG-IP
+      name: bigip_fast_template
+      namespace: ''
+    - description: Manage BIG-IP advanced routing configuration sections
+      name: bigip_imish_config
+      namespace: ''
+    - description: Manages Javascript LX packages on a BIG-IP
+      name: bigip_lx_package
+      namespace: ''
+    - description: Manage QKviews on the device
+      name: bigip_qkview
+      namespace: ''
+    - description: Create SSL CSR files on the BIG-IP
+      name: bigip_ssl_csr
+      namespace: ''
+    - description: Import/Delete SSL keys and certs from BIG-IP
+      name: bigip_ssl_key_cert
+      namespace: ''
+    - description: Manage BIG-IP PKCS12 certificates/keys
+      name: bigip_ssl_pkcs12
+      namespace: ''
+    - description: Manages TS declarations sent to BIG-IP
+      name: bigip_ts_deploy
+      namespace: ''
+    - description: Manage upload, installation, and removal of UCS files
+      name: bigip_ucs
+      namespace: ''
+    - description: Fetches a UCS file from remote nodes
+      name: bigip_ucs_fetch
+      namespace: ''
+    - description: Manages AS3 declarations sent to BIG-IQ
+      name: bigiq_as3_deploy
+      namespace: ''
+    - description: Manage BIG-IP devices through BIG-IQ
+      name: bigiq_device_discovery
+      namespace: ''
+    - description: Collect information from F5 BIG-IQ devices
+      name: bigiq_device_info
+      namespace: ''
+    - description: Manages DO declarations sent to BIG-IQ
+      name: bigiq_do_deploy
+      namespace: ''
+    - description: Manages licenses in a BIG-IQ registration key pool
+      name: bigiq_regkey_license
+      namespace: ''
+    - description: Manage regkey license assignment on BIG-IPs from a BIG-IQ
+      name: bigiq_regkey_license_assignment
+      namespace: ''
+    - description: Manages registration key pools on BIG-IQ
+      name: bigiq_regkey_pool
+      namespace: ''
+    - description: Manage utility licenses on a BIG-IQ
+      name: bigiq_utility_license
+      namespace: ''
+    - description: Manage utility license assignment on BIG-IPs from a BIG-IQ
+      name: bigiq_utility_license_assignment
+      namespace: ''
+    plugins:
+      httpapi:
+      - description: HttpApi Plugin for BIG-IP devices
+        name: bigip
+        namespace: null
+      - description: HttpApi Plugin for BIG-IQ devices
+        name: bigiq
+        namespace: null
+    release_date: '2021-06-21'

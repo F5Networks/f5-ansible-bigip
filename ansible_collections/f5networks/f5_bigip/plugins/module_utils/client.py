@@ -111,6 +111,48 @@ def module_provisioned(client, module_name):
     return False
 
 
+def package_installed(client, package_name):
+    provisioned = packages_installed(client)
+    if package_name in provisioned:
+        return True
+    return False
+
+
+def packages_installed(client):
+    """Returns a list of installed ATC packages
+
+    Args:
+        client: Client connection to the BIG-IP
+
+    Returns:
+        A list of installed packages in their short name for.
+        For example, ['as3', 'do', 'ts']
+    """
+    packages = {
+        "f5-declarative-onboarding": "do",
+        "f5-appsvcs": "as3",
+        "f5-appsvcs-templates": "fast",
+        "f5-cloud-failover": "cfe",
+        "f5-telemetry": "ts",
+        "f5-service-discovery": "sd"
+
+    }
+
+    uri = "/mgmt/shared/iapp/global-installed-packages"
+
+    response = client.get(uri)
+
+    if response['code'] == 404:
+        return []
+
+    if response['code'] in [200, 201]:
+        if 'items' not in response['contents']:
+            return []
+        result = [packages[x['appName']] for x in response['contents']['items'] if x['appName'] in packages.keys()]
+        return result
+    raise F5ModuleError(response['contents'])
+
+
 def modules_provisioned(client):
     """Returns a list of all provisioned modules
 

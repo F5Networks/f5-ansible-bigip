@@ -56,7 +56,7 @@ options:
     description:
       - The name of the UCS file to create on the remote server for downloading
     type: str
-  async_timeout:
+  timeout:
     description:
       - Parameter used when creating new UCS file on device.
       - The amount of time in seconds to wait for the API async interface to complete its task.
@@ -383,7 +383,7 @@ class ModuleManager(object):
         raise F5ModuleError(response['contents'])
 
     def async_wait(self, task):
-        delay, period = self.want.async_timeout
+        delay, period = self.want.timeout
         uri = "/mgmt/tm/task/sys/ucs/{0}/result".format(task)
         for x in range(0, period):
             response = self.client.get(uri)
@@ -395,7 +395,7 @@ class ModuleManager(object):
             time.sleep(delay)
         raise F5ModuleError(
             "Module timeout reached, state change is unknown, "
-            "please increase the async_timeout parameter for long lived actions."
+            "please increase the timeout parameter for long lived actions."
         )
 
     def download(self):
@@ -462,7 +462,7 @@ class ArgumentSpec(object):
                 type='bool'
             ),
             src=dict(),
-            async_timeout=dict(
+            timeout=dict(
                 type='int',
                 default=150
             )
