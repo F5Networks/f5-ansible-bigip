@@ -24,7 +24,7 @@ PLATFORM = {
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 # This collection version needs to be updated at each release
-CURRENT_COLL_VERSION = '1.0.0'
+CURRENT_COLL_VERSION = '1.1.0-devel'
 
 
 TEEM_ENDPOINT = 'product.apis.f5.com',
