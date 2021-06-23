@@ -34,9 +34,9 @@ options:
     type: raw
   task_id:
     description:
-      - The id of async task as returned by the system in previous module run.
-      - Used to query the status of the task on device, useful with longer running operations that require restart of
-        services.
+      - The ID of the async task as returned by the system in a previous module run.
+      - Used to query the status of the task on the device, useful with longer running operations that require
+        restarting services.
     type: str
   timeout:
     description:
@@ -83,7 +83,7 @@ content:
   type: dict
   sample: hash/dictionary of values
 task_id:
-  description: The task id returned by the system.
+  description: The task ID returned by the system.
   returned: changed
   type: dict
   sample: hash/dictionary of values

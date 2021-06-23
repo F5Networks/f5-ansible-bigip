@@ -58,7 +58,7 @@ options:
     type: str
   timeout:
     description:
-      - Parameter used when creating new UCS file on device.
+      - Parameter used when creating s new UCS file on the device.
       - The amount of time in seconds to wait for the API async interface to complete its task.
       - The accepted value range is between C(150) and C(1800) seconds.
     type: int

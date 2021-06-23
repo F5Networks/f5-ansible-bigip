@@ -366,9 +366,8 @@ asm_policies:
       sample: ['/Common/foo_VS/']
     manual_virtual_servers:
       description:
-        - Virtual servers that have manual configuration (Advanced) LTM policy configuration which, in turn,
-          have rule(s) built with ASM control actions enabled.
-        - That config is in fact maintained under a field called C(manualVirtualServers).
+        - The virtual servers that have Advanced LTM policy configuration which, in turn, have rule(s) built
+          with ASM control actions enabled.
       returned: queried
       type: list
       sample: ['/Common/test_VS/']
@@ -3900,13 +3899,13 @@ ltm_policies:
               sample: /Common/policy_using_datagroup
             tcp:
               description:
-                - This condition matches on an tcp parameters.
+                - This condition matches on TCP parameters.
               returned: when defined in the condition.
               type: bool
               sample: no
             address:
               description:
-                - This condition matches on an tcp address.
+                - This condition matches on a TCP address.
               returned: when defined in the condition.
               type: bool
               sample: no
