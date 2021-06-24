@@ -234,6 +234,19 @@ class Parameters(AnsibleF5Parameters):
             )
         return result
 
+    @property
+    def timeout(self):
+        divisor = 100
+        timeout = self._values['timeout']
+        if timeout < 150 or timeout > 1800:
+            raise F5ModuleError(
+                "Timeout value must be between 150 and 1800 seconds."
+            )
+
+        delay = timeout / divisor
+
+        return delay, divisor
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -371,11 +384,7 @@ class ModuleManager(object):
     def _start_task_on_device(self, task):
         payload = {"_taskState": "VALIDATING"}
         uri = "/mgmt/tm/task/sys/ucs/{0}".format(task)
-        resp = self.client.put(uri, data=payload)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
+        response = self.client.put(uri, data=payload)
 
         if response['code'] in [200, 201, 202]:
             return True
@@ -388,9 +397,9 @@ class ModuleManager(object):
         for x in range(0, period):
             response = self.client.get(uri)
             if response['code'] in [200, 201, 202]:
-                if response['_taskState'] == 'FAILED':
+                if response['contents']['_taskState'] == 'FAILED':
                     raise F5ModuleError("Task failed unexpectedly.")
-                if response['_taskState'] == 'COMPLETED':
+                if response['contents']['_taskState'] == 'COMPLETED':
                     return True
             time.sleep(delay)
         raise F5ModuleError(
