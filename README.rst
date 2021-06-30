@@ -43,6 +43,10 @@ Tips
    ansible_httpapi_use_ssl: yes
    ansible_httpapi_validate_certs: "{{ provider.validate_certs }}"
 
+Bugs, Issues
+------------
+   
+Please file any bugs, questions, or enhancement requests by using |ansible_issues|. For details, see |ansiblegethelp|.
 
 Your ideas
 ----------
@@ -59,7 +63,6 @@ Copyright
 ---------
 
 Copyright 2020 F5 Networks Inc.
-
 
 License
 -------
@@ -80,3 +83,11 @@ See `License`_.
    <a href="https://galaxy.ansible.com/f5networks/f5_modules" target="_blank">f5_modules</a>
 
 .. _License: https://github.com/f5devcentral/f5-ansible-bigip/blob/master/COPYING
+
+.. |ansible_issues| raw:: html
+
+   <a href="https://github.com/F5Networks/f5-ansible-bigip/issues" target="_blank">Github Issues</a>
+
+.. |ansiblehelp| raw:: html
+
+   <a href="http://clouddocs.f5.com/products/orchestration/ansible/devel/" target="_blank">clouddocs.f5.com</a>
