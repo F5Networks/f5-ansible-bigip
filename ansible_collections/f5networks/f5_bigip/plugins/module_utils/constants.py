@@ -9,12 +9,16 @@ __metaclass__ = type
 import os
 
 BASE_HEADERS = {'Content-Type': 'application/json'}
+VELOS_BASE_HEADERS = {'Content-Type': 'application/yang-data+json'}
 
 MANAGED_BY_ANNOTATION_VERSION = 'f5-ansible.version'
 MANAGED_BY_ANNOTATION_MODIFIED = 'f5-ansible.last_modified'
 
 LOGIN = '/mgmt/shared/authn/login'
 LOGOUT = '/mgmt/shared/authz/tokens/'
+
+VELOS_LOGIN = '/restconf/data/openconfig-system:system/aaa'
+VELOS_ROOT = '/restconf/data'
 
 PLATFORM = {
     'bigip': 'BIG-IP',

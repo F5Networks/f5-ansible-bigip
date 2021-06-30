@@ -11,11 +11,15 @@ import json
 from unittest.mock import Mock, MagicMock
 
 from ansible.module_utils.six import BytesIO
+from ansible_collections.f5networks.f5_bigip.plugins.module_utils.constants import BASE_HEADERS
 
 
-def connection_response(response, status=200):
+def connection_response(response, status=200, headers=None):
     response_mock = Mock()
     response_mock.getcode.return_value = status
+    if headers is None:
+        headers = BASE_HEADERS
+    response_mock.getheaders.return_value = headers.items()
     response_text = json.dumps(response) if type(response) is dict else response
     response_data = BytesIO(response_text.encode() if response_text else ''.encode())
     return response_mock, response_data
