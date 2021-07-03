@@ -64,14 +64,15 @@ class HttpApi(HttpApiBase):
             )
 
     def logout(self):
-        # need to confirm how to 'expire tokens'
+        # token removal to be added to VELOS, for now this is a placeholder
         pass
 
     def handle_httperror(self, exc):
         if exc.code == 401:
-            # this ensures that if token expires we request new one
-            self.connection._auth = None
-            return True
+            if self.connection._auth is not None:
+                # only attempt to refresh token if we were connected before not when we get 401 on first attempt
+                self.connection._auth = None
+                return True
         return False
 
     def send_request(self, url, method=None, **kwargs):

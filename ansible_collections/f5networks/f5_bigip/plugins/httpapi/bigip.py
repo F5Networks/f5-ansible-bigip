@@ -106,8 +106,10 @@ class HttpApi(HttpApiBase):
             # Other codes will be raised by underlying connection plugin.
             return exc
         if exc.code == 401:
-            self.connection._auth = None
-            return True
+            if self.connection._auth is not None:
+                # only attempt to refresh token if we were connected before not when we get 401 on first attempt
+                self.connection._auth = None
+                return True
         return False
 
     def send_request(self, url, method=None, **kwargs):
