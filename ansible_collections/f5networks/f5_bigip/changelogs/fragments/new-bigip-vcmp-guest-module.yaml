@@ -1,3 +1,3 @@
 ---
 minor_changes:
-  - New vcmp guest module for configuring and managing vcmp guests
+  - Add vcmp guest module for configuring and managing vcmp guests

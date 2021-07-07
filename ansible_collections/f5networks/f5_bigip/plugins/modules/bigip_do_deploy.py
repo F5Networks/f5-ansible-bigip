@@ -41,9 +41,9 @@ options:
   timeout:
     description:
       - The amount of time in seconds to wait for the DO async interface to complete its task.
-      - The accepted value range is between C(300) and C(3600) seconds.
-      - If the device needs to restart the defined timeout will be extended.
-      - The hard timeout to wait for device reboot is 1800 seconds.
+      - The accepted value range is between C(150) and C(3600) seconds.
+      - If the device needs to restart the module will return with no change and an appropriate message. In such case, 
+        it is up to the user to pause task execution until device is ready, see C(EXAMPLES) section. 
     type: int
     default: 300
 notes:
@@ -66,14 +66,28 @@ EXAMPLES = r'''
     ansible_httpapi_use_ssl: yes
 
   tasks:
-    - name: Simple declaration no restart
+    - name: Start complex declaration with restart
       bigip_do_deploy:
-        content: "{{ lookup('file', 'do_simple_no_restart.json') }}"
+        content: "{{ lookup('file', 'do_provision_restart.json') }}"
+      register: task
 
-    - name: Check for DO task status
+    - name: Check for task that will reboot
       bigip_do_deploy:
-        task_id: "4b97a754-022f-430c-85d6-35c32190c104"
-        timeout: 500
+        task_id: "{{ task.task_id }}"
+      register: result
+
+    - name: Wait for 4 minutes if device is restarting services
+      pause:
+        minutes: 4
+      when:
+        - result.message == "Device is restarting services, unable to check task status."
+    
+    - name: Check for task again after restart
+      bigip_do_deploy:
+        task_id: "{{ task.task_id }}"
+      register: repeat
+      when:
+        - result.message == "Device is restarting services, unable to check task status."
 '''
 
 RETURN = r'''

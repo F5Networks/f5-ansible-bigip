@@ -184,27 +184,28 @@ EXAMPLES = r'''
     ansible_httpapi_password: "secret"
     ansible_network_os: f5networks.f5_bigip.bigip
     ansible_httpapi_use_ssl: yes
-
-- name: Create a vCMP guest
-  bigip_vcmp_guest:
-    name: foo
-    mgmt_network: bridge
-    mgmt_address: 10.20.30.40/24
-
-- name: Create a vCMP guest with specific VLANs
-  bigip_vcmp_guest:
-    name: foo
-    mgmt_network: bridge
-    mgmt_address: 10.20.30.40/24
-    vlans:
-      - vlan1
-      - vlan2
-
-- name: Remove vCMP guest and disk
-  bigip_vcmp_guest:
-    name: guest1
-    state: absent
-    delete_virtual_disk: yes
+  
+  tasks:
+    - name: Create a vCMP guest
+      bigip_vcmp_guest:
+        name: foo
+        mgmt_network: bridge
+        mgmt_address: 10.20.30.40/24
+    
+    - name: Create a vCMP guest with specific VLANs
+      bigip_vcmp_guest:
+        name: foo
+        mgmt_network: bridge
+        mgmt_address: 10.20.30.40/24
+        vlans:
+          - vlan1
+          - vlan2
+    
+    - name: Remove vCMP guest and disk
+      bigip_vcmp_guest:
+        name: guest1
+        state: absent
+        delete_virtual_disk: yes
 '''
 
 RETURN = r'''

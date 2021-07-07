@@ -1,0 +1,22 @@
+{
+    "kind": "tm:sys:software:volume:volumestate",
+    "name": "HD1.2",
+    "fullPath": "HD1.2",
+    "generation": 29,
+    "selfLink": "https://localhost/mgmt/tm/sys/software/volume/HD1.2?ver=13.0.0",
+    "basebuild": "0.0.1645",
+    "build": "0.0.1645",
+    "product": "BIG-IP",
+    "status": "failed",
+    "version": "13.0.0",
+    "media": [
+        {
+            "name": "HD1.2",
+            "media": "general_use_ssd",
+            "size": "default",
+            "nameReference": {
+                "link": "https://localhost/mgmt/tm/sys/software/volume/HD1.2?ver=13.0.0"
+            }
+        }
+    ]
+}
