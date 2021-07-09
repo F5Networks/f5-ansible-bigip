@@ -379,8 +379,6 @@ class BaseManager(object):
         return True
 
     def _create_async_task_on_device(self):
-        ## there is async endpoint for qkview maybe switch to that:
-        ## use example here https://bugzilla.olympus.f5net.com/show_bug.cgi?id=896689
         """Creates an async cli script task in the REST API
 
         Returns:

@@ -60,8 +60,8 @@ options:
     description:
       - The amount of time in seconds to wait for software installation to finish.
       - The accepted value range is between C(150) and C(3600) seconds.
-      - If the device needs to restart the module will return with no change and an appropriate message. In such case, 
-        it is up to the user to pause task execution until device is ready, see C(EXAMPLES) section. 
+      - If the device needs to restart the module will return with no change and an appropriate message. In such case,
+        it is up to the user to pause task execution until device is ready, see C(EXAMPLES) section.
     type: int
     default: 300
 notes:
@@ -82,7 +82,7 @@ EXAMPLES = r'''
     ansible_network_os: f5networks.f5_bigip.bigip
     ansible_httpapi_use_ssl: yes
 
-  tasks:        
+  tasks:
     - name: Ensure an existing image is activated in specified volume
       bigip_software_install:
         image: BIGIP-13.0.0.0.0.1645.iso
@@ -94,7 +94,7 @@ EXAMPLES = r'''
         volume_uri: "{{task.volume_uri}}"
         timeout: 900
       register: result
-        
+
     - name: Wait for 6 minutes if device is restarting services
       pause:
         minutes: 6
@@ -107,13 +107,13 @@ EXAMPLES = r'''
         timeout: 900
       when:
         - result.message == "Device is restarting services, unable to check software installation status."
-    
+
     - name: Ensure an existing image is activated in specified volume - Idempotent check
       bigip_software_install:
         image: BIGIP-13.0.0.0.0.1645.iso
         volume: HD1.2
       register: result
-      
+
     - name: Assert Ensure an existing image is activated in specified volume - Idempotent check
       assert:
         that:
@@ -139,7 +139,9 @@ from datetime import datetime
 
 from ansible.module_utils.urls import urlparse
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.connection import Connection
+from ansible.module_utils.connection import (
+    Connection, ConnectionError
+)
 
 from ..module_utils.client import (
     F5Client, send_teem
@@ -604,13 +606,37 @@ class ModuleManager(object):
             if code in [200, 201, 202]:
                 if response['status'] == 'complete':
                     if self.want.state == 'activated':
-                        if 'defaultBootLocation' in response['media'][0]:
-                            self.changes.update(
-                                {'message': 'Software installation on volume: {0} complete, '
-                                            'volume: {0} is now active.'.format(response['name'])
-                                 }
-                            )
-                            return True
+                        if 'active' in response and response['active'] is True:
+                            if 'media' in response:
+                                if 'defaultBootLocation' in response['media'][0]:
+                                    self.changes.update(
+                                        {'message': 'Software installation on volume: {0} complete, '
+                                                    'volume: {0} is now active.'.format(response['name'])
+                                         }
+                                    )
+                                return True
+                        if 'media' in response:
+                            if 'defaultBootLocation' in response['media'][0]:
+                                # We need to pause as volume might show  as default boot location but not active when
+                                # the unit is in process of booting to volume, we pause to verify
+                                # this is indeed happening
+                                time.sleep(7)
+                                if not self.device_is_ready():
+                                    self.changes.update(
+                                        {'message': 'Device is restarting services, '
+                                                    'unable to check software installation status.'}
+                                    )
+                                    return False
+                        if 'media' not in response:
+                            # sometimes during volume boot process the api returns incomplete information,
+                            # pausing to confirm reboot is happening
+                            time.sleep(7)
+                            if not self.device_is_ready():
+                                self.changes.update(
+                                    {'message': 'Device is restarting services, '
+                                                'unable to check software installation status.'}
+                                )
+                                return False
                         raise F5ModuleError(
                             'Software installation and activation of volume: {0} failed.'.format(response['name'])
                         )

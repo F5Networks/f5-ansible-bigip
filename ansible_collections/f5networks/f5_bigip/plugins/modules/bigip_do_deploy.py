@@ -42,8 +42,8 @@ options:
     description:
       - The amount of time in seconds to wait for the DO async interface to complete its task.
       - The accepted value range is between C(150) and C(3600) seconds.
-      - If the device needs to restart the module will return with no change and an appropriate message. In such case, 
-        it is up to the user to pause task execution until device is ready, see C(EXAMPLES) section. 
+      - If the device needs to restart the module will return with no change and an appropriate message. In such case,
+        it is up to the user to pause task execution until device is ready, see C(EXAMPLES) section.
     type: int
     default: 300
 notes:
@@ -81,7 +81,7 @@ EXAMPLES = r'''
         minutes: 4
       when:
         - result.message == "Device is restarting services, unable to check task status."
-    
+
     - name: Check for task again after restart
       bigip_do_deploy:
         task_id: "{{ task.task_id }}"

@@ -268,3 +268,53 @@ class TestManager(unittest.TestCase):
             mm.exec_module()
 
         assert "Software installation and activation of volume: HD1.2 failed." in str(res.exception)
+
+    def test_software_install_progress_check_media_missing(self):
+        set_module_args(dict(
+            volume_uri='/mgmt/tm/sys/software/volume/HD1.2',
+            timeout=300
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        resp = dict(code=200, contents=load_fixture('load_volume_install_media_missing.json'))
+        error = dict(code=400, contents=dict())
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.device_is_ready = Mock(side_effect=[True, False])
+        mm.client.get = Mock(
+            side_effect=[resp, error]
+        )
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        assert results['message'] == 'Device is restarting services, unable to check software installation status.'
+
+    def test_software_install_progress_check_media_default(self):
+        set_module_args(dict(
+            volume_uri='/mgmt/tm/sys/software/volume/HD1.2',
+            timeout=300
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        resp = dict(code=200, contents=load_fixture('load_volume_install_default.json'))
+        error = dict(code=400, contents=dict())
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.device_is_ready = Mock(side_effect=[True, False])
+        mm.client.get = Mock(
+            side_effect=[resp, error]
+        )
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        assert results['message'] == 'Device is restarting services, unable to check software installation status.'

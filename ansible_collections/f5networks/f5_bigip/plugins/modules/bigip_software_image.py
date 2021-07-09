@@ -58,16 +58,16 @@ EXAMPLES = r'''
     ansible_httpapi_password: "secret"
     ansible_network_os: f5networks.f5_bigip.bigip
     ansible_httpapi_use_ssl: yes
-  
+
   tasks:
     - name: Upload relative image to the BIG-IP
       bigip_software_image:
         image: BIGIP-13.0.0.0.0.1645.iso
-    
+
     - name: Upload absolute image to the BIG-IP
       bigip_software_image:
         image: /path/to/images/BIGIP-13.0.0.0.0.1645.iso
-    
+
     - name: Upload image in a role to the BIG-IP
       bigip_software_image:
         image: "{{ role_path }}/files/BIGIP-13.0.0.0.0.1645.iso"

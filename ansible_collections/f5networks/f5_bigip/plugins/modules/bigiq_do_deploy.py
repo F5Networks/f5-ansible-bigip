@@ -67,8 +67,8 @@ EXAMPLES = r'''
     - name: Start simple declaration task
       bigip_do_deploy:
         content: "{{ lookup('file', 'do_bigiq_declaration.json') }}"
-      register: task  
-    
+      register: task
+
     - name: Check for simple declaration status
       bigiq_do_deploy:
         task_id: result.task_id
