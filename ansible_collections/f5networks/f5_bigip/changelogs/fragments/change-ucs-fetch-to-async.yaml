@@ -1,0 +1,3 @@
+---
+major_changes:
+  - Module bigip_ucs_fetch changed to be asynchronous, see https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html for details

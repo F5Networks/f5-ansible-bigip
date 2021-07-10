@@ -54,7 +54,15 @@ options:
     default: yes
   src:
     description:
-      - The name of the UCS file to create on the remote server for downloading
+      - The name of the UCS file to create on the remote server for downloading.
+      - If not given the name will be randomly generated when creating UCS file on device.
+      - The parameter is required when C(task_id) is defined otherwise file download will fail.
+    type: str
+  task_id:
+    description:
+      - The ID of the async task as returned by the system in a previous module run.
+      - Used to query the status of the task on the device, useful with longer running operations that require
+        restarting services.
     type: str
   timeout:
     description:
@@ -92,11 +100,22 @@ EXAMPLES = r'''
     ansible_httpapi_use_ssl: yes
 
   tasks:
-    - name: Download a new UCS
+    - name: Create a new UCS
+      bigip_ucs_fetch:
+        dest: /tmp/cs_backup.ucs
+      register: task
+
+    - name: Check for task completion and download created UCS
+      bigip_ucs_fetch:
+        dest: /tmp/cs_backup.ucs
+        src: "{{ task.src }}"
+        task_id: "{{ task.task_id }}"
+        timeout: 300
+
+    - name: Download an existing UCS
       bigip_ucs_fetch:
         src: cs_backup.ucs
         dest: /tmp/cs_backup.ucs
-
 '''
 
 RETURN = r'''
@@ -157,6 +176,16 @@ size:
   returned: success
   type: int
   sample: 1220
+task_id:
+  description: The task ID returned by the system.
+  returned: changed
+  type: dict
+  sample: hash/dictionary of values
+message:
+  description: Informative message of the task status.
+  returned: changed
+  type: dict
+  sample: hash/dictionary of values
 '''
 
 import os
@@ -183,7 +212,10 @@ class Parameters(AnsibleF5Parameters):
         'src',
         'md5sum',
         'checksum',
-        'backup_file']
+        'backup_file',
+        'message',
+        'task_id',
+    ]
     api_attributes = []
     api_map = {}
 
@@ -290,7 +322,9 @@ class ModuleManager(object):
         return result
 
     def present(self):
-        if self.exists():
+        if self.want.task_id:
+            self.check_task()
+        elif self.exists():
             self.update()
         else:
             self.create()
@@ -351,13 +385,19 @@ class ModuleManager(object):
             return True
         if self.want.create_on_missing:
             self.create_on_device()
-        self.execute()
+            return True
+
+    def check_task(self):
+        self.async_wait(self.want.task_id)
+        self.update()
         return True
 
     def create_on_device(self):
         task = self.create_async_task_on_device()
         self._start_task_on_device(task)
-        self.async_wait(task)
+        self.changes.update({'task_id': task})
+        self.changes.update({'src': self.want.src})
+        self.changes.update({'message': 'UCS async task started with id: {0}'.format(task)})
 
     def create_async_task_on_device(self):
         if self.want.passphrase:
@@ -453,6 +493,7 @@ class ArgumentSpec(object):
                 default='no',
                 type='bool'
             ),
+            task_id=dict(),
             create_on_missing=dict(
                 default='yes',
                 type='bool'
