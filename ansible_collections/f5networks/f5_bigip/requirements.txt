@@ -3,4 +3,5 @@ cryptography
 objectpath
 ordereddict
 simplejson
+paramiko
 

@@ -8,14 +8,13 @@ __metaclass__ = type
 
 import json
 import os
-from unittest.mock import (
-    MagicMock, ANY
-)
+from unittest.mock import MagicMock
 from unittest import TestCase
 
 from ansible.errors import AnsibleConnectionFailure
 from ansible.playbook.play_context import PlayContext
 from ansible.plugins.loader import connection_loader
+from ansible.module_utils.six.moves.urllib.error import HTTPError
 
 from ansible_collections.f5networks.f5_bigip.tests.utils.common import connection_response
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.constants import VELOS_BASE_HEADERS
@@ -75,11 +74,3 @@ class TestVelosHttpapi(TestCase):
 
         assert self.connection.httpapi.access_token == 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
         assert self.connection._auth == {'X-Auth-Token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'}
-
-    def test_get_telemetry_network_os(self):
-        mock_response = MagicMock()
-        self.connection.httpapi.get_option = mock_response
-        self.connection.httpapi.get_option.return_value = False
-
-        assert self.connection.httpapi.telemetry() is False
-        assert self.connection.httpapi.network_os() == self.pc.network_os

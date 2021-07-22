@@ -89,7 +89,7 @@ class HttpApi(HttpApiBase):
                 headers=dict(response.getheaders())
             )
         except HTTPError as e:
-            return dict(code=e.code, contents=json.loads(e.read()))
+            return dict(code=e.code, contents=handle_errors(e))
 
     def _display_request(self, method, url, data=None):
         if data:
@@ -114,8 +114,20 @@ class HttpApi(HttpApiBase):
         except ValueError:
             raise F5ModuleError('Invalid JSON response: %s' % response_text)
 
-    def telemetry(self):
-        return self.get_option('send_telemetry')
 
-    def network_os(self):
-        return self.connection._network_os
+def handle_errors(error):
+    try:
+        error_data = json.loads(error.read())
+    except ValueError:
+        error_data = error.read()
+
+    if error_data:
+        if "errors" in error_data:
+            errors = error_data["errors"]["error"]
+            error_text = "\n".join(
+                (error["error-message"] for error in errors)
+            )
+        else:
+            error_text = error_data
+        return error_text
+    return to_text(error)

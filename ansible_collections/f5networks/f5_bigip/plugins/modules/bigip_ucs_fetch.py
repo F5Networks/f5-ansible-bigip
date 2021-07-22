@@ -185,7 +185,7 @@ message:
   description: Informative message of the task status.
   returned: changed
   type: dict
-  sample: hash/dictionary of values
+  sample: Import success
 '''
 
 import os
