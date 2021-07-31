@@ -23,9 +23,10 @@ from ansible.module_utils.six.moves.urllib.error import (
 )
 
 from .constants import (
-    TEEM_ENDPOINT, TEEM_KEY, TEEM_TIMEOUT, TEEM_VERIFY,
-    CURRENT_COLL_VERSION, BASE_HEADERS, PLATFORM
+    TEEM_ENDPOINT, TEEM_KEY, TEEM_TIMEOUT, TEEM_VERIFY, BASE_HEADERS, PLATFORM
 )
+
+from .version import CURRENT_COLL_VERSION
 
 
 class TeemClient:

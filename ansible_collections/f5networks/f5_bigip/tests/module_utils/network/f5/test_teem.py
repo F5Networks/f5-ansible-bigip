@@ -14,7 +14,6 @@ from datetime import datetime
 from unittest.mock import MagicMock, patch
 from unittest import TestCase
 
-from ansible.module_utils.six.moves.urllib.error import HTTPError
 from ansible.playbook.play_context import PlayContext
 from ansible.plugins.loader import connection_loader
 
