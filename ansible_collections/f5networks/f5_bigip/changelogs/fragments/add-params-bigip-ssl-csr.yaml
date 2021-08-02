@@ -1,3 +1,0 @@
----
-minor_changes:
-  - Add additional parameters to bigip_ssl_csr module
