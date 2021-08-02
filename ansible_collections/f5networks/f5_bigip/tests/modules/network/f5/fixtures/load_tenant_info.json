@@ -1,0 +1,22 @@
+{
+    "name": "tenant1",
+    "type": "BIG-IP",
+    "image": "BIGIP-14.1.4.1-0.0.4.ALL-VELOS.qcow2.zip.bundle",
+    "nodes": [
+        1,
+        2
+    ],
+    "mgmt-ip": "10.144.140.150",
+    "prefix-length": 24,
+    "gateway": "10.144.140.254",
+    "vlans": [
+        444
+    ],
+    "cryptos": "disabled",
+    "vcpu-cores-per-node": "2",
+    "memory": "7680",
+    "running-state": "configured",
+    "appliance-mode": {
+        "enabled": false
+    }
+}

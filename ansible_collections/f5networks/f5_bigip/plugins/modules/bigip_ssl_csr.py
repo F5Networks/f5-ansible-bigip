@@ -29,15 +29,41 @@ options:
     description:
       - The SSL key to be used to generate the CSR.
     type: str
-  state:
+  challenge_password:
     description:
-      - When C(present), ensures the resource exists.
-      - When C(absent), ensures the resource does not exist.
+      - Specifies the C(PKCS#9) challenge-password to be associated with this CSR.
     type: str
-    choices:
-      - present
-      - absent
-    default: present
+    version_added: "1.1.0"
+  city:
+    description:
+      - Specifies the x509 city to be associated with this CSR.
+    type: str
+    version_added: "1.1.0"
+  country:
+    description:
+      - Specifies the 2 letter x509 country code to be associated with this CSR.
+    type: str
+    version_added: "1.1.0"
+  email_address:
+    description:
+      - Specifies the x509 email-address to be used in creation of the certificate signing request.
+    type: str
+    version_added: "1.1.0"
+  organization:
+    description:
+      - Specifies the x509 organization name to be associated with this CSR.
+    type: str
+    version_added: "1.1.0"
+  ou:
+    description:
+      - Specifies the x509 organizational unit to be used in creation of the certificate signing request.
+    type: str
+    version_added: "1.1.0"
+  province:
+    description:
+      - Specifies the x509 state or province to be used in creation of the certificate signing request.
+    type: str
+    version_added: "1.1.0"
   dest:
     description:
       - Destination on your local filesystem when you want to save the CSR file.
@@ -49,8 +75,23 @@ options:
         exist.
     type: bool
     default: yes
+  partition:
+    description:
+      - Device partition to manage resources on.
+    type: str
+    default: Common
+    version_added: "1.1.0"
+  state:
+    description:
+      - When C(present), ensures the resource exists.
+      - When C(absent), ensures the resource does not exist.
+    type: str
+    choices:
+      - present
+      - absent
+    default: present
 author:
-  - Nitin Khanna (@nitinthewiz)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = r'''
@@ -75,23 +116,50 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-csr_name:
-  description: The name of the CSR file.
-  returned: created
-  type: str
-  sample: csr-name
 common_name:
   description: The common name of the CSR file.
   returned: created
   type: str
   sample: csr-name
+organization:
+  description: The x509 organization to be used in creation of the certificate signing request.
+  returned: created
+  type: str
+  sample: Foobar Inc.
+ou:
+  description: The x509 organizational unit to be used in creation of the certificate signing request.
+  returned: created
+  type: str
+  sample: IT
+city:
+  description: The x509 city to be associated with this CSR.
+  returned: created
+  type: str
+  sample: Seattle
+country:
+  description: The 2 letter x509 country code to be associated with this CSR.
+  returned: created
+  type: str
+  sample: US
+province:
+  description: The x509 state or province to be used in creation of the certificate signing request.
+  returned: created
+  type: str
+  sample: WA
+email_address:
+  description: The x509 email-address to be used in creation of the certificate signing request.
+  returned: created
+  type: str
+  sample: root@local.net
 '''
 
 import os
 from datetime import datetime
 from distutils.version import LooseVersion
 
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import (
+    AnsibleModule, env_fallback
+)
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
@@ -105,22 +173,34 @@ from ..module_utils.common import (
 class Parameters(AnsibleF5Parameters):
     api_map = {
         'commonName': 'common_name',
-        'key': 'key_name'
+        'key': 'key_name',
+        'email-address': 'email_address',
+        'challenge-password': 'challenge_password',
     }
 
     api_attributes = [
         'commonName',
-        'key'
+        'key',
+        'organization',
+        'ou',
+        'city',
+        'country',
+        'email-address',
+        'challenge-password',
     ]
 
     returnables = [
-        'csr_name',
-        'common_name'
+        'common_name',
+        'key_name',
+        'organization',
+        'email_address',
+        'ou',
+        'city',
+        'country',
+        'province',
     ]
 
-    updatables = [
-
-    ]
+    updatables = []
 
 
 class ApiParameters(Parameters):
@@ -148,7 +228,14 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
-    pass
+    returnables = [
+        'common_name',
+        'organization',
+        'ou',
+        'city',
+        'country',
+        'province',
+    ]
 
 
 class Difference(object):
@@ -293,7 +380,6 @@ class ModuleManager(object):
     def exists(self):
         uri = "/mgmt/tm/sys/crypto/csr/{0}".format(self.want.name)
         response = self.client.get(uri)
-
         if response['code'] == 404:
             return False
         if response['code'] in [200, 201, 202]:
@@ -304,7 +390,9 @@ class ModuleManager(object):
         params = self.changes.api_params()
         params['name'] = self.want.name
         params['partition'] = self.want.partition
-        params['key'] = self.want.key_name
+        if self.want.province:
+            # we need to do this otherwise state parameter gets overridden
+            params['state'] = self.want.province
 
         uri = "/mgmt/tm/sys/crypto/csr/"
 
@@ -382,17 +470,28 @@ class ArgumentSpec(object):
                 required=True
             ),
             common_name=dict(),
+            organization=dict(),
+            province=dict(),
+            ou=dict(),
+            city=dict(),
+            country=dict(),
+            email_address=dict(),
+            challenge_password=dict(no_log=True),
             key_name=dict(),
-            state=dict(
-                default='present',
-                choices=['present', 'absent']
-            ),
             dest=dict(
                 type='path',
                 required=True
             ),
+            partition=dict(
+                default='Common',
+                fallback=(env_fallback, ['F5_PARTITION'])
+            ),
+            state=dict(
+                default='present',
+                choices=['present', 'absent']
+            ),
             force=dict(
-                default=True,
+                default='yes',
                 type='bool'
             )
         )
@@ -410,6 +509,7 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
+        required_if=spec.required_if
     )
 
     try:

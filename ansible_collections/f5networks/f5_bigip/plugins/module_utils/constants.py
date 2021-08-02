@@ -9,6 +9,7 @@ __metaclass__ = type
 import os
 
 BASE_HEADERS = {'Content-Type': 'application/json'}
+VELOS_BASE_HEADERS = {'Content-Type': 'application/yang-data+json'}
 
 MANAGED_BY_ANNOTATION_VERSION = 'f5-ansible.version'
 MANAGED_BY_ANNOTATION_MODIFIED = 'f5-ansible.last_modified'
@@ -16,16 +17,15 @@ MANAGED_BY_ANNOTATION_MODIFIED = 'f5-ansible.last_modified'
 LOGIN = '/mgmt/shared/authn/login'
 LOGOUT = '/mgmt/shared/authz/tokens/'
 
+VELOS_LOGIN = '/restconf/data/openconfig-system:system/aaa'
+VELOS_ROOT = '/restconf/data'
+
 PLATFORM = {
     'bigip': 'BIG-IP',
     'bigiq': 'BIG-IQ'
 }
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-
-# This collection version needs to be updated at each release
-CURRENT_COLL_VERSION = '1.0.0'
-
 
 TEEM_ENDPOINT = 'product.apis.f5.com',
 TEEM_KEY = 'mmhJU2sCd63BznXAXDh4kxLIyfIMm3Ar'

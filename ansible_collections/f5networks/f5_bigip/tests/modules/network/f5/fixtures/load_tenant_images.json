@@ -1,0 +1,10 @@
+{
+  "image": [
+    {
+      "name": "BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip",
+      "in-use": false,
+      "signature": "verified",
+      "replication": "replicated"
+    }
+  ]
+}

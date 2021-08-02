@@ -34,16 +34,14 @@ options:
     type: raw
   task_id:
     description:
-      - The id of async task as returned by the system in previous module run.
-      - Used to query the status of the task on device, useful with longer running operations that require restart of
-        services.
+      - The ID of the async task as returned by the system in a previous module run.
+      - Used to query the status of the task on the device, useful with longer running operations that require
+        restarting services.
     type: str
   timeout:
     description:
       - The amount of time in seconds to wait for the DO async interface to complete its task.
-      - The accepted value range is between C(300) and C(3600) seconds.
-      - If the device needs to restart the defined timeout will be extended.
-      - The hard timeout to wait for device reboot is 1800 seconds.
+      - The accepted value range is between C(150) and C(3600) seconds.
     type: int
     default: 300
 notes:
@@ -66,14 +64,15 @@ EXAMPLES = r'''
     ansible_httpapi_use_ssl: yes
 
   tasks:
-    - name: Simple declaration no restart
-      bigiq_do_deploy:
-        content: "{{ lookup('file', 'do_simple_no_restart.json') }}"
+    - name: Start simple declaration task
+      bigip_do_deploy:
+        content: "{{ lookup('file', 'do_bigiq_declaration.json') }}"
+      register: task
 
-    - name: Check for DO task status
+    - name: Check for simple declaration status
       bigiq_do_deploy:
-        task_id: "4b97a754-022f-430c-85d6-35c32190c104"
-        timeout: 500
+        task_id: result.task_id
+        timeout: 1000
 '''
 
 RETURN = r'''
@@ -83,7 +82,7 @@ content:
   type: dict
   sample: hash/dictionary of values
 task_id:
-  description: The task id returned by the system.
+  description: The task ID returned by the system.
   returned: changed
   type: dict
   sample: hash/dictionary of values
@@ -99,9 +98,7 @@ from datetime import datetime
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import string_types
 
-from ansible.module_utils.connection import (
-    Connection, ConnectionError
-)
+from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
     F5Client, send_teem
@@ -143,9 +140,9 @@ class ModuleParameters(Parameters):
     def timeout(self):
         divisor = 100
         timeout = self._values['timeout']
-        if timeout < 300 or timeout > 3600:
+        if timeout < 150 or timeout > 3600:
             raise F5ModuleError(
-                "Timeout value must be between 300 and 3600 seconds."
+                "Timeout value must be between 150 and 3600 seconds."
             )
 
         delay = timeout / divisor

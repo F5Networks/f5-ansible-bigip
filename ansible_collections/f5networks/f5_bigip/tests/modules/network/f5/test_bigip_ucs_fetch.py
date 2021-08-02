@@ -51,13 +51,14 @@ class TestParameters(unittest.TestCase):
             force='yes',
             fail_on_missing='no',
             src='remote.ucs',
+            timeout=600
         )
         p = Parameters(params=args)
         assert p.backup == 'yes'
+        assert p.timeout == (6.0, 100)
 
 
 class TestV1Manager(unittest.TestCase):
-
     def setUp(self):
         self.spec = ArgumentSpec()
         self.p1 = patch('time.sleep')
@@ -70,26 +71,46 @@ class TestV1Manager(unittest.TestCase):
         self.p1.stop()
         self.p2.stop()
 
-    def test_create(self, *args):
+    def test_start_create_task(self, *args):
+        task_id = "e7550a12-994b-483f-84ee-761eb9af6750"
         set_module_args(dict(
-            backup='yes',
-            create_on_missing='yes',
-            dest='/tmp/foo.ucs',
-            force='yes',
-            fail_on_missing='no',
-            src='remote.ucs'
+            src='remote.ucs',
+            dest='/tmp/cs_backup.ucs',
         ))
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
-            add_file_common_args=self.spec.add_file_common_args
+            add_file_common_args=self.spec.add_file_common_args,
+        )
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.create_async_task_on_device = Mock(return_value=task_id)
+        mm._start_task_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+        assert results['changed'] is True
+        assert results['task_id'] == task_id
+        assert results['message'] == 'UCS async task started with id: {0}'.format(task_id)
+
+    def test_check_task_download_ucs(self, *args):
+        set_module_args(dict(
+            backup='yes',
+            dest='/tmp/foo.ucs',
+            src='remote.ucs',
+            task_id='e7550a12-994b-483f-84ee-761eb9af6750',
+            timeout=400
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            add_file_common_args=self.spec.add_file_common_args,
         )
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
-        mm.exists = Mock(return_value=False)
-        mm.create_on_device = Mock(return_value=True)
+        mm.async_wait = Mock(return_value=True)
         mm._get_backup_file = Mock(return_value='/tmp/foo.backup')
         mm.download_from_device = Mock(return_value=True)
         mm._set_checksum = Mock(return_value=12345)

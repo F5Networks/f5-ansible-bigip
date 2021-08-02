@@ -104,3 +104,55 @@ releases:
         name: bigiq
         namespace: null
     release_date: '2021-06-21'
+  1.1.0:
+    changes:
+      bugfixes:
+      - Fix snat pool issue in device info module
+      - Include serialNumber for ssl-certs gather_subset issue-2041
+      major_changes:
+      - Module bigip_ucs_fetch changed to be asynchronous, see https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html
+        for details
+      minor_changes:
+      - Add additional parameters to bigip_ssl_csr module
+      - Add bigip_software_image module to manage software images on BIG-IP
+      - Add bigip_software_install module to manage software installations on BIG-IP
+      - Add new module to check for VELOS tenant state
+      - Add new module to manage VELOS tenant images on partition
+      - Add new module to manage VELOS tenants on partition
+      - Add vcmp guest module for configuring and managing vcmp guests
+      - New httpapi plugin for velos platform
+    fragments:
+    - add-params-bigip-ssl-csr.yaml
+    - backportv1-v2.yaml
+    - change-ucs-fetch-to-async.yaml
+    - new-bigip-vcmp-guest-module.yaml
+    - new-httapi-velos-plugin.yaml
+    - new-software-image-install-modules.yaml
+    - new-velos-tenant-image-module.yaml
+    - new-velos-tenant-module.yaml
+    - new-velos-tenant-wait-module.yaml
+    modules:
+    - description: Manage software images on a BIG-IP
+      name: bigip_software_image
+      namespace: private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules
+    - description: Install software images on a BIG-IP
+      name: bigip_software_install
+      namespace: private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules
+    - description: Manages vCMP guests on a BIG-IP
+      name: bigip_vcmp_guest
+      namespace: private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules
+    - description: Manage Velos tenants
+      name: velos_tenant
+      namespace: private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules
+    - description: Manage Velos tenant images
+      name: velos_tenant_image
+      namespace: private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules
+    - description: Wait for a Velos condition before continuing
+      name: velos_tenant_wait
+      namespace: private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules
+    plugins:
+      httpapi:
+      - description: HttpApi Plugin for VELOS devices
+        name: velos
+        namespace: null
+    release_date: '2021-08-02'

@@ -1,0 +1,66 @@
+{
+  "name": "defaultbip",
+  "config": {
+    "name": "defaultbip",
+    "type": "BIG-IP",
+    "image": "BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip",
+    "blades": 1,
+    "nodes": [
+      1
+    ],
+    "mgmt-ip": "10.146.97.29",
+    "netmask": "255.255.224.0",
+    "gateway": "10.146.127.254",
+    "port": 22,
+    "mac-ndi-set": [
+      {
+        "ndi": "default",
+        "mac": "00:94:a1:8e:7c:08"
+      }
+    ],
+    "vlans": [
+      104
+    ],
+    "serviceID": 8,
+    "cryptos": "disabled",
+    "cpu-cores": "2",
+    "memory": "8192",
+    "running-state": "provisioned",
+    "mac-data": {
+      "mgmt-mac": "00:94:a1:8e:7c:09",
+      "base-mac": "00:94:a1:8e:7c:0a",
+      "mac-pool-size": 1
+    }
+  },
+  "state": {
+    "name": "defaultbip",
+    "type": "BIG-IP",
+    "blades": 1,
+    "port": 22,
+    "cryptos": "disabled",
+    "cpu-cores": "2",
+    "memory": "8192",
+    "running-state": "provisioned",
+    "mac-data": {
+      "mgmt-mac": "00:94:a1:8e:7c:09",
+      "base-mac": "00:94:a1:8e:7c:0a",
+      "mac-pool-size": 1
+    },
+    "status": "Provisioned",
+    "primary-slot": 1,
+    "image-version": "BIG-IP 14.1.2.5 0.0.336",
+    "instances": {
+      "instance": [
+        {
+          "node": 1,
+          "instance-id": 1,
+          "phase": "Ready to deploy",
+          "image-name": "BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip",
+          "creation-time": "",
+          "ready-time": "",
+          "status": ""
+        }
+      ]
+    }
+  }
+}

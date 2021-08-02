@@ -1,0 +1,21 @@
+{
+    "kind": "tm:sys:software:image:imagecollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/sys/software/image?ver=13.0.0",
+    "items": [
+        {
+            "kind": "tm:sys:software:image:imagestate",
+            "name": "13.0.0.iso",
+            "fullPath": "13.0.0.iso",
+            "generation": 31,
+            "selfLink": "https://localhost/mgmt/tm/sys/software/image/13.0.0.iso?ver=13.0.0",
+            "build": "0.0.1645",
+            "buildDate": "Tue Jan 31 16 59 50 PST 2017",
+            "checksum": "db2b6c5fa73655e82721a19a777f4778",
+            "fileSize": "1689 MB",
+            "lastModified": "Mon Jun 21 23:53:49 2021",
+            "product": "BIG-IP",
+            "verified": "yes",
+            "version": "13.0.0"
+        }
+    ]
+}
