@@ -5105,6 +5105,12 @@ ssl_certs:
       returned: queried
       type: str
       sample: "2018-05-15T21:11:15Z"
+    serial_no:
+      description:
+        - Specifies certificate's serial number
+      returned: queried
+      type: str
+      sample: "1234567890"
     subject_alternative_name:
       description:
         - Displays the Subject Alternative Name for the certificate.
@@ -7421,18 +7427,17 @@ import datetime
 import math
 import re
 import time
-
 from collections import namedtuple
 from distutils.version import LooseVersion
-from ipaddress import ip_interface
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.connection import Connection
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.six import (
     iteritems, string_types
 )
+from ansible.module_utils.connection import Connection
 
+from ipaddress import ip_interface
 from ..module_utils.client import (
     F5Client, tmos_version, modules_provisioned, send_teem, packages_installed
 )
@@ -7472,6 +7477,7 @@ class BaseManager(object):
         # This list is provided to the specific fact manager by the
         # master ModuleManager of this module.
         self.provisioned_modules = []
+
         # A list of packages currently installed on the device.
         #
         # This list is used by different fact managers to check to see
@@ -7825,8 +7831,8 @@ class AsmPolicyFactParameters(BaseParameters):
         'hasParent': 'has_parent',
         'protocolIndependent': 'protocol_independent',
         'virtualServers': 'virtual_servers',
-        'allowedResponseCodes': 'allowed_response_codes',
         'manualVirtualServers': 'manual_virtual_servers',
+        'allowedResponseCodes': 'allowed_response_codes',
         'learningMode': 'learning_mode',
         'enforcementMode': 'enforcement_mode',
         'customXffHeaders': 'custom_xff_headers',
@@ -13431,6 +13437,7 @@ class SslCertificatesParameters(BaseParameters):
         'expirationDate': 'expiration_timestamp',
         'createTime': 'create_time',
         'subjectAlternativeName': 'subject_alternative_name',
+        'serialNumber': 'serial_no',
     }
 
     returnables = [
@@ -13449,6 +13456,7 @@ class SslCertificatesParameters(BaseParameters):
         'expiration_timestamp',
         'create_time',
         'subject_alternative_name',
+        'serial_no',
     ]
 
     @property
@@ -15823,8 +15831,20 @@ class VirtualServersParameters(BaseParameters):
                 return 'automap'
             elif self._values['snat_type']['type'] == 'none':
                 return 'none'
-            elif self._values['snat_type']['type'] == 'pool':
+            elif self._values['snat_type']['type'] == 'snat':
                 return 'snat'
+
+    @property
+    def snat_pool(self):
+        if self._values['snat_type'] is None:
+            return None
+        if 'type' in self._values['snat_type']:
+            if self._values['snat_type']['type'] == 'automap':
+                return 'none'
+            elif self._values['snat_type']['type'] == 'none':
+                return 'none'
+            elif self._values['snat_type']['type'] == 'snat':
+                return self._values['snat_type']["pool"]
 
     @property
     def connection_mirror_enabled(self):
