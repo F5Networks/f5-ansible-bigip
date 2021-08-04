@@ -42,18 +42,12 @@ Httpapi
 New Modules
 -----------
 
-Private
-~~~~~~~
-
-tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-- private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_software_image - Manage software images on a BIG-IP
-- private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_software_install - Install software images on a BIG-IP
-- private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_vcmp_guest - Manages vCMP guests on a BIG-IP
-- private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules.velos_tenant - Manage Velos tenants
-- private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules.velos_tenant_image - Manage Velos tenant images
-- private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules.velos_tenant_wait - Wait for a Velos condition before continuing
+- bigip_software_image - Manage software images on a BIG-IP
+- bigip_software_install - Install software images on a BIG-IP
+- bigip_vcmp_guest - Manages vCMP guests on a BIG-IP
+- velos_tenant - Manage Velos tenants
+- velos_tenant_image - Manage Velos tenant images
+- velos_tenant_wait - Wait for a Velos condition before continuing
 
 v1.0.0
 ======

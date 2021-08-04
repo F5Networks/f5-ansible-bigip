@@ -134,22 +134,22 @@ releases:
     modules:
     - description: Manage software images on a BIG-IP
       name: bigip_software_image
-      namespace: private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules
+      namespace: ''
     - description: Install software images on a BIG-IP
       name: bigip_software_install
-      namespace: private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules
+      namespace: ''
     - description: Manages vCMP guests on a BIG-IP
       name: bigip_vcmp_guest
-      namespace: private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules
+      namespace: ''
     - description: Manage Velos tenants
       name: velos_tenant
-      namespace: private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules
+      namespace: ''
     - description: Manage Velos tenant images
       name: velos_tenant_image
-      namespace: private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules
+      namespace: ''
     - description: Wait for a Velos condition before continuing
       name: velos_tenant_wait
-      namespace: private.tmp.antsibull-changelogbzsh1cqj.collections.ansible_collections.f5networks.f5_bigip.plugins.modules
+      namespace: ''
     plugins:
       httpapi:
       - description: HttpApi Plugin for VELOS devices
