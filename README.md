@@ -7,6 +7,9 @@ uploading security policies, uploading crts/keys, gathering info, etc.
 
 **Note that this Collection is not currently intended to replace the existing** [f5_modules] **Collection.**
 
+##Python Version
+This collection is supported on Python 3.6 and above.
+
 ##Collections Daily Build
 
 

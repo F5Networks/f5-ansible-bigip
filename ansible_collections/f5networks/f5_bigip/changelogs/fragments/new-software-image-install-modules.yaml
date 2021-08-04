@@ -1,4 +1,0 @@
----
-minor_changes:
-  - Add bigip_software_image module to manage software images on BIG-IP
-  - Add bigip_software_install module to manage software installations on BIG-IP
