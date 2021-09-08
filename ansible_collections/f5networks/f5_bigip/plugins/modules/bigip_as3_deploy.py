@@ -76,7 +76,7 @@ EXAMPLES = r'''
 
     - name: Remove one tenant - AS3
       bigip_as3_deploy:
-        as3_tenant: "Sample_01"
+        tenant: "Sample_01"
         state: absent
 '''
 
