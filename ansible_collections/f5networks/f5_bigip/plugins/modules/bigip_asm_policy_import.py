@@ -422,7 +422,7 @@ class ModuleManager(object):
 
     def exists(self):
         uri = "/mgmt/tm/asm/policies/"
-        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,partition".format(
+        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,partition".format(
             self.want.name, self.want.partition
         )
         response = self.client.get(uri + query)
@@ -431,7 +431,10 @@ class ModuleManager(object):
             raise F5ModuleError(response['contents'])
 
         if 'items' in response['contents'] and response['contents']['items'] != []:
-            return True
+            # because api filter on ASM is broken when names contain numbers at the end we need to work around it
+            for policy in response['contents']['items']:
+                if policy['name'] == self.want.name and policy['partition'] == self.want.partition:
+                    return True
         return False
 
     def upload_file_to_device(self, content, name):
@@ -446,7 +449,7 @@ class ModuleManager(object):
 
     def _get_policy_link(self):
         uri = "/mgmt/tm/asm/policies/"
-        query = "?$filter=name+eq+{0}+and+partition+eq+{1}&$select=name,partition".format(
+        query = "?$filter=contains(name,'{0}')+and+contains(partition,'{1}')&$select=name,partition".format(
             self.want.name, self.want.partition
         )
         response = self.client.get(uri + query)
@@ -454,8 +457,15 @@ class ModuleManager(object):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        policy_link = response['contents']['items'][0]['selfLink']
-        return policy_link
+        if 'items' in response['contents'] and response['contents']['items'] != []:
+            # because api filter on ASM is broken when names contain numbers at the end we need to work around it
+            for policy in response['contents']['items']:
+                if policy['name'] == self.want.name and policy['partition'] == self.want.partition:
+                    policy_link = policy['selfLink']
+                    return policy_link
+        raise F5ModuleError(
+            'Unable to retrieve policy link for policy {0}.'.format(self.want.name)
+        )
 
     def inline_import(self):
         params = self.changes.api_params()

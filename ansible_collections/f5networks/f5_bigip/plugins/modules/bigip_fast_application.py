@@ -144,6 +144,7 @@ from ..module_utils.client import (
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters,
 )
+from ..module_utils.version import CURRENT_COLL_VERSION
 
 try:
     import json
@@ -317,7 +318,9 @@ class ModuleManager(object):
             parameters=declaration
         )
 
-        uri = "/mgmt/shared/fast/applications"
+        uri = "/mgmt/shared/fast/applications?userAgent=F5_BIGIP/{0}/{1}".format(
+            CURRENT_COLL_VERSION, self.want.template
+        )
 
         response = self.client.post(uri, data=payload)
 

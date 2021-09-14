@@ -7590,7 +7590,7 @@ class ApmAccessProfileFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -7644,7 +7644,7 @@ class ApmAccessPolicyFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -7821,6 +7821,10 @@ class AsmPolicyStatsFactManager(BaseManager):
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
+        if 'items' not in response['contents']:
+            return dict(
+                policies=[]
+            )
         return dict(
             policies=response['contents']['items']
         )
@@ -8249,7 +8253,7 @@ class AsmPolicyFactManagerV12(AsmPolicyFactManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         return response['contents']['items']
 
@@ -8274,7 +8278,7 @@ class AsmPolicyFactManagerV13(AsmPolicyFactManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         return response['contents']['items']
 
@@ -8338,7 +8342,7 @@ class AsmServerTechnologyFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -8438,7 +8442,7 @@ class AsmSignatureSetsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return None
 
         return response['contents']['items']
@@ -8747,7 +8751,7 @@ class ClientSslProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -8791,7 +8795,7 @@ class CFEFactManager(BaseManager):
         if response['code'] not in [200, 201]:
             raise F5ModuleError(response['contents'])
 
-        result['declaration'] = response['declaration']
+        result['declaration'] = response['contents']['declaration']
         return result
 
 
@@ -8895,7 +8899,7 @@ class DeviceGroupsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -9045,7 +9049,7 @@ class DevicesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -9089,7 +9093,10 @@ class DOFactManager(BaseManager):
         if response['code'] not in [200, 201]:
             raise F5ModuleError(response['contents'])
 
-        result['declaration'] = response[0]['declaration']
+        if not response['contents']:
+            result['declaration'] = []
+        else:
+            result['declaration'] = response['contents'][0]['declaration']
         return result
 
 
@@ -9179,7 +9186,7 @@ class ExternalMonitorsFactManager(BaseManager):
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -9320,7 +9327,7 @@ class FastHttpProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -9639,7 +9646,7 @@ class FastL4ProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -9731,7 +9738,7 @@ class GatewayIcmpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -9964,7 +9971,7 @@ class GtmAPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10008,7 +10015,7 @@ class GtmAaaaPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10052,7 +10059,7 @@ class GtmCnamePoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10096,7 +10103,7 @@ class GtmMxPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10140,7 +10147,7 @@ class GtmNaptrPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10184,7 +10191,7 @@ class GtmSrvPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10429,7 +10436,7 @@ class GtmServersFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10546,7 +10553,7 @@ class GtmAWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10589,7 +10596,7 @@ class GtmAaaaWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10632,7 +10639,7 @@ class GtmCnameWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10675,7 +10682,7 @@ class GtmMxWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10718,7 +10725,7 @@ class GtmNaptrWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10761,7 +10768,7 @@ class GtmSrvWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10843,7 +10850,7 @@ class GtmTopologyRegionFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -11298,7 +11305,7 @@ class HttpProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -11389,7 +11396,7 @@ class IappServicesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -11445,10 +11452,10 @@ class IapplxPackagesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        status = self.wait_for_task(response['id'])
+        status = self.wait_for_task(response['contents']['id'])
         if status == 'FINISHED':
             uri = "/mgmt/shared/iapp/package-management-tasks/{0}".format(
-                response['id']
+                response['contents']['id']
             )
             response = self.client.get(uri)
             if response['code'] not in [200, 201, 202]:
@@ -11458,23 +11465,24 @@ class IapplxPackagesFactManager(BaseManager):
             raise F5ModuleError(
                 "An error occurred querying iAppLX packages."
             )
-        result = response['queryResponse']
+        result = response['contents']['queryResponse']
         return result
 
     def wait_for_task(self, task_id):
         uri = "/mgmt/shared/iapp/package-management-tasks/{0}".format(
             task_id
         )
+        response = None
         for x in range(0, 60):
             response = self.client.get(uri)
 
             if response['code'] not in [200, 201, 202]:
                 raise F5ModuleError(response['contents'])
 
-            if response['status'] in ['FINISHED', 'FAILED']:
-                return response['status']
+            if response['contents']['status'] in ['FINISHED', 'FAILED']:
+                return response['contents']['status']
             time.sleep(1)
-        return response['status']
+        return response['contents']['status']
 
 
 class IcmpMonitorsParameters(BaseParameters):
@@ -11563,7 +11571,7 @@ class IcmpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -11675,7 +11683,7 @@ class InterfacesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -11729,7 +11737,7 @@ class InternalDataGroupsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -11819,7 +11827,7 @@ class IrulesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12181,7 +12189,7 @@ class LtmPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12195,7 +12203,7 @@ class LtmPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12325,7 +12333,7 @@ class LtmPolicyFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12451,7 +12459,7 @@ class NodesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12556,7 +12564,7 @@ class OneConnectProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12605,20 +12613,13 @@ class PartitionFactManager(BaseManager):
         return results
 
     def read_collection_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/auth/partition".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-        )
-        resp = self.client.api.get(uri)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
+        uri = "/mgmt/tm/auth/partition"
+        response = self.client.get(uri)
 
-        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
-            raise F5ModuleError(resp.content)
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12677,7 +12678,7 @@ class ProvisionInfoFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12760,7 +12761,7 @@ class RouteDomainFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12865,7 +12866,7 @@ class SelfIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -13162,7 +13163,7 @@ class ServerSslProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -13241,7 +13242,7 @@ class SoftwareVolumesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -13300,7 +13301,7 @@ class SoftwareHotfixesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -13418,7 +13419,7 @@ class SoftwareImagesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -13510,7 +13511,7 @@ class SslCertificatesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -13579,7 +13580,7 @@ class SslKeysFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -13696,7 +13697,7 @@ class SyncStatusFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        result = response.get('entries', {}) \
+        result = response['contents'].get('entries', {}) \
             .get('https://localhost/mgmt/tm/cm/sync-status/0', {}) \
             .get('nestedStats', {}) \
             .get('entries')
@@ -13738,7 +13739,7 @@ class SystemDbFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -14285,7 +14286,7 @@ class TcpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -14364,7 +14365,7 @@ class TcpHalfOpenMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -14780,7 +14781,7 @@ class TcpProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -14877,7 +14878,7 @@ class TrafficGroupsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -14987,7 +14988,7 @@ class TrunksFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -15075,7 +15076,7 @@ class UsersFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -15178,7 +15179,7 @@ class UdpProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -15261,7 +15262,7 @@ class VcmpGuestsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -15366,7 +15367,7 @@ class VirtualAddressesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -15936,7 +15937,7 @@ class VirtualServersParameters(BaseParameters):
         if self._values['destination'] is None:
             result = Destination(ip=None, port=None, route_domain=None, mask=None)
             return result
-        destination = re.sub(r'^/[a-zA-Z0-9_.-]+/', '', self._values['destination'])
+        destination = re.sub(r'^/[a-zA-Z0-9_.-]+/([a-zA-Z0-9_.-]+\/)?', '', self._values['destination'])
         # Covers the following examples
         #
         # /Common/2700:bc00:1f10:101::6%2.80
@@ -15944,6 +15945,7 @@ class VirtualServersParameters(BaseParameters):
         # 1.1.1.1%2:80
         # /Common/1.1.1.1%2:80
         # /Common/2700:bc00:1f10:101::6%2.any
+        # /Common/Shared/1.1.1.1:80
         #
         pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)[:.](?P<port>[0-9]+|any)'
         matches = re.search(pattern, destination)
@@ -16106,7 +16108,7 @@ class VirtualServersFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -16254,7 +16256,7 @@ class VlansFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -16326,7 +16328,7 @@ class ManagementRouteFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -16386,7 +16388,7 @@ class RemoteSyslogFactManager(BaseManager):
 
     def read_collection_from_device(self):
         uri = "/mgmt/tm/sys/syslog/"
-        response = self.client.api.get(uri)
+        response = self.client.get(uri)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])

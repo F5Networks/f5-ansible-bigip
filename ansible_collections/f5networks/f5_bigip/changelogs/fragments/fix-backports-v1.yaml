@@ -1,0 +1,4 @@
+---
+bugfixes:
+  - Fix from v1 https://github.com/F5Networks/f5-ansible/pull/2099
+  - Fix from v1 https://github.com/F5Networks/f5-ansible/pull/2092

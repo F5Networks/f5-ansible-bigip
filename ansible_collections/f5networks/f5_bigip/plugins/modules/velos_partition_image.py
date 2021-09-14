@@ -9,20 +9,26 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: velos_tenant_image
-short_description: Manage Velos tenant images
+module: velos_partition_image
+short_description: Manage Velos partition images
 description:
-  - Manage Velos tenant images.
+  - Manage Velos partition images.
 version_added: 1.1.0
 options:
   image_name:
     description:
-      - Name of the tenant image.
+      - Name of the partition image.
+      - "The value must follow original F5 ISO naming pattern: C(F5OS-C-) if C(iso_version) is not provided."
     type: str
     required: True
+  iso_version:
+    description:
+      - Version of the ISO image.
+      - When not provided the value is extracted from the provided C(image_name).
+    type: str
   remote_host:
     description:
-      - The hostname or ip address of the remote server on which the tenant image is
+      - The hostname or ip address of the remote server on which the partition image is
         stored.
       - The server must make the image accessible via the specified C(protocol).
     type: str
@@ -42,15 +48,15 @@ options:
       - https
   remote_user:
     description:
-      - User name for the remote server on which the tenant image is stored.
+      - User name for the remote server on which the partition image is stored.
     type: str
   remote_password:
     description:
-      - Password for the user on the remote server on which the tenant image is stored.
+      - Password for the user on the remote server on which the partition image is stored.
     type: str
   remote_path:
     description:
-      - The path to the tenant image on the remote server.
+      - The path to the partition image on the remote server.
     type: path
   timeout:
     description:
@@ -60,10 +66,10 @@ options:
     default: 300
   state:
     description:
-      - The tenant image state.
+      - The partition image state.
       - If C(import), start the image import task if the image it does not exist
       - If C(present), checks for the status of the import task if the image does not exist.
-      - If C(absent), delete the tenant image if it exists.
+      - If C(absent), delete the partition image if it exists.
     type: str
     choices:
       - import
@@ -71,8 +77,11 @@ options:
       - absent
     default: import
 notes:
-  - Repeating the same image import task immediately after previous is not idempotent if the image has not finished
-    downloading.
+  - It can take up to 20 minutes for the image to register on device after successful upload.
+  - As there is no way to check the internal ISO import progress yet.users should assume that if the image ISO
+    has not been found by this module when running the module with C(state) set to C(present) and 20 minutes has
+    passed since it was uploaded, the internal import failed. The most common reason for this failure is ISO
+    image corruption.
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -91,32 +100,32 @@ EXAMPLES = r'''
     ansible_httpapi_use_ssl: yes
 
   tasks:
-    - name: Import tenant image 'foo' onto the Velos provider
-      velos_tenant_image:
-        image_name: foo
+    - name: Import partition image onto the Velos controller
+      velos_partition_image:
+        image_name: F5OS-C-1.1.0-3198.PARTITION.iso
         remote_host: builds.mydomain.com
         remote_user: admin
         remote_password: secret
         remote_path: /images/
         state: import
 
-    - name: Check the status of the image import onto the Velos provider
-      velos_tenant_image:
-        image_name: foo
+    - name: Check for presence of the imported ISO on the Velos controller
+      velos_partition_image:
+        image_name: F5OS-C-1.1.0-3198.PARTITION.iso
         timeout: 600
         state: present
 
-    - name: Remove tenant image 'foo'
-      velos_tenant_image:
-        name: foo
+    - name: Remove partition image from the Velos controller
+      velos_partition_image:
+        image_name: F5OS-C-1.1.0-3198.PARTITION.iso
         state: absent
 '''
 RETURN = r'''
 image_name:
-  description: Name of the tenant image.
+  description: Name of the partition image.
   returned: changed
   type: str
-  example: BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip
+  example: F5OS-C-1.1.0-3198.PARTITION.iso
 remote_host:
   description: The hostname or ip address of the remote server.
   returned: changed
@@ -128,7 +137,7 @@ remote_port:
   type: int
   example: 443
 remote_path:
-  description: The path to the tenant image on the remote server.
+  description: The path to the partition image on the remote server.
   returned: changed
   type: str
   example: /foo/bar/
@@ -137,7 +146,13 @@ message:
   returned: changed
   type: dict
   sample: Import success
+iso_version:
+  description: Version of the ISO image.
+  returned: changed
+  type: dict
+  sample: 1.1.0-3198
 '''
+import re
 import time
 from ipaddress import ip_interface
 
@@ -169,6 +184,7 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     returnables = [
+        'iso_version',
         'protocol',
         'remote_host',
         'remote_port',
@@ -183,6 +199,21 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ModuleParameters(Parameters):
+    @property
+    def iso_version(self):
+        # attempt to extract iso_version if not provided
+        if self._values['iso_version'] is None:
+            pattern = r"\d\.\d\.\d\-\d*"
+            value = re.search(pattern, self._values['image_name'])
+            if value:
+                return value.group(0)
+            raise F5ModuleError(
+                f"Could not derive iso_version from provided image_name {self._values['image_name']}."
+                f"If the image name has been changed from the original 'F5OS-C-' "
+                f"format, iso_version parameter must be provided."
+            )
+        return self._values['iso_version']
+
     @property
     def timeout(self):
         divisor = 100
@@ -240,8 +271,8 @@ class ReportableChanges(Changes):
         'remote_port',
         'remote_path',
         'image_name',
-        'remote_user',
         'message',
+        'iso_version'
     ]
 
 
@@ -252,7 +283,6 @@ class ModuleManager(object):
         self.client = F5Client(module=self.module, client=self.connection)
         self.want = ModuleParameters(params=self.module.params)
         self.changes = UsableChanges()
-        self.image_is_valid = False
 
     def _set_changed_options(self):
         changed = {}
@@ -290,13 +320,13 @@ class ModuleManager(object):
         return result
 
     def import_image(self):
-        if self.exists() and self.image_is_valid:
+        if self.exists():
             return False
         else:
             return self.create()
 
     def present(self):
-        if self.exists() and self.image_is_valid:
+        if self.exists():
             return False
         else:
             return self.check_progress()
@@ -322,27 +352,24 @@ class ModuleManager(object):
         return True
 
     def exists(self):
-        uri = f"/f5-tenant-images:images/image={self.want.image_name}/status"
+        uri = f"/f5-system-image:image/partition/config/iso/iso={self.want.iso_version}"
         response = self.client.get(uri)
-
         if response['code'] == 404:
             return False
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
-        if response['contents']['f5-tenant-images:status'] == 'replicated':
-            self.image_is_valid = True
         return True
 
     def create_on_device(self):
         params = self.changes.api_params()
         uri = "/f5-utils-file-transfer:file/import"
-        params['local-file'] = "IMAGES",
+        params['local-file'] = "/var/import/staging/",
         params['insecure'] = ""
         payload = dict(input=[params])
         response = self.client.post(uri, data=payload)
 
         if response['code'] not in [200, 201, 202]:
-            raise F5ModuleError(f"Failed to import tenant image: {self.want.image_name}")
+            raise F5ModuleError(f"Failed to import partition image: {self.want.image_name}")
 
         self.changes.update({"message": f"Image {self.want.image_name} import started."})
         return True
@@ -354,43 +381,50 @@ class ModuleManager(object):
                 if not self.changes.message:
                     self.changes.update({"message": f"Image {self.want.image_name} import successful."})
                 return True
+            self.check_file_transfer_status()
             time.sleep(delay)
         raise F5ModuleError(
             "Module timeout reached, state change is unknown, "
             "please increase the timeout parameter for long lived actions."
         )
 
-    def is_imported(self):
-        uri = f"/f5-tenant-images:images/image={self.want.image_name}/status"
-        response = self.client.get(uri)
+    def check_file_transfer_status(self):
+        uri = "/f5-utils-file-transfer:file/transfer-status"
+        payload = {"f5-utils-file-transfer:file-name": f"/var/import/staging/{self.want.image_name}"}
+        response = self.client.post(uri, data=payload)
         if response['code'] not in [200, 201, 202, 204]:
             raise F5ModuleError(response['contents'])
-        if response['code'] == 204:
+        r = response['contents']['f5-utils-file-transfer:output']['result']
+        result = r.split('\n')[2].split('|')[-1]
+        if not any(s in result for s in ['Completed', 'File Transfer Initiated']):
+            raise F5ModuleError(f"Error uploading image: {result}")
+
+    def is_imported(self):
+        uri = f"/f5-system-image:image/partition/config/iso/iso={self.want.iso_version}"
+        response = self.client.get(uri)
+        if response['code'] == 404:
             return False
-        status = response['contents']['f5-tenant-images:status']
-        if 'replicated' in status:
-            return True
-        if 'verification-failed' in status:
-            raise F5ModuleError(f"The image: {self.want.image_name} was imported, but it failed signature verification,"
-                                f" remove the image and try again.")
-        return False
+        if response['code'] not in [200, 201, 202, 204]:
+            raise F5ModuleError(response['contents'])
+        return True
 
     def remove_from_device(self):
-        uri = "/f5-tenant-images:images/remove"
-        payload = dict(input=[{"name": self.want.image_name}])
+        uri = "/f5-system-image:image/partition/remove"
+        payload = {"f5-system-image:iso": self.want.iso_version}
         response = self.client.post(uri, data=payload)
         if response['code'] not in [200, 201, 202]:
-            raise F5ModuleError(f"Failed to remove tenant image: {self.want.image_name} {response['contents']}")
-        result = response['contents']["f5-tenant-images:output"]["result"]
-        if result == "Successful.":
+            raise F5ModuleError(f"Failed to remove partition ISO: {self.want.iso_version} {response['contents']}")
+        result = response['contents']["f5-system-image:output"]["response"]
+        if result == "specified images removed":
             return True
-        raise F5ModuleError(f"Failed to remove tenant image: {self.want.image_name} {result}")
+        raise F5ModuleError(f"Failed to remove partition ISO: {self.want.iso_version} {result}")
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
+            iso_version=dict(),
             image_name=dict(required=True),
             remote_host=dict(),
             remote_port=dict(type='int'),
@@ -413,7 +447,8 @@ class ArgumentSpec(object):
         self.argument_spec = {}
         self.argument_spec.update(argument_spec)
         self.required_if = [
-            ['state', 'import', ['image_name', 'remote_host', 'remote_user', 'remote_password', 'remote_path']]]
+            ['state', 'import', ['image_name', 'remote_host', 'remote_user', 'remote_password', 'remote_path']]
+        ]
 
 
 def main():

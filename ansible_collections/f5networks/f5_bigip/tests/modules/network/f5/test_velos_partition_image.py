@@ -11,7 +11,7 @@ import os
 
 from ansible.module_utils.basic import AnsibleModule
 
-from ansible_collections.f5networks.f5_bigip.plugins.modules.velos_tenant_image import (
+from ansible_collections.f5networks.f5_bigip.plugins.modules.velos_partition_image import (
     ModuleParameters, ArgumentSpec, ModuleManager
 )
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
@@ -46,7 +46,7 @@ def load_fixture(name):
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
-            image_name='BIGIP-bigip.ALL-VELOS.qcow2.zip',
+            image_name='F5OS-C-1.1.0-3198.PARTITION.iso',
             remote_host='1.2.3.4',
             remote_user='admin',
             remote_password='admin',
@@ -56,11 +56,12 @@ class TestParameters(unittest.TestCase):
         )
 
         p = ModuleParameters(params=args)
-        assert p.image_name == 'BIGIP-bigip.ALL-VELOS.qcow2.zip'
+        assert p.image_name == 'F5OS-C-1.1.0-3198.PARTITION.iso'
         assert p.remote_host == '1.2.3.4'
         assert p.remote_user == 'admin'
         assert p.remote_password == 'admin'
-        assert p.remote_path == '/test/BIGIP-bigip.ALL-VELOS.qcow2.zip'
+        assert p.remote_path == '/test/F5OS-C-1.1.0-3198.PARTITION.iso'
+        assert p.iso_version == '1.1.0-3198'
         assert p.state == 'present'
         assert p.timeout == (6.0, 100)
 
@@ -68,7 +69,7 @@ class TestParameters(unittest.TestCase):
 class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
-        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.velos_tenant_image.F5Client')
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.velos_partition_image.F5Client')
         self.p2 = patch('time.sleep')
         self.p2.start()
         self.m1 = self.p1.start()
@@ -80,7 +81,7 @@ class TestManager(unittest.TestCase):
 
     def test_import_image(self, *args):
         set_module_args(dict(
-            image_name='BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip',
+            image_name='F5OS-C-1.1.0-3198.PARTITION.iso',
             remote_host='fake.imageserver.foo.bar.com',
             remote_user='admin',
             remote_password='admin',
@@ -94,24 +95,27 @@ class TestManager(unittest.TestCase):
             required_if=self.spec.required_if
         )
         expected = {'input': [{'protocol': 'scp', 'remote-host': 'fake.imageserver.foo.bar.com',
-                               'remote-file': '/test/BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip',
-                               'username': 'admin', 'password': 'admin', 'local-file': ('IMAGES',), 'insecure': ''}]
+                               'remote-file': '/test/F5OS-C-1.1.0-3198.PARTITION.iso',
+                               'username': 'admin', 'password': 'admin', 'local-file': ('/var/import/staging/',),
+                               'insecure': ''}]
                     }
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=False)
-        mm.client.post = Mock(return_value=dict(code=200, contents=dict(load_fixture('start_image_import.json'))))
+        mm.client.post = Mock(return_value=dict(code=200, contents=dict(
+            load_fixture('start_partition_image_import.json'))))
 
         results = mm.exec_module()
         assert results['changed'] is True
         assert mm.client.post.call_args[1]['data'] == expected
-        assert results['image_name'] == 'BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip'
-        assert results['remote_path'] == '/test/BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip'
-        assert results['message'] == "Image BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip import started."
+        assert results['image_name'] == "F5OS-C-1.1.0-3198.PARTITION.iso"
+        assert results['remote_path'] == "/test/F5OS-C-1.1.0-3198.PARTITION.iso"
+        assert results['iso_version'] == '1.1.0-3198'
+        assert results['message'] == "Image F5OS-C-1.1.0-3198.PARTITION.iso import started."
 
     def test_import_image_progress_check(self, *args):
         set_module_args(dict(
-            image_name='BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip',
+            image_name='F5OS-C-1.1.0-3198.PARTITION.iso',
             state='present',
         ))
 
@@ -120,28 +124,24 @@ class TestManager(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode,
             required_if=self.spec.required_if
         )
-        url = '/f5-tenant-images:images/image=BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip/status'
-        importing = dict(code=200, contents={"f5-tenant-images:status": "importing"})
-        verifying = dict(code=200, contents={"f5-tenant-images:status": "verifying"})
-        verified = dict(code=200, contents={"f5-tenant-images:status": "verified"})
-        replicating = dict(code=200, contents={"f5-tenant-images:status": "replicating"})
-        replicated = dict(code=200, contents={"f5-tenant-images:status": "replicated"})
+
+        importing = dict(code=200, contents=dict(load_fixture('partition_image_import_progress.json')))
+        completed = dict(code=200, contents=dict(load_fixture('partition_image_import_success.json')))
 
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=False)
-        mm.client.get = Mock(side_effect=[importing, importing, importing, importing, verifying, verifying, verified,
-                                          replicating, replicated])
+        mm.is_imported = Mock(side_effect=[False, False, True])
+        mm.client.post = Mock(side_effect=[importing, completed])
+
         results = mm.exec_module()
-
-        mm.client.get.assert_called_with(url)
         assert results['changed'] is True
-        assert results['message'] == 'Image BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip ' \
+        assert results['message'] == 'Image F5OS-C-1.1.0-3198.PARTITION.iso ' \
                                      'import successful.'
-        assert mm.client.get.call_count == 9
+        assert mm.client.post.call_count == 2
 
-    def test_image_imported_failed_verification(self):
+    def test_import_image_progress_check_import_fails(self, *args):
         set_module_args(dict(
-            image_name='BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip',
+            image_name='F5OS-C-1.1.0-3198.PARTITION.iso',
             state='present',
         ))
 
@@ -150,25 +150,24 @@ class TestManager(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode,
             required_if=self.spec.required_if
         )
-        msg = 'The image: BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip was imported, ' \
-              'but it failed signature verification, remove the image and try again.'
-        importing = dict(code=200, contents={"f5-tenant-images:status": "importing"})
-        verifying = dict(code=200, contents={"f5-tenant-images:status": "verifying"})
-        failed = dict(code=200, contents={"f5-tenant-images:status": "verification-failed"})
+
+        importing = dict(code=200, contents=dict(load_fixture('partition_image_import_progress.json')))
+        fail = dict(code=200, contents=dict(load_fixture('partition_image_import_fail.json')))
 
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=False)
-        mm.client.get = Mock(side_effect=[importing, importing, verifying, verifying, failed])
+        mm.is_imported = Mock(side_effect=[False, False])
+        mm.client.post = Mock(side_effect=[importing, fail])
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
 
-        assert msg in str(err.exception)
-        assert mm.client.get.call_count == 5
+        assert "Error uploading image: File Not Found, HTTP Error 404" in str(err.exception)
+        assert mm.client.post.call_count == 2
 
-    def test_remove_image(self):
+    def test_remove_image_success(self):
         set_module_args(dict(
-            image_name='BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip',
+            image_name='F5OS-C-1.1.0-3198.PARTITION.iso',
             state='absent',
         ))
 
@@ -178,7 +177,7 @@ class TestManager(unittest.TestCase):
             required_if=self.spec.required_if
         )
 
-        response = dict(code=200, contents={"f5-tenant-images:output": {"result": "Successful."}})
+        response = dict(code=200, contents={"f5-system-image:output": {"response": "specified images removed"}})
         mm = ModuleManager(module=module)
         mm.exists = Mock(side_effect=[True, False])
         mm.client.post = Mock(return_value=response)
@@ -187,32 +186,9 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
 
-    def test_image_import_failed(self):
+    def test_remove_image_failure(self):
         set_module_args(dict(
-            image_name='BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip',
-            remote_host='fake.imageserver.foo.bar.com',
-            remote_user='admin',
-            remote_password='admin',
-            remote_path='/test/',
-            state='import',
-        ))
-
-        module = AnsibleModule(
-            argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            required_if=self.spec.required_if
-        )
-
-        mm = ModuleManager(module=module)
-        mm.exists = Mock(return_value=False)
-        mm.client.post = Mock(return_value=dict(code=400, contents={'operation failed'}))
-
-        with self.assertRaises(F5ModuleError):
-            mm.exec_module()
-
-    def test_remove_image_failed(self):
-        set_module_args(dict(
-            image_name='BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip',
+            image_name='F5OS-C-1.1.0-3198.PARTITION.iso',
             state='absent',
         ))
 
@@ -222,12 +198,12 @@ class TestManager(unittest.TestCase):
             required_if=self.spec.required_if
         )
 
-        response = dict(code=200, contents={"f5-tenant-images:output": {"result": "Failed."}})
+        response = dict(code=400, contents=load_fixture('partition_image_remove_fail.json'))
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=True)
         mm.client.post = Mock(return_value=response)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
-        assert 'Failed to remove tenant image: ' \
-               'BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip Failed.' in str(err.exception)
+
+        assert "Failed to remove partition ISO" in str(err.exception)

@@ -93,7 +93,7 @@ class TestParameters(unittest.TestCase):
 class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
-        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_software_install.F5Client')
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.velos_tenant.F5Client')
         self.m1 = self.p1.start()
         self.m1.return_value = MagicMock()
 
@@ -122,7 +122,7 @@ class TestManager(unittest.TestCase):
         expected = {'tenant': [
             {'name': 'foo', 'config': {
                 'image': 'BIGIP-14.1.4.1-0.0.4.ALL-VELOS.qcow2.zip.bundle', 'nodes': [1],
-                'mgmt-ip': '10.144.140.151', 'gateway': '10.144.140.254', 'vlans': [444],
+                'mgmt-ip': '10.144.140.151', 'gateway': '10.144.140.254', 'vlans': [444], 'prefix-length': 24,
                 'vcpu-cores-per-node': 2, 'memory': 7680, 'cryptos': 'enabled', 'running-state': 'configured'}}]}
 
         # Override methods to force specific logic in the module to happen
@@ -131,7 +131,6 @@ class TestManager(unittest.TestCase):
         mm.client.post = Mock(return_value=dict(code=201, contents={}))
 
         results = mm.exec_module()
-
         assert results['changed'] is True
         assert mm.client.post.call_args[1]['data'] == expected
 
@@ -157,8 +156,8 @@ class TestManager(unittest.TestCase):
         assert results['vlans'] == [333, 444]
         assert results['running_state'] == 'deployed'
         assert mm.client.patch.call_count == 2
-        assert mm.client.patch.call_args_list[0][0][0] == 'f5-tenants:tenants/tenant=foo/config/vlans'
-        assert mm.client.patch.call_args_list[1][0][0] == 'f5-tenants:tenants/tenant=foo/config/running-state'
+        assert mm.client.patch.call_args_list[0][0][0] == '/f5-tenants:tenants/tenant=foo/config/vlans'
+        assert mm.client.patch.call_args_list[1][0][0] == '/f5-tenants:tenants/tenant=foo/config/running-state'
         assert mm.client.patch.call_args_list[0][1] == {'data': {'vlans': [333, 444]}}
         assert mm.client.patch.call_args_list[1][1] == {'data': {'running-state': 'deployed'}}
 
