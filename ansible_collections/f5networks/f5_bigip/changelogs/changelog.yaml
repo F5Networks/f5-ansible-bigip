@@ -156,3 +156,17 @@ releases:
         name: velos
         namespace: null
     release_date: '2021-08-02'
+  1.2.0:
+    changes:
+      bugfixes:
+      - Fix a number of on_device methods in bigip_device_info to prevent key errors
+        during device query
+      - Fix from v1 https://github.com/F5Networks/f5-ansible/pull/2092
+      - Fix from v1 https://github.com/F5Networks/f5-ansible/pull/2099
+      minor_changes:
+      - Add module to manage velos partition images
+    fragments:
+    - add-partition-image.yaml
+    - fix-backports-v1.yaml
+    - fix-bigip-device-info-on-device-methods.yaml
+    release_date: '2021-09-17'

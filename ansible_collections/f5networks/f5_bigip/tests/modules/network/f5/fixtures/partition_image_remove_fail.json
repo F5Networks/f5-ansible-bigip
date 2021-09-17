@@ -1,0 +1,12 @@
+{
+    "errors": {
+        "error": [
+            {
+                "error-message": "<err> Sep  2 06:36:16 main: unable to get response from sw mgmt API",
+                "error-path": "/f5-system-image:image/partition/remove",
+                "error-tag": "malformed-message",
+                "error-type": "application"
+            }
+        ]
+    }
+}

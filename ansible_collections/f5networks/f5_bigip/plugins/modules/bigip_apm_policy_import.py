@@ -98,7 +98,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 source:
-  description: Local path to APM policy file.
+  description: Local path to the APM policy file.
   returned: changed
   type: str
   sample: /root/some_policy.tar.gz

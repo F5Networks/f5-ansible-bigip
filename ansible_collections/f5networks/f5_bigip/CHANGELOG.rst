@@ -5,6 +5,21 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v1.2.0
+======
+
+Minor Changes
+-------------
+
+- Add module to manage velos partition images
+
+Bugfixes
+--------
+
+- Fix a number of on_device methods in bigip_device_info to prevent key errors during device query
+- Fix from v1 https://github.com/F5Networks/f5-ansible/pull/2092
+- Fix from v1 https://github.com/F5Networks/f5-ansible/pull/2099
+
 v1.1.0
 ======
 

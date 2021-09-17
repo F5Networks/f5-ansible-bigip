@@ -1,0 +1,5 @@
+{
+    "f5-utils-file-transfer:output": {
+        "result": "\nS.No.|Operation  |Protocol|Local File Path                                             |Remote Host         |Remote File Path                                            |Status            \n1    |Import file|HTTPS     |/var/import/staging/F5OS-C-1.1.0-3198.PARTITION.iso        |10.144.140.21       |/root/image/F5OS-C-1.1.0-3198.PARTITION.iso                |File Transfer Initiated"
+    }
+}

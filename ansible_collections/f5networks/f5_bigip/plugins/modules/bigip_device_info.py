@@ -18,7 +18,7 @@ version_added: "1.0.0"
 options:
   gather_subset:
     description:
-      - When supplied, this argument will restrict the information returned to a given subset.
+      - When supplied, this argument restricts the information returned to a given subset.
       - You can specify a list of values to include a larger subset.
       - Values can also be used with an initial C(!) to specify that a specific subset
         should not be collected.
@@ -215,42 +215,42 @@ EXAMPLES = r'''
 
 RETURN = r'''
 apm_access_profiles:
-  description: Information about APM Access Profiles.
+  description: Information about APM Access profiles.
   returned: When C(apm-access-profiles) is specified in C(gather_subset).
   type: complex
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/foo_policy
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: foo_policy
     access_policy:
       description:
-        - APM Access Policy attached to this Access Profile.
+        - APM Access policy attached to this Access profile.
       returned: queried
       type: str
       sample: foo_policy
 apm_access_policies:
-  description: Information about APM Access Policies.
+  description: Information about APM Access policies.
   returned: When C(apm-access-policies) is specified in C(gather_subset).
   type: complex
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/foo_policy
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: foo_policy
@@ -279,7 +279,7 @@ asm_policy_stats:
       sample: 2
     policies_active:
       description:
-        - The number of ASM policies that are marked as active. From TMOS 13.x and above this setting equals
+        - The number of ASM policies that are marked as active. In TMOS 13.x and later, this setting is equal
           to C(policies_attached).
       returned: queried
       type: int
@@ -292,7 +292,7 @@ asm_policy_stats:
       sample: 1
     policies_inactive:
       description:
-        - The number of ASM policies that are marked as inactive. From TMOS 13.x and above this setting equals
+        - The number of ASM policies that are marked as inactive. In TMOS 13.x and later, this setting is equal
           to C(policies_unattached).
       returned: queried
       type: int
@@ -329,14 +329,14 @@ asm_policies:
       sample: l0Ckxe-7yHsXp8U5tTgbFQ
     active:
       description:
-        - Indicates if an ASM policy is active. In TMOS 13.x and above,
+        - Indicates if an ASM policy is active. In TMOS 13.x and later,
           this setting indicates if the policy is bound to any Virtual Server.
       returned: queried
       type: bool
       sample: yes
     apply:
       description:
-        - In TMOS 13.x and above, this setting indicates if an ASM policy has pending changes that need to be applied.
+        - In TMOS 13.x and later, this setting indicates if an ASM policy has pending changes that need to be applied.
       returned: queried
       type: bool
       sample: yes
@@ -373,7 +373,7 @@ asm_policies:
       sample: ['/Common/test_VS/']
     allowed_response_codes:
       description:
-        - Lists the response status codes between 400 and 599 that the security profile considers legal.
+        - Lists the response status codes between 400 and 599 that the security profile considers acceptable.
       returned: queried
       type: list
       sample: ['400', '404']
@@ -428,7 +428,7 @@ asm_policies:
       sample: no
     enforcement_readiness_period:
       description:
-        - Period in days both security policy entities and attack signatures
+        - Period, in days, both security policy entities and attack signatures
           remain in staging mode before the system suggests to enforce them.
       returned: queried
       type: int
@@ -441,7 +441,7 @@ asm_policies:
       sample: ignore
     trigger_asm_irule_event:
       description:
-        - Indicates if iRule event is enabled.
+        - Indicates if an iRule event is enabled.
       returned: queried
       type: str
       sample: disabled
@@ -528,7 +528,7 @@ asm_policies:
           sample: ['fooparam']
         csrf_url:
           description:
-            - Specifies an URL to protect.
+            - Specifies a URL to protect.
           returned: queried
           type: str
           sample: ['/foo.html']
@@ -588,7 +588,7 @@ asm_server_technologies:
           sample: https://localhost/mgmt/tm/asm/server-technologies/NQG7CT02OBC2cQWbnP7T-A?ver=13.1.0
   sample: hash/dictionary of values
 asm_signature_sets:
-  description: Detailed information for ASM signature sets present on device.
+  description: Detailed information for ASM signature sets present on the device.
   returned: When C(asm-signature-sets) is specified in C(gather_subset).
   type: complex
   contains:
@@ -651,7 +651,7 @@ asm_signature_sets:
       sample: yes
   sample: hash/dictionary of values
 client_ssl_profiles:
-  description: Client SSL Profile related information.
+  description: Client SSL profile related information.
   returned: When C(client-ssl-profiles) is specified in C(gather_subset).
   type: complex
   contains:
@@ -663,7 +663,7 @@ client_ssl_profiles:
       sample: /Common/bigip02.internal
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: bigip02.internal
@@ -747,7 +747,7 @@ client_ssl_profiles:
       sample: /Common/default.crl
     parent:
       description:
-        - Parent of the profile
+        - Parent of the profile.
       returned: queried
       type: str
       sample: /Common/clientssl
@@ -801,7 +801,7 @@ client_ssl_profiles:
       sample: yes
     renegotiation_maximum_record_delay:
       description:
-        - Maximum number of SSL records that the traffic
+        - Maximum number of SSL records the traffic
           management system can receive before it renegotiates an SSL
           session.
       returned: queried
@@ -883,7 +883,7 @@ client_ssl_profiles:
       sample: no
     forward_proxy_enabled:
       description:
-        - Enables or disables SSL forward proxy feature.
+        - Enables or disables the SSL forward proxy feature.
       returned: queried
       type: bool
       sample: yes
@@ -916,13 +916,13 @@ devices:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/bigip02.internal
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: bigip02.internal
@@ -934,7 +934,7 @@ devices:
       sample: ["DNS Services (LAB)", "PSM, VE"]
     base_mac_address:
       description:
-        - Media Access Control address (MAC address) of the device.
+        - Media Access Control (MAC) address of the device.
       returned: queried
       type: str
       sample: "fa:16:3e:c3:42:6f"
@@ -1024,7 +1024,7 @@ devices:
       sample: 4.4.4.4
     optional_modules:
       description:
-        - Modules that are available for the current platform, but are not currently licensed.
+        - Modules  available for the current platform, but are not currently licensed.
       returned: queried
       type: list
       sample: ["App Mode (TMSH Only, No Root/Bash)", "BIG-IP VE, Multicast Routing"]
@@ -1084,19 +1084,19 @@ devices:
       contains:
         effective_ip:
           description:
-            - The IP address that peers can use to reach this unicast address IP.
+            - The IP address peers can use to reach this unicast address IP.
           returned: queried
           type: str
           sample: 5.4.3.5
         effective_port:
           description:
-            - The port that peers can use to reach this unicast address.
+            - The port peers can use to reach this unicast address.
           returned: queried
           type: int
           sample: 1026
         ip:
           description:
-            - The IP address the failover daemon will listen on for packets from its peers.
+            - The IP address the failover daemon listens on for packets from its peers.
           returned: queried
           type: str
           sample: 5.4.3.5
@@ -1138,7 +1138,7 @@ device_groups:
       sample: My device group
     devices:
       description:
-        - List of devices in the group. Devices are listed by their C(full_path).
+        - List of devices in the group, listed by their C(full_path).
       returned: queried
       type: list
       sample: [/Common/bigip02.internal]
@@ -1181,7 +1181,7 @@ external_monitors:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/external
@@ -1443,13 +1443,13 @@ fastl4_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/fastl4
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: fastl4
@@ -1820,13 +1820,13 @@ gateway_icmp_monitors:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/gateway_icmp
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: gateway_icmp
@@ -1936,13 +1936,13 @@ gtm_pools:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/pool1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: pool1
@@ -2078,13 +2078,13 @@ gtm_servers:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/server1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: server1
@@ -2140,7 +2140,7 @@ gtm_servers:
       type: bool
     limit_max_bps:
       description:
-        - Maximum allowable data throughput rate in bits per second for this server.
+        - Maximum allowable data throughput rate for this server, in bits per second.
       returned: queried
       type: int
     limit_max_bps_status:
@@ -2187,7 +2187,7 @@ gtm_servers:
       type: str
     monitors:
       description:
-        - Specifies health monitors that the system uses to determine whether this
+        - Specifies health monitors the system uses to determine whether this
           server is available for load balancing.
       returned: queried
       type: list
@@ -2245,13 +2245,13 @@ gtm_wide_ips:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/wide1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: wide1
@@ -2334,13 +2334,13 @@ gtm_topology_regions:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/region1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: region1
@@ -2420,13 +2420,13 @@ http_monitors:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/http
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: http
@@ -2576,13 +2576,13 @@ https_monitors:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as known to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/http
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: http
@@ -2738,13 +2738,13 @@ http_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/http
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: http
@@ -2954,13 +2954,13 @@ iapp_services:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/service1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: service1
@@ -3039,13 +3039,13 @@ icmp_monitors:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/icmp
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: icmp
@@ -3151,13 +3151,13 @@ interfaces:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/interface1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: interface1
@@ -3280,13 +3280,13 @@ irules:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/irul1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: irule1
@@ -3422,7 +3422,7 @@ ltm_pools:
       sample: enabled
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/pool1
@@ -3478,7 +3478,7 @@ ltm_pools:
       sample: no
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: pool1
@@ -3681,7 +3681,7 @@ ltm_pools:
           sample: yes
         full_path:
           description:
-            - Full name of the resource as known to BIG-IP.
+            - Full name of the resource as know to the BIG-IP.
             - Includes the port in the name.
           returned: queried
           type: str
@@ -3706,13 +3706,13 @@ ltm_pools:
           sample: ['/Common/http']
         name:
           description:
-            - Relative name of the resource in BIG-IP.
+            - Relative name of the resource in the BIG-IP.
           returned: queried
           type: str
           sample: "member:80"
         partition:
           description:
-            - Partition the member exists on.
+            - Partition on which the member exists.
           returned: queried
           type: str
           sample: Common
@@ -3766,13 +3766,13 @@ ltm_policies:
   contains:
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: policy1
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/policy1
@@ -3845,7 +3845,7 @@ ltm_policies:
           sample: hash/dictionary of values
         conditions:
           description:
-            - The conditions a policy will match on.
+            - The conditions on which a policy will match.
           returned: when conditions are defined in the rule.
           type: complex
           contains:
@@ -3967,13 +3967,13 @@ management_routes:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/default
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: default
@@ -4009,13 +4009,13 @@ nodes:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/5.6.7.8
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: 5.6.7.8
@@ -4113,13 +4113,13 @@ oneconnect_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/oneconnect
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: oneconnect
@@ -4200,13 +4200,13 @@ partitions:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: Common
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: Common
@@ -4231,13 +4231,13 @@ provision_info:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: asm
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: asm
@@ -4313,13 +4313,13 @@ route_domains:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/rd1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: rd1
@@ -4391,13 +4391,13 @@ self_ips:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/self1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: self1
@@ -4466,13 +4466,13 @@ server_ssl_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: serverssl
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: serverssl
@@ -4824,7 +4824,7 @@ software_hotfixes:
       sample: Hotfix-BIGIP-13.0.0.3.0.1679-HF3.iso
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: Hotfix-BIGIP-13.0.0.3.0.1679-HF3.iso
@@ -4889,7 +4889,7 @@ software_images:
       sample: BIGIP-13.1.0.7-0.0.1.iso
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: BIGIP-13.1.0.7-0.0.1.iso
@@ -4974,7 +4974,7 @@ software_volumes:
       sample: 0.0.6
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: HD1.1
@@ -4986,7 +4986,7 @@ software_volumes:
       sample: yes
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
         - This usually matches the C(full_name).
       returned: queried
       type: str
@@ -5019,13 +5019,13 @@ ssl_certs:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/cert1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: cert1
@@ -5107,7 +5107,7 @@ ssl_certs:
       sample: "2018-05-15T21:11:15Z"
     serial_no:
       description:
-        - Specifies certificate's serial number
+        - Specifies certificate's serial number.
       returned: queried
       type: str
       sample: "1234567890"
@@ -5126,13 +5126,13 @@ ssl_keys:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/key1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: key1
@@ -5231,13 +5231,13 @@ system_db:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: vendor.wwwurl
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: vendor.wwwurl
@@ -5467,13 +5467,13 @@ tcp_monitors:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/tcp
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: tcp
@@ -5594,13 +5594,13 @@ tcp_half_open_monitors:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/tcp
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: tcp
@@ -5673,13 +5673,13 @@ tcp_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: tcp
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: /Common/tcp
@@ -6247,13 +6247,13 @@ traffic_groups:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/tg1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: tg1
@@ -6312,19 +6312,19 @@ trunks:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/trunk1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: trunk1
     description:
       description:
-        - Description of the Trunk.
+        - Description of the trunk.
       returned: queried
       type: str
       sample: My trunk
@@ -6405,13 +6405,13 @@ udp_profiles:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: udp
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: /Common/udp
@@ -6543,13 +6543,13 @@ users:
       sample: Admin user
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: admin
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: admin
@@ -6584,13 +6584,13 @@ vcmp_guests:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: guest1
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: guest1
@@ -6701,13 +6701,13 @@ virtual_addresses:
   contains:
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/2.3.4.5
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: 2.3.4.5
@@ -6807,13 +6807,13 @@ virtual_servers:
       sample: offline
     full_path:
       description:
-        - Full name of the resource as known to BIG-IP.
+        - Full name of the resource as know to the BIG-IP.
       returned: queried
       type: str
       sample: /Common/2.3.4.5
     name:
       description:
-        - Relative name of the resource in BIG-IP.
+        - Relative name of the resource in the BIG-IP.
       returned: queried
       type: str
       sample: 2.3.4.5
@@ -7272,13 +7272,13 @@ virtual_servers:
           sample: client-side
         full_path:
           description:
-            - Full name of the resource as known to BIG-IP.
+            - Full name of the resource as know to the BIG-IP.
           returned: queried
           type: str
           sample: /Common/tcp
         name:
           description:
-            - Relative name of the resource in BIG-IP.
+            - Relative name of the resource in the BIG-IP.
           returned: queried
           type: str
           sample: tcp
@@ -7354,13 +7354,13 @@ vlans:
       contains:
         full_path:
           description:
-            - Full name of the resource as known to BIG-IP.
+            - Full name of the resource as know to the BIG-IP.
           returned: queried
           type: str
           sample: 1.3
         name:
           description:
-            - Relative name of the resource in BIG-IP.
+            - Relative name of the resource in the BIG-IP.
           returned: queried
           type: str
           sample: 1.3
@@ -7590,7 +7590,7 @@ class ApmAccessProfileFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -7644,7 +7644,7 @@ class ApmAccessPolicyFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -7821,6 +7821,10 @@ class AsmPolicyStatsFactManager(BaseManager):
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
+        if 'items' not in response['contents']:
+            return dict(
+                policies=[]
+            )
         return dict(
             policies=response['contents']['items']
         )
@@ -8249,7 +8253,7 @@ class AsmPolicyFactManagerV12(AsmPolicyFactManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         return response['contents']['items']
 
@@ -8274,7 +8278,7 @@ class AsmPolicyFactManagerV13(AsmPolicyFactManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         return response['contents']['items']
 
@@ -8338,7 +8342,7 @@ class AsmServerTechnologyFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -8438,7 +8442,7 @@ class AsmSignatureSetsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return None
 
         return response['contents']['items']
@@ -8747,7 +8751,7 @@ class ClientSslProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -8791,7 +8795,7 @@ class CFEFactManager(BaseManager):
         if response['code'] not in [200, 201]:
             raise F5ModuleError(response['contents'])
 
-        result['declaration'] = response['declaration']
+        result['declaration'] = response['contents']['declaration']
         return result
 
 
@@ -8895,7 +8899,7 @@ class DeviceGroupsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -9045,7 +9049,7 @@ class DevicesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -9089,7 +9093,10 @@ class DOFactManager(BaseManager):
         if response['code'] not in [200, 201]:
             raise F5ModuleError(response['contents'])
 
-        result['declaration'] = response[0]['declaration']
+        if not response['contents']:
+            result['declaration'] = []
+        else:
+            result['declaration'] = response['contents'][0]['declaration']
         return result
 
 
@@ -9179,7 +9186,7 @@ class ExternalMonitorsFactManager(BaseManager):
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -9320,7 +9327,7 @@ class FastHttpProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -9639,7 +9646,7 @@ class FastL4ProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -9731,7 +9738,7 @@ class GatewayIcmpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -9964,7 +9971,7 @@ class GtmAPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10008,7 +10015,7 @@ class GtmAaaaPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10052,7 +10059,7 @@ class GtmCnamePoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10096,7 +10103,7 @@ class GtmMxPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10140,7 +10147,7 @@ class GtmNaptrPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10184,7 +10191,7 @@ class GtmSrvPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10429,7 +10436,7 @@ class GtmServersFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10546,7 +10553,7 @@ class GtmAWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10589,7 +10596,7 @@ class GtmAaaaWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10632,7 +10639,7 @@ class GtmCnameWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10675,7 +10682,7 @@ class GtmMxWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10718,7 +10725,7 @@ class GtmNaptrWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10761,7 +10768,7 @@ class GtmSrvWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -10843,7 +10850,7 @@ class GtmTopologyRegionFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -11298,7 +11305,7 @@ class HttpProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -11389,7 +11396,7 @@ class IappServicesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -11445,10 +11452,10 @@ class IapplxPackagesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        status = self.wait_for_task(response['id'])
+        status = self.wait_for_task(response['contents']['id'])
         if status == 'FINISHED':
             uri = "/mgmt/shared/iapp/package-management-tasks/{0}".format(
-                response['id']
+                response['contents']['id']
             )
             response = self.client.get(uri)
             if response['code'] not in [200, 201, 202]:
@@ -11458,23 +11465,24 @@ class IapplxPackagesFactManager(BaseManager):
             raise F5ModuleError(
                 "An error occurred querying iAppLX packages."
             )
-        result = response['queryResponse']
+        result = response['contents']['queryResponse']
         return result
 
     def wait_for_task(self, task_id):
         uri = "/mgmt/shared/iapp/package-management-tasks/{0}".format(
             task_id
         )
+        response = None
         for x in range(0, 60):
             response = self.client.get(uri)
 
             if response['code'] not in [200, 201, 202]:
                 raise F5ModuleError(response['contents'])
 
-            if response['status'] in ['FINISHED', 'FAILED']:
-                return response['status']
+            if response['contents']['status'] in ['FINISHED', 'FAILED']:
+                return response['contents']['status']
             time.sleep(1)
-        return response['status']
+        return response['contents']['status']
 
 
 class IcmpMonitorsParameters(BaseParameters):
@@ -11563,7 +11571,7 @@ class IcmpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -11675,7 +11683,7 @@ class InterfacesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -11729,7 +11737,7 @@ class InternalDataGroupsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -11819,7 +11827,7 @@ class IrulesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12181,7 +12189,7 @@ class LtmPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12195,7 +12203,7 @@ class LtmPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12325,7 +12333,7 @@ class LtmPolicyFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12451,7 +12459,7 @@ class NodesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12556,7 +12564,7 @@ class OneConnectProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12605,20 +12613,13 @@ class PartitionFactManager(BaseManager):
         return results
 
     def read_collection_from_device(self):
-        uri = "https://{0}:{1}/mgmt/tm/auth/partition".format(
-            self.client.provider['server'],
-            self.client.provider['server_port'],
-        )
-        resp = self.client.api.get(uri)
-        try:
-            response = resp.json()
-        except ValueError as ex:
-            raise F5ModuleError(str(ex))
+        uri = "/mgmt/tm/auth/partition"
+        response = self.client.get(uri)
 
-        if resp.status not in [200, 201] or 'code' in response and response['code'] not in [200, 201]:
-            raise F5ModuleError(resp.content)
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12677,7 +12678,7 @@ class ProvisionInfoFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12760,7 +12761,7 @@ class RouteDomainFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -12865,7 +12866,7 @@ class SelfIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -13162,7 +13163,7 @@ class ServerSslProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -13241,7 +13242,7 @@ class SoftwareVolumesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -13300,7 +13301,7 @@ class SoftwareHotfixesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -13418,7 +13419,7 @@ class SoftwareImagesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -13510,7 +13511,7 @@ class SslCertificatesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -13579,7 +13580,7 @@ class SslKeysFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -13696,7 +13697,7 @@ class SyncStatusFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        result = response.get('entries', {}) \
+        result = response['contents'].get('entries', {}) \
             .get('https://localhost/mgmt/tm/cm/sync-status/0', {}) \
             .get('nestedStats', {}) \
             .get('entries')
@@ -13738,7 +13739,7 @@ class SystemDbFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -14285,7 +14286,7 @@ class TcpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -14364,7 +14365,7 @@ class TcpHalfOpenMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -14780,7 +14781,7 @@ class TcpProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -14877,7 +14878,7 @@ class TrafficGroupsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -14987,7 +14988,7 @@ class TrunksFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -15075,7 +15076,7 @@ class UsersFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -15178,7 +15179,7 @@ class UdpProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -15261,7 +15262,7 @@ class VcmpGuestsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -15366,7 +15367,7 @@ class VirtualAddressesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -15936,7 +15937,7 @@ class VirtualServersParameters(BaseParameters):
         if self._values['destination'] is None:
             result = Destination(ip=None, port=None, route_domain=None, mask=None)
             return result
-        destination = re.sub(r'^/[a-zA-Z0-9_.-]+/', '', self._values['destination'])
+        destination = re.sub(r'^/[a-zA-Z0-9_.-]+/([a-zA-Z0-9_.-]+\/)?', '', self._values['destination'])
         # Covers the following examples
         #
         # /Common/2700:bc00:1f10:101::6%2.80
@@ -15944,6 +15945,7 @@ class VirtualServersParameters(BaseParameters):
         # 1.1.1.1%2:80
         # /Common/1.1.1.1%2:80
         # /Common/2700:bc00:1f10:101::6%2.any
+        # /Common/Shared/1.1.1.1:80
         #
         pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)[:.](?P<port>[0-9]+|any)'
         matches = re.search(pattern, destination)
@@ -16106,7 +16108,7 @@ class VirtualServersFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -16254,7 +16256,7 @@ class VlansFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -16326,7 +16328,7 @@ class ManagementRouteFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response:
+        if 'items' not in response['contents']:
             return []
         result = response['contents']['items']
         return result
@@ -16386,7 +16388,7 @@ class RemoteSyslogFactManager(BaseManager):
 
     def read_collection_from_device(self):
         uri = "/mgmt/tm/sys/syslog/"
-        response = self.client.api.get(uri)
+        response = self.client.get(uri)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])

@@ -19,7 +19,7 @@ recent Ansible module updates between releases. You can also install development
 ###Install from GitHub
 ```bash
 
-ansible-galaxy collection install git+https://github.com/f5devcentral/f5-ansible-bigip.git#ansible_collections/f5networks/f5_bigip
+ansible-galaxy collection install git+https://github.com/F5Networks/f5-ansible-bigip.git#ansible_collections/f5networks/f5_bigip
 ```
 
 ###Install from daily build file

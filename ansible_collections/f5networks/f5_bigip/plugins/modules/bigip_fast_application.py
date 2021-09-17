@@ -13,7 +13,7 @@ DOCUMENTATION = r'''
 module: bigip_fast_application
 short_description: Manages FAST application declarations sent to BIG-IP
 description:
-  - Manages FAST application declarations sent to BIG-IP.
+  - Manages FAST application declarations sent to the BIG-IP.
 version_added: "1.0.0"
 options:
   content:
@@ -21,16 +21,16 @@ options:
       - Declaration to be configured on the system.
       - This parameter is most often used along with the C(file) or C(template) lookup plugins.
         Refer to the examples section for correct usage.
-      - For anything advanced or with formatting consider using the C(template) lookup.
+      - For anything advanced or with formatting, consider using the C(template) lookup.
       - This can additionally be used for specifying application service configurations
         directly in YAML, however that is not an encouraged practice and, if used at all,
         should only be used for the absolute smallest of configurations to prevent your
         Playbooks from becoming too large.
-      - If you C(content) includes encrypted values (such as ciphertexts, passphrases, etc),
+      - If your C(content) includes encrypted values (such as ciphertexts, passphrases, etc),
         the returned C(changed) value will always be true.
       - If you are using the C(to_nice_json) filter, it will cause this module to fail because
         the purpose of that filter is to format the JSON to be human-readable and this process
-        includes inserting "extra characters that break JSON validators.
+        includes inserting "extra characters" that break JSON validators.
       - Parameter is required when C(state) is C(create) or C(present).
     type: raw
   tenant:
@@ -46,7 +46,7 @@ options:
   template:
     description:
       - Name of installed FAST template used to create FAST application.
-      - Parameter is only used when creating new application, when C(state) is C(create)
+      - Parameter is only used when creating new application, when C(state) is C(create).
     type: str
   timeout:
     description:
@@ -56,7 +56,7 @@ options:
     default: 300
   state:
     description:
-      - When C(state) is C(create), the declaration is used to create new FAST application.
+      - When C(state) is C(create), the declaration is used to create a new FAST application.
       - When C(state) is C(present), the existing FAST application is updated.
       - When C(state) is C(absent), ensures the existing FAST application is removed.
       - When C(state) is C(purge), ensures the all FAST applications are removed from device.
@@ -144,6 +144,7 @@ from ..module_utils.client import (
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters,
 )
+from ..module_utils.version import CURRENT_COLL_VERSION
 
 try:
     import json
@@ -317,7 +318,9 @@ class ModuleManager(object):
             parameters=declaration
         )
 
-        uri = "/mgmt/shared/fast/applications"
+        uri = "/mgmt/shared/fast/applications?userAgent=F5_BIGIP/{0}/{1}".format(
+            CURRENT_COLL_VERSION, self.want.template
+        )
 
         response = self.client.post(uri, data=payload)
 
