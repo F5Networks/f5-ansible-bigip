@@ -1,3 +1,0 @@
----
-bugfixes:
-  - Fix a number of on_device methods in bigip_device_info to prevent key errors during device query
