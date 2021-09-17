@@ -10,9 +10,9 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_tenant_image
-short_description: Manage Velos tenant images
+short_description: Manage VELOS tenant images
 description:
-  - Manage Velos tenant images.
+  - Manage VELOS tenant images.
 version_added: 1.1.0
 options:
   image_name:
@@ -22,14 +22,14 @@ options:
     required: True
   remote_host:
     description:
-      - The hostname or ip address of the remote server on which the tenant image is
+      - The hostname or IP address of the remote server on which the tenant image is
         stored.
       - The server must make the image accessible via the specified C(protocol).
     type: str
   remote_port:
     description:
       - The port to connect to on the remote host.
-      - If the port is not provided a default port for selected C(protocol) is assumed.
+      - If the port is not provided, a default port for the selected C(protocol) is assumed.
     type: int
   protocol:
     description:
@@ -61,9 +61,9 @@ options:
   state:
     description:
       - The tenant image state.
-      - If C(import), start the image import task if the image it does not exist
+      - If C(import), starts the image import task if the image it does not exist
       - If C(present), checks for the status of the import task if the image does not exist.
-      - If C(absent), delete the tenant image if it exists.
+      - If C(absent), deletes the tenant image if it exists.
     type: str
     choices:
       - import
@@ -71,7 +71,7 @@ options:
       - absent
     default: import
 notes:
-  - Repeating the same image import task immediately after previous is not idempotent if the image has not finished
+  - Repeating the same image import task immediately after the previous is not idempotent if the image has not finished
     downloading.
 author:
   - Wojciech Wypior (@wojtek0806)
@@ -118,7 +118,7 @@ image_name:
   type: str
   example: BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip
 remote_host:
-  description: The hostname or ip address of the remote server.
+  description: The hostname or IP address of the remote server.
   returned: changed
   type: str
   example: foo.bar.baz.net

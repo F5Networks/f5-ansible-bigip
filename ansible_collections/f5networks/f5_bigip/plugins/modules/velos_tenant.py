@@ -11,9 +11,9 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_tenant
-short_description: Manage Velos tenants
+short_description: Manage VELOS tenants
 description:
-  - Manage Velos tenants.
+  - Manage VELOS tenants.
 version_added: 1.1.0
 options:
   name:
@@ -34,29 +34,29 @@ options:
     elements: int
   mgmt_ip:
     description:
-      - IP address which will be used to connect to deployed tenant.
+      - IP address which will be used to connect to the deployed tenant.
       - Required for create operations.
     type: str
   mgmt_prefix:
     description:
-      - Desired tenant management CIDR prefix.
+      - Tenant management CIDR prefix.
     type: int
   mgmt_gateway:
     description:
-      - Desired tenant management gateway.
+      - Tenant management gateway.
     type: str
   vlans:
     description:
-      - Which existing VLAN IDs in partition should be added to VM.
-      - The order of these VLANs is not important; in fact, it's ignored. This module will
-        order the VLANs for you automatically. Therefore, if you deliberately re-order them
-        in subsequent tasks, you will find that this module will B(not) register a change.
+      - The existing VLAN IDs in the partition that should be added to the VM.
+      - The order of these VLANs is ignored. This module orders the VLANs automatically.
+        Therefore, if you deliberately re-order them in subsequent tasks,
+        this module will B(not) register a change.
       - Required for create operations.
     type: list
     elements: int
   cpu_cores:
     description:
-      - How many cpus should be added to VM.
+      - How many CPUs should be added to VM.
       - Required for create operations.
     type: int
     choices:
@@ -77,7 +77,7 @@ options:
       - 28
   memory:
     description:
-      - How much memory should be provided to VM in KB.
+      - How much memory should be provided to the VM, in KB.
       - Required for create operations.
     type: int
   cryptos:
@@ -89,7 +89,7 @@ options:
       - disabled
   running_state:
     description:
-      - Desired running_state of tenant.
+      - Desired running_state of the tenant.
     type: str
     choices:
       - configured
@@ -98,7 +98,7 @@ options:
   state:
     description:
       - The tenant state. If C(absent), delete the tenant if it exists.
-      - If C(present) the tenant is created and and enabled it.
+      - If C(present) the tenant is created and enabled.
     type: str
     choices:
       - present
@@ -107,7 +107,7 @@ options:
 author:
   - Wojciech Wypior (@wojtek0806)
 notes:
-  - The module will create configurations of the tenants, it does not assume actual state of running tenant.
+  - The module will create configurations of the tenants, it does not assume actual state of the running tenant.
   - As deployment of tenants is a lengthy process, the module C(velos_tenant_wait) should be used in concert with
     this module to achieve desired results.
 '''
@@ -159,17 +159,17 @@ image_name:
   type: str
   sample: BIGIP-bigip.TMOS-VEL.qcow2.zip
 nodes:
-  description: Specify which blades the VM is configured on.
+  description: Specify on which blades the VM is configured.
   returned: changed
   type: list
   sample: [1]
 mgmt_ip:
-  description: IP address which will be used to connect to deployed tenant.
+  description: IP address used to connect to the deployed tenant.
   returned: changed
   type: str
   sample: 192.168.1.1
 mgmt_prefix:
-  description: Renant management CIDR prefix.
+  description: Tenant management CIDR prefix.
   returned: changed
   type: int
   sample: 24
@@ -179,17 +179,17 @@ mgmt_gateway:
   type: str
   sample: 192.168.1.254
 vlans:
-  description: Existing VLAN IDs in partition that are be added to VM.
+  description: Existing VLAN IDs in the partition to be added to the VM.
   returned: changed
   type: list
   sample: [444, 333]
 cpu_cores:
-  description: The number of cpus added to VM.
+  description: The number of CPUs added to VM.
   returned: changed
   type: int
   sample: 4
 memory:
-  description: The amount of memory in KB provided to VM.
+  description: The amount of memory in KB provided to the VM.
   returned: changed
   type: int
   sample: 4096

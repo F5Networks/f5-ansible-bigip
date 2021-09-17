@@ -10,9 +10,9 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_partition_image
-short_description: Manage Velos partition images
+short_description: Manage VELOS partition images
 description:
-  - Manage Velos partition images.
+  - Manage VELOS partition images.
 version_added: 1.1.0
 options:
   image_name:
@@ -24,11 +24,11 @@ options:
   iso_version:
     description:
       - Version of the ISO image.
-      - When not provided the value is extracted from the provided C(image_name).
+      - When not provided, the value is extracted from the provided C(image_name).
     type: str
   remote_host:
     description:
-      - The hostname or ip address of the remote server on which the partition image is
+      - The hostname or IP address of the remote server on which the partition image is
         stored.
       - The server must make the image accessible via the specified C(protocol).
     type: str
@@ -67,7 +67,7 @@ options:
   state:
     description:
       - The partition image state.
-      - If C(import), start the image import task if the image it does not exist
+      - If C(import), start the image import task if the image it does not exist.
       - If C(present), checks for the status of the import task if the image does not exist.
       - If C(absent), delete the partition image if it exists.
     type: str
@@ -78,7 +78,7 @@ options:
     default: import
 notes:
   - It can take up to 20 minutes for the image to register on device after successful upload.
-  - As there is no way to check the internal ISO import progress yet.users should assume that if the image ISO
+  - As there is no way to check the internal ISO import progress yet, users should assume if the image ISO
     has not been found by this module when running the module with C(state) set to C(present) and 20 minutes has
     passed since it was uploaded, the internal import failed. The most common reason for this failure is ISO
     image corruption.
@@ -127,7 +127,7 @@ image_name:
   type: str
   example: F5OS-C-1.1.0-3198.PARTITION.iso
 remote_host:
-  description: The hostname or ip address of the remote server.
+  description: The hostname or IP address of the remote server.
   returned: changed
   type: str
   example: foo.bar.baz.net

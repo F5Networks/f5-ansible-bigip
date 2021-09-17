@@ -11,9 +11,9 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_tenant_wait
-short_description: Wait for a Velos condition before continuing
+short_description: Wait for a VELOS condition before continuing
 description:
-  - Wait for Velos tenant to be C(configured), C(provisioned) or C(deployed).
+  - Wait for a VELOS tenant to be C(configured), C(provisioned) or C(deployed).
 version_added: 1.1.0
 options:
   name:
@@ -23,12 +23,12 @@ options:
     required: True
   state:
     description:
-      - The condition for which we are waiting.
-      - Defaults to C(configured) which verifies the specified tenant has been created on
+      - The condition for which the system is waiting.
+      - Defaults to C(configured), which verifies the specified tenant has been created on
         the partition and is in the configured run-state.
       - C(provisioned) waits for the tenant running-state and status "provisioned".
-      - C(deployed) waits for tenant running-state "deployed", status "running" and phase "running".
-      - C(ssh-ready) waits for a deployed tenant to be reachable via ssh.
+      - C(deployed) waits for the tenant running-state "deployed", status "running", and phase "running".
+      - C(ssh-ready) waits for a deployed tenant to be reachable via SSH.
     type: str
     default: configured
     choices:

@@ -13,7 +13,7 @@ DOCUMENTATION = r'''
 module: bigip_fast_template
 short_description: Manages FAST template sets on BIG-IP
 description:
-  - Uploads and manages FAST template sets on BIG-IP.
+  - Uploads and manages FAST template sets on the BIG-IP.
 version_added: "1.0.0"
 options:
   name:
