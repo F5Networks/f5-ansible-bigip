@@ -169,3 +169,25 @@ class TestVelosClient(TestCase):
         self.connection.send.assert_called_once_with(
             VELOS_ROOT + '/testlink', None, method='DELETE', headers=VELOS_BASE_HEADERS
         )
+
+    def test_different_scope_without_additional_headers(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+
+        self.client.get('/testlink', headers={'CUSTOM': 'HEADER'}, scope='openconfig/different/scope')
+        expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/yang-data+json'}
+        self.connection.send.assert_called_once_with(
+            'openconfig/different/scope/testlink', None, method='GET', headers=expected_header
+        )
+
+    def test_different_scope_with_additional_headers(self):
+        self.connection.send.return_value = connection_response(
+            {'FOO': 'BAR', 'BAZ': 'FOO'}
+        )
+
+        self.client.get('/testlink', headers={'CUSTOM': 'HEADER'}, scope='openconfig/different/scope')
+        expected_header = {'CUSTOM': 'HEADER', 'Content-Type': 'application/yang-data+json'}
+        self.connection.send.assert_called_once_with(
+            'openconfig/different/scope/testlink', None, method='GET', headers=expected_header
+        )
