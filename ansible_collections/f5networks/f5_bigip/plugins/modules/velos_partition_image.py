@@ -447,7 +447,7 @@ class ArgumentSpec(object):
         self.argument_spec = {}
         self.argument_spec.update(argument_spec)
         self.required_if = [
-            ['state', 'import', ['image_name', 'remote_host', 'remote_user', 'remote_password', 'remote_path']]
+            ['state', 'import', ['image_name', 'remote_host', 'remote_path']]
         ]
 
 
