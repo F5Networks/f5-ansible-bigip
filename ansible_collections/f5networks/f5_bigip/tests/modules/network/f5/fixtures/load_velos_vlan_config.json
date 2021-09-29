@@ -1,0 +1,6 @@
+{
+    "openconfig-vlan:config": {
+        "vlan-id": 3333,
+        "name": "addednow"
+    }
+}
