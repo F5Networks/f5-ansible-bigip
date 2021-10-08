@@ -1,0 +1,11 @@
+{
+        "enabled": true,
+        "iso-version": "1.1.1-5046",
+        "mgmt-ip": {
+            "ipv4": {
+                "address": "10.144.140.124",
+                "prefix-length": 24,
+                "gateway": "10.144.140.254"
+            }
+        }
+}
