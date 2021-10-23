@@ -13,33 +13,24 @@ DOCUMENTATION = r'''
 module: bigip_config
 short_description: Manage BIG-IP configuration sections
 description:
-  - Manages a BIG-IP configuration by allowing TMSH commands that
-    modify running configuration, or merge SCF formatted files into
-    the running configuration. Additionally, this module is of
-    significant importance because it allows you to save your running
-    configuration to disk. Since the F5 module only manipulate running
-    configuration, it is important that you utilize this module to save
-    that running config.
+  - Manages a BIG-IP configuration. Allows for merge of SCF formatted files into
+    the running configuration.
 version_added: "1.0.0"
 options:
   save:
     description:
       - The C(save) argument instructs the module to save the
         running-config to startup-config.
-      - This operation is performed after any changes are made to the
-        current running config. If no changes are made, the configuration
-        is still saved to the startup config.
-      - This option will always cause the module to return changed.
     type: bool
-    default: yes
+    default: no
   reset:
     description:
       - Loads the default configuration on the device.
-      - If this option is specified, the default configuration will be
-        loaded before any commands or other provided configuration is run.
+      - If this option is specified, the default configuration will be loaded.
       - On TMOS v14.0.0 and up, resetting to default configuration will reset admin and user password back to default.
-        Restarting services,which will lead to 503 server errors followed by 401 authorization errors during module
-        execution. It is therefore recommended to run such task with C(ignore_errors) set to C(yes).
+        Restarting services, which will lead to 503 server errors followed by 401 authorization errors during module
+        execution. It is therefore recommended to change the C(ansible_httpapi_password) before checking for reset
+        task state.
     type: bool
     default: no
   merge_content:
@@ -55,8 +46,21 @@ options:
       - The running configuration will not be changed.
       - When this parameter is set to C(yes), no change will be reported
         by the module.
+      - Verify operation is synchronous and does not require checking for task completion.
     type: bool
     default: no
+  task_id:
+    description:
+      - The ID of the async task as returned by the system in a previous module run.
+      - Used to query the status of the task on the device.
+      - When this parameter is set all other module parameters are ignored.
+    type: str
+  timeout:
+    description:
+      - The amount of time in seconds to wait for the DO async interface to complete its task.
+      - The accepted value range is between C(150) and C(3600) seconds.
+    type: int
+    default: 150
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -78,32 +82,69 @@ EXAMPLES = r'''
     - name: Save the running configuration of the BIG-IP
       bigip_config:
         save: yes
+      register: task
+
+    - name: Check for task completion
+      bigip_config:
+        task_id: "{{ task.task_id }}"
+        timeout: 150
 
     - name: Reset the BIG-IP configuration, for example, to RMA the device
       bigip_config:
         reset: yes
+      register: task
+
+    - name: Change connection password after config was reset
+      set_fact:
+        ansible_httpapi_password: "default"
+
+    - name: Check for reset task completion
+      bigip_config:
+        task_id: "{{ task.task_id }}"
+        timeout: 150
+
+    - name: Save the running configuration of the BIG-IP after reset
+      bigip_config:
         save: yes
+      register: task
+
+    - name: Check for save config task completion after reset
+      bigip_config:
+        task_id: "{{ task.task_id }}"
+        timeout: 150
 
     - name: Load an SCF configuration
       bigip_config:
         merge_content: "{{ role_path }}/files/config.scf') }}"
+      register: task
+
+    - name: Check for merge config task completion
+      bigip_config:
+        task_id: "{{ task.task_id }}"
+        timeout: 150
+
+    - name: Verify an SCF configuration merge validity
+      bigip_config:
+        merge_content: "{{ role_path }}/files/config.scf') }}"
+        validate: true
 '''
 
 RETURN = r'''
-stdout:
-  description: The set of responses from the options
+task_id:
+  description: The task ID returned by the system.
+  returned: changed
+  type: dict
+  sample: hash/dictionary of values
+message:
+  description: Informative message.
   returned: always
-  type: list
-  sample: ['...', '...']
-stdout_lines:
-  description: The value of stdout split into a list
-  returned: always
-  type: list
-  sample: [['...', '...'], ['...'], ['...']]
+  type: dict
+  sample: Verification is successful
 '''
 
 import os
 import tempfile
+import time
 from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
@@ -118,7 +159,20 @@ from ..module_utils.common import (
 
 
 class Parameters(AnsibleF5Parameters):
-    returnables = ['stdout', 'stdout_lines']
+    returnables = ['task_id', 'message']
+
+    @property
+    def timeout(self):
+        divisor = 100
+        timeout = self._values['timeout']
+        if timeout < 150 or timeout > 1800:
+            raise F5ModuleError(
+                "Timeout value must be between 150 and 1800 seconds."
+            )
+
+        delay = timeout / divisor
+
+        return delay, divisor
 
     def to_return(self):
         result = {}
@@ -136,22 +190,6 @@ class ModuleManager(object):
         self.want = Parameters(params=self.module.params)
         self.changes = Parameters()
 
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = Parameters(params=changed)
-
-    def _to_lines(self, stdout):
-        lines = list()
-        for item in stdout:
-            if isinstance(item, str):
-                item = str(item).split('\n')
-            lines.append(item)
-        return lines
-
     def exec_module(self):
         start = datetime.now().isoformat()
         result = {}
@@ -164,62 +202,75 @@ class ModuleManager(object):
         return result
 
     def execute(self):
-        responses = []
+        if self.want.task_id:
+            return self.check_task()
         if self.want.reset:
-            response = self.reset()
-            responses.append(response)
-
+            task = self.reset()
+            self._start_task_on_device(task)
+            self.changes.update({'task_id': task})
+            self.changes.update({'message': 'Load config defaults async task started with id: {0}'.format(task)})
+            return True
         if self.want.merge_content:
+            if self.module.check_mode:
+                return True
             if self.want.verify:
-                response = self.merge(verify=True)
-                responses.append(response)
+                self.verify()
+                self.changes.update({'message': 'Validating configuration process succeeded.'})
+                return False
             else:
-                response = self.merge(verify=False)
-                responses.append(response)
-
+                task = self.merge()
+                self._start_task_on_device(task)
+                self.changes.update({'task_id': task})
+                self.changes.update({'message': 'Merge config async task started with id: {0}'.format(task)})
+                return True
         if self.want.save:
-            response = self.save()
-            responses.append(response)
-        if not self.module.check_mode:
-            self._detect_errors(responses)
-        changes = {
-            'stdout': responses,
-            'stdout_lines': self._to_lines(responses)
-        }
-        self.changes = Parameters(params=changes)
-        if self.want.verify:
-            return False
-        return True
-
-    def _detect_errors(self, stdout):
-        errors = [
-            'Unexpected Error:'
-        ]
-        msg = [x for x in stdout for y in errors if y in x]
-        if msg:
-            # Error only contains the lines that include the error
-            raise F5ModuleError(' '.join(msg))
+            task = self.save()
+            self._start_task_on_device(task)
+            self.changes.update({'task_id': task})
+            self.changes.update({'message': 'Save config async task started with id: {0}'.format(task)})
+            return True
 
     def reset(self):
         if self.module.check_mode:
             return True
         return self.reset_device()
 
+    def check_task(self):
+        ready = self.device_is_ready()
+        if not ready:
+            self.changes.update(
+                {'message': 'Device is restarting services, unable to check task status.'}
+            )
+            return False
+        self.async_wait(self.want.task_id)
+        return True
+
     def reset_device(self):
-        command = 'tmsh load sys config default'
         args = dict(
-            command='run',
-            utilCmdArgs='-c "{0}"'.format(command)
+            command='load',
+            options=[{"default": ""}]
         )
-        response = self.client.post('/mgmt/tm/util/bash', data=args)
+        response = self.client.post('/mgmt/tm/task/sys/config', data=args)
 
-        if response['code'] not in [200, 201, 202]:
-            raise F5ModuleError(response['contents'])
+        if response['code'] in [200, 201, 202]:
+            return response['contents']['_taskId']
 
-        if 'commandResult' in response['contents']:
-            return str(response['contents']['commandResult'])
+        raise F5ModuleError(response['contents'])
 
-    def merge(self, verify=True):
+    def verify(self):
+        temp_name = next(tempfile._get_candidate_names())
+        remote_path = "/var/config/rest/downloads/{0}".format(temp_name)
+        temp_path = '/tmp/' + temp_name
+
+        if self.module.check_mode:
+            return True
+        self.upload_to_device(temp_name)
+        self.move_on_device(remote_path)
+        result = self.verify_on_device(temp_path)
+        self.remove_temporary_file(remote_path=temp_path)
+        return result
+
+    def merge(self):
         temp_name = next(tempfile._get_candidate_names())
         remote_path = "/var/config/rest/downloads/{0}".format(temp_name)
         temp_path = '/tmp/' + temp_name
@@ -229,29 +280,34 @@ class ModuleManager(object):
 
         self.upload_to_device(temp_name)
         self.move_on_device(remote_path)
-        response = self.merge_on_device(
-            remote_path=temp_path, verify=verify
-        )
-        self.remove_temporary_file(remote_path=temp_path)
-        return response
+        task = self.merge_on_device(temp_path)
+        return task
 
-    def merge_on_device(self, remote_path, verify=True):
-        command = 'tmsh load sys config file {0} merge'.format(
-            remote_path
-        )
-        if verify:
-            command += ' verify'
+    def verify_on_device(self, remote_path):
         args = dict(
-            command='run',
-            utilCmdArgs='-c "{0}"'.format(command)
+            command='load',
+            options=[{"file": remote_path, "merge": "", "verify": ""}]
         )
-        response = self.client.post('/mgmt/tm/util/bash', data=args)
 
-        if response['code'] not in [200, 201, 202]:
-            raise F5ModuleError(response['contents'])
+        response = self.client.post('/mgmt/tm/sys/config', data=args)
 
-        if 'commandResult' in response['contents']:
-            return str(response['contents']['commandResult'])
+        if response['code'] in [200, 201, 202]:
+            return True
+
+        raise F5ModuleError(response['contents'])
+
+    def merge_on_device(self, remote_path):
+        args = dict(
+            command='load',
+            options=[{"file": remote_path, "merge": ""}]
+        )
+
+        response = self.client.post('/mgmt/tm/task/sys/config', data=args)
+
+        if response['code'] in [200, 201, 202]:
+            return response['contents']['_taskId']
+
+        raise F5ModuleError(response['contents'])
 
     def remove_temporary_file(self, remote_path):
         args = dict(
@@ -293,18 +349,65 @@ class ModuleManager(object):
         return self.save_on_device()
 
     def save_on_device(self):
-        command = 'tmsh save sys config'
         args = dict(
-            command='run',
-            utilCmdArgs='-c "{0}"'.format(command)
+            command='save'
         )
-        response = self.client.post('/mgmt/tm/util/bash', data=args)
+        response = self.client.post('/mgmt/tm/task/sys/config', data=args)
+        if response['code'] in [200, 201, 202]:
+            return response['contents']['_taskId']
+        raise F5ModuleError(response['contents'])
 
-        if response['code'] not in [200, 201, 202]:
-            raise F5ModuleError(response['contents'])
+    def _start_task_on_device(self, task):
+        payload = {"_taskState": "VALIDATING"}
+        uri = "/mgmt/tm/task/sys/config/{0}".format(task)
+        response = self.client.put(uri, data=payload)
 
-        if 'commandResult' in response['contents']:
-            return str(response['contents']['commandResult'])
+        if response['code'] in [200, 201, 202]:
+            return True
+
+        raise F5ModuleError(response['contents'])
+
+    def check_task_exists_on_device(self, task):
+        uri = "/mgmt/tm/task/sys/config/{0}".format(task)
+        response = self.client.get(uri)
+        if response['code'] in [200, 201, 202]:
+            return True
+        else:
+            raise F5ModuleError("The task with the given task_id: {0} does not exist.".format(task))
+
+    def async_wait(self, task):
+        self.check_task_exists_on_device(task)
+        delay, period = self.want.timeout
+        uri = "/mgmt/tm/task/sys/config/{0}/result".format(task)
+        for x in range(0, period):
+            response = self.client.get(uri)
+            if response['code'] in [200, 201, 202]:
+                if response['contents']['_taskState'] == 'FAILED':
+                    raise F5ModuleError("Task failed unexpectedly.")
+                if response['contents']['_taskState'] == 'COMPLETED':
+                    self.changes.update({'message': 'Task completed successfully.'})
+                    return True
+            if response['code'] not in [200, 201, 202]:
+                if not self.device_is_ready():
+                    self.changes.update(
+                        {'message': 'Device is restarting services, unable to check task status.'}
+                    )
+                    return False
+            time.sleep(delay)
+        raise F5ModuleError(
+            "Module timeout reached, state change is unknown, "
+            "please increase the timeout parameter for long lived actions."
+        )
+
+    def device_is_ready(self):
+        uri = "/mgmt/tm/sys/available"
+        try:
+            response = self.client.get(uri)
+            if response['code'] in [200, 201, 202]:
+                return True
+            return False
+        except ConnectionError:
+            return False
 
 
 class ArgumentSpec(object):
@@ -316,13 +419,18 @@ class ArgumentSpec(object):
                 default=False
             ),
             merge_content=dict(type='path'),
+            task_id=dict(),
+            timeout=dict(
+                type='int',
+                default=150
+            ),
             verify=dict(
                 type='bool',
                 default=False
             ),
             save=dict(
                 type='bool',
-                default='yes'
+                default=False
             )
         )
         self.argument_spec = {}
