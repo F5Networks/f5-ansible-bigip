@@ -27,8 +27,8 @@ options:
         to a virtual server.
       - When C(policy_type) is C(parent), the policy becomes a parent to which other Security policies attach,
         inheriting its attributes. This policy type cannot be applied to Virtual Servers.
-      - This parameter is available on TMOS version 13.x and later and only takes effect when the C(inline) import method
-        is used.
+      - This parameter is available on TMOS version 13.x and later and only takes effect when you use the C(inline)
+        import method.
     type: str
     default: security
     choices:
@@ -36,26 +36,26 @@ options:
       - parent
   retain_inheritance_settings:
     description:
-      - Indicate if an imported security type policy should retain settings when attached to parent policy.
-      - This parameter is available on TMOS version 13.x and later and only takes effect when the C(inline) import method
-        is used.
+      - Indicates if an imported security type policy should retain settings when attached to parent policy.
+      - This parameter is available on TMOS version 13.x and later and only takes effect when you use the C(inline)
+        import method.
     type: bool
   parent_policy:
     description:
       - The parent policy to which the newly imported policy should be attached as child.
       - When C(parent_policy) is specified, the imported C(policy_type) must not be C(parent).
-      - This parameter is available on TMOS version 13.x and later and only takes effect when C(inline) import method
-        is used.
+      - This parameter is available on TMOS version 13.x and later and only takes effect when you use the C(inline)
+        import method.
     type: str
   base64:
     description:
       - Indicates if the imported policy string is encoded in Base64.
-      - Parameter only takes effect when using the C(inline) method of import.
+      - This parameter only takes effect when using the C(inline) method of import.
     type: bool
   inline:
     description:
       - When specified, the ASM policy is created from a provided string.
-      - Content needs to be provided in a valid XML format, otherwise the operation will fail.
+      - Content needs to be provided in a valid XML format, otherwise the operation fails.
     type: str
   encoding:
     description:
@@ -63,9 +63,9 @@ options:
       - The imported policy cannot be a C(parent) type or attached to a C(parent) policy when C(auto-detect)
         encoding is set.
       - When importing a policy to attach to a C(parent) policy, the C(encoding) of the imported policy, if different,
-        must be set to be the same value as C(parent_policy), otherwise import will fail.
-      - This parameter is available on TMOS version 13.x and later and only takes effect when the C(inline) import method
-        is used.
+        must be set to be the same value as C(parent_policy), otherwise import fails.
+      - This parameter is available on TMOS version 13.x and later and only takes effect when you use the C(inline)
+        import method.
     type: str
     choices:
       - windows-874
@@ -103,13 +103,13 @@ options:
     description:
       - Full path to a policy file to be imported into the BIG-IP ASM.
       - Policy files exported from newer versions of BIG-IP cannot be imported into older
-        versions of BIG-IP. The opposite, however, is true; you can import older into
+        versions of BIG-IP. The opposite, however, is acceptable; you can import older into
         newer.
       - The file format can be binary or XML.
     type: path
   force:
     description:
-      - When set to C(yes) any existing policy with the same name will be overwritten by the new import.
+      - When set to C(yes), any existing policy with the same name is overwritten by the new import.
       - Works for both inline and file imports, if the policy does not exist this setting is ignored.
     default: no
     type: bool
@@ -161,7 +161,7 @@ policy_type:
   type: str
   sample: security
 retain_inheritance_settings:
-  description: Indicate if an imported security type policy should retain settings when attached to the parent policy.
+  description: Indicates if an imported security type policy should retain settings when attached to the parent policy.
   returned: changed
   type: bool
   sample: yes
