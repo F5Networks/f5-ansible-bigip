@@ -11,23 +11,23 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_partition
-short_description: Manage Velos chassis partitions
+short_description: Manage VELOS chassis partitions
 description:
-  - Manage Velos partitions.
+  - Manage VELOS partitions.
   - This module uses the controller API. The specified provider should be the IP of a VELOS system Controller.
 version_added: 1.3.0
 options:
   name:
     description:
-      - Name of the partition
+      - Name of the partition.
     type: str
     required: True
   ipv4_mgmt_address:
     description:
-      - Specifies the IPv4 address, and subnet or subnet mask that you use to access
+      - Specifies the IPv4 address and subnet or subnet mask that you use to access
         the partition.
       - When creating a new partition, if you do not specify a network or network mask,
-        a default of C(/24) will be assumed.
+        a default of C(/24) is used.
       - The value C(none) can be used during an update to remove this value.
     type: str
   ipv4_mgmt_gateway:
@@ -37,10 +37,10 @@ options:
     type: str
   ipv6_mgmt_address:
     description:
-      - Specifies the IPv6 address, and subnet or subnet mask that you use to access
+      - Specifies the IPv6 address and subnet or subnet mask that you use to access
         the partition.
       - When creating a new partition, if you do not specify a network or network mask,
-        a default of C(/96) will be assumed.
+        a default of C(/96) is used.
       - The value C(none) can be used during an update to remove this value.
     type: str
   ipv6_mgmt_gateway:
@@ -55,7 +55,7 @@ options:
     type: str
   slots:
     description:
-      - list (integers), specify which slots with which the partition should associated.
+      - List (integers), specifies which slots with which the partition should associated.
       - By default, the partition is not associated with any slots.
     type: list
     elements: int
@@ -73,8 +73,8 @@ options:
     description:
       - The partition state. If C(absent), delete the partition
         if it exists. C(present) creates the partition and enables it.
-        If C(enabled), enable the partition if it exists. If C(disabled),
-        create the partition if needed, and set state to C(disabled).
+        If C(enabled), enables the partition if it exists. If C(disabled),
+        creates the partition if needed, and sets state to C(disabled).
     type: str
     choices:
       - present
@@ -117,7 +117,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 name:
-  description: Specify Name of the partition
+  description: Specify the name of the partition.
   returned: changed
   type: str
   sample: foo
@@ -127,17 +127,17 @@ os_version:
   type: str
   sample: 1.1.1-5046
 ipv4_mgmt_address:
-  description: Specifies the IPv4 address, and subnet or subnet mask that you use to access partition
+  description: Specifies the IPv4 address and subnet or subnet mask that you use to access the partition.
   returned: changed
   type: str
   sample: 192.168.1.12/24
 ipv4_mgmt_gateway:
-  description: Desired partition management gateway
+  description: Desired partition management gateway.
   returned: changed
   type: str
   sample: 192.168.1.1
 slots:
-  description: specify which slots with which the partition should associated
+  description: Specifies which slots with which the partition should be associated.
   returned: changed
   type: list
   sample: [3, 4]

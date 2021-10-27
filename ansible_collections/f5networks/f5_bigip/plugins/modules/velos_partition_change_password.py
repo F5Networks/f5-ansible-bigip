@@ -11,14 +11,14 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_partition_change_password
-short_description: Provides access to Velos partition user authentication methods
+short_description: Provides access to VELOS partition user authentication methods
 description:
-  - Provides access to Velos partition user authentication change password method.
+  - Provides access to VELOS partition user authentication change password methods.
 version_added: 1.3.0
 options:
   user_name:
     description:
-      - Name of partition user account.
+      - Name of the partition user account.
     type: str
     required: True
   old_password:
@@ -32,7 +32,7 @@ options:
     type: str
     required: True
 notes:
-  - The module is not idempotent.
+  - This module is not idempotent.
 author:
   - Wojciech Wypior (@wojtek0806)
 '''

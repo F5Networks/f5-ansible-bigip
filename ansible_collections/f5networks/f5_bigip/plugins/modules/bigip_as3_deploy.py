@@ -13,40 +13,40 @@ DOCUMENTATION = r'''
 module: bigip_as3_deploy
 short_description: Manages AS3 declarations sent to BIG-IP
 description:
-  - Manages AS3 declarations sent to BIG-IP.
+  - Manages AS3 declarations sent to the BIG-IP.
 version_added: "1.0.0"
 options:
   content:
     description:
       - Declaration to be configured on the system.
-      - This parameter is most often used along with the C(file) or C(template) lookup plugins.
+      - This parameter is most often used with the C(file) or C(template) lookup plugins.
         Refer to the examples section for correct usage.
-      - For anything advanced or with formatting consider using the C(template) lookup.
-      - This can additionally be used for specifying application service configurations
-        directly in YAML, however that is not an encouraged practice and, if used at all,
+      - For anything advanced or with formatting, consider using the C(template) lookup.
+      - Additionally, this can be used for specifying application service configurations
+        directly in YAML. However that is not an encouraged practice and, if used at all,
         should only be used for the absolute smallest of configurations to prevent your
         Playbooks from becoming too large.
-      - If you C(content) includes encrypted values (such as ciphertexts, passphrases, etc),
+      - If your C(content) includes encrypted values (such as ciphertexts, passphrases, etc),
         the returned C(changed) value will always be true.
-      - If you are using the C(to_nice_json) filter, it will cause this module to fail because
+      - If you are using the C(to_nice_json) filter, it causes this module to fail because
         the purpose of that filter is to format the JSON to be human-readable and this process
-        includes inserting "extra characters that break JSON validators.
+        includes inserting extra characters that break JSON validators.
     type: raw
   tenant:
     description:
-      - An AS3 tenant you wish to manage.
-      - A value of C(all) when C(state) is C(absent) will remove all as3 declarations from device.
+      - An AS3 tenant you want to manage.
+      - A value of C(all) when C(state) is C(absent) removes all AS3 declarations from the device.
     type: str
   timeout:
     description:
-      - The amount of time in seconds to wait for the AS3 async interface to complete its task.
+      - The amount of time to wait for the AS3 async interface to complete its task, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
   state:
     description:
       - When C(state) is C(present), ensures the declaration is exists.
-      - When C(state) is C(absent), ensures that the declaration is removed.
+      - When C(state) is C(absent), ensures the declaration is removed.
     type: str
     choices:
       - present

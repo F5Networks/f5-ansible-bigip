@@ -26,7 +26,7 @@ options:
     type: bool
   ucs:
     description:
-      - The path to the UCS file to install. The parameter must be
+      - The path to the UCS file to install. This parameter must be
         provided if the C(state) is either C(installed) or C(activated).
         When C(state) is C(absent), the full path for this parameter is
         ignored and only the filename is used to select a UCS for removal.
@@ -38,14 +38,14 @@ options:
     description:
       - If C(yes), the system uploads the file every time and replaces the file on the
         device. If C(no), the file is only uploaded if it does not already
-        exist. Generally should only be C(yes) in cases where you believe
+        exist. Generally it should only be C(yes) in cases where you believe
         the image was corrupted during upload.
     type: bool
     default: no
   no_license:
     description:
       - Performs a full restore of the UCS file and all the files it contains,
-        with the exception of the license file. The option must be used to
+        with the exception of the license file. This option must be used to
         restore a UCS on RMA (Returned Materials Authorization) devices.
     type: bool
   no_platform_check:
@@ -56,11 +56,11 @@ options:
     type: bool
   passphrase:
     description:
-      - Specifies the passphrase that is necessary to load the specified UCS file.
+      - Specifies the passphrase necessary to load the specified UCS file.
     type: str
   reset_trust:
     description:
-      - When specified, the device and trust domain certs and keys are not
+      - When specified, the device and trust domain certificates and keys are not
         loaded from the UCS. Instead, a new set is generated.
     type: bool
   state:

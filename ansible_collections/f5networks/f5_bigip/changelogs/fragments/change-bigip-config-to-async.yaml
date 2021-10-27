@@ -1,4 +1,0 @@
----
-major_changes:
-- Module bigip_config changed to be asynchronous, see https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html
-  for details

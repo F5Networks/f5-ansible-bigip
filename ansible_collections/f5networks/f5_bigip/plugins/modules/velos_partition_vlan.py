@@ -11,26 +11,26 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_partition_vlan
-short_description: Manage VLANs on Velos partitions
+short_description: Manage VLANs on VELOS partitions
 description:
-  - Manage VLANs on Velos partitions.
+  - Manage VLANs on VELOS partitions.
 version_added: 1.3.0
 options:
   name:
     description:
-      - Specifies the name of the vlan to configure on partition.
-      - Parameter is optional if not provided parameter name will be derived from C(vlan_id).
+      - Specifies the name of the VLAN to configure on partition.
+      - This parameter is optional, if it is not provided, the parameter name is derived from C(vlan_id).
     type: str
   vlan_id:
     description:
-      - The id for the vlan.
-      - Valid value range is from C(0) to C(4095)
+      - The ID for the vlan.
+      - Valid value range is from C(0) to C(4095).
     required: True
     type: int
   state:
     description:
       - The partition VLAN state.
-      - If C(present), creates the specified VLAN if it does not exist, or updates existing VLAN
+      - If C(present), creates the specified VLAN if it does not exist, or updates the existing VLAN.
       - If C(absent), deletes the VLAN if it exists.
     type: str
     choices:
@@ -73,12 +73,12 @@ EXAMPLES = r'''
 
 RETURN = r'''
 name:
-  description: The name of the vlan.
+  description: The name of the VLAN.
   returned: changed
   type: str
   sample: new_name
 vlan_id:
-  description: The id of the vlan.
+  description: The ID of the VLAN.
   returned: changed
   type: int
   sample: 1234

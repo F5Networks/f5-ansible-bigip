@@ -35,21 +35,21 @@ options:
     type: path
   force:
     description:
-      - When set to C(yes) any existing policy with the same name will be overwritten by the new import.
+      - When set to C(yes), any existing policy with the same name is overwritten by the new import.
       - If a policy does not exist, this setting is ignored.
     default: no
     type: bool
   partition:
     description:
-      - Device partition to manage resources on.
+      - Device partition on which to manage resources.
     type: str
     default: Common
   reuse_objects:
     description:
       - When set to C(yes) and objects referred within the policy exist on the BIG-IP,
-        those will be used instead of the objects defined in the policy.
+        those are used instead of the objects defined in the policy.
       - Reusing existing objects reduces configuration size.
-      - The configuration of existing objects might differ to the configuration of the objects defined in the policy!
+      - The configuration of existing objects might differ from the configuration of the objects defined in the policy!
     default: yes
     type: bool
 notes:
@@ -108,7 +108,7 @@ name:
   type: str
   sample: APM_policy_global
 type:
-  description: Set to specify type of item to export.
+  description: Set to specify the type of item to export.
   returned: changed
   type: str
   sample: access_policy

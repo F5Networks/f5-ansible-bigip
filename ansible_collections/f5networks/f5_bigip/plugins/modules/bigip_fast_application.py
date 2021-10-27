@@ -22,35 +22,35 @@ options:
       - This parameter is most often used along with the C(file) or C(template) lookup plugins.
         Refer to the examples section for correct usage.
       - For anything advanced or with formatting, consider using the C(template) lookup.
-      - This can additionally be used for specifying application service configurations
+      - Additionally, this can be used for specifying application service configurations
         directly in YAML, however that is not an encouraged practice and, if used at all,
         should only be used for the absolute smallest of configurations to prevent your
         Playbooks from becoming too large.
       - If your C(content) includes encrypted values (such as ciphertexts, passphrases, etc),
-        the returned C(changed) value will always be true.
-      - If you are using the C(to_nice_json) filter, it will cause this module to fail because
+        the returned C(changed) value is always true.
+      - If you are using the C(to_nice_json) filter, it causes this module to fail because
         the purpose of that filter is to format the JSON to be human-readable and this process
-        includes inserting "extra characters" that break JSON validators.
-      - Parameter is required when C(state) is C(create) or C(present).
+        includes inserting extra characters that break JSON validators.
+      - This parameter is required when C(state) is C(create) or C(present).
     type: raw
   tenant:
     description:
-      - A FAST tenant name on which you want to manage application.
-      - Parameter is required when C(state) is C(present) or C(absent).
+      - A FAST tenant name on which you want to manage the application.
+      - This parameter is required when C(state) is C(present) or C(absent).
     type: str
   application:
     description:
-      - A FAST application name you wish to update or remove.
-      - Parameter is required when C(tenant) is specified.
+      - A FAST application name you want to update or remove.
+      - This parameter is required when C(tenant) is specified.
     type: str
   template:
     description:
-      - Name of installed FAST template used to create FAST application.
-      - Parameter is only used when creating new application, when C(state) is C(create).
+      - Name of installed FAST template used to create the FAST application.
+      - This parameter is only used when creating a new application, when C(state) is C(create).
     type: str
   timeout:
     description:
-      - The amount of time in seconds to wait for the FAST async interface to complete its task.
+      - The amount of time to wait for the FAST async interface to complete its task, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
@@ -59,7 +59,7 @@ options:
       - When C(state) is C(create), the declaration is used to create a new FAST application.
       - When C(state) is C(present), the existing FAST application is updated.
       - When C(state) is C(absent), ensures the existing FAST application is removed.
-      - When C(state) is C(purge), ensures the all FAST applications are removed from device.
+      - When C(state) is C(purge), ensures all FAST applications are removed from device.
     type: str
     choices:
       - create
@@ -121,12 +121,12 @@ tenant:
   type: str
   sample: example_tenant
 application:
-  description: A FAST application name you wish to update or remove.
+  description: A FAST application name you want to update or remove.
   returned: changed
   type: str
   sample: simple_http
 template:
-  description: Name of installed FAST template used to create FAST application.
+  description: Name of the installed FAST template used to create the FAST application.
   returned: changed
   type: str
   sample: examples/simple_http

@@ -26,38 +26,38 @@ options:
   reset:
     description:
       - Loads the default configuration on the device.
-      - If this option is specified, the default configuration will be loaded.
-      - On TMOS v14.0.0 and up, resetting to default configuration will reset admin and user password back to default.
-        Restarting services, which will lead to 503 server errors followed by 401 authorization errors during module
-        execution. It is therefore recommended to change the C(ansible_httpapi_password) before checking for reset
+      - If this option is specified, the default configuration is loaded.
+      - On TMOS v14.0.0 and up, resetting to the default configuration resets the admin and user password to the defaults.
+        Restarts services, which leads to 503 server errors followed by 401 authorization errors during module
+        execution. We recommend changing the C(ansible_httpapi_password) before checking for the reset
         task state.
     type: bool
     default: no
   merge_content:
     description:
-      - The file that contains desired configuration to me merged.
+      - The file that contains desired configuration to be merged.
       - Loads the specified configuration from a file to merge into
         the running configuration.
     type: path
   verify:
     description:
-      - Validates the specified configuration to see whether they are
+      - Validates the specified configuration to see whether it is
         valid to replace the running configuration.
       - The running configuration will not be changed.
-      - When this parameter is set to C(yes), no change will be reported
+      - When this parameter is set to C(yes), no change is reported
         by the module.
-      - Verify operation is synchronous and does not require checking for task completion.
+      - Verifies the operation is synchronous and does not require checking for task completion.
     type: bool
     default: no
   task_id:
     description:
       - The ID of the async task as returned by the system in a previous module run.
       - Used to query the status of the task on the device.
-      - When this parameter is set all other module parameters are ignored.
+      - When this parameter is set, all other module parameters are ignored.
     type: str
   timeout:
     description:
-      - The amount of time in seconds to wait for the DO async interface to complete its task.
+      - The amount of time to wait for the DO async interface to complete its task, in seconds.
       - The accepted value range is between C(150) and C(3600) seconds.
     type: int
     default: 150

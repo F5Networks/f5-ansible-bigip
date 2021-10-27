@@ -5,6 +5,29 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v1.3.0
+======
+
+Major Changes
+-------------
+
+- Module bigip_config changed to be asynchronous, see https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html for details
+
+Minor Changes
+-------------
+
+- Add module to change velos partition user passwords
+- Add module to manage velos partition
+- Add module to manage velos partition vlans
+
+New Modules
+-----------
+
+- velos_partition - Manage VELOS chassis partitions
+- velos_partition_change_password - Provides access to VELOS partition user authentication methods
+- velos_partition_vlan - Manage VLANs on VELOS partitions
+- velos_partition_wait - Wait for a VELOS partition to match a condition before continuing
+
 v1.2.0
 ======
 

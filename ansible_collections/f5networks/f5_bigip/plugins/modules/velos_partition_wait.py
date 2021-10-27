@@ -11,22 +11,22 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_partition_wait
-short_description: Wait for a Velos partition to match a condition before continuing
+short_description: Wait for a VELOS partition to match a condition before continuing
 description:
-  - Wait for Velos Partition to be C(running) or C(api_available).
+  - Wait for VELOS partition to be C(running) or C(api_available).
 version_added: 1.3.0
 options:
   name:
     description:
-      - Name of the partition
+      - Name of the partition.
     type: str
     required: True
   state:
     description:
-      - The condition for which we are waiting.
-      - Defaults to C(running) which verifies the specified partition has been created with a status of 'running'.
-      - C(api_available) waits for the partition API to be accessible/functional on the configured partition IP's.
-      - C(ssh-ready) waits for a deployed tenant to be reachable via ssh.
+      - The condition for which the system is waiting.
+      - Defaults to C(running), which verifies the specified partition has been created with a status of 'running'.
+      - C(api_available) waits for the partition API to be accessible/functional on the IP addresses of the configured partition.
+      - C(ssh-ready) waits for a deployed tenant to be reachable via SSH.
     type: str
     default: running
     choices:
