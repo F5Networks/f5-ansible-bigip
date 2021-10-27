@@ -1,0 +1,44 @@
+{
+    "f5-system-slot:slot": [
+        {
+            "slot-num": 1,
+            "enabled": true,
+            "partition": "main"
+        },
+        {
+            "slot-num": 2,
+            "enabled": true,
+            "partition": "main"
+        },
+        {
+            "slot-num": 3,
+            "enabled": true,
+            "partition": "foo"
+        },
+        {
+            "slot-num": 4,
+            "enabled": true,
+            "partition": "none"
+        },
+        {
+            "slot-num": 5,
+            "enabled": true,
+            "partition": "none"
+        },
+        {
+            "slot-num": 6,
+            "enabled": true,
+            "partition": "none"
+        },
+        {
+            "slot-num": 7,
+            "enabled": true,
+            "partition": "none"
+        },
+        {
+            "slot-num": 8,
+            "enabled": true,
+            "partition": "none"
+        }
+    ]
+}

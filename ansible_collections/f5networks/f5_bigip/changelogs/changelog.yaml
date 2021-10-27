@@ -170,3 +170,31 @@ releases:
     - fix-backports-v1.yaml
     - fix-bigip-device-info-on-device-methods.yaml
     release_date: '2021-09-17'
+  1.3.0:
+    changes:
+      major_changes:
+      - Module bigip_config changed to be asynchronous, see https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html
+        for details
+      minor_changes:
+      - Add module to change velos partition user passwords
+      - Add module to manage velos partition
+      - Add module to manage velos partition vlans
+    fragments:
+    - add-partition-module.yaml
+    - change-bigip-config-to-async.yaml
+    - new-velos-partition-password.yaml
+    - new-velos-partition-vlan.yaml
+    modules:
+    - description: Manage VELOS chassis partitions
+      name: velos_partition
+      namespace: ''
+    - description: Provides access to VELOS partition user authentication methods
+      name: velos_partition_change_password
+      namespace: ''
+    - description: Manage VLANs on VELOS partitions
+      name: velos_partition_vlan
+      namespace: ''
+    - description: Wait for a VELOS partition to match a condition before continuing
+      name: velos_partition_wait
+      namespace: ''
+    release_date: '2021-10-27'

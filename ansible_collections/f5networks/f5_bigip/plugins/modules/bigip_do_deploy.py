@@ -278,6 +278,14 @@ class ModuleManager(object):
         except ConnectionError:
             return 400, None
 
+    def check_task_exists_on_device(self, task):
+        uri = "/mgmt/shared/declarative-onboarding/task/{0}".format(task)
+        response = self.client.get(uri)
+        if response['code'] in [200, 201, 202]:
+            return True
+        else:
+            raise F5ModuleError("The task with the given task_id: {0} does not exist.".format(task))
+
     def wait_for_task(self, task, delay, period):
         for x in range(0, period):
             code, response = self._check_task_on_device(task)
@@ -288,6 +296,7 @@ class ModuleManager(object):
                     self.changes.update({'message': 'Device is restarting services, unable to check task status.'})
                     return
                 else:
+                    self.check_task_exists_on_device(task)
                     code, response = self._check_task_on_device(task)
             if code in [200, 201, 202]:
                 if response['result']['status'] != 'RUNNING':

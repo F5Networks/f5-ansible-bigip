@@ -29,11 +29,11 @@ options:
   remote_port:
     description:
       - The port to connect to on the remote host.
-      - If the port is not provided, a default port for the selected C(protocol) is assumed.
+      - If the port is not provided, a default port for the selected C(protocol) is used.
     type: int
   protocol:
     description:
-      - Protocol to be used for image transfer.
+      - Protocol for image transfer.
     type: str
     default: scp
     choices:
@@ -54,14 +54,14 @@ options:
     type: path
   timeout:
     description:
-      - The amount of time in seconds to wait for image import to finish.
+      - The amount of time to wait for image import to finish, in seconds.
       - The accepted value range is between C(150) and C(3600) seconds.
     type: int
     default: 300
   state:
     description:
       - The tenant image state.
-      - If C(import), starts the image import task if the image it does not exist
+      - If C(import), starts the image import task if the image does not exist
       - If C(present), checks for the status of the import task if the image does not exist.
       - If C(absent), deletes the tenant image if it exists.
     type: str
@@ -413,7 +413,7 @@ class ArgumentSpec(object):
         self.argument_spec = {}
         self.argument_spec.update(argument_spec)
         self.required_if = [
-            ['state', 'import', ['image_name', 'remote_host', 'remote_user', 'remote_password', 'remote_path']]]
+            ['state', 'import', ['image_name', 'remote_host', 'remote_path']]]
 
 
 def main():

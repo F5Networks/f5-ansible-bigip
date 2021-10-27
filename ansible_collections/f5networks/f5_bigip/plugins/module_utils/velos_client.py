@@ -14,7 +14,11 @@ from ..module_utils.constants import (
 def header(method):
     def wrap(self, *args, **kwargs):
         args = list(args)
-        args[0] = VELOS_ROOT + args[0]
+        if 'scope' in kwargs:
+            args[0] = kwargs['scope'] + args[0]
+            kwargs.pop('scope')
+        else:
+            args[0] = VELOS_ROOT + args[0]
         if 'headers' not in kwargs:
             kwargs['headers'] = VELOS_BASE_HEADERS
             return method(self, *args, **kwargs)

@@ -17,11 +17,10 @@ from unittest import TestCase
 from ansible.playbook.play_context import PlayContext
 from ansible.plugins.loader import connection_loader
 
-from ansible_collections.f5networks.f5_bigip.plugins.module_utils.constants import (
-    TEEM_KEY, CURRENT_COLL_VERSION
-)
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.client import F5Client
+from ansible_collections.f5networks.f5_bigip.plugins.module_utils.constants import TEEM_KEY
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.teem import TeemClient
+from ansible_collections.f5networks.f5_bigip.plugins.module_utils.version import CURRENT_COLL_VERSION
 from ansible_collections.f5networks.f5_bigip.tests.utils.common import connection_response
 
 

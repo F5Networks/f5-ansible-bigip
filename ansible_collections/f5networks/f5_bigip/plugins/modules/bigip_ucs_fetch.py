@@ -431,7 +431,16 @@ class ModuleManager(object):
 
         raise F5ModuleError(response['contents'])
 
+    def check_task_exists_on_device(self, task):
+        uri = "/mgmt/tm/task/sys/ucs/{0}".format(task)
+        response = self.client.get(uri)
+        if response['code'] in [200, 201, 202]:
+            return True
+        else:
+            raise F5ModuleError("The task with the given task_id: {0} does not exist.".format(task))
+
     def async_wait(self, task):
+        self.check_task_exists_on_device(task)
         delay, period = self.want.timeout
         uri = "/mgmt/tm/task/sys/ucs/{0}/result".format(task)
         for x in range(0, period):

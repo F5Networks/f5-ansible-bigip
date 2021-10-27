@@ -35,7 +35,7 @@ options:
   remote_port:
     description:
       - The port to connect to on the remote host.
-      - If the port is not provided a default port for selected C(protocol) is assumed.
+      - If the port is not provided, a default port for selected C(protocol) is used.
     type: int
   protocol:
     description:
@@ -60,14 +60,14 @@ options:
     type: path
   timeout:
     description:
-      - The amount of time in seconds to wait for image import to finish.
+      - The amount of time to wait for image import to finish, in seconds.
       - The accepted value range is between C(150) and C(3600) seconds.
     type: int
     default: 300
   state:
     description:
       - The partition image state.
-      - If C(import), start the image import task if the image it does not exist.
+      - If C(import), start the image import task if the image does not exist.
       - If C(present), checks for the status of the import task if the image does not exist.
       - If C(absent), delete the partition image if it exists.
     type: str
@@ -77,7 +77,7 @@ options:
       - absent
     default: import
 notes:
-  - It can take up to 20 minutes for the image to register on device after successful upload.
+  - It can take up to 20 minutes for the image to register on the device after successful upload.
   - As there is no way to check the internal ISO import progress yet, users should assume if the image ISO
     has not been found by this module when running the module with C(state) set to C(present) and 20 minutes has
     passed since it was uploaded, the internal import failed. The most common reason for this failure is ISO
@@ -447,7 +447,7 @@ class ArgumentSpec(object):
         self.argument_spec = {}
         self.argument_spec.update(argument_spec)
         self.required_if = [
-            ['state', 'import', ['image_name', 'remote_host', 'remote_user', 'remote_password', 'remote_path']]
+            ['state', 'import', ['image_name', 'remote_host', 'remote_path']]
         ]
 
 
