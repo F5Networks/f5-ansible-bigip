@@ -1,0 +1,7 @@
+---
+major_changes:
+  - Module bigip_ucs install state is now asynchronous, see https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html
+    for details
+
+minor_changes:
+  - Add custom timeout parameter to bigip_lx_package, allowing users define the amount of time to wait for RPM installation

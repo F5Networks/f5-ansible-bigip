@@ -260,7 +260,7 @@ class ModuleManager(object):
         if response['code'] not in [200, 201, 202, 204, 207]:
             raise F5ModuleError(response['contents'])
 
-        return all([msg.get('message', None) == 'no change' for msg in response['contents']['results']])
+        return all(msg.get('message', None) == 'no change' for msg in response['contents']['results'])
 
     def _get_errors_from_response(self, messages):
         results = []
@@ -306,7 +306,7 @@ class ModuleManager(object):
             if errors:
                 message = "{0}".format('. '.join(errors))
                 raise F5ModuleError(message)
-            if any([msg.get('message', None) != 'in progress' for msg in task['results']]):
+            if any(msg.get('message', None) != 'in progress' for msg in task['results']):
                 return task
             time.sleep(delay)
         raise F5ModuleError(

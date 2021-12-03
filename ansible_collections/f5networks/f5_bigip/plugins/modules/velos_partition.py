@@ -469,11 +469,11 @@ class ModuleManager(object):
     def create(self):
         if self.want.ipv4_mgmt_address is not None and self.want.ipv4_mgmt_address.split('/')[1] is None:
             self.want.update(dict(
-                ipv4_mgmt_address='{0}/24'.format(self.want.ipv4_mgmt_address.split('/')[0])
+                ipv4_mgmt_address='{0}/24'.format(self.want.ipv4_mgmt_address.split('/', maxsplit=1)[0])
             ))
         if self.want.ipv6_mgmt_address is not None and self.want.ipv6_mgmt_address.split('/')[1] is None:
             self.want.update(dict(
-                ipv6_mgmt_address='{0}/96'.format(self.want.ipv6_mgmt_address.split('/')[0])
+                ipv6_mgmt_address='{0}/96'.format(self.want.ipv6_mgmt_address.split('/', maxsplit=1)[0])
             ))
         self._set_changed_options()
         if self.module.check_mode:
@@ -528,12 +528,12 @@ class ModuleManager(object):
 
         if params.get('mgmt-ip'):
             if params.get('mgmt-ip').get('ipv4') and params.get('mgmt-ip').get('ipv4').get('address') is None:
-                params['mgmt-ip']['ipv4']['address'] = self.want.ipv4_mgmt_address.split('/')[0]
+                params['mgmt-ip']['ipv4']['address'] = self.want.ipv4_mgmt_address.split('/', maxsplit=1)[0]
                 params['mgmt-ip']['ipv4']['prefix-length'] = self.want.ipv4_mgmt_address.split('/')[1]
             if params.get('mgmt-ip').get('ipv4') and params.get('mgmt-ip').get('ipv4').get('gateway') is None:
                 params['mgmt-ip']['ipv4']['gateway'] = self.want.ipv4_mgmt_gateway
             if params.get('mgmt-ip').get('ipv6') and params.get('mgmt-ip').get('ipv6').get('address') is None:
-                params['mgmt-ip']['ipv6']['address'] = self.want.ipv6_mgmt_address.split('/')[0]
+                params['mgmt-ip']['ipv6']['address'] = self.want.ipv6_mgmt_address.split('/', maxsplit=1)[0]
                 params['mgmt-ip']['ipv6']['prefix-length'] = self.want.ipv6_mgmt_address.split('/')[1]
             if params.get('mgmt-ip').get('ipv6') and params.get('mgmt-ip').get('ipv6').get('gateway') is None:
                 params['mgmt-ip']['ipv6']['gateway'] = self.want.ipv6_mgmt_gateway
