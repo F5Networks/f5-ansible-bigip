@@ -13,7 +13,7 @@ DOCUMENTATION = r'''
 module: bigip_lx_package
 short_description: Manages Javascript LX packages on a BIG-IP
 description:
-  - Manages Javascript LX packages on a BIG-IP. This module will allow
+  - Manages Javascript LX packages on a BIG-IP. This module allows
     you to deploy LX packages to the BIG-IP and manage their lifecycle.
 version_added: "1.0.0"
 options:
@@ -23,8 +23,8 @@ options:
         and you intend to use this module in a C(role), it is recommended that you use
         the C({{ role_path }}) variable. An example is provided in the C(EXAMPLES) section.
       - When C(state) is C(absent), it is not necessary for the package to exist on the
-        Ansible controller. If the full path to the package is provided, the fileame will
-        specifically be cherry picked from it to properly remove the package.
+        Ansible controller. If the full path to the package is provided, the filename is
+        specifically cherry picked from it to properly remove the package.
     type: path
   state:
     description:
@@ -41,7 +41,7 @@ options:
     default: no
   timeout:
     description:
-      - The amount of time in seconds to wait for the installation task to complete.
+      - The amount of time to wait for the installation task to complete, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300

@@ -458,7 +458,7 @@ class ModuleManager(object):
         return True
 
     def remove(self):
-        # self.have = self.read_current_from_device()
+        self.have = self.read_current_from_device()
         if self.module.check_mode:
             return True
         self.remove_from_device()
@@ -570,7 +570,7 @@ class ModuleManager(object):
 
     def remove_slot_from_partition(self):
         slots_to_disassociate = list(set(self.have.slots) - set(self.want.slots))
-        if self.want.state == "absent":
+        if self.want.state == "absent" and self.have.slots is not None:
             slots_to_disassociate = self.have.slots
 
         if len(slots_to_disassociate) > 0:

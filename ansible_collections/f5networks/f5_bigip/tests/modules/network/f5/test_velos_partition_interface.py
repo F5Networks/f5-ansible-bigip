@@ -12,13 +12,14 @@ import os
 
 from ansible.module_utils.basic import AnsibleModule
 
-from ansible_collections.f5networks.f5_bigip.plugins.modules.velos_partition import (
+from ansible_collections.f5networks.f5_bigip.plugins.modules.velos_partition_interface import (
     ModuleParameters, ApiParameters, ArgumentSpec, ModuleManager
 )
-
 from ansible_collections.f5networks.f5_bigip.tests.compat import unittest
 from ansible_collections.f5networks.f5_bigip.tests.compat.mock import Mock, patch, MagicMock
 from ansible_collections.f5networks.f5_bigip.tests.modules.utils import set_module_args
+
+from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -45,50 +46,37 @@ def load_fixture(name):
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
-            name='testfoo2',
-            os_version='1.1.1-5046',
-            ipv4_mgmt_address='10.144.140.127/24',
-            ipv4_mgmt_gateway='10.144.140.253',
-            slots=[6],
+            name="2/1.0",
+            trunk_vlans=[444],
             state='present'
         )
-
         p = ModuleParameters(params=args)
-        assert p.name == 'testfoo2'
-        assert p.os_version == '1.1.1-5046'
-        assert p.ipv4_mgmt_address == '10.144.140.127/24'
-        assert p.ipv4_mgmt_gateway == '10.144.140.253'
-        # assert p.state == 'enabled'
-        assert p.slots == [6]
+        assert p.name == '2/1.0'
+        assert p.switched_vlan == [444]
 
     def test_api_parameters(self):
-        args = load_fixture('load_partition_info.json')
+        args = load_fixture('load_velos_partition_interface_config.json')
 
         p = ApiParameters(params=args)
 
-        assert p.os_version == '1.1.1-5046'
-        assert p.ipv4_mgmt_address == '10.144.140.124/24'
-        assert p.ipv4_mgmt_gateway == '10.144.140.254'
-        assert p.enabled is True
+        assert p.interface_type == 'ethernetCsmacd'
+        assert p.switched_vlan == [444]
 
 
 class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
-        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.velos_partition.F5Client')
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.velos_partition_interface.F5Client')
         self.m1 = self.p1.start()
         self.m1.return_value = MagicMock()
 
     def tearDown(self):
         self.p1.stop()
 
-    def test_partition_create(self, *args):
+    def test_partition_interface_create_switched_vlan(self, *args):
         set_module_args(dict(
-            name='foo2',
-            os_version='1.1.1-5046',
-            ipv4_mgmt_address='10.144.140.127/24',
-            ipv4_mgmt_gateway='10.144.140.255',
-            slots=[5],
+            name="2/1.0",
+            trunk_vlans=[444],
             state='present'
         ))
 
@@ -96,24 +84,26 @@ class TestManager(unittest.TestCase):
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
         )
-        expected = {'partition': {'config': {'enabled': True, 'iso-version': '1.1.1-5046', 'mgmt-ip': {
-            'ipv4': {'address': '10.144.140.127', 'gateway': '10.144.140.255', 'prefix-length': 24}}}, 'name': 'foo2'}}
-
-        # Override methods to force specific logic in the module to happen
+        expected = {'openconfig-vlan:switched-vlan': {'config': {'trunk-vlans': [444]}}}
         mm = ModuleManager(module=module)
-        mm.exists = Mock(return_value=False)
-        mm.client.post = Mock(return_value=dict(code=201, contents={}))
+        mm.exists = Mock(return_value=True)
         mm.client.patch = Mock(return_value=dict(code=201, contents={}))
+        fixdata = []
+        fixdata.append(load_fixture("load_velos_partition_interface_config.json"))
+        newdata = {
+            "openconfig-interfaces:interface": fixdata,
+        }
+        mm.client.get = Mock(
+            return_value=dict(code=200, contents=dict(newdata)))
 
         results = mm.exec_module()
+        assert results['changed'] is False
 
-        assert results['changed'] is True
-        assert mm.client.post.call_args[1]['data'] == expected
-
-    def test_partition_update(self, *args):
+    def test_partition_interface_update_switched_vlan(self, *args):
         set_module_args(dict(
-            name='foo2',
-            slots=[5, 6],
+            name="2/1.0",
+            trunk_vlans=[444, 555],
+            state='present'
         ))
 
         module = AnsibleModule(
@@ -122,19 +112,24 @@ class TestManager(unittest.TestCase):
         )
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=True)
-        mm.client.patch = Mock(return_value=dict(code=204, contents={}))
-        mm.get_slots_associated_with_partition = Mock(
-            return_value=dict(code=200, contents=load_fixture('load_slot_info.json')))
+        mm.client.patch = Mock(return_value=dict(code=204, contents=""))
+        fixdata = []
+        fixdata.append(load_fixture("load_velos_partition_interface_config.json"))
+        newdata = {
+            "openconfig-interfaces:interface": fixdata,
+        }
         mm.client.get = Mock(
-            return_value=dict(code=200, contents=load_fixture('load_partition_status_configured.json')))
+            return_value=dict(code=200, contents=dict(newdata)))
+        mm.client.delete = Mock(return_value=dict(code=204, contents=""))
 
         results = mm.exec_module()
-        assert results['changed'] is True
-        assert results['slots'] == [5, 6]
 
-    def test_partition_remove(self, *args):
+        assert results['changed'] is True
+
+    def test_partition_interface_delete_switched_vlan(self, *args):
         set_module_args(dict(
-            name='foo2',
+            name="2/1.0",
+            trunk_vlans=[444],
             state='absent'
         ))
 
@@ -143,16 +138,20 @@ class TestManager(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode,
         )
 
-        # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         mm.exists = Mock(side_effect=[True, False])
-        mm.remove_from_device = Mock(return_value=True)
+        mm.client.delete = Mock(return_value=dict(code=204, contents=""))
         mm.client.get = Mock(
-            return_value=dict(code=200, contents=load_fixture('load_partition_status_configured.json')))
-        mm.get_slots_associated_with_partition = Mock(
-            return_value=dict(code=200, contents=load_fixture('load_slot_info.json')))
+            return_value=dict(code=200,
+                              contents=load_fixture("load_velos_partition_interface_swichedvlan_config.json")))
+        fixdata = []
+        fixdata.append(load_fixture("load_velos_partition_interface_config.json"))
+        newdata = {
+            "openconfig-interfaces:interface": fixdata,
+        }
+        mm.client.get = Mock(
+            return_value=dict(code=200, contents=dict(newdata)))
 
         results = mm.exec_module()
 
-        # assert mm.want.timeout == (3, 100)
         assert results['changed'] is True

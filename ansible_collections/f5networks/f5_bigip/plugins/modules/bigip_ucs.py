@@ -81,17 +81,17 @@ options:
       - The ID of the async task as returned by the system in a previous module run.
       - Used to query the status of the task on the device, useful with longer running operations that require
         restarting services.
-      - Parameter only usable when C(state) is C(installed)
-      - Parameter assumes that a load ucs task has been started ond device,
-        therefore it does not check for existence of UCS file beforehand.
-      - Adding this parameter incorrectly to module run will lead to confusing error messages. Refer to examples section
-        for correct usage of this parameter.
+      - This parameter is only usable when C(state) is C(installed)
+      - This parameter assumes a load ucs task has been started ond device,
+        therefore it does not check for existence of the UCS file beforehand.
+      - Adding this parameter incorrectly to a module run leads to confusing error messages. Refer to the examples
+        section for correct usage of this parameter.
     type: str
     version_added: "1.4.0"
   timeout:
     description:
-      - Parameter used when installing uploaded UCS file on the device.
-      - The amount of time in seconds to wait for the API async interface to complete its task.
+      - This parameter is used when installing uploaded UCS file on the device.
+      - The amount of time to wait for the API async interface to complete its task, in seconds.
       - The accepted value range is between C(150) and C(1800) seconds.
     type: int
     default: 150
