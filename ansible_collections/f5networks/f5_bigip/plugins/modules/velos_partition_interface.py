@@ -12,11 +12,10 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_partition_interface
-short_description: Manage network interfaces on the Velos partitions.
+short_description: Manage network interfaces on the VELOS partitions
 description:
-  - Manage network interfaces on the Velos partitions.
-  - This module uses the partition API. The specified provider should be the IP of a Velos Partition.
-version_added: 1.3.0
+  - Manage network interfaces on VELOS partitions.
+version_added: "1.4.0"
 options:
   name:
     description:
@@ -24,21 +23,22 @@ options:
     type: str
     required: true
   trunk_vlans:
-    description: trunk_vlans configures multiple vlan-ids to be associated for interface
-      - C(trunk_vlans) is used for untagged traffic.
-      - If C(native_vlan) is used , C(trunk_vlans) can't be specified both are mutual exclusive
-      - The order of these VLANs is not important; in fact, it's ignored. Module will provide sort list
+    description:
+      - Configures multiple VLAN IDs to be associated with the interface. The C(trunk_vlans) parameter is used for
+        untagged traffic.
+      - The C(native_vlan) and C(trunk_vlans) parameters are mutually exclusive.
+      - The order of these VLANs is ignored, the module orders the VLANs automatically.
     type: list
     elements: int
   native_vlan:
-    description: native_vlan configures Vlan-ID to be associated for interface
-      - If C(native_vlan) is used ,C(trunk_vlans) can't be specified both are mutual exclusive
+    description:
+      - Configures the VLAN ID to be associated with the interface.
+      - The C(native_vlan) and C(trunk_vlans) parameters are mutually exclusive.
     type: int
   state:
     description:
-      - The partition VLAN state.
-      - If C(present), creates the specified VLAN if it does not exist, or updates the existing VLAN.
-      - If C(absent), deletes the VLAN if it exists.
+      - If C(present), creates the specified object if it does not exist, or updates the existing object.
+      - If C(absent), deletes the object if it exists.
     type: str
     choices:
       - present
@@ -76,11 +76,13 @@ EXAMPLES = r'''
         name: "2/1.0"
         trunk_vlans: [444]
         state: present
+
     - name: modify Vlans to interface
       velos_partition_interface:
         name: "2/1.0"
         trunk_vlans: [444,555]
         state: present
+
     - name: Delete vlans on interface
       velos_partition_interface:
         name: "2/1.0"

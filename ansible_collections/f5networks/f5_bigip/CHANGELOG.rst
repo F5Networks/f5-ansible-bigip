@@ -5,6 +5,25 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v1.4.0
+======
+
+Major Changes
+-------------
+
+- Module bigip_ucs install state is now asynchronous, see https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html for details
+
+Minor Changes
+-------------
+
+- Add custom timeout parameter to bigip_lx_package, allowing users define the amount of time to wait for RPM installation
+
+New Modules
+-----------
+
+- velos_partition_interface - Manage network interfaces on the VELOS partitions
+- velos_partition_lag - Manage network interfaces on the VELOS partitions
+
 v1.3.0
 ======
 

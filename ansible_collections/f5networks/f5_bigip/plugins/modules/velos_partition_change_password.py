@@ -14,7 +14,7 @@ module: velos_partition_change_password
 short_description: Provides access to VELOS partition user authentication methods
 description:
   - Provides access to VELOS partition user authentication change password methods.
-version_added: 1.3.0
+version_added: "1.3.0"
 options:
   user_name:
     description:

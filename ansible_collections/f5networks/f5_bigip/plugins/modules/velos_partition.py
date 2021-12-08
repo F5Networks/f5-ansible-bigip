@@ -15,7 +15,7 @@ short_description: Manage VELOS chassis partitions
 description:
   - Manage VELOS partitions.
   - This module uses the controller API. The specified provider should be the IP of a VELOS system Controller.
-version_added: 1.3.0
+version_added: "1.3.0"
 options:
   name:
     description:

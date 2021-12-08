@@ -198,3 +198,21 @@ releases:
       name: velos_partition_wait
       namespace: ''
     release_date: '2021-10-27'
+  1.4.0:
+    changes:
+      major_changes:
+      - Module bigip_ucs install state is now asynchronous, see https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html
+        for details
+      minor_changes:
+      - Add custom timeout parameter to bigip_lx_package, allowing users define the
+        amount of time to wait for RPM installation
+    fragments:
+    - change-ucs-to-async.yaml
+    modules:
+    - description: Manage network interfaces on the VELOS partitions
+      name: velos_partition_interface
+      namespace: ''
+    - description: Manage network interfaces on the VELOS partitions
+      name: velos_partition_lag
+      namespace: ''
+    release_date: '2021-12-08'

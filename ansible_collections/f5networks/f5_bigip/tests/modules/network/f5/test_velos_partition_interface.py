@@ -84,7 +84,6 @@ class TestManager(unittest.TestCase):
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
         )
-        expected = {'openconfig-vlan:switched-vlan': {'config': {'trunk-vlans': [444]}}}
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=True)
         mm.client.patch = Mock(return_value=dict(code=201, contents={}))
