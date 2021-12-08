@@ -14,7 +14,7 @@ module: velos_tenant_wait
 short_description: Wait for a VELOS condition before continuing
 description:
   - Wait for a VELOS tenant to be C(configured), C(provisioned) or C(deployed).
-version_added: 1.1.0
+version_added: "1.1.0"
 options:
   name:
     description:

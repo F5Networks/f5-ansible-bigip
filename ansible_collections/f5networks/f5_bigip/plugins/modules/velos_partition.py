@@ -15,7 +15,7 @@ short_description: Manage VELOS chassis partitions
 description:
   - Manage VELOS partitions.
   - This module uses the controller API. The specified provider should be the IP of a VELOS system Controller.
-version_added: 1.3.0
+version_added: "1.3.0"
 options:
   name:
     description:
@@ -458,7 +458,7 @@ class ModuleManager(object):
         return True
 
     def remove(self):
-        # self.have = self.read_current_from_device()
+        self.have = self.read_current_from_device()
         if self.module.check_mode:
             return True
         self.remove_from_device()
@@ -469,11 +469,11 @@ class ModuleManager(object):
     def create(self):
         if self.want.ipv4_mgmt_address is not None and self.want.ipv4_mgmt_address.split('/')[1] is None:
             self.want.update(dict(
-                ipv4_mgmt_address='{0}/24'.format(self.want.ipv4_mgmt_address.split('/')[0])
+                ipv4_mgmt_address='{0}/24'.format(self.want.ipv4_mgmt_address.split('/', maxsplit=1)[0])
             ))
         if self.want.ipv6_mgmt_address is not None and self.want.ipv6_mgmt_address.split('/')[1] is None:
             self.want.update(dict(
-                ipv6_mgmt_address='{0}/96'.format(self.want.ipv6_mgmt_address.split('/')[0])
+                ipv6_mgmt_address='{0}/96'.format(self.want.ipv6_mgmt_address.split('/', maxsplit=1)[0])
             ))
         self._set_changed_options()
         if self.module.check_mode:
@@ -528,12 +528,12 @@ class ModuleManager(object):
 
         if params.get('mgmt-ip'):
             if params.get('mgmt-ip').get('ipv4') and params.get('mgmt-ip').get('ipv4').get('address') is None:
-                params['mgmt-ip']['ipv4']['address'] = self.want.ipv4_mgmt_address.split('/')[0]
+                params['mgmt-ip']['ipv4']['address'] = self.want.ipv4_mgmt_address.split('/', maxsplit=1)[0]
                 params['mgmt-ip']['ipv4']['prefix-length'] = self.want.ipv4_mgmt_address.split('/')[1]
             if params.get('mgmt-ip').get('ipv4') and params.get('mgmt-ip').get('ipv4').get('gateway') is None:
                 params['mgmt-ip']['ipv4']['gateway'] = self.want.ipv4_mgmt_gateway
             if params.get('mgmt-ip').get('ipv6') and params.get('mgmt-ip').get('ipv6').get('address') is None:
-                params['mgmt-ip']['ipv6']['address'] = self.want.ipv6_mgmt_address.split('/')[0]
+                params['mgmt-ip']['ipv6']['address'] = self.want.ipv6_mgmt_address.split('/', maxsplit=1)[0]
                 params['mgmt-ip']['ipv6']['prefix-length'] = self.want.ipv6_mgmt_address.split('/')[1]
             if params.get('mgmt-ip').get('ipv6') and params.get('mgmt-ip').get('ipv6').get('gateway') is None:
                 params['mgmt-ip']['ipv6']['gateway'] = self.want.ipv6_mgmt_gateway
@@ -570,7 +570,7 @@ class ModuleManager(object):
 
     def remove_slot_from_partition(self):
         slots_to_disassociate = list(set(self.have.slots) - set(self.want.slots))
-        if self.want.state == "absent":
+        if self.want.state == "absent" and self.have.slots is not None:
             slots_to_disassociate = self.have.slots
 
         if len(slots_to_disassociate) > 0:

@@ -14,7 +14,7 @@ module: velos_tenant
 short_description: Manage VELOS tenants
 description:
   - Manage VELOS tenants.
-version_added: 1.1.0
+version_added: "1.1.0"
 options:
   name:
     description:

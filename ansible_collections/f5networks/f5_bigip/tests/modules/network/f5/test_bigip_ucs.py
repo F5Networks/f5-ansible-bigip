@@ -64,10 +64,10 @@ class TestParameters(unittest.TestCase):
         assert p.no_platform_check is True
         assert p.passphrase == "foobar"
         assert p.reset_trust is True
-        assert p.install_command == \
-            "tmsh load sys ucs /var/local/ucs/bigip.localhost.localdomain.ucs " \
-            "include-chassis-level-config no-license no-platform-check " \
-            "passphrase foobar reset-trust"
+        assert p.options == {
+            'include-chassis-level-config': True, 'no-license': True,
+            'no-platform-check': True, 'passphrase': 'foobar', 'reset-trust': True
+        }
 
     def test_module_parameters_false_ucs_booleans(self):
         args = dict(
@@ -84,7 +84,19 @@ class TestParameters(unittest.TestCase):
         assert p.no_license is False
         assert p.no_platform_check is False
         assert p.reset_trust is False
-        assert p.install_command == "tmsh load sys ucs /var/local/ucs/bigip.localhost.localdomain.ucs"
+        assert p.options == {
+            'include-chassis-level-config': False, 'no-license': False,
+            'no-platform-check': False, 'reset-trust': False
+        }
+
+    def test_module_parameters_no_options(self):
+        args = dict(
+            ucs="/root/bigip.localhost.localdomain.ucs"
+        )
+
+        p = ModuleParameters(params=args)
+        assert p.ucs == '/root/bigip.localhost.localdomain.ucs'
+        assert p.options is None
 
 
 class TestManager(unittest.TestCase):
@@ -155,11 +167,14 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         mm.create_on_device = Mock(return_value=True)
         mm.exists = Mock(return_value=True)
-        mm.install_on_device = Mock(return_value=True)
+        mm.install_on_device = Mock(return_value='1638418523586009')
+        mm._start_task_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
 
         assert results['changed'] is True
+        assert results['task_id'] == '1638418523586009'
+        assert results['message'] == 'UCS load async task started with id: 1638418523586009'
 
     def test_ucs_absent_exists(self, *args):
         set_module_args(dict(

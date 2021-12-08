@@ -266,7 +266,7 @@ class ModuleManager(object):
             if errors:
                 message = "{0}".format('. '.join(errors))
                 raise F5ModuleError(message)
-            if any([msg.get('message', None) != 'in progress' for msg in task['results']]):
+            if any(msg.get('message', None) != 'in progress' for msg in task['results']):
                 return task
             time.sleep(delay)
         raise F5ModuleError(

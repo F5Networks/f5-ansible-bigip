@@ -543,8 +543,8 @@ class ModuleManager(object):
                 )
         elif self.want.type == "vcmp":
             if self.want.block_device_image and not any(
-                [have_block_device_image.startswith(self.want.block_device_image)
-                    for have_block_device_image in self.have.block_device_image_names]):
+                have_block_device_image.startswith(self.want.block_device_image)
+                    for have_block_device_image in self.have.block_device_image_names):
                 raise F5ModuleError(
                     "The specified block_device_image was not found on the device."
                 )

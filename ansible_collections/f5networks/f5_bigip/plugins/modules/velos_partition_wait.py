@@ -14,7 +14,7 @@ module: velos_partition_wait
 short_description: Wait for a VELOS partition to match a condition before continuing
 description:
   - Wait for VELOS partition to be C(running) or C(api_available).
-version_added: 1.3.0
+version_added: "1.3.0"
 options:
   name:
     description:

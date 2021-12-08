@@ -14,7 +14,7 @@ module: velos_partition_vlan
 short_description: Manage VLANs on VELOS partitions
 description:
   - Manage VLANs on VELOS partitions.
-version_added: 1.3.0
+version_added: "1.3.0"
 options:
   name:
     description:

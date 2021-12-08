@@ -13,7 +13,7 @@ module: velos_partition_image
 short_description: Manage VELOS partition images
 description:
   - Manage VELOS partition images.
-version_added: 1.1.0
+version_added: "1.1.0"
 options:
   image_name:
     description:

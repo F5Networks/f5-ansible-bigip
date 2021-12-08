@@ -1,0 +1,9 @@
+{
+    "openconfig-vlan:switched-vlan": {
+        "config": {
+            "trunk-vlans": [
+                444
+            ]
+        }
+    }
+}

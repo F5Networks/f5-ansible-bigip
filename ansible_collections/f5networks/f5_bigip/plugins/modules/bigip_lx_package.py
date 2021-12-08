@@ -13,7 +13,7 @@ DOCUMENTATION = r'''
 module: bigip_lx_package
 short_description: Manages Javascript LX packages on a BIG-IP
 description:
-  - Manages Javascript LX packages on a BIG-IP. This module will allow
+  - Manages Javascript LX packages on a BIG-IP. This module allows
     you to deploy LX packages to the BIG-IP and manage their lifecycle.
 version_added: "1.0.0"
 options:
@@ -23,8 +23,8 @@ options:
         and you intend to use this module in a C(role), it is recommended that you use
         the C({{ role_path }}) variable. An example is provided in the C(EXAMPLES) section.
       - When C(state) is C(absent), it is not necessary for the package to exist on the
-        Ansible controller. If the full path to the package is provided, the fileame will
-        specifically be cherry picked from it to properly remove the package.
+        Ansible controller. If the full path to the package is provided, the filename is
+        specifically cherry picked from it to properly remove the package.
     type: path
   state:
     description:
@@ -39,6 +39,13 @@ options:
       - Should the install file be deleted on successful installation of the package
     type: bool
     default: no
+  timeout:
+    description:
+      - The amount of time to wait for the installation task to complete, in seconds.
+      - The accepted value range is between C(10) and C(1800) seconds.
+    type: int
+    default: 300
+    version_added: "1.4.0"
 notes:
   - Requires the rpm tool be installed on the host. This can be accomplished through
     different ways on each platform.
@@ -68,6 +75,11 @@ EXAMPLES = r'''
     - name: Install AS3
       bigip_lx_package:
         package: f5-appsvcs-3.5.0-3.noarch.rpm
+
+    - name: Install AS3 with custom timeout
+      bigip_lx_package:
+        package: f5-appsvcs-3.5.0-3.noarch.rpm
+        timeout: 100
 
     - name: Add an LX package stored in a role
       bigip_lx_package:
@@ -153,6 +165,20 @@ class Parameters(AnsibleF5Parameters):
     @property
     def retain_package_file(self):
         return flatten_boolean(self._values['retain_package_file'])
+
+    @property
+    def timeout(self):
+        divisor = 10
+        timeout = self._values['timeout']
+        if timeout < 10 or timeout > 1800:
+            raise F5ModuleError(
+                "Timeout value must be between 10 and 1800 seconds."
+            )
+        if timeout > 99:
+            divisor = 100
+        delay = timeout / divisor
+
+        return int(delay), divisor
 
 
 class ApiParameters(Parameters):
@@ -283,12 +309,13 @@ class ModuleManager(object):
         )
 
     def wait_for_task(self, path):
+        delay, period = self.want.timeout
         task = None
-        for x in range(0, 60):
+        for x in range(0, period):
             task = self._check_task_on_device(path)
             if task['status'] in ['FINISHED', 'FAILED']:
                 return task
-            time.sleep(1)
+            time.sleep(delay)
         return task
 
     def _check_task_on_device(self, path):
@@ -389,6 +416,10 @@ class ArgumentSpec(object):
             retain_package_file=dict(
                 default='no',
                 type='bool'
+            ),
+            timeout=dict(
+                type='int',
+                default=300
             ),
         )
         self.argument_spec = {}

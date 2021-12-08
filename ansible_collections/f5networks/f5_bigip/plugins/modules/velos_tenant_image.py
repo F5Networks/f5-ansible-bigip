@@ -13,7 +13,7 @@ module: velos_tenant_image
 short_description: Manage VELOS tenant images
 description:
   - Manage VELOS tenant images.
-version_added: 1.1.0
+version_added: "1.1.0"
 options:
   image_name:
     description:

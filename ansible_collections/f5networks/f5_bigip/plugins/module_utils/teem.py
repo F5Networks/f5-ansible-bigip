@@ -89,7 +89,7 @@ class TeemClient:
         tmp, version = self.f5client.platform
         platform = PLATFORM.get(tmp, '')
         ansible_version = self.f5client.ansible_version
-        python_version = sys.version.split(' ')[0]
+        python_version = sys.version.split(' ', maxsplit=1)[0]
 
         return [{
             'CollectionName': 'F5_BIGIP',

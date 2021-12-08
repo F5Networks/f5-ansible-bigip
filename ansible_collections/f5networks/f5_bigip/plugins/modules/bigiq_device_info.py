@@ -2096,7 +2096,7 @@ class ModuleManager(object):
 
 class ArgumentSpec(object):
     def __init__(self):
-        self.supports_check_mode = False
+        self.supports_check_mode = True
         argument_spec = dict(
             gather_subset=dict(
                 type='list',

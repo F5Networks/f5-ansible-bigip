@@ -76,6 +76,26 @@ options:
       - installed
       - present
     default: present
+  task_id:
+    description:
+      - The ID of the async task as returned by the system in a previous module run.
+      - Used to query the status of the task on the device, useful with longer running operations that require
+        restarting services.
+      - This parameter is only usable when C(state) is C(installed)
+      - This parameter assumes a load ucs task has been started ond device,
+        therefore it does not check for existence of the UCS file beforehand.
+      - Adding this parameter incorrectly to a module run leads to confusing error messages. Refer to the examples
+        section for correct usage of this parameter.
+    type: str
+    version_added: "1.4.0"
+  timeout:
+    description:
+      - This parameter is used when installing uploaded UCS file on the device.
+      - The amount of time to wait for the API async interface to complete its task, in seconds.
+      - The accepted value range is between C(150) and C(1800) seconds.
+    type: int
+    default: 150
+    version_added: "1.4.0"
 notes:
    - Only the most basic checks are performed by this module. Other checks and
      considerations need to be taken into account. See
@@ -113,45 +133,73 @@ EXAMPLES = r'''
     ansible_network_os: f5networks.f5_bigip.bigip
     ansible_httpapi_use_ssl: yes
 
-- name: Upload UCS
-  bigip_ucs:
-    ucs: /root/bigip.localhost.localdomain.ucs
-    state: present
+  tasks:
+    - name: Upload UCS
+      bigip_ucs:
+        ucs: /root/bigip.localhost.localdomain.ucs
+        state: present
 
-- name: Install (upload, install) UCS.
-  bigip_ucs:
-    ucs: /root/bigip.localhost.localdomain.ucs
-    state: installed
+    - name: Install (upload, install) UCS - start task
+      bigip_ucs:
+        ucs: /root/bigip.localhost.localdomain.ucs
+        state: installed
+        register: task
 
-- name: Install (upload, install) UCS without installing the license portion
-  bigip_ucs:
-    ucs: /root/bigip.localhost.localdomain.ucs
-    state: installed
-    no_license: yes
+    - name: Install (upload, install) UCS - check task
+      bigip_ucs:
+        ucs: "{{ task.ucs }}"
+        task_id: "{{ task.task_id }}"
+        timeout: 300
 
-- name: Install (upload, install) UCS except the license, and bypassing the platform check
-  bigip_ucs:
-    ucs: /root/bigip.localhost.localdomain.ucs
-    state: installed
-    no_license: yes
-    no_platform_check: yes
+    - name: Install (upload, install) UCS without installing the license portion - start task
+      bigip_ucs:
+        ucs: /root/bigip.localhost.localdomain.ucs
+        no_license: yes
+        state: installed
+        register: task
 
-- name: Install (upload, install) UCS using a passphrase necessary to load the UCS
-  bigip_ucs:
-    ucs: /root/bigip.localhost.localdomain.ucs
-    state: installed
-    passphrase: MyPassphrase1234
+    - name: Install (upload, install) UCS without installing the license portion - check task
+      bigip_ucs:
+        ucs: "{{ task.ucs }}"
+        task_id: "{{ task.task_id }}"
+        timeout: 300
 
-- name: Remove uploaded UCS file
-  bigip_ucs:
-    ucs: bigip.localhost.localdomain.ucs
-    state: absent
+    - name: Install (upload, install) UCS except the license, and bypassing the platform check - start task
+      bigip_ucs:
+        ucs: /root/bigip.localhost.localdomain.ucs
+        no_license: yes
+        no_platform_check: yes
+        state: installed
+        register: task
+
+    - name: Install (upload, install) UCS except the license, and bypassing the platform check - check task
+      bigip_ucs:
+        ucs: "{{ task.ucs }}"
+        task_id: "{{ task.task_id }}"
+        timeout: 300
+
+    - name: Install (upload, install) UCS using a passphrase necessary to load the UCS - start task
+      bigip_ucs:
+        ucs: /root/bigip.localhost.localdomain.ucs
+        passphrase: MyPassphrase1234
+        state: installed
+        register: task
+
+    - name: Install (upload, install) UCS using a passphrase necessary to load the UCS - check task
+      bigip_ucs:
+        ucs: "{{ task.ucs }}"
+        task_id: "{{ task.task_id }}"
+        timeout: 300
+
+    - name: Remove uploaded UCS file
+      bigip_ucs:
+        ucs: bigip.localhost.localdomain.ucs
+        state: absent
 '''
 
 RETURN = r'''
 # only common fields returned
 '''
-
 import os
 import re
 import time
@@ -159,30 +207,24 @@ from datetime import datetime
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import Connection, ConnectionError
-from ansible.module_utils.six.moves.urllib.error import HTTPError
 
 from ..module_utils.client import (
     F5Client, send_teem
 )
 
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters,
+    F5ModuleError, AnsibleF5Parameters, flatten_boolean
 )
-
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    try:
-        from ordereddict import OrderedDict
-    except ImportError:
-        pass
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {}
     updatables = []
-    returnables = []
+    returnables = [
+        'ucs',
+        'task_id',
+        'message'
+    ]
     api_attributes = []
 
 
@@ -200,23 +242,43 @@ class ModuleParameters(Parameters):
             )
 
     @property
+    def timeout(self):
+        divisor = 100
+        timeout = self._values['timeout']
+        if timeout < 150 or timeout > 3600:
+            raise F5ModuleError(
+                "Timeout value must be between 150 and 3600 seconds."
+            )
+
+        delay = timeout / divisor
+
+        return delay, divisor
+
+    @property
     def basename(self):
         return os.path.basename(self.ucs)
 
     @property
     def options(self):
-        return {
+        tmp = {
             'include-chassis-level-config': self.include_chassis_level_config,
             'no-license': self.no_license,
             'no-platform-check': self.no_platform_check,
             'passphrase': self.passphrase,
             'reset-trust': self.reset_trust
         }
+        result = self._filter_params(tmp)
+        if result:
+            return result
 
     @property
     def reset_trust(self):
         self._check_required_if('reset_trust')
-        return self._values['reset_trust']
+        result = flatten_boolean(self._values['reset_trust'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
 
     @property
     def passphrase(self):
@@ -226,31 +288,29 @@ class ModuleParameters(Parameters):
     @property
     def no_platform_check(self):
         self._check_required_if('no_platform_check')
-        return self._values['no_platform_check']
+        result = flatten_boolean(self._values['no_platform_check'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
 
     @property
     def no_license(self):
         self._check_required_if('no_license')
-        return self._values['no_license']
+        result = flatten_boolean(self._values['no_license'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
 
     @property
     def include_chassis_level_config(self):
         self._check_required_if('include_chassis_level_config')
-        return self._values['include_chassis_level_config']
-
-    @property
-    def install_command(self):
-        cmd = 'tmsh load sys ucs /var/local/ucs/{0}'.format(self.basename)
-        # Append any options that might be specified
-        options = OrderedDict(sorted(self.options.items(), key=lambda t: t[0]))
-        for k, v in options.items():
-            if v is False or v is None:
-                continue
-            elif k == 'passphrase':
-                cmd += ' %s %s' % (k, v)
-            else:
-                cmd += ' %s' % (k)
-        return cmd
+        result = flatten_boolean(self._values['include_chassis_level_config'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
 
 
 class Changes(Parameters):
@@ -313,6 +373,11 @@ class ModuleManager(object):
         return result
 
     def present(self):
+        if self.want.task_id:
+            self.device_is_ready()
+            self.async_wait(self.want.task_id)
+            self.changes.update({'message': 'UCS loaded successfully'})
+            return True
         if self.exists():
             return self.update()
         else:
@@ -327,7 +392,12 @@ class ModuleManager(object):
             self.remove()
             return self.create()
         elif self.want.state == 'installed':
-            return self.install_on_device()
+            task = self.install_on_device()
+            self._start_task_on_device(task)
+            self.changes.update({'task_id': task})
+            self.changes.update({'ucs': self.want.basename})
+            self.changes.update({'message': 'UCS load async task started with id: {0}'.format(task)})
+            return True
         else:
             return False
 
@@ -336,9 +406,13 @@ class ModuleManager(object):
             return True
         self.create_on_device()
         if not self.exists():
-            raise F5ModuleError("Failed to upload the UCS file")
+            raise F5ModuleError("Failed to upload the UCS file.")
         if self.want.state == 'installed':
-            self.install_on_device()
+            task = self.install_on_device()
+            self._start_task_on_device(task)
+            self.changes.update({'task_id': task})
+            self.changes.update({'ucs': self.want.basename})
+            self.changes.update({'message': 'UCS load async task started with id: {0}'.format(task)})
         return True
 
     def absent(self):
@@ -351,7 +425,7 @@ class ModuleManager(object):
             return True
         self.remove_from_device()
         if self.exists():
-            raise F5ModuleError("Failed to delete the UCS file")
+            raise F5ModuleError("Failed to delete the UCS file.")
         return True
 
     def exists(self):
@@ -359,79 +433,6 @@ class ModuleManager(object):
         if self.want.basename in collection:
             return True
         return False
-
-    def wait_for_rest_api_restart(self):
-        for x in range(0, 20):
-            time.sleep(10)
-            try:
-                response = self.client.get('/mgmt/tm/util/available')
-                if response['code'] == 200:
-                    break
-            except ConnectionError:
-                pass
-            except HTTPError:
-                pass
-            except Exception:
-                raise
-
-    def wait_for_configuration_reload(self):
-        noops = 0
-        while noops < 4:
-            time.sleep(3)
-            params = dict(command="run",
-                          utilCmdArgs='-c "tmsh show sys mcp-state"'
-                          )
-            uri = "/mgmt/tm/util/bash"
-
-            response = self.client.post(uri, data=params)
-
-            if response['code'] not in [200, 201, 202]:
-                raise F5ModuleError(response['contents'])
-
-            if 'commandResult' not in response['contents']:
-                continue
-
-            result = response['contents']['commandResult']
-
-            if self._is_config_reloading_failed_on_device(result):
-                raise F5ModuleError(
-                    "Failed to reload the configuration. This may be due "
-                    "to a cross-version incompatibility. {0}".format(result)
-                )
-            if self._is_config_reloading_success_on_device(result):
-                if self._is_config_reloading_running_on_device(result):
-                    noops += 1
-                    continue
-            noops = 0
-
-    def _is_config_reloading_success_on_device(self, output):
-        succeed = r'Last Configuration Load Status\s+full-config-load-succeed'
-        matches = re.search(succeed, output)
-        if matches:
-            return True
-        return False
-
-    def _is_config_reloading_running_on_device(self, output):
-        running = r'Running Phase\s+running'
-        matches = re.search(running, output)
-        if matches:
-            return True
-        return False
-
-    def _is_config_reloading_failed_on_device(self, output):
-        failed = r'Last Configuration Load Status\s+base-config-load-failed'
-        matches = re.search(failed, output)
-        if matches:
-            return True
-        return False
-
-    def upload_file_to_device(self, content, name):
-        try:
-            self.client.plugin.upload_file("/mgmt/shared/file-transfer/uploads", content, name)
-        except F5ModuleError:
-            raise F5ModuleError(
-                "Failed to upload the file."
-            )
 
     def create_on_device(self):
         remote_path = "/var/local/ucs"
@@ -467,20 +468,105 @@ class ModuleManager(object):
         return False
 
     def install_on_device(self):
-        params = dict(command="run", utilCmdArgs='-c "{0}"'.format(self.want.install_command))
-        uri = "/mgmt/tm/util/bash"
+        if self.want.options:
+            params = dict(
+                command="load",
+                name=self.want.basename,
+                options=[self.want.options]
+            )
+        else:
+            params = dict(
+                command="load",
+                name=self.want.basename
+            )
+        uri = "/mgmt/tm/task/sys/ucs"
 
-        try:
-            response = self.client.post(uri, data=params)
-            if response['code'] in [400, 403]:
-                raise F5ModuleError(response['contents'])
-        except ConnectionError:
-            pass
-        except HTTPError:
-            pass
-        self.wait_for_rest_api_restart()
-        self.wait_for_configuration_reload()
-        return True
+        response = self.client.post(uri, data=params)
+
+        if response['code'] in [200, 201, 202]:
+            return response['contents']['_taskId']
+
+        raise F5ModuleError(response['contents'])
+
+    def _start_task_on_device(self, task):
+        payload = {"_taskState": "VALIDATING"}
+        uri = "/mgmt/tm/task/sys/ucs/{0}".format(task)
+        response = self.client.put(uri, data=payload)
+
+        if response['code'] in [200, 201, 202]:
+            return True
+
+        raise F5ModuleError(response['contents'])
+
+    def check_task_exists_on_device(self, task):
+        uri = "/mgmt/tm/task/sys/ucs/{0}".format(task)
+        response = self.client.get(uri)
+        if response['code'] in [200, 201, 202]:
+            return True
+        if response['code'] == 404:
+            return False
+        raise F5ModuleError(response['contents'])
+
+    def async_wait(self, task):
+        delay, period = self.want.timeout
+        # in most cases the task is no longer there after service restart, so instead for task we will check mcp state.
+        if not self.check_task_exists_on_device(task):
+            for x in range(0, period):
+                params = dict(command="run",
+                              utilCmdArgs='-c "tmsh show sys mcp-state"'
+                              )
+                uri = "/mgmt/tm/util/bash"
+
+                response = self.client.post(uri, data=params)
+
+                if response['code'] not in [200, 201, 202]:
+                    raise F5ModuleError(response['contents'])
+
+                if 'commandResult' not in response['contents']:
+                    continue
+
+                result = response['contents']['commandResult']
+
+                if self._is_config_reloading_failed_on_device(result):
+                    raise F5ModuleError(
+                        "Failed to reload the configuration. This may be due "
+                        "to a cross-version incompatibility. {0}".format(result)
+                    )
+                if self._is_config_reloading_success_on_device(result):
+                    return True
+                time.sleep(delay)
+            raise F5ModuleError(
+                "Module timeout reached, state change is unknown, "
+                "please increase the timeout parameter for long lived actions."
+            )
+        else:
+            for x in range(0, period):
+                uri = "/mgmt/tm/task/sys/ucs/{0}/result".format(task)
+                response = self.client.get(uri)
+                if response['code'] in [200, 201, 202]:
+                    if response['contents']['_taskState'] == 'FAILED':
+                        raise F5ModuleError("UCS load task has failed, please check device logs for more information.")
+                    if response['contents']['_taskState'] == 'COMPLETED':
+                        return True
+                time.sleep(delay)
+            raise F5ModuleError(
+                "Module timeout reached, state change is unknown, "
+                "please increase the timeout parameter for long lived actions."
+            )
+
+    def _is_config_reloading_success_on_device(self, output):
+        succeed = r'Last Configuration Load Status\s+full-config-load-succeed'
+        matches = re.search(succeed, output)
+        if matches:
+            return True
+        return False
+
+    def _is_config_reloading_failed_on_device(self, output):
+        failed = r'Last Configuration Load Status\s+base-config-load-failed'
+        matches = re.search(failed, output)
+        if matches:
+            return True
+        return False
 
     def read_current_from_device(self):
         result = []
@@ -496,11 +582,38 @@ class ModuleManager(object):
             result.append(os.path.basename(item['apiRawValues']['filename']))
         return result
 
+    def device_is_ready(self):
+        # we need to back off for a moment in case services are not restarting yet
+        delay, period = self.want.timeout
+        uri = "/mgmt/tm/sys/available"
+        time.sleep(delay)
+        for x in range(0, period):
+            try:
+                response = self.client.get(uri)
+                if response['code'] in [200, 201, 202]:
+                    return True
+                time.sleep(delay)
+            except ConnectionError:
+                time.sleep(delay)
+        raise F5ModuleError(
+            "Module timeout reached, unable to contact device, most likely due to restarting services, "
+            "if this message persists check device logs."
+        )
+
+    def upload_file_to_device(self, content, name):
+        try:
+            self.client.plugin.upload_file("/mgmt/shared/file-transfer/uploads", content, name)
+        except F5ModuleError:
+            raise F5ModuleError(
+                "Failed to upload the file."
+            )
+
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
+            ucs=dict(required=True),
             force=dict(
                 type='bool',
                 default='no'
@@ -516,11 +629,15 @@ class ArgumentSpec(object):
             ),
             passphrase=dict(no_log=True),
             reset_trust=dict(type='bool'),
+            task_id=dict(),
             state=dict(
                 default='present',
                 choices=['absent', 'installed', 'present']
             ),
-            ucs=dict(required=True)
+            timeout=dict(
+                type='int',
+                default=150
+            )
         )
         self.argument_spec = {}
         self.argument_spec.update(argument_spec)

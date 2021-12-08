@@ -1,0 +1,61 @@
+{
+    "name": "2/1.0",
+    "config": {
+        "name": "2/1.0",
+        "type": "iana-if-type:ethernetCsmacd",
+        "enabled": true,
+        "openconfig-vlan:tpid": "openconfig-vlan-types:TPID_0X8100"
+    },
+    "state": {
+        "name": "2/1.0",
+        "type": "iana-if-type:ethernetCsmacd",
+        "mtu": 9600,
+        "enabled": true,
+        "oper-status": "DOWN",
+        "counters": {
+            "in-octets": "0",
+            "in-unicast-pkts": "0",
+            "in-broadcast-pkts": "0",
+            "in-multicast-pkts": "0",
+            "in-discards": "0",
+            "in-errors": "22282779",
+            "in-fcs-errors": "10413416",
+            "out-octets": "0",
+            "out-unicast-pkts": "0",
+            "out-broadcast-pkts": "0",
+            "out-multicast-pkts": "0",
+            "out-discards": "0",
+            "out-errors": "0"
+        },
+        "f5-interface:forward-error-correction": "auto",
+        "f5-lacp:lacp_state": "LACP_DEFAULTED"
+    },
+    "openconfig-if-ethernet:ethernet": {
+        "state": {
+            "port-speed": "openconfig-if-ethernet:SPEED_100GB",
+            "hw-mac-address": "00:94:a1:8f:bc:80",
+            "counters": {
+                "in-mac-control-frames": "0",
+                "in-mac-pause-frames": "0",
+                "in-oversize-frames": "0",
+                "in-jabber-frames": "0",
+                "in-fragment-frames": "3640870",
+                "in-8021q-frames": "0",
+                "in-crc-errors": "6772546",
+                "out-mac-control-frames": "0",
+                "out-mac-pause-frames": "0",
+                "out-8021q-frames": "0"
+            },
+            "f5-if-ethernet:flow-control": {
+                "rx": "on"
+            }
+        },
+        "openconfig-vlan:switched-vlan": {
+            "config": {
+                "trunk-vlans": [
+                    444
+                ]
+            }
+        }
+    }
+}

@@ -67,7 +67,7 @@ class TestTeemClient(TestCase):
         self.fake_module._name = 'fake_module'
         self.fake_module.ansible_version = '2.10'
         self.client = F5Client(client=self.connection.httpapi, module=self.fake_module)
-        self.python_version = sys.version.split(' ')[0]
+        self.python_version = sys.version.split(' ', maxsplit=1)[0]
 
     def test_teem_client_build_telemetry(self):
         self.connection.send.return_value = connection_response(

@@ -81,5 +81,5 @@ def get_netmask(address):
 
 def compress_address(address):
     addr = ip_network(u'{0}'.format(address))
-    result = addr.compressed.split('/')[0]
+    result = addr.compressed.split('/', maxsplit=1)[0]
     return result
