@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - bigip_ucs_fetch - fixed random src parameter being returned to the user at the end of module run
