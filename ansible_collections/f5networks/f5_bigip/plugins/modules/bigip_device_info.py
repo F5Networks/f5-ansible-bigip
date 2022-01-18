@@ -16,6 +16,13 @@ description:
   - Collect information from F5 BIG-IP devices.
 version_added: "1.0.0"
 options:
+  partition:
+    description:
+      - Specifies the partition to gather the resource information from.
+      - The default value for the partition is taken as Common.
+    type: str
+    default: Common
+    version_added: "1.5.0"
   gather_subset:
     description:
       - When supplied, this argument restricts the information returned to a given subset.
@@ -7631,15 +7638,27 @@ class ApmAccessPolicyFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = ApmAccessProfileFactParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/apm/policy/access-policy"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -8246,7 +8265,7 @@ class AsmPolicyFactManagerV12(AsmPolicyFactManager):
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/asm/policies"
         to_expand = 'policy-builder,geolocation-enforcement,csrf-protection'
-        query = '?$top=10&$skip={0}&$expand={1}'.format(skip, to_expand)
+        query = '?$top=10&$skip={0}&$expand={1}&$filter=partition+eq+{2}'.format(skip, to_expand, self.module.params['partition'])
 
         response = self.client.get(uri + query)
 
@@ -8272,7 +8291,7 @@ class AsmPolicyFactManagerV13(AsmPolicyFactManager):
         uri = "/mgmt/tm/asm/policies"
         to_expand = 'general,signature-settings,header-settings,cookie-settings,antivirus,' \
                     'policy-builder,csrf-protection,csrf-urls'
-        query = '?$top=10&$skip={0}&$expand={1}'.format(skip, to_expand)
+        query = '?$top=10&$skip={0}&$expand={1}&$filter=partition+eq+{2}'.format(skip, to_expand, self.module.params['partition'])
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -8738,15 +8757,28 @@ class ClientSslProfilesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = ClientSslProfilesParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/client-ssl"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -8886,15 +8918,28 @@ class DeviceGroupsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = DeviceGroupsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
-        uri = "/mgmt/tm/cm/device-group/?expandSubcollections=true"
-        response = self.client.get(uri)
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
+        uri = "/mgmt/tm/cm/device-group"
+        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -9036,15 +9081,28 @@ class DevicesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = DevicesParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/cm/device"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -9174,15 +9232,28 @@ class ExternalMonitorsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = ExternalMonitorsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/monitor/external"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -9314,15 +9385,28 @@ class FastHttpProfilesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = FastHttpProfilesParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/fasthttp"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -9633,15 +9717,28 @@ class FastL4ProfilesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = FastL4ProfilesParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/fastl4"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -9725,15 +9822,28 @@ class GatewayIcmpMonitorsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GatewayIcmpMonitorsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/monitor/gateway-icmp"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -9957,15 +10067,29 @@ class GtmAPoolsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GtmXPoolsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/pool/a"
-        query = "?expandSubcollections=true"
+        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
+            skip,
+            self.module.params['partition']
+        )
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10001,15 +10125,29 @@ class GtmAaaaPoolsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GtmXPoolsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/pool/aaaa"
-        query = "?expandSubcollections=true"
+        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
+            skip,
+            self.module.params['partition']
+        )
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10045,15 +10183,29 @@ class GtmCnamePoolsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GtmXPoolsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/pool/cname"
-        query = "?expandSubcollections=true"
+        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
+            skip,
+            self.module.params['partition']
+        )
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10089,15 +10241,29 @@ class GtmMxPoolsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GtmXPoolsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/pool/mx"
-        query = "?expandSubcollections=true"
+        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
+            skip,
+            self.module.params['partition']
+        )
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10133,15 +10299,29 @@ class GtmNaptrPoolsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GtmXPoolsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/pool/naptr"
-        query = "?expandSubcollections=true"
+        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
+            skip,
+            self.module.params['partition']
+        )
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10177,15 +10357,29 @@ class GtmSrvPoolsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GtmXPoolsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/pool/srv"
-        query = "?expandSubcollections=true"
+        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
+            skip,
+            self.module.params['partition']
+        )
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10423,15 +10617,27 @@ class GtmServersFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GtmServersParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/server"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -10540,15 +10746,27 @@ class GtmAWideIpsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GtmXWideIpsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/wideip/a"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -10583,15 +10801,27 @@ class GtmAaaaWideIpsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GtmXWideIpsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/wideip/aaaa"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -10626,15 +10856,27 @@ class GtmCnameWideIpsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GtmXWideIpsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/wideip/cname"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -10669,15 +10911,27 @@ class GtmMxWideIpsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GtmXWideIpsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/wideip/mx"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -10712,15 +10966,27 @@ class GtmNaptrWideIpsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GtmXWideIpsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/wideip/naptr"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -10755,15 +11021,27 @@ class GtmSrvWideIpsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GtmXWideIpsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/wideip/srv"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -10837,15 +11115,27 @@ class GtmTopologyRegionFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = GtmTopologyRegionParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/region"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -10943,15 +11233,27 @@ class HttpMonitorsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = HttpMonitorsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/monitor/http"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -11049,15 +11351,27 @@ class HttpsMonitorsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = HttpsMonitorsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/monitor/https"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -11292,15 +11606,27 @@ class HttpProfilesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = HttpProfilesParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/http"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -11383,15 +11709,27 @@ class IappServicesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = IappServicesParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/sys/application/service"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -11558,15 +11896,27 @@ class IcmpMonitorsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = IcmpMonitorsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/monitor/icmp"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -11670,15 +12020,27 @@ class InterfacesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = InterfacesParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/net/interface"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}".format(skip)
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -11724,15 +12086,27 @@ class InternalDataGroupsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = InternalDataGroupsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/data-group/internal"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -11814,15 +12188,27 @@ class IrulesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = IrulesParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/rule"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -12162,7 +12548,7 @@ class LtmPoolsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             attrs = resource
             members = self.read_member_from_device(attrs['fullPath'])
@@ -12172,7 +12558,18 @@ class LtmPoolsFactManager(BaseManager):
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         """Read the LTM pools collection from the device
 
         Note that sub-collection expansion does not work with LTM pools. Therefore,
@@ -12184,7 +12581,8 @@ class LtmPoolsFactManager(BaseManager):
              list: List of ``Pool`` objects
         """
         uri = "/mgmt/tm/ltm/pool"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -12319,15 +12717,29 @@ class LtmPolicyFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = LtmPolicyParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/policy/"
-        query = "?expandSubcollections=true"
+        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
+            skip,
+            self.module.params['partition']
+        )
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -12444,7 +12856,7 @@ class NodesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             attrs = resource
             attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
@@ -12452,9 +12864,21 @@ class NodesFactManager(BaseManager):
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/node"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -12551,15 +12975,27 @@ class OneConnectProfilesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = OneConnectProfilesParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/one-connect"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -12748,15 +13184,27 @@ class RouteDomainFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = RouteDomainParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/net/route-domain"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -12853,15 +13301,27 @@ class SelfIpsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = SelfIpsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/net/self"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -13150,15 +13610,27 @@ class ServerSslProfilesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = ServerSslProfilesParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/server-ssl"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -13498,15 +13970,27 @@ class SslCertificatesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = SslCertificatesParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/sys/file/ssl-cert"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -13567,15 +14051,27 @@ class SslKeysFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = SslKeysParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/sys/file/ssl-key"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -14273,15 +14769,27 @@ class TcpMonitorsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = TcpMonitorsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/monitor/tcp"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -14352,15 +14860,27 @@ class TcpHalfOpenMonitorsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = TcpHalfOpenMonitorsParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/monitor/tcp-half-open"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -14768,15 +15288,27 @@ class TcpProfilesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = TcpProfilesParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/tcp"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -14863,7 +15395,7 @@ class TrafficGroupsFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             attrs = resource
             attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
@@ -14871,9 +15403,21 @@ class TrafficGroupsFactManager(BaseManager):
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/cm/traffic-group"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -14973,7 +15517,7 @@ class TrunksFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             attrs = resource
             attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
@@ -14981,9 +15525,21 @@ class TrunksFactManager(BaseManager):
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/net/trunk"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}".format(skip)
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -15166,15 +15722,27 @@ class UdpProfilesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = UdpProfilesParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/udp"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -15354,15 +15922,27 @@ class VirtualAddressesFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             params = VirtualAddressesParameters(params=resource)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/virtual-address"
-        response = self.client.get(uri)
+        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -16093,7 +16673,7 @@ class VirtualServersFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             attrs = resource
             attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
@@ -16101,9 +16681,24 @@ class VirtualServersFactManager(BaseManager):
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
-        uri = "/mgmt/tm/ltm/virtual?expandSubcollections=true"
-        response = self.client.get(uri)
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
+        uri = "/mgmt/tm/ltm/virtual"
+        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
+            skip,
+            self.module.params["partition"]
+        )
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -16241,7 +16836,7 @@ class VlansFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             attrs = resource
             attrs['stats'] = self.read_stats_from_device(attrs['fullPath'])
@@ -16249,9 +16844,24 @@ class VlansFactManager(BaseManager):
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
-        uri = "/mgmt/tm/net/vlan?expandSubcollections=true"
-        response = self.client.get(uri)
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 10
+        return result
+
+    def read_collection_from_device(self, skip=0):
+        uri = "/mgmt/tm/net/vlan"
+        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
+            skip,
+            self.module.params['partition']
+        )
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -16314,16 +16924,31 @@ class ManagementRouteFactManager(BaseManager):
 
     def read_facts(self):
         results = []
-        collection = self.read_collection_from_device()
+        collection = self.increment_read()
         for resource in collection:
             attrs = resource
             params = ManagementRouteParameters(params=attrs)
             results.append(params)
         return results
 
-    def read_collection_from_device(self):
-        uri = "/mgmt/tm/sys/management-route?expandSubcollections=true"
-        response = self.client.get(uri)
+    def increment_read(self):
+        n = 0
+        result = []
+        while True:
+            items = self.read_collection_from_device(skip=n)
+            if not items:
+                break
+            result.extend(items)
+            n = n + 5
+        return result
+
+    def read_collection_from_device(self, skip=0):
+        uri = "/mgmt/tm/sys/management-route"
+        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
+            skip,
+            self.module.params['partition']
+        )
+        response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -16603,6 +17228,10 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
+            partition=dict(
+                type="str",
+                default="Common",
+            ),
             gather_subset=dict(
                 type='list',
                 elements='str',

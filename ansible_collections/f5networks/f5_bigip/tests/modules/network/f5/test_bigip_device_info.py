@@ -92,7 +92,7 @@ class TestManager(unittest.TestCase):
         )
 
         tm = VirtualAddressesFactManager(module=module)
-        tm.read_collection_from_device = Mock(return_value=collection)
+        tm.read_collection_from_device = Mock(side_effect=[collection, []])
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
