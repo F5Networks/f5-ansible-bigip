@@ -1,3 +1,0 @@
----
-known_issues:
-    - Changed functional tests for bigip_device_info module by replacing legacy modules with bigip_command
