@@ -5,6 +5,25 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v1.5.0
+======
+
+Major Changes
+-------------
+
+- bigip_device_info - pagination logic has also been added to help with api stability.
+- bigip_device_info - the module no longer gathers information from all partitions on device. This change will stabalize the module by gathering resources only from the given partition and prevent the module from gathering way too much information that might result in crashing.
+
+Bugfixes
+--------
+
+- bigip_ucs_fetch - fixed random src parameter being returned to the user at the end of module run
+
+Known Issues
+------------
+
+- Changed functional tests for bigip_device_info module by replacing legacy modules with bigip_command
+
 v1.4.0
 ======
 

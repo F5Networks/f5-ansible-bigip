@@ -12,7 +12,7 @@ import os
 from ansible.module_utils.basic import AnsibleModule
 
 from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_ucs_fetch import (
-    Parameters, ArgumentSpec, ModuleManager
+    ModuleParameters, ArgumentSpec, ModuleManager
 )
 from ansible_collections.f5networks.f5_bigip.tests.compat import unittest
 from ansible_collections.f5networks.f5_bigip.tests.compat.mock import Mock, patch
@@ -53,7 +53,7 @@ class TestParameters(unittest.TestCase):
             src='remote.ucs',
             timeout=600
         )
-        p = Parameters(params=args)
+        p = ModuleParameters(params=args)
         assert p.backup == 'yes'
         assert p.timeout == (6.0, 100)
 

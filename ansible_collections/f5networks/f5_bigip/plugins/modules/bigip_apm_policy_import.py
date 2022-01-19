@@ -328,7 +328,7 @@ class ModuleManager(object):
             raise F5ModuleError(response['contents'])
 
         if 'commandResult' in response['contents']:
-            raise F5ModuleError(response['commandResult'])
+            raise F5ModuleError(response['contents']['commandResult'])
 
         return True
 
