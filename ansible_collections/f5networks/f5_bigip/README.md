@@ -1,11 +1,11 @@
-#Ansible Collection f5_bigip
+#F5 Declarative Collection for Ansible
 
 A collection focusing on managing F5 BIG-IP/BIG-IQ through declarative APIs such as AS3, DO, TS, and CFE. 
 The collection does include key imperative modules as well for managing some resources and operational tasks 
 that are not part of declarative workflows. These would include actions such as saving config, backing up config, 
 uploading security policies, uploading crts/keys, gathering info, etc.
 
-**Note that this Collection is not currently intended to replace the existing** [f5_modules] **Collection.**
+**Note:** This Collection is not currently intended to replace the existing [imperative_collection].
 
 ##Python Version
 This collection is supported on Python 3.6 and above.
@@ -36,7 +36,7 @@ ansible-galaxy collection install git+https://github.com/F5Networks/f5-ansible-b
     
 ##Tips
 
-* You can leverage both this collection (f5_bigip) and the previous imperative collection (f5_modules) at the same time.
+* You can leverage both this declarative collection and the previous imperative collection at the same time.
 * If you are migrating from the imperative collection, you can leave the provider variables and reference them from 
   the new httpapi connection variables:
 
@@ -69,7 +69,7 @@ We love hearing about how you're using the F5_BIGIP collection for Ansible.
 
 ##Copyright
 
-Copyright 2021 F5 Networks Inc.
+Copyright 2022 F5 Networks Inc.
 
 
 ##License
@@ -88,7 +88,7 @@ being included in this project.
 
 
 [repoinstall]: https://docs.ansible.com/ansible/latest/user_guide/collections_using.html#installing-a-collection-from-a-git-repository
-[f5_modules]: https://galaxy.ansible.com/f5networks/f5_modules
+[imperative_collection]: https://galaxy.ansible.com/f5networks/f5_modules
 [dailybuild]: https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_bigip-devel.tar.gz
 [License]: https://github.com/f5devcentral/f5-ansible-bigip/blob/master/COPYING
 [ansible_issues]: https://github.com/F5Networks/f5-ansible-bigip/issues
