@@ -43,8 +43,8 @@ options:
     type: str
   use_bigiq_sync:
     description:
-      - When set to true, BIG-IQ manually synchronizes configuration changes
-        between members in a DSC cluster.
+      - When set to C(no), initiate BIG-IP DSC sync when deploying configuration changes.
+        When set to C(yes), ignore BIG-IP DSC sync when deploying configuration changes.
     type: bool
     default: no
   conflict_policy:
