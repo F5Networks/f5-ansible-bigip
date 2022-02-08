@@ -336,7 +336,7 @@ class ModuleManager(object):
     def create_on_device(self):
         params = self.changes.api_params()
         uri = "/f5-utils-file-transfer:file/import"
-        params['local-file'] = "IMAGES",
+        params['local-file'] = "images"
         params['insecure'] = ""
         payload = dict(input=[params])
         response = self.client.post(uri, data=payload)
@@ -363,10 +363,12 @@ class ModuleManager(object):
     def is_imported(self):
         uri = f"/f5-tenant-images:images/image={self.want.image_name}/status"
         response = self.client.get(uri)
-        if response['code'] not in [200, 201, 202, 204]:
-            raise F5ModuleError(response['contents'])
+        if response['code'] == 404:
+            return False
         if response['code'] == 204:
             return False
+        if response['code'] not in [200, 201, 202, 204]:
+            raise F5ModuleError(response['contents'])
         status = response['contents']['f5-tenant-images:status']
         if 'replicated' in status:
             return True

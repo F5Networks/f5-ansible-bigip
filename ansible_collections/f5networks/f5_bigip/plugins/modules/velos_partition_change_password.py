@@ -144,7 +144,7 @@ class ModuleManager(object):
         self.client = F5Client(module=self.module, client=self.connection)
         self.want = ModuleParameters(params=self.module.params)
         self.changes = UsableChanges()
-        self.scope = "/operations/openconfig-system:system/aaa"
+        self.scope = "/restconf/operations/openconfig-system:system/aaa"
 
     def _set_changed_options(self):
         changed = {}
