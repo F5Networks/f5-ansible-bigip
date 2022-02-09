@@ -386,9 +386,8 @@ class ModuleManager(object):
     def create_on_device(self):
         params = self.changes.api_params()
         # we only use name parameter separately in update
-        params.pop('name')
         uri = "/openconfig-interfaces:interfaces/"
-        response = self.client.post(uri, data=params)
+        response = self.client.patch(uri, data=params)
         if response['code'] not in [200, 201, 202, 204]:
             raise F5ModuleError(response['contents'])
         return True
