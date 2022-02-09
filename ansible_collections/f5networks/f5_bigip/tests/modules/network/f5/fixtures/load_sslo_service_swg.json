@@ -1,0 +1,354 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "13d80ac8-ff7a-43de-ae44-d89115fe7675",
+            "name": "ssloS_swg_custom",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-service",
+                    "type": "JSON",
+                    "value": {
+                        "name": "ssloS_swg_custom",
+                        "vendorInfo": {
+                            "name": "F5 Secure Web Gateway"
+                        },
+                        "customService": {
+                            "name": "ssloS_swg_custom",
+                            "serviceDownAction": "reset",
+                            "serviceType": "swg",
+                            "serviceSpecific": {
+                                "name": "ssloS_swg_custom",
+                                "description": "",
+                                "accessProfile": "/Common/test_access2",
+                                "accessProfileScope": "named",
+                                "logSettings": [
+                                    {
+                                        "name": "/Common/default-log-setting",
+                                        "value": "/Common/default-log-setting"
+                                    }
+                                ],
+                                "accessProfileNameScopeValue": "SSLO",
+                                "accessProfileScopeCustSource": "/Common/modern",
+                                "perReqPolicy": "/Common/test-swg",
+                                "iRuleList": [
+                                    {
+                                        "name": "/Common/ssloS_swg_custom.app/ssloS_swg_custom-swg",
+                                        "value": "/Common/ssloS_swg_custom.app/ssloS_swg_custom-swg"
+                                    },
+                                    {
+                                        "name": "/Common/test_rule_1",
+                                        "value": "/Common/test_rule_1"
+                                    },
+                                    {
+                                        "name": "/Common/test_rule_2",
+                                        "value": "/Common/test_rule_2"
+                                    }
+                                ]
+                            }
+                        },
+                        "description": "Type: swg",
+                        "useTemplate": false,
+                        "serviceTemplate": "",
+                        "partition": "Common",
+                        "previousVersion": 9.0,
+                        "version": 9.0,
+                        "strictness": false,
+                        "virtuals": {
+                            "ssloS_swg_custom04": {
+                                "name": "ssloS_swg_custom-t-4",
+                                "internal": true,
+                                "ip": "0.0.0.0",
+                                "source": "0.0.0.0/0",
+                                "port": "0",
+                                "mask": "any",
+                                "ipProto": "tcp",
+                                "description": "SWG service (2022-1-16 09:02:37)",
+                                "clientVlanRestrict": "enableSome",
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled",
+                                "profiles": {
+                                    "names": [],
+                                    "references": [
+                                        "ssloS_swg_custom-service",
+                                        "ssloS_swg_custom-tcp-wan",
+                                        "ssloS_swg_custom-tcp-lan"
+                                    ]
+                                },
+                                "clonePoolsRef": {},
+                                "iRules": {
+                                    "names": [
+                                        "/Common/ssloS_swg_custom.app/ssloS_swg_custom-swg",
+                                        "/Common/test_rule_1",
+                                        "/Common/test_rule_2"
+                                    ],
+                                    "references": [
+                                        "ssloS_swg_custom-swg"
+                                    ]
+                                },
+                                "additionalConfig": [
+                                    {
+                                        "configKey": "internal",
+                                        "referredObj": true
+                                    },
+                                    {
+                                        "configKey": "perFlowRequestAccessPolicy",
+                                        "referedObj": false
+                                    }
+                                ],
+                                "clonePools": [],
+                                "perFlowRequestAccessPolicy": "/Common/test-swg",
+                                "skipSnat": true,
+                                "sourceAddressTranslation": {
+                                    "type": "automap"
+                                }
+                            },
+                            "ssloS_swg_custom06": {
+                                "name": "ssloS_swg_custom-t-6",
+                                "internal": true,
+                                "ip": "0.0.0.0",
+                                "source": "0.0.0.0/0",
+                                "port": "0",
+                                "mask": "any",
+                                "ipProto": "tcp",
+                                "description": "SWG service (2022-1-16 09:02:37)",
+                                "clientVlanRestrict": "enableSome",
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled",
+                                "profiles": {
+                                    "names": [],
+                                    "references": [
+                                        "ssloS_swg_custom-service",
+                                        "ssloS_swg_custom-tcp-wan",
+                                        "ssloS_swg_custom-tcp-lan"
+                                    ]
+                                },
+                                "clonePoolsRef": {},
+                                "iRules": {
+                                    "names": [
+                                        "/Common/ssloS_swg_custom.app/ssloS_swg_custom-swg",
+                                        "/Common/test_rule_1",
+                                        "/Common/test_rule_2"
+                                    ],
+                                    "references": [
+                                        "ssloS_swg_custom-swg"
+                                    ]
+                                },
+                                "additionalConfig": [
+                                    {
+                                        "configKey": "internal",
+                                        "referredObj": true
+                                    },
+                                    {
+                                        "configKey": "perFlowRequestAccessPolicy",
+                                        "referedObj": false
+                                    }
+                                ],
+                                "clonePools": [],
+                                "perFlowRequestAccessPolicy": "/Common/test-swg",
+                                "skipSnat": true,
+                                "sourceAddressTranslation": {
+                                    "type": "automap"
+                                }
+                            }
+                        },
+                        "iRules": {
+                            "ssloS_swg_custom-swg": {
+                                "name": "ssloS_swg_custom-swg",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\n# Use iRules to create an Access session when one does not exist already.\n# SWG as a Service requires a valid Access session in order to use SWG\n# functionality without licensing errors.\nwhen CLIENT_ACCEPTED {\n if { not [ACCESS::session exists] } {\n  set swgaas_new_sid [ACCESS::session create -flow]\n  ACCESS::session data set -sid $swgaas_new_sid \"session.policy.result\" \"allow\"\n  ACCESS::session data set -sid $swgaas_new_sid \"session.ui.mode\" \"0\"\n }\n} ; #CLIENT_ACCEPTED\n\nwhen HTTP_REQUEST {\n sharedvar ctx\n set x_f5_forwarded_set 0\n if { $ctx(ptcl) eq \"https\" } {\n  if { [HTTP::header value \"X-F5-Forwarded-Proto\"] eq \"\" } {\n   HTTP::header insert \"X-F5-Forwarded-Proto\" \"https\"\n   set x_f5_forwarded_set 1\n  }\n }\n} ; #HTTP_REQUEST\n\nwhen HTTP_RESPONSE_RELEASE {\n if { $x_f5_forwarded_set eq 1 } {\n  HTTP::header remove \"X-F5-Forwarded-Proto\"\n  set x_f5_forwarded_set 0\n }\n} ; #HTTP_RESPONSE_RELEASE\n",
+                                "validUnreferenced": true
+                            }
+                        },
+                        "profiles": {
+                            "ssloS_swg_custom-service": {
+                                "name": "ssloS_swg_custom-service",
+                                "profile": "service",
+                                "type": "f5-module",
+                                "context": "all"
+                            },
+                            "ssloS_swg_custom-t-4-connector": {
+                                "name": "ssloS_swg_custom-t-4-connector",
+                                "profile": "connector",
+                                "connectionTimeout": 0.0,
+                                "entryVirtualServer": "ssloS_swg_custom-t-4",
+                                "serviceDownAction": "reset",
+                                "context": "all",
+                                "unhandledProfile": "true"
+                            },
+                            "ssloS_swg_custom-tcp-wan": {
+                                "name": "ssloS_swg_custom-tcp-wan",
+                                "slowStart": "disabled",
+                                "nagle": "disabled",
+                                "profile": "tcp",
+                                "parent": "sslo-default-tcp-wan",
+                                "context": "serverside"
+                            },
+                            "ssloS_swg_custom-tcp-lan": {
+                                "name": "ssloS_swg_custom-tcp-lan",
+                                "slowStart": "disabled",
+                                "nagle": "disabled",
+                                "profile": "tcp",
+                                "parent": "sslo-default-tcp-lan",
+                                "context": "clientside"
+                            },
+                            "ssloS_swg_custom-t-6-connector": {
+                                "name": "ssloS_swg_custom-t-6-connector",
+                                "profile": "connector",
+                                "connectionTimeout": 0.0,
+                                "entryVirtualServer": "ssloS_swg_custom-t-6",
+                                "serviceDownAction": "reset",
+                                "context": "all",
+                                "unhandledProfile": "true"
+                            }
+                        },
+                        "selfIps": {},
+                        "pools": {},
+                        "accessPolicies": {},
+                        "existingBlockId": "13d80ac8-ff7a-43de-ae44-d89115fe7675"
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-network",
+                    "type": "JSON",
+                    "value": []
+                },
+                {
+                    "id": "processorContext",
+                    "type": "JSON",
+                    "value": {}
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": [
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/connector/~Common~ssloS_swg_custom.app~ssloS_swg_custom-t-4-connector",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/connector/~Common~ssloS_swg_custom.app~ssloS_swg_custom-t-4-connector"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/connector/~Common~ssloS_swg_custom.app~ssloS_swg_custom-t-6-connector",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/connector/~Common~ssloS_swg_custom.app~ssloS_swg_custom-t-6-connector"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_swg_custom.app~ssloS_swg_custom-swg",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_swg_custom.app~ssloS_swg_custom-swg"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/service/~Common~ssloS_swg_custom.app~ssloS_swg_custom-service",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/service/~Common~ssloS_swg_custom.app~ssloS_swg_custom-service"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~ssloS_swg_custom.app~ssloS_swg_custom-tcp-wan",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~ssloS_swg_custom.app~ssloS_swg_custom-tcp-wan"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~ssloS_swg_custom.app~ssloS_swg_custom-tcp-lan",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~ssloS_swg_custom.app~ssloS_swg_custom-tcp-lan"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_swg_custom.app~ssloS_swg_custom-t-4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_swg_custom.app~ssloS_swg_custom-t-4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_swg_custom.app~ssloS_swg_custom-t-6",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_swg_custom.app~ssloS_swg_custom-t-6"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.144.72.149",
+                            "strictness": false,
+                            "potentialDrift": false
+                        }
+                    ]
+                },
+                {
+                    "id": "dependencyInfo",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "type": "f5-ssl-orchestrator-service",
+                            "name": "/Common/ssloS_swg_custom.app/ssloS_swg_custom",
+                            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/13d80ac8-ff7a-43de-ae44-d89115fe7675",
+                            "dependsOn": {
+                                "references": [
+                                    {
+                                        "type": "f5-ssl-orchestrator-network",
+                                        "names": []
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "configToDeploy",
+                    "type": "BOOLEAN",
+                    "value": true
+                },
+                {
+                    "id": "deviceSpecific",
+                    "type": "JSON"
+                },
+                {
+                    "id": "error",
+                    "type": "STRING",
+                    "value": ""
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-service"
+            },
+            "configProcessorTimeoutSeconds": 90,
+            "statsProcessorTimeoutSeconds": 15,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "UNBOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1642352565462590,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/13d80ac8-ff7a-43de-ae44-d89115fe7675"
+        }
+    ],
+    "generation": 267,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1642431891544257
+}

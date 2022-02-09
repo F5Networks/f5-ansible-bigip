@@ -1,0 +1,21 @@
+{
+    "packageFilePath": "/var/config/rest/downloads/MyApp-0.1.0-0001.noarch.rpm",
+    "operation": "INSTALL",
+    "id": "4580013b-d347-4346-a8bd-70f5a9aee61c",
+    "status": "FAILED",
+    "startTime": "2021-11-06T16:39:44.874+0000",
+    "endTime": "2021-11-06T16:39:45.041+0000",
+    "userReference": {
+        "link": "https://localhost/mgmt/shared/authz/users/admin"
+    },
+    "identityReferences": [
+        {
+            "link": "https://localhost/mgmt/shared/authz/users/admin"
+        }
+    ],
+    "ownerMachineId": "948881e0-c6fa-4218-a253-d655077c9fe4",
+    "generation": 3,
+    "lastUpdateMicros": 1636216785041857,
+    "kind": "shared:iapp:package-management-tasks:iapppackagemanagementtaskstate",
+    "selfLink": "https://localhost/mgmt/shared/iapp/package-management-tasks/4580013b-d347-4346-a8bd-70f5a9aee61c"
+}

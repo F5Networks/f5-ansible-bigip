@@ -1,0 +1,64 @@
+{
+    "id": "dde7d2df-e853-4f4e-a788-d32b95a79b24",
+    "name": "sslo_obj_SERVICE_CHAIN_MODIFY_ssloSC_foobar",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "version": 9.0,
+                "partition": "Common",
+                "strictness": false,
+                "operationType": "MODIFY",
+                "deploymentName": "ssloSC_foobar",
+                "deploymentType": "SERVICE_CHAIN",
+                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/a7433749-c87e-49ea-b508-91f6ed0f4a18"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-service-chain",
+            "type": "JSON",
+            "value": {
+                "name": "ssloSC_foobar",
+                "description": "",
+                "orderedServiceList": [
+                    {
+                        "ipFamily": "ipv4",
+                        "name": "ssloS_layer3a",
+                        "serviceType": "L3"
+                    }
+                ],
+                "partition": "Common",
+                "previousVersion": 9.0,
+                "version": 9.0,
+                "strictness": false,
+                "existingBlockId": "a7433749-c87e-49ea-b508-91f6ed0f4a18"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-policy",
+            "type": "JSON",
+            "value": []
+        }
+    ],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "configProcessorTimeoutSeconds": 120,
+    "statsProcessorTimeoutSeconds": 60,
+    "configProcessorAffinity": {
+        "processorPolicy": "LOCAL",
+        "affinityProcessorReference": {
+            "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+        },
+        "machineId": "948881e0-c6fa-4218-a253-d655077c9fe4"
+    },
+    "state": "BINDING",
+    "presentationHtmlReference": {
+        "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+    },
+    "generation": 1,
+    "lastUpdateMicros": 1637660403498432,
+    "kind": "shared:iapp:blocks:blockstate",
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks/dde7d2df-e853-4f4e-a788-d32b95a79b24"
+}

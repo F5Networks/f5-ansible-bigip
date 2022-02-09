@@ -1,0 +1,290 @@
+{
+  "name": "ssloS_foobar",
+  "vendorInfo": {
+      "name": "Generic ICAP Service"
+  },
+  "customService": {
+      "name": "ssloS_foobar",
+      "ipFamily": "ipv4",
+      "serviceType": "icap",
+      "loadBalancing": {
+          "devices": [
+              {
+                  "ip": "1.1.1.1",
+                  "port": 1344.0
+              },
+              {
+                  "ip": "2.2.2.2",
+                  "port": 1348.0
+              }
+          ],
+          "monitor": {
+              "fromSystem": "/Common/tcp"
+          }
+      },
+      "serviceSpecific": {
+          "name": "ssloS_foobar",
+          "headers": {
+              "mode": true,
+              "headerConfig": {
+                  "from": "foo_from",
+                  "host": "foo_host",
+                  "referrer": "foo_referrer",
+                  "userAgent": "foo_ua"
+              }
+          },
+          "requestUri": "icap://${SERVER_IP}:${SERVER_PORT}/avscan",
+          "allowHttp10": false,
+          "responseUri": "icap://${SERVER_IP}:${SERVER_PORT}/avscan",
+          "previewLength": 2048.0,
+          "enableOneConnect": true
+      },
+      "serviceDownAction": "ignore"
+  },
+  "partition": "Common",
+  "previousVersion": 9.0,
+  "version": 9.0,
+  "strictness": false,
+  "virtuals": {
+      "ssloS_foobar0": {
+          "name": "ssloS_foobar-req",
+          "ip": "0.0.0.0",
+          "source": "0.0.0.0/0",
+          "port": "0",
+          "mask": "any",
+          "ipProto": "tcp",
+          "description": "ICAP service (2021-12-16 11:15:55)",
+          "clientVlanRestrict": "enableSome",
+          "profiles": {
+              "names": {
+                  "contextAll": [
+                      "/Common/ssloS_foobar.app/ssloS_foobar-tcp-lan"
+                  ]
+              },
+              "references": [
+                  "ssloS_foobar-icap-oc",
+                  "ssloS_foobar-req"
+              ]
+          },
+          "pool": {
+              "reference": "ssloS_foobar"
+          },
+          "iRules": {},
+          "translateAddress": "enabled",
+          "translatePort": "enabled",
+          "skipSnat": true,
+          "internal": true,
+          "additionalConfig": {
+              "configKey": "internal",
+              "referedObj": true
+          }
+      },
+      "ssloS_foobar1": {
+          "name": "ssloS_foobar-rsp",
+          "ip": "0.0.0.0",
+          "source": "0.0.0.0/0",
+          "port": "0",
+          "mask": "any",
+          "description": "ICAP service (2021-12-16 11:15:55)",
+          "clientVlanRestrict": "enableSome",
+          "profiles": {
+              "names": {
+                  "contextAll": [
+                      "/Common/ssloS_foobar.app/ssloS_foobar-tcp-lan"
+                  ]
+              },
+              "references": [
+                  "ssloS_foobar-icap-oc",
+                  "ssloS_foobar-rsp"
+              ]
+          },
+          "pool": {
+              "reference": "ssloS_foobar"
+          },
+          "iRules": {},
+          "translateAddress": "enabled",
+          "translatePort": "enabled",
+          "skipSnat": true,
+          "internal": true,
+          "additionalConfig": {
+              "configKey": "internal",
+              "referedObj": true
+          }
+      },
+      "ssloS_foobar2": {
+          "name": "ssloS_foobar-t-4",
+          "ip": "0.0.0.0",
+          "source": "0.0.0.0/0",
+          "port": "0",
+          "mask": "any",
+          "ipProto": "tcp",
+          "description": "ICAP service (2021-12-16 11:15:55)",
+          "clientVlanRestrict": "enableSome",
+          "profiles": {
+              "names": {
+                  "contextClientSide": [
+                      "/Common/ssloS_foobar.app/ssloS_foobar-tcp-lan"
+                  ],
+                  "contextServerSide": [
+                      "/Common/ssloS_foobar.app/ssloS_foobar-tcp-wan"
+                  ]
+              },
+              "references": [
+                  "ssloS_foobar-service",
+                  "ssloS_foobar-adp-req",
+                  "ssloS_foobar-adp-rsp",
+                  "ssloS_foobar-icap-http"
+              ]
+          },
+          "pool": {
+              "reference": "ssloS_foobar"
+          },
+          "iRules": {
+              "references": [
+                  "ssloS_foobar-ic"
+              ]
+          },
+          "translateAddress": "disabled",
+          "translatePort": "disabled",
+          "skipSnat": true,
+          "internal": true,
+          "additionalConfig": {
+              "configKey": "internal",
+              "referedObj": true
+          },
+          "cpmPolicies": {
+              "names": []
+          }
+      }
+  },
+  "profiles": {
+      "ssloS_foobar-icap-http": {
+          "name": "ssloS_foobar-icap-http",
+          "requestChunking": "sustain",
+          "responseChunking": "unchunk",
+          "enforcement": {
+              "maxHeaderCount": 128.0,
+              "maxHeaderSize": 65536.0,
+              "maxRequests": 0.0
+          },
+          "profile": "http",
+          "parent": "sslo-default-http"
+      },
+      "ssloS_foobar-icap-oc": {
+          "name": "ssloS_foobar-icap-oc",
+          "maxReuse": 400.0,
+          "sharePools": "disabled",
+          "profile": "one-connect",
+          "parent": "sslo-default-oneconnect"
+      },
+      "ssloS_foobar-tcp-lan": {
+          "name": "ssloS_foobar-tcp-lan",
+          "slowStart": "disabled",
+          "nagle": "disabled",
+          "profile": "tcp",
+          "parent": "sslo-default-tcp-lan",
+          "unhandledProfile": "true",
+          "delayedAcks": "disabled",
+          "initRwnd": 8.0
+      },
+      "ssloS_foobar-tcp-wan": {
+          "name": "ssloS_foobar-tcp-wan",
+          "slowStart": "disabled",
+          "nagle": "disabled",
+          "profile": "tcp",
+          "parent": "sslo-default-tcp-wan",
+          "unhandledProfile": "true",
+          "delayedAcks": "disabled",
+          "initRwnd": 8.0
+      },
+      "ssloS_foobar-service": {
+          "name": "ssloS_foobar-service",
+          "profile": "service",
+          "type": "icap",
+          "context": "all"
+      },
+      "ssloS_foobar-req": {
+          "name": "ssloS_foobar-req",
+          "previewLength": 2048.0,
+          "uri": "icap://${SERVER_IP}:${SERVER_PORT}/avscan",
+          "profile": "icap",
+          "parent": "sslo-default-icap",
+          "headerFrom": "foo_from",
+          "host": "foo_host",
+          "userAgent": "foo_ua"
+      },
+      "ssloS_foobar-rsp": {
+          "name": "ssloS_foobar-rsp",
+          "previewLength": 2048.0,
+          "uri": "icap://${SERVER_IP}:${SERVER_PORT}/avscan",
+          "profile": "icap",
+          "parent": "sslo-default-icap",
+          "headerFrom": "foo_from",
+          "host": "foo_host",
+          "userAgent": "foo_ua"
+      },
+      "ssloS_foobar-t-4-connector": {
+          "name": "ssloS_foobar-t-4-connector",
+          "profile": "connector",
+          "connectionTimeout": 0.0,
+          "entryVirtualServer": "ssloS_foobar-t-4",
+          "serviceDownAction": "ignore",
+          "context": "all",
+          "unhandledProfile": "true"
+      },
+      "ssloS_foobar-adp-req": {
+          "name": "ssloS_foobar-adp-req",
+          "internalVirtual": "ssloS_foobar-req",
+          "previewSize": 2048.0,
+          "serviceDownAction": "ignore",
+          "allowHttp_10": "no",
+          "profile": "request-adapt",
+          "parent": "sslo-default-requestadapt",
+          "context": "clientside"
+      },
+      "ssloS_foobar-adp-rsp": {
+          "name": "ssloS_foobar-adp-rsp",
+          "internalVirtual": "ssloS_foobar-rsp",
+          "previewSize": 2048.0,
+          "serviceDownAction": "ignore",
+          "allowHttp_10": "no",
+          "profile": "response-adapt",
+          "parent": "sslo-default-responseadapt",
+          "context": "serverside"
+      }
+  },
+  "pools": {
+      "ssloS_foobar": {
+          "name": "ssloS_foobar",
+          "loadBalancingMode": "predictive-node",
+          "minActiveMembers": "0",
+          "monitors": {
+              "names": [
+                  "/Common/tcp"
+              ]
+          },
+          "members": [
+              {
+                  "port": 1344.0,
+                  "ip": "1.1.1.1",
+                  "appService": "ssloS_foobar.app/ssloS_foobar",
+                  "subPath": "ssloS_foobar.app"
+              },
+              {
+                  "port": 1348.0,
+                  "ip": "2.2.2.2",
+                  "appService": "ssloS_foobar.app/ssloS_foobar",
+                  "subPath": "ssloS_foobar.app"
+              }
+          ]
+      }
+  },
+  "iRules": {
+      "ssloS_foobar-ic": {
+          "name": "ssloS_foobar-ic",
+          "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\n\nwhen HTTP_DISABLED {\n set tmp \"ADAPT::enable request 0; ADAPT::enable response 0\"\n eval $tmp\n unset tmp\n}\n\n",
+          "validUnreferenced": true
+      }
+  },
+  "existingBlockId": "d69822e2-6ddf-4129-a475-a96bf753e91a"
+}

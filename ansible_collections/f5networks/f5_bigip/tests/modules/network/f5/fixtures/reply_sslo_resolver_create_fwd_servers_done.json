@@ -1,0 +1,114 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "269567bb-6de4-455b-831e-d61fec44d0a4",
+            "name": "sslo_obj_GENERAL_SETTINGS_CREATE_ssloGS_global",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-operation-context",
+                    "type": "JSON",
+                    "value": {
+                        "version": 9.0,
+                        "operationType": "CREATE",
+                        "deploymentType": "GENERAL_SETTINGS",
+                        "deploymentName": "ssloGS_Global",
+                        "deploymentReference": "",
+                        "partition": "Common",
+                        "strictness": false
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-general-settings",
+                    "type": "JSON",
+                    "value": {
+                        "name": "ssloGS_global",
+                        "previousVersion": 9.0,
+                        "version": 9.0,
+                        "configModified": true,
+                        "ipFamily": "both",
+                        "dns": {
+                            "enableDnsSecurity": false,
+                            "enableLocalDnsQueryResolution": true,
+                            "enableLocalDnsZones": false,
+                            "localDnsZones": [],
+                            "localDnsNameservers": [
+                                "10.1.20.1",
+                                "10.1.20.2",
+                                "fd66:2735:1533:46c1:68c8:0:0:7110",
+                                "fd66:2735:1533:46c1:68c8:0:0:7111"
+                            ]
+                        },
+                        "egressNetwork": {
+                            "gatewayOptions": "useDefault",
+                            "outboundGateways": {
+                                "referredObj": "",
+                                "ipv4OutboundGateways": [
+                                    {
+                                        "ip": "",
+                                        "ratio": 1.0
+                                    }
+                                ],
+                                "ipv6NonPublicGateways": [
+                                    {
+                                        "ip": ""
+                                    }
+                                ],
+                                "ipv6OutboundGateways": [
+                                    {
+                                        "ip": "",
+                                        "ratio": 1.0
+                                    }
+                                ]
+                            }
+                        },
+                        "partition": "Common",
+                        "strictness": false,
+                        "existingBlockId": ""
+                    }
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": []
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.144.75.87",
+                            "strictness": false,
+                            "potentialDrift": false
+                        }
+                    ]
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+            },
+            "configProcessorTimeoutSeconds": 120,
+            "statsProcessorTimeoutSeconds": 60,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "BOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1637248078541129,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/269567bb-6de4-455b-831e-d61fec44d0a4"
+        }
+    ],
+    "generation": 675,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1637248078542287
+}

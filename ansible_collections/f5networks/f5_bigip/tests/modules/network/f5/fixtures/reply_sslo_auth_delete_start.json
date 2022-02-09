@@ -1,0 +1,47 @@
+{
+    "id": "9f275bb1-eba0-4e7f-a923-76ec91f1f2f5",
+    "name": "sslo_obj_AUTHENTICATION_DELETE_ssloA_foobar",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "deploymentName": "ssloA_foobar",
+                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/3c5ca876-78c4-4e0e-a241-4c9ca0ddb168",
+                "deploymentType": "AUTHENTICATION",
+                "operationType": "DELETE",
+                "version": 9.0,
+                "partition": "Common"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-authentication",
+            "type": "JSON",
+            "value": {
+                "existingBlockId": "3c5ca876-78c4-4e0e-a241-4c9ca0ddb168",
+                "name": "ssloA_foobar",
+                "partition": "Common",
+                "previousVersion": 9.0,
+                "version": 9.0
+            }
+        }
+    ],
+    "dataProperties": [],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "configProcessorTimeoutSeconds": 30,
+    "statsProcessorTimeoutSeconds": 15,
+    "configProcessorAffinity": {
+        "processorPolicy": "LOAD_BALANCED",
+        "affinityProcessorReference": {
+            "link": "https://localhost/mgmt/shared/iapp/processors/affinity/load-balanced"
+        },
+        "machineId": "948881e0-c6fa-4218-a253-d655077c9fe4"
+    },
+    "state": "BINDING",
+    "generation": 1,
+    "lastUpdateMicros": 1636973739829359,
+    "kind": "shared:iapp:blocks:blockstate",
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks/9f275bb1-eba0-4e7f-a923-76ec91f1f2f5"
+}

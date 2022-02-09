@@ -1,0 +1,222 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "3c5ca876-78c4-4e0e-a241-4c9ca0ddb168",
+            "name": "ssloA_foobar",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-authentication",
+                    "type": "JSON",
+                    "value": {
+                        "name": "ssloA_foobar",
+                        "description": "OCSP Responder",
+                        "authType": "ocsp",
+                        "serverDef": {
+                            "source": "0.0.0.0%0/0",
+                            "destination": {
+                                "address": "192.168.1.1%0/32",
+                                "port": 80.0,
+                                "mask": "255.255.255.255"
+                            },
+                            "vlans": [
+                                {
+                                    "name": "/Common/vlan1",
+                                    "value": "/Common/vlan1"
+                                },
+                                {
+                                    "name": "/Common/vlan2",
+                                    "value": "/Common/vlan2"
+                                }
+                            ],
+                            "serverTcpProfile": "/Common/f5-tcp-wan",
+                            "clientTcpProfile": "/Common/f5-tcp-lan",
+                            "httpProfile": "/Common/http",
+                            "sslSettingReference": "ssloT_fake_ssl_1"
+                        },
+                        "vendorInfo": {
+                            "name": "OCSP Responder",
+                            "product": "",
+                            "model": "",
+                            "version": ""
+                        },
+                        "ocsp": {
+                            "useExisting": false,
+                            "ocspProfile": "",
+                            "maxAge": 604800.0,
+                            "nonce": "enabled",
+                            "fqdn": "baz.bar.net"
+                        },
+                        "useTemplate": false,
+                        "authTemplate": "",
+                        "partition": "Common",
+                        "previousVersion": 9.0,
+                        "version": 9.0,
+                        "strictness": false,
+                        "virtuals": {
+                            "ssloA_foobar": {
+                                "name": "ssloA_foobar-ocsp-4",
+                                "ip": "192.168.1.1%0",
+                                "source": "0.0.0.0%0/0",
+                                "port": "80",
+                                "mask": "255.255.255.255",
+                                "ipProto": "tcp",
+                                "ipFamily": "ipv4",
+                                "clientVlanRestrict": "enableSome",
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled",
+                                "skipSnat": true,
+                                "sourceAddressTranslation": {
+                                    "type": "none",
+                                    "pool": "none"
+                                },
+                                "description": "OCSP Responder (2021-11-15 08:41:47)",
+                                "profiles": {
+                                    "names": {
+                                        "contextServerSide": [
+                                            "/Common/f5-tcp-wan",
+                                            "/Common/ssloT_fake_ssl_1.app/ssloT_fake_ssl_1-sssl-vht"
+                                        ],
+                                        "contextClientSide": [
+                                            "/Common/f5-tcp-lan",
+                                            "/Common/ssloT_fake_ssl_1.app/ssloT_fake_ssl_1-cssl-vht"
+                                        ],
+                                        "contextAll": [
+                                            "/Common/ssloA_foobar.app/ssloA_foobar-ocsp",
+                                            "/Common/http"
+                                        ]
+                                    }
+                                },
+                                "vlans": [
+                                    "/Common/vlan1",
+                                    "/Common/vlan2"
+                                ]
+                            }
+                        },
+                        "profiles": {
+                            "ssloA_foobar-ocsp": {
+                                "name": "ssloA_foobar-ocsp",
+                                "maxAge": 604800.0,
+                                "nonce": "enabled",
+                                "profile": "ocsp",
+                                "parent": "sslo-default-ocsp",
+                                "unhandledProfile": "true"
+                            }
+                        },
+                        "iRules": {
+                            "ssloA_foobar-ocsp": {
+                                "name": "ssloA_foobar-ocsp",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\nwhen CLIENTSSL_CLIENTHELLO {\n        SSL::forward_proxy extension AIA \"ocsp,http://baz.bar.net:80\"\n}",
+                                "validUnreferenced": true
+                            }
+                        },
+                        "existingBlockId": "3c5ca876-78c4-4e0e-a241-4c9ca0ddb168"
+                    }
+                },
+                {
+                    "id": "processorContext",
+                    "type": "JSON",
+                    "value": {}
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": [
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/ocsp/~Common~ssloA_foobar.app~ssloA_foobar-ocsp",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/ocsp/~Common~ssloA_foobar.app~ssloA_foobar-ocsp"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloA_foobar.app~ssloA_foobar-ocsp",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloA_foobar.app~ssloA_foobar-ocsp"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloA_foobar.app~ssloA_foobar-ocsp-4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloA_foobar.app~ssloA_foobar-ocsp-4"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.144.75.87",
+                            "strictness": false,
+                            "potentialDrift": false
+                        }
+                    ]
+                },
+                {
+                    "id": "dependencyInfo",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "type": "f5-ssl-orchestrator-authentication",
+                            "name": "/Common/ssloA_foobar.app/ssloA_foobar",
+                            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/3c5ca876-78c4-4e0e-a241-4c9ca0ddb168",
+                            "dependsOn": {
+                                "references": [
+                                    {
+                                        "type": "f5-ssl-orchestrator-tls",
+                                        "names": [
+                                            "/Common/ssloT_fake_ssl_1.app/ssloT_fake_ssl_1"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "configToDeploy",
+                    "type": "BOOLEAN",
+                    "value": true
+                },
+                {
+                    "id": "deviceSpecific",
+                    "type": "JSON"
+                },
+                {
+                    "id": "error",
+                    "type": "STRING",
+                    "value": ""
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-authentication"
+            },
+            "configProcessorTimeoutSeconds": 90,
+            "statsProcessorTimeoutSeconds": 15,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "UNBOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1636965715043471,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/3c5ca876-78c4-4e0e-a241-4c9ca0ddb168"
+        }
+    ],
+    "generation": 458,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1636965814059356
+}

@@ -1,0 +1,186 @@
+{
+    "name": "ssloS_swg_default",
+    "vendorInfo": {
+        "name": "F5 Secure Web Gateway"
+    },
+    "customService": {
+        "name": "ssloS_swg_default",
+        "serviceDownAction": "reset",
+        "serviceType": "swg",
+        "serviceSpecific": {
+            "name": "ssloS_swg_default",
+            "description": "",
+            "accessProfile": "/Common/ssloS_swg_default.app/ssloS_swg_default_M_accessProfile",
+            "accessProfileScope": "profile",
+            "logSettings": [
+                {
+                    "name": "/Common/default-log-setting",
+                    "value": "/Common/default-log-setting"
+                }
+            ],
+            "accessProfileNameScopeValue": "",
+            "accessProfileScopeCustSource": "/Common/modern",
+            "perReqPolicy": "/Common/test-swg",
+            "iRuleList": [
+                {
+                    "name": "/Common/ssloS_swg_default.app/ssloS_swg_default-swg",
+                    "value": "/Common/ssloS_swg_default.app/ssloS_swg_default-swg"
+                }
+            ]
+        }
+    },
+    "description": "Type: swg",
+    "useTemplate": false,
+    "serviceTemplate": "",
+    "partition": "Common",
+    "previousVersion": 9.0,
+    "version": 9.0,
+    "strictness": false,
+    "virtuals": {
+        "ssloS_swg_default04": {
+            "name": "ssloS_swg_default-t-4",
+            "internal": true,
+            "ip": "0.0.0.0",
+            "source": "0.0.0.0/0",
+            "port": "0",
+            "mask": "any",
+            "ipProto": "tcp",
+            "description": "SWG service (2022-1-16 08:38:25)",
+            "clientVlanRestrict": "enableSome",
+            "translateAddress": "disabled",
+            "translatePort": "disabled",
+            "profiles": {
+                "names": [],
+                "references": [
+                    "ssloS_swg_default-service",
+                    "ssloS_swg_default-tcp-wan",
+                    "ssloS_swg_default-tcp-lan"
+                ]
+            },
+            "clonePoolsRef": {},
+            "iRules": {
+                "names": [
+                    "/Common/ssloS_swg_default.app/ssloS_swg_default-swg"
+                ],
+                "references": [
+                    "ssloS_swg_default-swg"
+                ]
+            },
+            "additionalConfig": [
+                {
+                    "configKey": "internal",
+                    "referredObj": true
+                },
+                {
+                    "configKey": "perFlowRequestAccessPolicy",
+                    "referedObj": false
+                }
+            ],
+            "clonePools": [],
+            "perFlowRequestAccessPolicy": "/Common/test-swg",
+            "skipSnat": true,
+            "sourceAddressTranslation": {
+                "type": "automap"
+            }
+        },
+        "ssloS_swg_default06": {
+            "name": "ssloS_swg_default-t-6",
+            "internal": true,
+            "ip": "0.0.0.0",
+            "source": "0.0.0.0/0",
+            "port": "0",
+            "mask": "any",
+            "ipProto": "tcp",
+            "description": "SWG service (2022-1-16 08:38:25)",
+            "clientVlanRestrict": "enableSome",
+            "translateAddress": "disabled",
+            "translatePort": "disabled",
+            "profiles": {
+                "names": [],
+                "references": [
+                    "ssloS_swg_default-service",
+                    "ssloS_swg_default-tcp-wan",
+                    "ssloS_swg_default-tcp-lan"
+                ]
+            },
+            "clonePoolsRef": {},
+            "iRules": {
+                "names": [
+                    "/Common/ssloS_swg_default.app/ssloS_swg_default-swg"
+                ],
+                "references": [
+                    "ssloS_swg_default-swg"
+                ]
+            },
+            "additionalConfig": [
+                {
+                    "configKey": "internal",
+                    "referredObj": true
+                },
+                {
+                    "configKey": "perFlowRequestAccessPolicy",
+                    "referedObj": false
+                }
+            ],
+            "clonePools": [],
+            "perFlowRequestAccessPolicy": "/Common/test-swg",
+            "skipSnat": true,
+            "sourceAddressTranslation": {
+                "type": "automap"
+            }
+        }
+    },
+    "iRules": {
+        "ssloS_swg_default-swg": {
+            "name": "ssloS_swg_default-swg",
+            "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\n# Use iRules to create an Access session when one does not exist already.\n# SWG as a Service requires a valid Access session in order to use SWG\n# functionality without licensing errors.\nwhen CLIENT_ACCEPTED {\n if { not [ACCESS::session exists] } {\n  set swgaas_new_sid [ACCESS::session create -flow]\n  ACCESS::session data set -sid $swgaas_new_sid \"session.policy.result\" \"allow\"\n  ACCESS::session data set -sid $swgaas_new_sid \"session.ui.mode\" \"0\"\n }\n} ; #CLIENT_ACCEPTED\n\nwhen HTTP_REQUEST {\n sharedvar ctx\n set x_f5_forwarded_set 0\n if { $ctx(ptcl) eq \"https\" } {\n  if { [HTTP::header value \"X-F5-Forwarded-Proto\"] eq \"\" } {\n   HTTP::header insert \"X-F5-Forwarded-Proto\" \"https\"\n   set x_f5_forwarded_set 1\n  }\n }\n} ; #HTTP_REQUEST\n\nwhen HTTP_RESPONSE_RELEASE {\n if { $x_f5_forwarded_set eq 1 } {\n  HTTP::header remove \"X-F5-Forwarded-Proto\"\n  set x_f5_forwarded_set 0\n }\n} ; #HTTP_RESPONSE_RELEASE\n",
+            "validUnreferenced": true
+        }
+    },
+    "profiles": {
+        "ssloS_swg_default-service": {
+            "name": "ssloS_swg_default-service",
+            "profile": "service",
+            "type": "f5-module",
+            "context": "all"
+        },
+        "ssloS_swg_default-t-4-connector": {
+            "name": "ssloS_swg_default-t-4-connector",
+            "profile": "connector",
+            "connectionTimeout": 0.0,
+            "entryVirtualServer": "ssloS_swg_default-t-4",
+            "serviceDownAction": "reset",
+            "context": "all",
+            "unhandledProfile": "true"
+        },
+        "ssloS_swg_default-tcp-wan": {
+            "name": "ssloS_swg_default-tcp-wan",
+            "slowStart": "disabled",
+            "nagle": "disabled",
+            "profile": "tcp",
+            "parent": "sslo-default-tcp-wan",
+            "context": "serverside"
+        },
+        "ssloS_swg_default-tcp-lan": {
+            "name": "ssloS_swg_default-tcp-lan",
+            "slowStart": "disabled",
+            "nagle": "disabled",
+            "profile": "tcp",
+            "parent": "sslo-default-tcp-lan",
+            "context": "clientside"
+        },
+        "ssloS_swg_default-t-6-connector": {
+            "name": "ssloS_swg_default-t-6-connector",
+            "profile": "connector",
+            "connectionTimeout": 0.0,
+            "entryVirtualServer": "ssloS_swg_default-t-6",
+            "serviceDownAction": "reset",
+            "context": "all",
+            "unhandledProfile": "true"
+        }
+    },
+    "selfIps": {},
+    "pools": {},
+    "accessPolicies": {},
+    "existingBlockId": "5b1db48d-b4a2-4898-9c22-1984b6e9a89c"
+}

@@ -1,0 +1,45 @@
+{
+  "name": "ssloGS_global",
+  "previousVersion": 9.0,
+  "version": 9.0,
+  "configModified": true,
+  "ipFamily": "both",
+  "dns": {
+      "enableDnsSecurity": false,
+      "enableLocalDnsQueryResolution": true,
+      "enableLocalDnsZones": false,
+      "localDnsZones": [],
+      "localDnsNameservers": [
+          "10.1.20.1",
+          "10.1.20.2",
+          "fd66:2735:1533:46c1:68c8:0:0:7110",
+          "fd66:2735:1533:46c1:68c8:0:0:7111"
+      ]
+  },
+  "egressNetwork": {
+      "gatewayOptions": "useDefault",
+      "outboundGateways": {
+          "referredObj": "",
+          "ipv4OutboundGateways": [
+              {
+                  "ip": "",
+                  "ratio": 1.0
+              }
+          ],
+          "ipv6NonPublicGateways": [
+              {
+                  "ip": ""
+              }
+          ],
+          "ipv6OutboundGateways": [
+              {
+                  "ip": "",
+                  "ratio": 1.0
+              }
+          ]
+      }
+  },
+  "partition": "Common",
+  "strictness": false,
+  "existingBlockId": "46082dbc-bb06-4968-909f-6fceb55206e5"
+}

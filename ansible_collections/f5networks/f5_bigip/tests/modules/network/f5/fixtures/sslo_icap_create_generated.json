@@ -1,0 +1,85 @@
+{
+   "name": "sslo_obj_SERVICE_CREATE_ssloS_foobar",
+   "inputProperties":[
+      {
+         "id":"f5-ssl-orchestrator-operation-context",
+         "type":"JSON",
+            "value": {
+                "version": 9.0,
+                "partition": "Common",
+                "strictness": false,
+                "operationType": "CREATE",
+                "deploymentName": "ssloS_foobar",
+                "deploymentType": "SERVICE"
+            }
+      },
+        {
+            "id": "f5-ssl-orchestrator-service",
+            "type": "JSON",
+            "value": [
+                {
+                    "name": "ssloS_foobar",
+                    "vendorInfo": {
+                        "name": "Generic ICAP Service"
+                    },
+                    "customService": {
+                        "name": "ssloS_foobar",
+                        "ipFamily": "ipv4",
+                        "serviceType": "icap",
+                        "loadBalancing": {
+                            "devices": [{"ip": "1.1.1.1", "port": 1344}, {"ip": "2.2.2.2", "port": 1348}],
+                            "monitor": {
+                                "fromSystem": "/Common/tcp"
+                            }
+                        },
+                        "serviceSpecific": {
+                            "name": "ssloS_foobar",
+                            "headers": {
+                              "mode": true,
+                              "headerConfig": {"from": "foo_from", "host": "foo_host", "referrer": "foo_referrer", "userAgent": "foo_ua"}
+                            },
+                            "requestUri": "icap://${SERVER_IP}:${SERVER_PORT}/avscan",
+                            "allowHttp10": false,
+                            "responseUri": "icap://${SERVER_IP}:${SERVER_PORT}/avscan",
+                            "previewLength": 2048,
+                            "enableOneConnect": true
+                        },
+                        "serviceDownAction": "ignore"
+                    },
+                    "partition": "Common",
+                    "previousVersion": 9.0,
+                    "version": 9.0,
+                    "strictness": false
+                }
+            ]
+        },{
+            "id": "f5-ssl-orchestrator-service-chain",
+            "type": "JSON",
+            "value": []
+        },{
+            "id": "f5-ssl-orchestrator-network",
+            "type": "JSON",
+            "value": []
+        },{
+            "id": "f5-ssl-orchestrator-policy",
+            "type": "JSON",
+            "value": []
+        }
+    ],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "configProcessorTimeoutSeconds": 120,
+    "statsProcessorTimeoutSeconds": 60,
+    "configProcessorAffinity": {
+        "processorPolicy": "LOCAL",
+        "affinityProcessorReference": {
+            "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+        }
+    },
+    "state": "BINDING",
+    "presentationHtmlReference": {
+        "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+    },
+    "operation": "CREATE"
+}

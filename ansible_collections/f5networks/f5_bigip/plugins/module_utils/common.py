@@ -7,13 +7,24 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import copy
+import json
 import os
 import re
 import datetime
 
+try:
+    from jinja2 import Environment
+except ImportError as imp_exc:
+    JINA2_IMPORT_ERROR = imp_exc
+    Environment = None
+else:
+    JINA2_IMPORT_ERROR = None
+
 from ansible.module_utils._text import to_text
 from ansible.module_utils.connection import exec_command
-from ansible.module_utils.six import iteritems
+from ansible.module_utils.six import (
+    iteritems, raise_from
+)
 from ansible.module_utils.parsing.convert_bool import (
     BOOLEANS_TRUE, BOOLEANS_FALSE
 )
@@ -29,6 +40,18 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.constants import (
     MANAGED_BY_ANNOTATION_VERSION, MANAGED_BY_ANNOTATION_MODIFIED
 )
+
+
+def process_json(data, template):
+    if JINA2_IMPORT_ERROR:
+        raise_from(F5ModuleError('jinja2 package must be installed to use this collection'),
+                   JINA2_IMPORT_ERROR
+                   )
+    jinja_env = Environment()
+    template = jinja_env.from_string(template)
+    content = template.render(params=data)
+    my_json = json.loads(content)
+    return my_json
 
 
 def is_empty_list(seq):

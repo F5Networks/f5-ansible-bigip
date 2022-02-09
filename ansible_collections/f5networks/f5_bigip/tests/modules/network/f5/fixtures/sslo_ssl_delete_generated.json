@@ -1,0 +1,33 @@
+{
+    "name": "sslo_obj_SSL_SETTINGS_DELETE_ssloT_foobar",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "deploymentName": "ssloT_foobar",
+                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/d0b1adaf-a860-4fe3-8d66-ab7937a0cb75",
+                "deploymentType": "SSL_SETTINGS",
+                "operationType": "DELETE",
+                "version": 9.0,
+                "partition": "Common"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-tls",
+            "type": "JSON",
+            "value": {
+                "existingBlockId": "d0b1adaf-a860-4fe3-8d66-ab7937a0cb75",
+                "name": "ssloT_foobar",
+                "partition": "Common",
+                "previousVersion": 9.0,
+                "version": 9.0
+            }
+        }
+    ],
+    "dataProperties":[],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "state": "BINDING"
+}

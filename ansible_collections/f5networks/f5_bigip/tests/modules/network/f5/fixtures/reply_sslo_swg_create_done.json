@@ -1,0 +1,120 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "ebca8399-5ecf-43c7-8b33-52c579425252",
+            "name": "sslo_obj_SERVICE_CREATE_ssloS_swg_custom",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-operation-context",
+                    "type": "JSON",
+                    "value": {
+                        "version": 9.0,
+                        "partition": "Common",
+                        "strictness": false,
+                        "operationType": "CREATE",
+                        "deploymentName": "ssloS_swg_custom",
+                        "deploymentType": "SERVICE"
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-service",
+                    "type": "JSON",
+                    "value": {
+                        "name": "ssloS_swg_custom",
+                        "vendorInfo": {
+                            "name": "F5 Secure Web Gateway"
+                        },
+                        "customService": {
+                            "name": "ssloS_swg_custom",
+                            "serviceDownAction": "reset",
+                            "serviceType": "swg",
+                            "serviceSpecific": {
+                                "name": "ssloS_swg_custom",
+                                "description": "",
+                                "accessProfile": "/Common/test_access2",
+                                "accessProfileScope": "named",
+                                "logSettings": [
+                                    {
+                                        "name": "/Common/default-log-setting",
+                                        "value": "/Common/default-log-setting"
+                                    }
+                                ],
+                                "accessProfileNameScopeValue": "SSLO",
+                                "accessProfileScopeCustSource": "/Common/modern",
+                                "perReqPolicy": "/Common/test-swg",
+                                "iRuleList": [
+                                    {
+                                        "name": "/Common/ssloS_swg_custom.app/ssloS_swg_custom-swg",
+                                        "value": "/Common/ssloS_swg_custom.app/ssloS_swg_custom-swg"
+                                    },
+                                    {
+                                        "name": "/Common/test_rule_1",
+                                        "value": "/Common/test_rule_1"
+                                    },
+                                    {
+                                        "name": "/Common/test_rule_2",
+                                        "value": "/Common/test_rule_2"
+                                    }
+                                ]
+                            }
+                        },
+                        "description": "Type: swg",
+                        "useTemplate": false,
+                        "serviceTemplate": "",
+                        "partition": "Common",
+                        "previousVersion": 9.0,
+                        "version": 9.0,
+                        "strictness": false
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-network",
+                    "type": "JSON",
+                    "value": []
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": []
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.144.72.149",
+                            "strictness": false,
+                            "potentialDrift": false
+                        }
+                    ]
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+            },
+            "configProcessorTimeoutSeconds": 30,
+            "statsProcessorTimeoutSeconds": 15,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOAD_BALANCED",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/processors/affinity/load-balanced"
+                }
+            },
+            "state": "BOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1642352566975350,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/ebca8399-5ecf-43c7-8b33-52c579425252"
+        }
+    ],
+    "generation": 246,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1642352566976620
+}

@@ -1,0 +1,133 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "4983f146-f2aa-421e-bfb3-7cbbd71f8ab6",
+            "name": "sslo_obj_SERVICE_CREATE_ssloS_foobar",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-operation-context",
+                    "type": "JSON",
+                    "value": {
+                        "version": 9.0,
+                        "partition": "Common",
+                        "strictness": false,
+                        "operationType": "CREATE",
+                        "deploymentName": "ssloS_foobar",
+                        "deploymentType": "SERVICE"
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-service",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "name": "ssloS_foobar",
+                            "vendorInfo": {
+                                "name": "Generic ICAP Service"
+                            },
+                            "customService": {
+                                "name": "ssloS_foobar",
+                                "ipFamily": "ipv4",
+                                "serviceType": "icap",
+                                "loadBalancing": {
+                                    "devices": [
+                                        {
+                                            "ip": "1.1.1.1",
+                                            "port": 1344.0
+                                        },
+                                        {
+                                            "ip": "2.2.2.2",
+                                            "port": 1348.0
+                                        }
+                                    ],
+                                    "monitor": {
+                                        "fromSystem": "/Common/tcp"
+                                    }
+                                },
+                                "serviceSpecific": {
+                                    "name": "ssloS_foobar",
+                                    "headers": {
+                                        "mode": true,
+                                        "headerConfig": {
+                                            "from": "foo_from",
+                                            "host": "foo_host",
+                                            "referrer": "foo_referrer",
+                                            "userAgent": "foo_ua"
+                                        }
+                                    },
+                                    "requestUri": "icap://${SERVER_IP}:${SERVER_PORT}/avscan",
+                                    "allowHttp10": false,
+                                    "responseUri": "icap://${SERVER_IP}:${SERVER_PORT}/avscan",
+                                    "previewLength": 2048.0,
+                                    "enableOneConnect": true
+                                },
+                                "serviceDownAction": "ignore"
+                            },
+                            "partition": "Common",
+                            "previousVersion": 9.0,
+                            "version": 9.0,
+                            "strictness": false
+                        }
+                    ]
+                },
+                {
+                    "id": "f5-ssl-orchestrator-service-chain",
+                    "type": "JSON",
+                    "value": []
+                },
+                {
+                    "id": "f5-ssl-orchestrator-network",
+                    "type": "JSON",
+                    "value": []
+                },
+                {
+                    "id": "f5-ssl-orchestrator-policy",
+                    "type": "JSON",
+                    "value": []
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": []
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.144.72.149",
+                            "strictness": false,
+                            "potentialDrift": false
+                        }
+                    ]
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+            },
+            "configProcessorTimeoutSeconds": 120,
+            "statsProcessorTimeoutSeconds": 60,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "BOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1639682165605658,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/4983f146-f2aa-421e-bfb3-7cbbd71f8ab6"
+        }
+    ],
+    "generation": 632,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1639682165607077
+}

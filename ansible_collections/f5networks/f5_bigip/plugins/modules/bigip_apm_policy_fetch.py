@@ -10,7 +10,7 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_apm_policy_fetch
-short_description: Exports the APM policy or APM access profile from remote nodes.
+short_description: Exports the APM policy or APM access profile from remote nodes
 description:
   - Exports the APM policy or APM access profile from remote nodes.
 version_added: "1.0.0"
