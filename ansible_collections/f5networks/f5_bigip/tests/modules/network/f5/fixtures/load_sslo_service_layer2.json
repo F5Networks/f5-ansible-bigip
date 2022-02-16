@@ -1,0 +1,1135 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "f45dd56c-6bf5-4ef1-a819-863d4afcc56b",
+            "name": "ssloS_layer2a",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-service",
+                    "type": "JSON",
+                    "value": {
+                        "strictness": false,
+                        "customService": {
+                            "name": "ssloS_layer2a",
+                            "serviceType": "L2",
+                            "serviceSpecific": {
+                                "unitIdMap": [],
+                                "name": "ssloS_layer2a"
+                            },
+                            "connectionInformation": {
+                                "interfaces": [
+                                    {
+                                        "fromBigipVlan": {
+                                            "path": "/Common/ssloN_FEYE1_in.app/ssloN_FEYE1_in",
+                                            "create": false,
+                                            "interface": [
+                                                "1.1"
+                                            ],
+                                            "tag": 100.0,
+                                            "name": "ssloN_FEYE1_in",
+                                            "networkBlockId": "9a599b5f-ab1c-4553-9a80-dd77cb7f7cc4"
+                                        },
+                                        "toBigipVlan": {
+                                            "path": "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out",
+                                            "create": false,
+                                            "interface": [
+                                                "1.1"
+                                            ],
+                                            "tag": 101.0,
+                                            "name": "ssloN_FEYE1_out",
+                                            "networkBlockId": "7e47d7b1-eef7-4065-80a4-d5b910a6b9f6"
+                                        }
+                                    }
+                                ]
+                            },
+                            "loadBalancing": {
+                                "devices": [
+                                    {
+                                        "ratio": "1",
+                                        "port": "0",
+                                        "ip": [
+                                            "198.19.33.30",
+                                            "2001:0200:0:201::1e"
+                                        ]
+                                    }
+                                ],
+                                "monitor": {
+                                    "fromSystem": "/Common/gateway_icmp"
+                                }
+                            },
+                            "portRemap": true,
+                            "httpPortRemapValue": 8283.0,
+                            "serviceDownAction": "reset",
+                            "iRuleReference": "",
+                            "iRuleList": [],
+                            "managedNetwork": {
+                                "serviceType": "L2",
+                                "ipFamily": "both",
+                                "ipv4": {
+                                    "serviceType": "L2",
+                                    "ipFamily": "ipv4",
+                                    "serviceSubnet": "198.19.33.0",
+                                    "serviceIndex": 0.0,
+                                    "subnetMask": " 255.255.255.0"
+                                },
+                                "ipv6": {
+                                    "serviceType": "L2",
+                                    "ipFamily": "ipv6",
+                                    "serviceSubnet": "2001:0200:0:201::",
+                                    "serviceIndex": 0.0,
+                                    "subnetMask": "ffff:ffff:ffff:ffff::"
+                                },
+                                "operation": "RESERVEANDCOMMIT"
+                            }
+                        },
+                        "vendorInfo": {
+                            "name": "Generic Inline Layer 2"
+                        },
+                        "modifiedNetworkObjects": [],
+                        "removedNetworks": [],
+                        "networkObjects": [
+                            {
+                                "partition": "Common",
+                                "strictness": false,
+                                "name": "ssloN_FEYE1_in",
+                                "previousVersion": 7.5,
+                                "version": 7.5,
+                                "vlan": {
+                                    "create": true,
+                                    "path": "/Common/ssloN_FEYE1_in.app/ssloN_FEYE1_in",
+                                    "interface": [
+                                        "1.1"
+                                    ],
+                                    "tag": 100.0,
+                                    "name": "ssloN_FEYE1_in"
+                                },
+                                "selfIpConfig": {
+                                    "selfIp": "",
+                                    "netmask": "",
+                                    "floating": false,
+                                    "HAstaticIpMap": [
+                                        {
+                                            "deviceMgmtIp": "",
+                                            "selfIp": ""
+                                        }
+                                    ]
+                                },
+                                "routeDomain": {
+                                    "create": false,
+                                    "id": 0.0,
+                                    "path": ""
+                                }
+                            },
+                            {
+                                "partition": "Common",
+                                "strictness": false,
+                                "name": "ssloN_FEYE1_out",
+                                "previousVersion": 7.5,
+                                "version": 7.5,
+                                "vlan": {
+                                    "create": true,
+                                    "path": "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out",
+                                    "interface": [
+                                        "1.1"
+                                    ],
+                                    "tag": 101.0,
+                                    "name": "ssloN_FEYE1_out"
+                                },
+                                "selfIpConfig": {
+                                    "selfIp": "",
+                                    "netmask": "",
+                                    "floating": false,
+                                    "HAstaticIpMap": [
+                                        {
+                                            "deviceMgmtIp": "",
+                                            "selfIp": ""
+                                        }
+                                    ]
+                                },
+                                "routeDomain": {
+                                    "create": false,
+                                    "id": 0.0,
+                                    "path": ""
+                                }
+                            }
+                        ],
+                        "name": "ssloS_layer2a",
+                        "description": "Type: L2",
+                        "useTemplate": false,
+                        "serviceTemplate": "",
+                        "partition": "Common",
+                        "advancedMode": "off",
+                        "iRulesSelected": [],
+                        "virtuals": {
+                            "ssloS_layer2a-0-06": {
+                                "name": "ssloS_layer2a-D-0-t-6",
+                                "ip": "::%65000",
+                                "port": "0",
+                                "mask": "any6",
+                                "ipProto": "tcp",
+                                "description": "In-line service (2022-2-13 23:51:59)",
+                                "clientVlanRestrict": "enableSome",
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled",
+                                "profiles": {
+                                    "names": [],
+                                    "references": [
+                                        "ssloS_layer2a-service",
+                                        "ssloS_layer2a-tcp-wan",
+                                        "ssloS_layer2a-tcp-lan",
+                                        "ssloS_layer2a-ss-server"
+                                    ]
+                                },
+                                "iRules": {
+                                    "references": [
+                                        "ssloS_layer2a-ilD"
+                                    ]
+                                },
+                                "vlans": [
+                                    "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out"
+                                ],
+                                "source": "::%65000/0",
+                                "skipSnat": true
+                            },
+                            "ssloS_layer2a-0-04": {
+                                "name": "ssloS_layer2a-D-0-t-4",
+                                "ip": "0.0.0.0%65000",
+                                "port": "0",
+                                "mask": "any",
+                                "ipProto": "tcp",
+                                "description": "In-line service (2022-2-13 23:51:59)",
+                                "clientVlanRestrict": "enableSome",
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled",
+                                "profiles": {
+                                    "names": [],
+                                    "references": [
+                                        "ssloS_layer2a-service",
+                                        "ssloS_layer2a-tcp-wan",
+                                        "ssloS_layer2a-tcp-lan",
+                                        "ssloS_layer2a-ss-server"
+                                    ]
+                                },
+                                "iRules": {
+                                    "references": [
+                                        "ssloS_layer2a-ilD"
+                                    ]
+                                },
+                                "vlans": [
+                                    "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out"
+                                ],
+                                "source": "0.0.0.0%65000/0",
+                                "skipSnat": true
+                            },
+                            "ssloS_layer2a-1-06": {
+                                "name": "ssloS_layer2a-D-0-u-6",
+                                "ip": "::%65000",
+                                "port": "0",
+                                "mask": "any6",
+                                "ipProto": "udp",
+                                "description": "In-line service (2022-2-13 23:51:59)",
+                                "clientVlanRestrict": "enableSome",
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled",
+                                "profiles": {
+                                    "names": [],
+                                    "references": [
+                                        "ssloS_layer2a-service",
+                                        "ssloS_layer2a-ss-server"
+                                    ]
+                                },
+                                "iRules": {},
+                                "vlans": [
+                                    "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out"
+                                ],
+                                "source": "::%65000/0",
+                                "skipSnat": true
+                            },
+                            "ssloS_layer2a-1-04": {
+                                "name": "ssloS_layer2a-D-0-u-4",
+                                "ip": "0.0.0.0%65000",
+                                "port": "0",
+                                "mask": "any",
+                                "ipProto": "udp",
+                                "description": "In-line service (2022-2-13 23:51:59)",
+                                "clientVlanRestrict": "enableSome",
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled",
+                                "profiles": {
+                                    "names": [],
+                                    "references": [
+                                        "ssloS_layer2a-service",
+                                        "ssloS_layer2a-ss-server"
+                                    ]
+                                },
+                                "iRules": {},
+                                "vlans": [
+                                    "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out"
+                                ],
+                                "source": "0.0.0.0%65000/0",
+                                "skipSnat": true
+                            },
+                            "ssloS_layer2a-2-06": {
+                                "name": "ssloS_layer2a-t-6",
+                                "ip": "0.0.0.0",
+                                "port": "0",
+                                "mask": "any",
+                                "ipProto": "tcp",
+                                "description": "In-line service (2022-2-13 23:51:59)",
+                                "clientVlanRestrict": "enableSome",
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled",
+                                "profiles": {
+                                    "names": [],
+                                    "references": [
+                                        "ssloS_layer2a-service",
+                                        "ssloS_layer2a-tcp-wan",
+                                        "ssloS_layer2a-tcp-lan",
+                                        "ssloS_layer2a-ss-client"
+                                    ]
+                                },
+                                "iRules": {
+                                    "references": [
+                                        "ssloS_layer2a-ilS"
+                                    ]
+                                },
+                                "pool": {
+                                    "name": "ssloS_layer2a-6",
+                                    "reference": "ssloS_layer2a-6",
+                                    "defaultPort": "80"
+                                },
+                                "source": "0.0.0.0/0",
+                                "skipSnat": true,
+                                "internal": true,
+                                "additionalConfig": [
+                                    {
+                                        "configKey": "internal",
+                                        "referredObj": true
+                                    }
+                                ]
+                            },
+                            "ssloS_layer2a-2-04": {
+                                "name": "ssloS_layer2a-t-4",
+                                "ip": "0.0.0.0",
+                                "port": "0",
+                                "mask": "any",
+                                "ipProto": "tcp",
+                                "description": "In-line service (2022-2-13 23:51:59)",
+                                "clientVlanRestrict": "enableSome",
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled",
+                                "profiles": {
+                                    "names": [],
+                                    "references": [
+                                        "ssloS_layer2a-service",
+                                        "ssloS_layer2a-tcp-wan",
+                                        "ssloS_layer2a-tcp-lan",
+                                        "ssloS_layer2a-ss-client"
+                                    ]
+                                },
+                                "iRules": {
+                                    "references": [
+                                        "ssloS_layer2a-ilS"
+                                    ]
+                                },
+                                "pool": {
+                                    "name": "ssloS_layer2a-4",
+                                    "reference": "ssloS_layer2a-4",
+                                    "defaultPort": "80"
+                                },
+                                "source": "0.0.0.0/0",
+                                "skipSnat": true,
+                                "internal": true,
+                                "additionalConfig": [
+                                    {
+                                        "configKey": "internal",
+                                        "referredObj": true
+                                    }
+                                ]
+                            },
+                            "ssloS_layer2a-3-06": {
+                                "name": "ssloS_layer2a-u-6",
+                                "ip": "0.0.0.0",
+                                "port": "0",
+                                "mask": "any",
+                                "ipProto": "udp",
+                                "description": "In-line service (2022-2-13 23:51:59)",
+                                "clientVlanRestrict": "enableSome",
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled",
+                                "profiles": {
+                                    "names": [],
+                                    "references": [
+                                        "ssloS_layer2a-service",
+                                        "ssloS_layer2a-ss-client"
+                                    ]
+                                },
+                                "iRules": {
+                                    "references": [
+                                        "ssloS_layer2a-ilS"
+                                    ]
+                                },
+                                "pool": {
+                                    "name": "ssloS_layer2a-6",
+                                    "reference": "ssloS_layer2a-6",
+                                    "defaultPort": "80"
+                                },
+                                "source": "0.0.0.0/0",
+                                "skipSnat": true,
+                                "internal": true,
+                                "additionalConfig": [
+                                    {
+                                        "configKey": "internal",
+                                        "referredObj": true
+                                    }
+                                ]
+                            },
+                            "ssloS_layer2a-3-04": {
+                                "name": "ssloS_layer2a-u-4",
+                                "ip": "0.0.0.0",
+                                "port": "0",
+                                "mask": "any",
+                                "ipProto": "udp",
+                                "description": "In-line service (2022-2-13 23:51:59)",
+                                "clientVlanRestrict": "enableSome",
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled",
+                                "profiles": {
+                                    "names": [],
+                                    "references": [
+                                        "ssloS_layer2a-service",
+                                        "ssloS_layer2a-ss-client"
+                                    ]
+                                },
+                                "iRules": {
+                                    "references": [
+                                        "ssloS_layer2a-ilS"
+                                    ]
+                                },
+                                "pool": {
+                                    "name": "ssloS_layer2a-4",
+                                    "reference": "ssloS_layer2a-4",
+                                    "defaultPort": "80"
+                                },
+                                "source": "0.0.0.0/0",
+                                "skipSnat": true,
+                                "internal": true,
+                                "additionalConfig": [
+                                    {
+                                        "configKey": "internal",
+                                        "referredObj": true
+                                    }
+                                ]
+                            }
+                        },
+                        "vlans": {},
+                        "selfIps": {
+                            "ssloS_layer2a-70-0-flt-S6": {
+                                "vlanOrTunnel": "/Common/ssloN_FEYE1_in.app/ssloN_FEYE1_in",
+                                "trafficGroup": "traffic-group-local-only",
+                                "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffe0",
+                                "name": "ssloS_layer2a-70-0-flt-S6",
+                                "address": "2001:0200:0:201::7",
+                                "floating": "disabled"
+                            },
+                            "ssloS_layer2a-70-0-S61": {
+                                "vlanOrTunnel": "/Common/ssloN_FEYE1_in.app/ssloN_FEYE1_in",
+                                "trafficGroup": "traffic-group-local-only",
+                                "address": "2001:0200:0:201::8",
+                                "name": "ssloS_layer2a-70-0-S6",
+                                "floating": "disabled",
+                                "deviceSpecific": "10.144.72.149",
+                                "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffe0"
+                            },
+                            "ssloS_layer2a-70-0-flt-D6": {
+                                "vlanOrTunnel": "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out",
+                                "trafficGroup": "traffic-group-local-only",
+                                "routeDomain": 65000.0,
+                                "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffe0",
+                                "name": "ssloS_layer2a-70-0-flt-D6",
+                                "address": "2001:0200:0:201::1e",
+                                "floating": "disabled"
+                            },
+                            "ssloS_layer2a-70-0-D61": {
+                                "vlanOrTunnel": "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out",
+                                "trafficGroup": "traffic-group-local-only",
+                                "routeDomain": 65000.0,
+                                "address": "2001:0200:0:201::1d",
+                                "name": "ssloS_layer2a-70-0-D6",
+                                "floating": "disabled",
+                                "deviceSpecific": "10.144.72.149",
+                                "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffe0"
+                            },
+                            "ssloS_layer2a-70-0-flt-S4": {
+                                "vlanOrTunnel": "/Common/ssloN_FEYE1_in.app/ssloN_FEYE1_in",
+                                "trafficGroup": "traffic-group-local-only",
+                                "netmask": "255.255.255.224",
+                                "name": "ssloS_layer2a-70-0-flt-S4",
+                                "address": "198.19.33.7",
+                                "floating": "disabled"
+                            },
+                            "ssloS_layer2a-70-0-S41": {
+                                "netmask": "255.255.255.224",
+                                "vlanOrTunnel": "/Common/ssloN_FEYE1_in.app/ssloN_FEYE1_in",
+                                "trafficGroup": "traffic-group-local-only",
+                                "address": "198.19.33.8",
+                                "name": "ssloS_layer2a-70-0-S4",
+                                "floating": "disabled",
+                                "deviceSpecific": "10.144.72.149"
+                            },
+                            "ssloS_layer2a-70-0-flt-D4": {
+                                "vlanOrTunnel": "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out",
+                                "trafficGroup": "traffic-group-local-only",
+                                "routeDomain": 65000.0,
+                                "netmask": "255.255.255.224",
+                                "name": "ssloS_layer2a-70-0-flt-D4",
+                                "address": "198.19.33.30",
+                                "floating": "disabled"
+                            },
+                            "ssloS_layer2a-70-0-D41": {
+                                "netmask": "255.255.255.224",
+                                "vlanOrTunnel": "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out",
+                                "trafficGroup": "traffic-group-local-only",
+                                "routeDomain": 65000.0,
+                                "address": "198.19.33.29",
+                                "name": "ssloS_layer2a-70-0-D4",
+                                "floating": "disabled",
+                                "deviceSpecific": "10.144.72.149"
+                            }
+                        },
+                        "routeDomains": {
+                            "ssloS_layer2a-0": {
+                                "id": 65000.0,
+                                "vlans": [
+                                    "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out"
+                                ],
+                                "create": true,
+                                "name": "ssloS_layer2a-0",
+                                "vlan": "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out"
+                            }
+                        },
+                        "pools": {
+                            "ssloS_layer2a-4": {
+                                "name": "ssloS_layer2a-4",
+                                "loadBalancingMode": "ratio-member",
+                                "monitors": {
+                                    "names": [
+                                        "/Common/gateway_icmp"
+                                    ]
+                                },
+                                "members": [
+                                    {
+                                        "port": "0",
+                                        "ip": "198.19.33.30",
+                                        "ratio": "1",
+                                        "appService": "ssloS_layer2a.app/ssloS_layer2a",
+                                        "subPath": "ssloS_layer2a.app"
+                                    }
+                                ],
+                                "slowRampTime": "10",
+                                "minActiveMembers": "0",
+                                "applicationMonitor": true
+                            },
+                            "ssloS_layer2a-6": {
+                                "name": "ssloS_layer2a-6",
+                                "loadBalancingMode": "ratio-member",
+                                "monitors": {
+                                    "names": [
+                                        "/Common/gateway_icmp"
+                                    ]
+                                },
+                                "members": [
+                                    {
+                                        "port": "0",
+                                        "ip": "2001:0200:0:201::1e",
+                                        "ratio": "1",
+                                        "appService": "ssloS_layer2a.app/ssloS_layer2a",
+                                        "subPath": "ssloS_layer2a.app"
+                                    }
+                                ],
+                                "slowRampTime": "10",
+                                "minActiveMembers": "0",
+                                "applicationMonitor": true
+                            },
+                            "ssloS_layer2a-4_portremap": {
+                                "name": "ssloS_layer2a-4_portremap",
+                                "loadBalancingMode": "ratio-member",
+                                "monitors": {
+                                    "names": [
+                                        "/Common/gateway_icmp"
+                                    ]
+                                },
+                                "members": [
+                                    {
+                                        "port": 8283.0,
+                                        "ip": "198.19.33.30",
+                                        "ratio": "1",
+                                        "appService": "ssloS_layer2a.app/ssloS_layer2a",
+                                        "subPath": "ssloS_layer2a.app"
+                                    }
+                                ],
+                                "slowRampTime": "10",
+                                "minActiveMembers": "0",
+                                "applicationMonitor": true,
+                                "unhandledPool": true,
+                                "callerContext": "serviceConfigProcessor"
+                            },
+                            "ssloS_layer2a-6_portremap": {
+                                "name": "ssloS_layer2a-6_portremap",
+                                "loadBalancingMode": "ratio-member",
+                                "monitors": {
+                                    "names": [
+                                        "/Common/gateway_icmp"
+                                    ]
+                                },
+                                "members": [
+                                    {
+                                        "port": 8283.0,
+                                        "ip": "2001:0200:0:201::1e",
+                                        "ratio": "1",
+                                        "appService": "ssloS_layer2a.app/ssloS_layer2a",
+                                        "subPath": "ssloS_layer2a.app"
+                                    }
+                                ],
+                                "slowRampTime": "10",
+                                "minActiveMembers": "0",
+                                "applicationMonitor": true,
+                                "unhandledPool": true,
+                                "callerContext": "serviceConfigProcessor"
+                            }
+                        },
+                        "snatPools": {},
+                        "routes": {},
+                        "iRules": {
+                            "ssloS_layer2a-ilS": {
+                                "name": "ssloS_layer2a-ilS",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\nwhen CLIENT_ACCEPTED {\n sharedvar ctx\n\n if {not [info exists ctx]} {\n  event LB_SELECTED disable\n  return\n }\n\n if {[set pn [IP::protocol]] == 6} {\n  set proto TCP\n } elseif {$pn == 17} {\n  set proto UDP\n } else {\n  log local0.error \"cannot handle IP protocol ${pn} from ${fromIP}\"\n  reject\n  return\n }\n\n set default_pool [LB::server pool]\n append default_pool \"_portremap\"\n\n # remap destination port on known traffic over secure port\n switch $ctx(ptcl) {\n  \"https\" {\n    translate port enable\n    pool ${default_pool}\n  }\n  \"http-connect\" {\n    translate port enable\n    pool ${default_pool}\n  }\n }\n} ; #CLIENT_ACCEPTED\n",
+                                "validUnreferenced": true
+                            },
+                            "ssloS_layer2a-ilD": {
+                                "name": "ssloS_layer2a-ilD",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\n",
+                                "validUnreferenced": true
+                            },
+                            "ssloS_layer2a-ilS_auth": {
+                                "name": "ssloS_layer2a-ilS_auth",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\nwhen HTTP_REQUEST {\n    if { [ACCESS::session exists] } {\n        set sessionID [ACCESS::session sid]\n        set user [ACCESS::session data get \"session.logon.last.username\"]\n        HTTP::header insert \"X-Authenticated-User\" $user\n    }\n}\n",
+                                "validUnreferenced": true
+                            },
+                            "ssloS_layer2a-ilD_auth": {
+                                "name": "ssloS_layer2a-ilD_auth",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\nwhen HTTP_REQUEST {\n    HTTP::header remove \"X-Authenticated-User\"\n}\n",
+                                "validUnreferenced": true
+                            }
+                        },
+                        "profiles": {
+                            "ssloS_layer2a-service": {
+                                "name": "ssloS_layer2a-service",
+                                "profile": "service",
+                                "type": "inline",
+                                "context": "all"
+                            },
+                            "ssloS_layer2a-ss-server": {
+                                "name": "ssloS_layer2a-ss-server",
+                                "profile": "splitsessionserver",
+                                "httpHeader": "none",
+                                "listenIp": "any",
+                                "listenPort": 0.0,
+                                "localPeer": true,
+                                "sessionLookupType": "session-flow",
+                                "splitsessionclient": "/Common/ssloS_layer2a.app/ssloS_layer2a-ss-client"
+                            },
+                            "ssloS_layer2a-t-6-connector": {
+                                "name": "ssloS_layer2a-t-6-connector",
+                                "profile": "connector",
+                                "connectionTimeout": 0.0,
+                                "entryVirtualServer": "ssloS_layer2a-t-6",
+                                "serviceDownAction": "reset",
+                                "context": "all",
+                                "unhandledProfile": "true"
+                            },
+                            "ssloS_layer2a-tcp-wan": {
+                                "name": "ssloS_layer2a-tcp-wan",
+                                "slowStart": "disabled",
+                                "nagle": "disabled",
+                                "profile": "tcp",
+                                "parent": "sslo-default-tcp-wan",
+                                "context": "serverside"
+                            },
+                            "ssloS_layer2a-tcp-lan": {
+                                "name": "ssloS_layer2a-tcp-lan",
+                                "slowStart": "disabled",
+                                "nagle": "disabled",
+                                "profile": "tcp",
+                                "parent": "sslo-default-tcp-lan",
+                                "context": "clientside"
+                            },
+                            "ssloS_layer2a-ss-client": {
+                                "name": "ssloS_layer2a-ss-client",
+                                "profile": "splitsessionclient",
+                                "httpHeader": "none",
+                                "listenIp": "any",
+                                "listenPort": 0.0,
+                                "localPeer": true,
+                                "sessionLookupType": "session-flow"
+                            },
+                            "ssloS_layer2a-t-4-connector": {
+                                "name": "ssloS_layer2a-t-4-connector",
+                                "profile": "connector",
+                                "connectionTimeout": 0.0,
+                                "entryVirtualServer": "ssloS_layer2a-t-4",
+                                "serviceDownAction": "reset",
+                                "context": "all",
+                                "unhandledProfile": "true"
+                            },
+                            "ssloS_layer2a-u-6-connector": {
+                                "name": "ssloS_layer2a-u-6-connector",
+                                "profile": "connector",
+                                "connectionTimeout": 0.0,
+                                "entryVirtualServer": "ssloS_layer2a-u-6",
+                                "serviceDownAction": "reset",
+                                "context": "all",
+                                "unhandledProfile": "true"
+                            },
+                            "ssloS_layer2a-u-4-connector": {
+                                "name": "ssloS_layer2a-u-4-connector",
+                                "profile": "connector",
+                                "connectionTimeout": 0.0,
+                                "entryVirtualServer": "ssloS_layer2a-u-4",
+                                "serviceDownAction": "reset",
+                                "context": "all",
+                                "unhandledProfile": "true"
+                            }
+                        },
+                        "dataGroupInternals": {
+                            "ssloS_layer2a-service": {
+                                "name": "ssloS_layer2a-service",
+                                "type": "string",
+                                "records": [
+                                    {
+                                        "name": "70",
+                                        "data": "ssloS_layer2a 1 0"
+                                    }
+                                ]
+                            }
+                        },
+                        "existingBlockId": "f45dd56c-6bf5-4ef1-a819-863d4afcc56b"
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-network",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "partition": "Common",
+                            "strictness": false,
+                            "name": "ssloN_FEYE1_in",
+                            "previousVersion": 7.5,
+                            "version": 7.5,
+                            "vlan": {
+                                "create": true,
+                                "path": "/Common/ssloN_FEYE1_in.app/ssloN_FEYE1_in",
+                                "interface": [
+                                    "1.1"
+                                ],
+                                "name": "ssloN_FEYE1_in",
+                                "tag": 100.0
+                            },
+                            "selfIpConfig": {
+                                "selfIp": "",
+                                "netmask": "",
+                                "floating": false,
+                                "HAstaticIpMap": [
+                                    {
+                                        "deviceMgmtIp": "",
+                                        "selfIp": ""
+                                    }
+                                ]
+                            },
+                            "routeDomain": {
+                                "create": false,
+                                "id": 0.0,
+                                "path": ""
+                            }
+                        },
+                        {
+                            "partition": "Common",
+                            "strictness": false,
+                            "name": "ssloN_FEYE1_out",
+                            "previousVersion": 7.5,
+                            "version": 7.5,
+                            "vlan": {
+                                "create": true,
+                                "path": "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out",
+                                "interface": [
+                                    "1.1"
+                                ],
+                                "name": "ssloN_FEYE1_out",
+                                "tag": 101.0
+                            },
+                            "selfIpConfig": {
+                                "selfIp": "",
+                                "netmask": "",
+                                "floating": false,
+                                "HAstaticIpMap": [
+                                    {
+                                        "deviceMgmtIp": "",
+                                        "selfIp": ""
+                                    }
+                                ]
+                            },
+                            "routeDomain": {
+                                "create": false,
+                                "id": 0.0,
+                                "path": ""
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "processorContext",
+                    "type": "JSON",
+                    "value": {}
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": [
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/connector/~Common~ssloS_layer2a.app~ssloS_layer2a-t-6-connector",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/connector/~Common~ssloS_layer2a.app~ssloS_layer2a-t-6-connector"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/connector/~Common~ssloS_layer2a.app~ssloS_layer2a-t-4-connector",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/connector/~Common~ssloS_layer2a.app~ssloS_layer2a-t-4-connector"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/connector/~Common~ssloS_layer2a.app~ssloS_layer2a-u-6-connector",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/connector/~Common~ssloS_layer2a.app~ssloS_layer2a-u-6-connector"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/connector/~Common~ssloS_layer2a.app~ssloS_layer2a-u-4-connector",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/connector/~Common~ssloS_layer2a.app~ssloS_layer2a-u-4-connector"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/data-group/internal/~Common~ssloS_layer2a.app~ssloS_layer2a-service",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/data-group/internal/~Common~ssloS_layer2a.app~ssloS_layer2a-service"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/net/routeDomain/~Common~ssloS_layer2a.app~ssloS_layer2a-0",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/routeDomain/~Common~ssloS_layer2a.app~ssloS_layer2a-0"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-flt-S6",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-flt-S6"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-flt-D6",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-flt-D6"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-flt-S4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-flt-S4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-flt-D4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-flt-D4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/pool/~Common~ssloS_layer2a.app~ssloS_layer2a-4_portremap",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/pool/~Common~ssloS_layer2a.app~ssloS_layer2a-4_portremap"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/pool/~Common~ssloS_layer2a.app~ssloS_layer2a-6_portremap",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/pool/~Common~ssloS_layer2a.app~ssloS_layer2a-6_portremap"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/pool/~Common~ssloS_layer2a.app~ssloS_layer2a-4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/pool/~Common~ssloS_layer2a.app~ssloS_layer2a-4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/pool/~Common~ssloS_layer2a.app~ssloS_layer2a-6",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/pool/~Common~ssloS_layer2a.app~ssloS_layer2a-6"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_layer2a.app~ssloS_layer2a-ilS",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_layer2a.app~ssloS_layer2a-ilS"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_layer2a.app~ssloS_layer2a-ilD",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_layer2a.app~ssloS_layer2a-ilD"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_layer2a.app~ssloS_layer2a-ilS_auth",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_layer2a.app~ssloS_layer2a-ilS_auth"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_layer2a.app~ssloS_layer2a-ilD_auth",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_layer2a.app~ssloS_layer2a-ilD_auth"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/service/~Common~ssloS_layer2a.app~ssloS_layer2a-service",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/service/~Common~ssloS_layer2a.app~ssloS_layer2a-service"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/splitsessionserver/~Common~ssloS_layer2a.app~ssloS_layer2a-ss-server",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/splitsessionserver/~Common~ssloS_layer2a.app~ssloS_layer2a-ss-server"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~ssloS_layer2a.app~ssloS_layer2a-tcp-wan",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~ssloS_layer2a.app~ssloS_layer2a-tcp-wan"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~ssloS_layer2a.app~ssloS_layer2a-tcp-lan",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~ssloS_layer2a.app~ssloS_layer2a-tcp-lan"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/splitsessionclient/~Common~ssloS_layer2a.app~ssloS_layer2a-ss-client",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/splitsessionclient/~Common~ssloS_layer2a.app~ssloS_layer2a-ss-client"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-D-0-t-6",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-D-0-t-6"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-D-0-t-4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-D-0-t-4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-D-0-u-6",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-D-0-u-6"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-D-0-u-4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-D-0-u-4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-t-6",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-t-6"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-t-4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-t-4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-u-6",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-u-6"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-u-4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_layer2a.app~ssloS_layer2a-u-4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/node/~Common~ssloS_layer2a.app~198.19.33.30",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/node/~Common~ssloS_layer2a.app~198.19.33.30"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/node/~Common~ssloS_layer2a.app~2001:0200:0:201::1e",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/node/~Common~ssloS_layer2a.app~2001:0200:0:201::1e"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-D4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-D4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-S4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-S4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-D6",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-D6"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-S6",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer2a.app~ssloS_layer2a-70-0-S6"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.144.72.149",
+                            "strictness": false,
+                            "potentialDrift": false
+                        }
+                    ]
+                },
+                {
+                    "id": "dependencyInfo",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "type": "f5-ssl-orchestrator-service",
+                            "name": "/Common/ssloS_layer2a.app/ssloS_layer2a",
+                            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/f45dd56c-6bf5-4ef1-a819-863d4afcc56b",
+                            "dependsOn": {
+                                "references": [
+                                    {
+                                        "type": "f5-ssl-orchestrator-network",
+                                        "names": [
+                                            "/Common/ssloN_FEYE1_in.app/ssloN_FEYE1_in",
+                                            "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "configToDeploy",
+                    "type": "BOOLEAN",
+                    "value": true
+                },
+                {
+                    "id": "deviceSpecific",
+                    "type": "JSON"
+                },
+                {
+                    "id": "error",
+                    "type": "STRING",
+                    "value": ""
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-service"
+            },
+            "configProcessorTimeoutSeconds": 30,
+            "statsProcessorTimeoutSeconds": 15,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "UNBOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1644825129990483,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/f45dd56c-6bf5-4ef1-a819-863d4afcc56b"
+        }
+    ],
+    "generation": 794,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1644825131443457
+}

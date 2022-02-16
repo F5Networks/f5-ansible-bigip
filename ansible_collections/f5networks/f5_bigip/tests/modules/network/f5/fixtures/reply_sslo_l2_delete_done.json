@@ -1,0 +1,220 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "5ca89a46-3e61-4039-845a-fba9bc9fc647",
+            "name": "sslo_obj_SERVICE_DELETE_ssloS_layer2a",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-operation-context",
+                    "type": "JSON",
+                    "value": {
+                        "version": 7.5,
+                        "partition": "Common",
+                        "strictness": false,
+                        "operationType": "DELETE",
+                        "deploymentName": "ssloS_layer2a",
+                        "deploymentType": "SERVICE",
+                        "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/f45dd56c-6bf5-4ef1-a819-863d4afcc56b"
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-network",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "partition": "Common",
+                            "strictness": false,
+                            "name": "ssloN_FEYE1_out",
+                            "previousVersion": 7.5,
+                            "version": 7.5,
+                            "vlan": {
+                                "create": true,
+                                "path": "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out",
+                                "interface": [
+                                    "1.1"
+                                ],
+                                "name": "ssloN_FEYE1_out",
+                                "tag": 101.0
+                            },
+                            "selfIpConfig": {
+                                "selfIp": "",
+                                "netmask": "",
+                                "floating": false,
+                                "HAstaticIpMap": [
+                                    {
+                                        "deviceMgmtIp": "",
+                                        "selfIp": ""
+                                    }
+                                ]
+                            },
+                            "routeDomain": {
+                                "create": false,
+                                "id": 0.0,
+                                "path": ""
+                            },
+                            "existingBlockId": "7e47d7b1-eef7-4065-80a4-d5b910a6b9f6"
+                        }
+                    ]
+                },
+                {
+                    "id": "f5-ssl-orchestrator-service",
+                    "type": "JSON",
+                    "value": {
+                        "strictness": false,
+                        "customService": {
+                            "name": "ssloS_layer2a",
+                            "serviceType": "L2",
+                            "serviceSpecific": {
+                                "unitIdMap": [],
+                                "name": "ssloS_layer2a"
+                            },
+                            "connectionInformation": {
+                                "interfaces": [
+                                    {
+                                        "fromBigipVlan": {
+                                            "path": "/Common/L2service_vlan_in",
+                                            "create": false,
+                                            "name": "ssloN_FEYE1_in",
+                                            "networkBlockId": ""
+                                        },
+                                        "toBigipVlan": {
+                                            "path": "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out",
+                                            "create": false,
+                                            "interface": [
+                                                "1.1"
+                                            ],
+                                            "tag": 101.0,
+                                            "name": "ssloN_FEYE1_out",
+                                            "networkBlockId": "7e47d7b1-eef7-4065-80a4-d5b910a6b9f6"
+                                        }
+                                    }
+                                ]
+                            },
+                            "loadBalancing": {
+                                "devices": [
+                                    {
+                                        "ratio": "1",
+                                        "port": "0",
+                                        "ip": [
+                                            "198.19.33.30",
+                                            "2001:0200:0:201::1e"
+                                        ]
+                                    }
+                                ],
+                                "monitor": {
+                                    "fromSystem": "/Common/gateway_icmp"
+                                }
+                            },
+                            "portRemap": true,
+                            "httpPortRemapValue": 8283.0,
+                            "serviceDownAction": "reset",
+                            "iRuleReference": "",
+                            "iRuleList": [],
+                            "managedNetwork": {
+                                "serviceType": "L2",
+                                "ipFamily": "both",
+                                "ipv4": {
+                                    "serviceType": "L2",
+                                    "ipFamily": "ipv4",
+                                    "serviceSubnet": "198.19.33.0",
+                                    "serviceIndex": 0.0,
+                                    "subnetMask": " 255.255.255.0"
+                                },
+                                "ipv6": {
+                                    "serviceType": "L2",
+                                    "ipFamily": "ipv6",
+                                    "serviceSubnet": "2001:0200:0:201::",
+                                    "serviceIndex": 0.0,
+                                    "subnetMask": "ffff:ffff:ffff:ffff::"
+                                },
+                                "operation": "RESERVEANDCOMMIT"
+                            }
+                        },
+                        "vendorInfo": {
+                            "name": "Generic Inline Layer 2"
+                        },
+                        "modifiedNetworkObjects": [
+                            {
+                                "partition": "Common",
+                                "strictness": false,
+                                "name": "ssloN_FEYE1_out",
+                                "previousVersion": 7.5,
+                                "version": 7.5,
+                                "vlan": {
+                                    "create": true,
+                                    "path": "/Common/ssloN_FEYE1_out.app/ssloN_FEYE1_out",
+                                    "interface": [
+                                        "1.1"
+                                    ],
+                                    "name": "ssloN_FEYE1_out",
+                                    "tag": 101.0
+                                },
+                                "selfIpConfig": {
+                                    "selfIp": "",
+                                    "netmask": "",
+                                    "floating": false,
+                                    "HAstaticIpMap": [
+                                        {
+                                            "deviceMgmtIp": "",
+                                            "selfIp": ""
+                                        }
+                                    ]
+                                },
+                                "routeDomain": {
+                                    "create": false,
+                                    "id": 0.0,
+                                    "path": ""
+                                }
+                            }
+                        ],
+                        "removedNetworks": [],
+                        "networkObjects": [],
+                        "name": "ssloS_layer2a",
+                        "description": "Type: L2",
+                        "useTemplate": false,
+                        "serviceTemplate": "",
+                        "partition": "Common",
+                        "advancedMode": "off",
+                        "iRulesSelected": [],
+                        "existingBlockId": "f45dd56c-6bf5-4ef1-a819-863d4afcc56b"
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-service-chain",
+                    "type": "JSON",
+                    "value": []
+                },
+                {
+                    "id": "f5-ssl-orchestrator-policy",
+                    "type": "JSON",
+                    "value": []
+                }
+            ],
+            "dataProperties": [],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+            },
+            "configProcessorTimeoutSeconds": 120,
+            "statsProcessorTimeoutSeconds": 60,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "BOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1644837932434019,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/5ca89a46-3e61-4039-845a-fba9bc9fc647"
+        }
+    ],
+    "generation": 847,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1644837932436379
+}
