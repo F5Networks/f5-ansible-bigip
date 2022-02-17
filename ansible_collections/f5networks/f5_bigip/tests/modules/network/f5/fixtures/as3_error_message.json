@@ -1,0 +1,14 @@
+{
+    "id": "33aa0bd6-ece1-4eb0-8088-0e2832230bce",
+    "results": [
+        {
+            "code": 422,
+            "errors": [
+                "/Sample_02/A1/web_pool2/members/0: should have required property 'bigip'"
+            ],
+            "declarationFullId": "",
+            "message": "declaration is invalid"
+        }
+    ],
+    "declaration": {}
+}

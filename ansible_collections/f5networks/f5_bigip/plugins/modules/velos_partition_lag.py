@@ -151,7 +151,6 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     updatables = [
-        'name',
         'switched_vlan',
         'interface',
         'config_members',
@@ -288,37 +287,30 @@ class UsableChanges(Changes):
 
     @property
     def interface(self):
-        if self._values['switched_vlan'] is None:
-            return None
         result = {
             "name": self._values['name'],
             "config": {
                 "name": self._values['name'],
                 "type": self._values['interface_type'],
                 "enabled": bool("true"),
-                "openconfig-vlan:tpid": "openconfig-vlan-types:TPID_0X8100",
             },
             "openconfig-if-aggregate:aggregation": {
                 "config": {
                     "lag-type": self._values['lag_type'],
                     "f5-if-aggregate:distribution-hash": "src-dst-ipport",
                 },
-                "openconfig-vlan:switched-vlan": {
-                    "config": {
-                    }
-                }
             }
         }
         if isinstance(self._values['switched_vlan'], list):
             vlan = {
                 "trunk-vlans": self._values['switched_vlan'],
             }
-            result['openconfig-if-aggregate:aggregation']['openconfig-vlan:switched-vlan']['config'] = vlan
+            result['openconfig-if-aggregate:aggregation']['openconfig-vlan:switched-vlan'] = dict(config=vlan)
         if isinstance(self._values['switched_vlan'], int):
             vlan = {
                 "native-vlan": self._values['switched_vlan'],
             }
-            result['openconfig-if-aggregate:aggregation']['openconfig-vlan:switched-vlan']['config'] = vlan
+            result['openconfig-if-aggregate:aggregation']['openconfig-vlan:switched-vlan'] = dict(config=vlan)
         return [result]
 
 
@@ -474,10 +466,15 @@ class ModuleManager(object):
 
     def create_on_device(self):
         params = self.changes.api_params()
-        # we only use name parameter separately in update
-        params.pop('name')
-        uri = "/openconfig-interfaces:interfaces/"
-        response = self.client.post(uri, data=dict(interface=params.get('interface')))
+        payload = {
+            'openconfig-interfaces:interfaces': {
+                'interface': params.get('interface')
+            }
+        }
+
+        uri = "/"
+        response = self.client.patch(uri, data=payload)
+
         if response['code'] not in [200, 201, 202, 204]:
             raise F5ModuleError(response['contents'])
         if params.get('config_members'):
@@ -573,13 +570,22 @@ class ModuleManager(object):
         return intf_list
 
     def _configure_member(self, intf):
-        interface_encoded = self._encode_interface(intf)
-        iftype = 'openconfig-if-ethernet:ethernet'
-        uri = f"/openconfig-interfaces:interfaces/interface={interface_encoded}" \
-              f"/{iftype}/config"
+        uri = "/"
         payload = {
-            "openconfig-if-ethernet:config": {
-                "openconfig-if-aggregate:aggregate-id": self.want.name
+            'openconfig-interfaces:interfaces': {
+                'interface': [
+                    {
+                        'name': intf,
+                        'config': {
+                            'name': intf
+                        },
+                        'openconfig-if-ethernet:ethernet': {
+                            'config': {
+                                'openconfig-if-aggregate:aggregate-id': self.want.name
+                            }
+                        }
+                    }
+                ]
             }
         }
         response = self.client.patch(uri, data=payload)
@@ -592,10 +598,13 @@ class ModuleManager(object):
         iftype = 'openconfig-if-ethernet:ethernet'
         uri = f"/openconfig-interfaces:interfaces/interface={interface_encoded}" \
               f"/{iftype}/config"
+
         response = self.client.delete(uri)
+
         if response['code'] not in [200, 201, 202, 204]:
             raise F5ModuleError(
-                "Failed to delete LAG Interface {0} with {1}".format(self.want.name, intf))
+                "Failed to delete LAG Interface {0} with {1}".format(self.want.name, intf)
+            )
 
     def _is_lag_member(self, intf):
         interface_encoded = self._encode_interface(intf)

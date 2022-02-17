@@ -279,14 +279,6 @@ class ModuleManager(object):
         self.changes = UsableChanges()
         self.have = ApiParameters()
 
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = UsableChanges(params=changed)
-
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
@@ -335,7 +327,11 @@ class ModuleManager(object):
             # self._set_changed_options() <== remove ?
             return self.update()
         else:
-            return self.create()
+            raise F5ModuleError(
+                "Interface {0} does not exist. This module can only update existing interfaces".format(
+                    self.want.name
+                )
+            )
 
     def absent(self):
         if self.exists() and self._get_switched_vlan():
@@ -364,13 +360,6 @@ class ModuleManager(object):
         self.remove_from_device()
         return True
 
-    def create(self):
-        self._set_changed_options()
-        if self.module.check_mode:
-            return True
-        self.create_on_device()
-        return True
-
     def exists(self):
         interface_encoded = self._encode_interface_name()
         uri = f"/openconfig-interfaces:interfaces/interface={interface_encoded}"
@@ -383,29 +372,28 @@ class ModuleManager(object):
 
         return True
 
-    def create_on_device(self):
-        params = self.changes.api_params()
-        # we only use name parameter separately in update
-        uri = "/openconfig-interfaces:interfaces/"
-        response = self.client.patch(uri, data=params)
-        if response['code'] not in [200, 201, 202, 204]:
-            raise F5ModuleError(response['contents'])
-        return True
-
     def update_on_device(self):
         params = self.changes.api_params()
-        if 'switched_vlan' in params:
-            self._update_switched_vlan(params['switched_vlan'])
-        for k, v in params.items():
-            if k == 'switched_vlan':
-                interface_encoded = self._encode_interface_name()
-                iftype = 'openconfig-if-ethernet:ethernet'
-                # iftype = 'openconfig-if-aggregate:aggregation' <=== remove this
-                uri = f"/openconfig-interfaces:interfaces/interface={interface_encoded}" \
-                      f"/{iftype}/openconfig-vlan:switched-vlan/"
-                response = self.client.patch(uri, data=v)
-                if response['code'] not in [200, 201, 202, 204]:
-                    raise F5ModuleError("Failed to update Vlasns for {0}, {1} to {2}".format(self.want.switched_vlan, k, v))
+        payload = {
+            'openconfig-interfaces:interfaces': {
+                'interface': [
+                    {
+                        'name': self.want.name,
+                        'openconfig-if-ethernet:ethernet': params.get('switched_vlan')
+                    }
+                ]
+            }
+        }
+
+        uri = "/openconfig-interfaces:interfaces/"
+        response = self.client.patch(uri, data=payload)
+
+        if response['code'] not in [200, 201, 202, 204]:
+            raise F5ModuleError(
+                "Failed to update Vlans {0} to interface {1}".format(
+                    self.want.switched_vlan, self.want.name
+                )
+            )
         return True
 
     def remove_from_device(self):

@@ -14,8 +14,10 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_as3_deploy import (
     Parameters, ArgumentSpec, ModuleManager
 )
+
+from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_bigip.tests.compat import unittest
-from ansible_collections.f5networks.f5_bigip.tests.compat.mock import Mock, patch
+from ansible_collections.f5networks.f5_bigip.tests.compat.mock import Mock, patch, MagicMock
 from ansible_collections.f5networks.f5_bigip.tests.modules.utils import set_module_args
 
 
@@ -62,6 +64,11 @@ class TestManager(unittest.TestCase):
         self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_as3_deploy.send_teem')
         self.m2 = self.p2.start()
         self.m2.return_value = True
+        self.p3 = patch(
+            'ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_as3_deploy.F5Client'
+        )
+        self.m3 = self.p3.start()
+        self.m3.return_value = MagicMock()
 
     def tearDown(self):
         self.p1.stop()
@@ -113,3 +120,63 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert mm.want.timeout == (3, 100)
+
+    def test_upsert_tenant_declaration_generates_errors(self, *args):
+        declaration = load_fixture('as3_declaration_invalid.json')
+        set_module_args(dict(
+            content=declaration,
+            state='present',
+            timeout=600
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=False)
+        mm.client.post = Mock(return_value=dict(
+            code=202, contents=load_fixture('as3_invalid_declaration_task_start.json')
+        ))
+        mm.client.get = Mock(return_value=dict(
+            code=200, contents=load_fixture('as3_error_message.json')
+        ))
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        assert "declaration is invalid. /Sample_02/A1/web_pool2/members/0: " \
+               "should have required property 'bigip'" in str(err.exception)
+
+    def test_upsert_multi_tenant_declaration_generates_errors(self, *args):
+        declaration = load_fixture('as3_multiple_tenants_invalid.json')
+        set_module_args(dict(
+            content=declaration,
+            state='present',
+            timeout=600
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=False)
+        mm.client.post = Mock(return_value=dict(
+            code=202, contents=load_fixture('as3_multi_tenant_declare_task_start.json')
+        ))
+        mm.client.get = Mock(return_value=dict(
+            code=200, contents=load_fixture('as3_multi_tenant_error_message.json')
+        ))
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        assert "declaration failed. 0107176c:3: Invalid Node, the IP " \
+               "address 192.0.1.12 already exists." in str(err.exception)

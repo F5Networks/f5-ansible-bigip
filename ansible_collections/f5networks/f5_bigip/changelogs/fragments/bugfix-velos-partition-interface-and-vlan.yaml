@@ -1,0 +1,4 @@
+---
+bugfixes:
+  - velos_partition_vlan - changed the payload structure.
+  - velos_partition_intrface - removed the logic to create new interfaces as they were not required, along with change in payload and endpoint.

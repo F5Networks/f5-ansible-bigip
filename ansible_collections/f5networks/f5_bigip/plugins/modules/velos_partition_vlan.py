@@ -84,7 +84,6 @@ vlan_id:
   sample: 1234
 '''
 
-
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import Connection
 
@@ -307,9 +306,10 @@ class ModuleManager(object):
     def create_on_device(self):
         params = self.changes.api_params()
         # we only use name parameter separately in update
-        params.pop('name')
-        uri = "/openconfig-vlan:vlans/"
-        response = self.client.post(uri, data=params)
+        params.pop('name', None)
+        params = {'openconfig-vlan:vlans': params}
+        uri = "/"
+        response = self.client.patch(uri, data=params)
         if response['code'] not in [200, 201, 202, 204]:
             raise F5ModuleError(response['contents'])
         return True

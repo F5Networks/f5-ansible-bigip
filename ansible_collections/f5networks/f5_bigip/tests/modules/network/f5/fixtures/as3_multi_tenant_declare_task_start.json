@@ -1,0 +1,14 @@
+{
+    "id": "a31dcadc-bf22-4b8a-9abc-d1d42049b0e4",
+    "results": [
+        {
+            "message": "Declaration successfully submitted",
+            "tenant": "",
+            "host": "",
+            "runTime": 0,
+            "code": 0
+        }
+    ],
+    "declaration": {},
+    "selfLink": "https://localhost/mgmt/shared/appsvcs/task/a31dcadc-bf22-4b8a-9abc-d1d42049b0e4"
+}

@@ -94,14 +94,14 @@ class TestManager(unittest.TestCase):
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
         )
-        expected = {'vlan': [{'vlan-id': 1234, 'config': {'vlan-id': 1234, 'name': 'foobar'}}]}
+        expected = {'openconfig-vlan:vlans': {'vlan': [{'vlan-id': 1234, 'config': {'vlan-id': 1234, 'name': 'foobar'}}]}}
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=False)
-        mm.client.post = Mock(return_value=dict(code=201, contents={}))
+        mm.client.patch = Mock(return_value=dict(code=201, contents={}))
 
         results = mm.exec_module()
         assert results['changed'] is True
-        assert mm.client.post.call_args[1]['data'] == expected
+        assert mm.client.patch.call_args[1]['data'] == expected
 
     def test_vlan_create_name_missing(self, *args):
         set_module_args(dict(
@@ -113,14 +113,14 @@ class TestManager(unittest.TestCase):
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
         )
-        expected = {'vlan': [{'vlan-id': 1234, 'config': {'vlan-id': 1234, 'name': '1234'}}]}
+        expected = {'openconfig-vlan:vlans': {'vlan': [{'vlan-id': 1234, 'config': {'vlan-id': 1234, 'name': '1234'}}]}}
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=False)
-        mm.client.post = Mock(return_value=dict(code=201, contents=""))
+        mm.client.patch = Mock(return_value=dict(code=201, contents=""))
 
         results = mm.exec_module()
         assert results['changed'] is True
-        mm.client.post.assert_called_once_with('/openconfig-vlan:vlans/', data=expected)
+        mm.client.patch.assert_called_once_with('/', data=expected)
 
     def test_vlan_update_name(self, *args):
         set_module_args(dict(

@@ -87,11 +87,13 @@ class TestManager(unittest.TestCase):
         expected = {'openconfig-vlan:switched-vlan': {'config': {'trunk-vlans': [444]}}}
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=False)
-        mm.client.post = Mock(return_value=dict(code=201, contents={}))
+        mm.client.patch = Mock(return_value=dict(code=201, contents={}))
         fixdata = []
         fixdata.append(load_fixture("load_velos_partition_lag_config.json"))
         newdata = {
-            "openconfig-interfaces:interface": fixdata,
+            "openconfig-interfaces:interfaces": {
+                "interface": fixdata
+            }
         }
         intdata = {
             "openconfig-interfaces:interfaces": {
