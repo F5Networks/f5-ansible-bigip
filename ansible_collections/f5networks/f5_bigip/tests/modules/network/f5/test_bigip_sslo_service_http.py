@@ -121,7 +121,7 @@ class TestManager(unittest.TestCase):
         self.m2.return_value = MagicMock()
         self.p3 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_service_http.sslo_version')
         self.m3 = self.p3.start()
-        self.m3.return_value = '8.0'
+        self.m3.return_value = '7.5'
 
     def tearDown(self):
         self.p1.stop()
@@ -186,6 +186,30 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(module=module)
 
         exists = dict(code=200, contents=load_fixture('load_sslo_service_http.json'))
+        # Override methods to force specific logic in the module to happen
+        mm.client.get = Mock(side_effect=[exists, exists])
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        assert results['json'] == expected
+
+    def test_delete_http_service_object_dump_json(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        expected = load_fixture('sslo_http_delete_generated.json')
+        set_module_args(dict(
+            name='proxy1a',
+            state='absent',
+            dump_json=True
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+
+        exists = dict(code=200, contents=load_fixture('load_sslo_service_http2.json'))
         # Override methods to force specific logic in the module to happen
         mm.client.get = Mock(side_effect=[exists, exists])
 
@@ -277,3 +301,27 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['snat'] == 'snatlist'
         assert results['snat_list'] == ['198.19.64.10', '198.19.64.11']
+
+    def test_delete_http_service_object(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='proxy1a',
+            state='absent'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+
+        exists = dict(code=200, contents=load_fixture('load_sslo_service_http2.json'))
+        done = dict(code=200, contents=load_fixture('reply_sslo_http_delete_done.json'))
+        # Override methods to force specific logic in the module to happen
+        mm.client.post = Mock(return_value=dict(
+            code=202, contents=load_fixture('reply_sslo_http_delete_start.json')
+        ))
+        mm.client.get = Mock(side_effect=[exists, exists, done])
+
+        results = mm.exec_module()
+        assert results['changed'] is True

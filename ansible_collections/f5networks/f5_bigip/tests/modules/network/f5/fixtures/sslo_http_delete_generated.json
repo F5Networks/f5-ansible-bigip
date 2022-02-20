@@ -1,6 +1,6 @@
 
 {
-    "name": "sslo_obj_SERVICE_MODIFY_ssloS_proxy1a",
+    "name": "sslo_obj_SERVICE_DELETE_ssloS_proxy1a",
     "inputProperties":[
        {
           "id":"f5-ssl-orchestrator-operation-context",
@@ -9,16 +9,47 @@
                 "version": 7.5,
                 "partition": "Common",
                 "strictness": false,
-                "operationType": "MODIFY",
+                "operationType": "DELETE",
                 "deploymentName": "ssloS_proxy1a",
                 "deploymentType": "SERVICE",
-                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/a6aec5a7-78a4-474a-b07d-fb77ad27c7f1"
+                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/85c0dc50-54f4-4851-ac5e-68cc0fbfd383"
           }
        },
        {
           "id":"f5-ssl-orchestrator-network",
           "type":"JSON",
-          "value": [
+          "value": [{
+                "name": "ssloN_proxy1a_in",
+                "partition": "Common",
+                "strictness": false,
+                "create": true,
+                "vlan":{
+                    "name": "ssloN_proxy1a_in",
+                    "path": "/Common/ssloN_proxy1a_in.app/ssloN_proxy1a_in",
+                    "create": true,
+                    "modify": false,
+                    "networkError": false,
+                    "interface":[
+                        "1.3"
+                    ],
+                    "networkInterface": "1.3",
+                    "tag": 450,
+                    "networkTag": 450
+                },
+                "selfIpConfig":{
+                    "create": true,
+                    "modify": false,
+                    "selfIp": "",
+                    "netmask": "",
+                    "floating": false,
+                    "HAstaticIpMap": []
+                },
+                "routeDomain":{
+                    "id": 0,
+                    "create": false
+                },
+                "existingBlockId": ""
+             },
              {
                     "name": "ssloN_proxy1a_out",
                     "partition": "Common",
@@ -31,11 +62,11 @@
                         "modify": false,
                         "networkError": false,
                         "interface":[
-                            "1.1"
+                            "1.3"
                         ],
-                        "networkInterface": "1.1",
-                        "tag": 50,
-                        "networkTag": 50
+                        "networkInterface": "1.3",
+                        "tag": 451,
+                        "networkTag": 451
                 },
                 "selfIpConfig":{
                     "create": true,
@@ -63,16 +94,16 @@
                 "serviceSpecific":{
                     "name": "ssloS_proxy1a",
                     "proxyType": "Transparent",
-                    "authOffload": true
+                    "authOffload": false
                 },
                 "connectionInformation":{
                     "fromBigipNetwork":{
                         "name": "ssloN_proxy1a_in",
                         "vlan":{
-                            "path": "/Common/proxy1a-in-vlan",
+                            "path": "/Common/ssloN_proxy1a_in.app/ssloN_proxy1a_in",
                             "create": false,
                             "modify": false,
-                            "selectedValue": "/Common/proxy1a-in-vlan",
+                            "selectedValue": "/Common/ssloN_proxy1a_in.app/ssloN_proxy1a_in",
                             "networkVlanValue": ""
                         },
                         "routeDomain":{
@@ -84,7 +115,7 @@
                             "modify": false,
                             "autoValue": "198.19.96.7/25",
                             "selectedValue": "",
-                            "selfIp": "198.19.96.7",
+                            "selfIp": "198.19.69.7",
                             "netmask": "255.255.255.128",
                             "floating": false,
                             "HAstaticIpMap": []
@@ -109,25 +140,25 @@
                             "modify": false,
                             "autoValue": "198.19.96.245/25",
                             "selectedValue": "",
-                            "selfIp": "198.19.96.245",
+                            "selfIp": "198.19.69.245",
                             "netmask": "255.255.255.128",
                             "floating": false,
                             "HAstaticIpMap": []
                         },
-                        "networkBlockId": "28ccac9f-1f5a-4ab0-adbd-ac7ec37529d4"
-
+                        "networkBlockId": ""
                    }
                 },
                 "snatConfiguration":{
                    "clientSnat": "SNAT",
                    "snat":{
-                      "referredObj": "",
-                      "ipv4SnatAddresses": [{"ip": "198.19.64.10"}, {"ip": "198.19.64.11"}],
+                      "referredObj": "/Common/ssloS_proxy1a.app/ssloS_proxy1a-svc-snatpool"
+                      ,
+                      "ipv4SnatAddresses": [{"ip": "198.19.63.14"}, {"ip": "198.19.63.15"}, {"ip": "198.19.63.16"}],
                       "ipv6SnatAddresses": []
                    }
                 },
                 "loadBalancing":{
-                   "devices": [{"ip": "198.19.96.30", "port": 80}, {"ip": "198.19.96.31", "port": 80}],
+                   "devices": [{"ip": "198.19.69.30", "port": 80}, {"ip": "198.19.69.31", "port": 80}, {"ip": "198.19.69.33", "port": 80}],
                    "monitor":{
                       "fromSystem": "/Common/gateway_icmp"
                    }
@@ -137,8 +168,8 @@
                 "isAutoManage": true,
                 "portRemap": true,
                 "httpPortRemapValue": 8080,
-                "serviceDownAction": "reset",
-                "iRuleList": null,
+                "serviceDownAction": "ignore",
+                "iRuleList": [],
                 "managedNetwork":{
                     "serviceType": "http-proxy",
                     "ipFamily": "ipv4",
@@ -146,28 +177,28 @@
                     "ipv4": {
                         "serviceType": "http-proxy",
                         "ipFamily": "ipv4",
-                        "serviceSubnet": "198.19.96.0",
+                        "serviceSubnet": "198.19.69.0",
                         "serviceIndex": 0,
                         "subnetMask": "255.255.255.0",
-                        "toServiceNetwork": "198.19.96.0",
+                        "toServiceNetwork": "198.19.69.0",
                         "toServiceMask": "255.255.255.128",
-                        "toServiceSelfIp": "198.19.96.7",
-                        "fromServiceNetwork": "198.19.96.128",
+                        "toServiceSelfIp": "198.19.69.7",
+                        "fromServiceNetwork": "198.19.69.128",
                         "fromServiceMask": "255.255.255.128",
-                        "fromServiceSelfIp": "198.19.96.245"
+                        "fromServiceSelfIp": "198.19.69.245"
                     },
                    "ipv6": {
                         "serviceType": "http-proxy",
                         "ipFamily": "ipv4",
-                        "serviceSubnet": "198.19.96.0",
+                        "serviceSubnet": "198.19.69.0",
                         "serviceIndex": 0,
                         "subnetMask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00",
-                        "toServiceNetwork": "198.19.96.0",
+                        "toServiceNetwork": "198.19.69.0",
                         "toServiceMask": "255.255.255.128",
-                        "toServiceSelfIp": "198.19.96.7",
-                        "fromServiceNetwork": "198.19.96.128",
+                        "toServiceSelfIp": "198.19.69.7",
+                        "fromServiceNetwork": "198.19.69.128",
                         "fromServiceMask": "255.255.255.128",
-                        "fromServiceSelfIp": "198.19.96.245"
+                        "fromServiceSelfIp": "198.19.69.245"
                     },
                    "operation":"RESERVEANDCOMMIT"
                 }
@@ -183,20 +214,21 @@
                 "partition": "Common",
                 "strictness": false,
                 "vlan":{
-                    "create": false,
+                    "create": true,
                     "modify": false,
                     "name": "ssloN_proxy1a_in",
-                    "path": "/Common/proxy1a-in-vlan",
+                    "path": "/Common/ssloN_proxy1a_in.app/ssloN_proxy1a_in",
                     "networkError": false,
-                    "interface": [],
-                    "tag": 0,
-                    "networkInterface": "",
-                    "networkTag": 0
+                    "interface": "1.3"
+                    ,
+                    "tag": 450,
+                    "networkInterface": "1.3",
+                    "networkTag": 450
                 },
                 "selfIpConfig":{
                     "create": true,
                     "modify": false,
-                    "selfIp": "198.19.96.7",
+                    "selfIp": "198.19.69.7",
                     "netmask": "255.255.255.128",
                     "floating": false,
                     "HAstaticIpMap": []
@@ -222,15 +254,15 @@
                     "name": "ssloN_proxy1a_out",
                     "path": "/Common/ssloN_proxy1a_out.app/ssloN_proxy1a_out",
                     "networkError": false,
-                    "interface": "1.1",
-                    "tag": 50,
-                    "networkInterface": "1.1",
-                    "networkTag": 50
+                    "interface": "1.3",
+                    "tag": 451,
+                    "networkInterface": "1.3",
+                    "networkTag": 451
                 },
                 "selfIpConfig":{
                     "create": true,
                     "modify": false,
-                    "selfIp": "198.19.96.245",
+                    "selfIp": "198.19.69.245",
                     "netmask": "255.255.255.128",
                     "floating": false,
                     "HAstaticIpMap": []
@@ -252,7 +284,7 @@
             "templateName": "HTTP Service",
             "previousVersion": 7.5,
             "version": 7.5,
-            "existingBlockId": "a6aec5a7-78a4-474a-b07d-fb77ad27c7f1"
+            "existingBlockId": "85c0dc50-54f4-4851-ac5e-68cc0fbfd383"
           }
        },
        {

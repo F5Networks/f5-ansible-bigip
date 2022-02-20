@@ -183,6 +183,15 @@ options:
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
+  state:
+    description:
+      - When C(state) is C(present), ensures the object is created or modified.
+      - When C(state) is C(absent), ensures that the service is removed.
+    type: str
+    choices:
+      - present
+      - absent
+    default: present
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -231,6 +240,11 @@ EXAMPLES = r'''
         snat_list:
           - "198.19.64.10"
           - "198.19.64.11"
+
+    - name: Delete SSLO HTTP service
+      bigip_sslo_service_http:
+        name: "proxy1a"
+        state: "absent"
 '''
 
 RETURN = r'''
@@ -447,7 +461,10 @@ class ApiParameters(Parameters):
         result['netmask'] = self._values['customService']['managedNetwork'][ipfamily]['toServiceMask']
         result['network'] = self._values['customService']['managedNetwork'][ipfamily]['toServiceNetwork']
         if self._values['fromNetworkObj']['vlan']['create']:
-            result['interface'] = self._values['fromNetworkObj']['vlan']['interface']
+            if isinstance(self._values['fromNetworkObj']['vlan']['interface'], list):
+                result['interface'] = self._values['fromNetworkObj']['vlan']['interface'][0]
+            else:
+                result['interface'] = self._values['fromNetworkObj']['vlan']['interface']
             if int(self._values['fromNetworkObj']['vlan']['tag']) != 0:
                 result['tag'] = int(self._values['fromNetworkObj']['vlan']['tag'])
         else:
@@ -464,7 +481,10 @@ class ApiParameters(Parameters):
         result['netmask'] = self._values['customService']['managedNetwork'][ipfamily]['fromServiceMask']
         result['network'] = self._values['customService']['managedNetwork'][ipfamily]['fromServiceNetwork']
         if self._values['toNetworkObj']['vlan']['create']:
-            result['interface'] = self._values['toNetworkObj']['vlan']['interface']
+            if isinstance(self._values['toNetworkObj']['vlan']['interface'], list):
+                result['interface'] = self._values['toNetworkObj']['vlan']['interface'][0]
+            else:
+                result['interface'] = self._values['toNetworkObj']['vlan']['interface']
             if int(self._values['toNetworkObj']['vlan']['tag']) != 0:
                 result['tag'] = int(self._values['toNetworkObj']['vlan']['tag'])
         else:
@@ -528,13 +548,13 @@ class ApiParameters(Parameters):
         return self._values['customService']['serviceSpecific']['authOffload']
 
     @property
-    def to_net_id(self):
+    def from_net_id(self):
         block_id = self._values['customService']['connectionInformation']['fromBigipNetwork']['networkBlockId']
         if block_id:
             return block_id
 
     @property
-    def from_net_id(self):
+    def to_net_id(self):
         block_id = self._values['customService']['connectionInformation']['toBigipNetwork']['networkBlockId']
         if block_id:
             return block_id
@@ -722,6 +742,25 @@ class UsableChanges(Changes):
     pass
 
 
+class RemovalChanges(Changes):
+    returnables = [
+        'devices_to',
+        'devices_from',
+        'devices',
+        'ip_family',
+        'monitor',
+        'service_down_action',
+        'port_remap',
+        'snat',
+        'snat_list',
+        'snat_pool',
+        'rules',
+        'proxy_type',
+        'auth_offload',
+        'snat_ref_id'
+    ]
+
+
 class ReportableChanges(Changes):
     @staticmethod
     def _normalize_devices(devices):
@@ -859,6 +898,7 @@ class ModuleManager(object):
         self.client = F5Client(module=self.module, client=self.connection)
         self.want = ModuleParameters(params=self.module.params)
         self.changes = UsableChanges()
+        self.removals = RemovalChanges()
         self.have = ApiParameters()
 
         # define a set of common instance variables used during module execution
@@ -866,6 +906,14 @@ class ModuleManager(object):
         self.operation = None
         self.version = None
         self.json_dump = None
+
+    def _set_options_to_remove(self):
+        changed = {}
+        for key in RemovalChanges.returnables:
+            if getattr(self.have, key) is not None:
+                changed[key] = getattr(self.have, key)
+        if changed:
+            self.removals = RemovalChanges(params=changed)
 
     def _set_changed_options(self):
         changed = {}
@@ -902,11 +950,16 @@ class ModuleManager(object):
             )
 
     def exec_module(self):
+        changed = False
         result = dict()
+        state = self.want.state
 
         self.check_sslo_version()
 
-        changed = self.present()
+        if state == 'present':
+            changed = self.present()
+        elif state == 'absent':
+            changed = self.absent()
 
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
@@ -932,6 +985,11 @@ class ModuleManager(object):
             return self.update()
         else:
             return self.create()
+
+    def absent(self):
+        if self.exists():
+            return self.remove()
+        return False
 
     def should_update(self):
         result = self._update_changed_options()
@@ -961,6 +1019,20 @@ class ModuleManager(object):
             return True
         self.operation = 'MODIFY'
         task_id, output = self.update_on_device()
+        if task_id:
+            self.wait_for_task(task_id)
+        if output:
+            self.json_dump = output
+            return False
+        return True
+
+    def remove(self):
+        if self.module.check_mode:
+            return True
+        self.operation = 'DELETE'
+        self.have = self.read_current_from_device()
+        self._set_options_to_remove()
+        task_id, output = self.remove_from_device()
         if task_id:
             self.wait_for_task(task_id)
         if output:
@@ -1028,9 +1100,7 @@ class ModuleManager(object):
             params['snat_ref_id'] = self.changes.snat_pool
         return params
 
-    def add_json_metadata(self, payload=None):
-        if not payload:
-            payload = dict()
+    def add_json_metadata(self, payload):
         payload['name'] = f"sslo_obj_SERVICE_{self.operation}_{self.want.name}"
         payload['deployment_name'] = self.want.name
         payload['operation'] = self.operation
@@ -1083,6 +1153,24 @@ class ModuleManager(object):
     def update_on_device(self):
         payload = self.changes.to_return()
         data = self.add_missing_options(self.add_json_metadata(payload))
+
+        output = process_json(data, create_modify)
+
+        if self.want.dump_json:
+            return None, output
+
+        uri = "/mgmt/shared/iapp/blocks/"
+        response = self.client.post(uri, data=output)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        task_id = str(response['contents']['id'])
+        return task_id, None
+
+    def remove_from_device(self):
+        payload = self.removals.to_return()
+        data = self.add_json_metadata(payload)
 
         output = process_json(data, create_modify)
 
@@ -1233,6 +1321,10 @@ class ArgumentSpec(object):
             ),
             auth_offload=dict(
                 type='bool'
+            ),
+            state=dict(
+                default='present',
+                choices=['absent', 'present']
             ),
             timeout=dict(
                 type='int',

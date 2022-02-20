@@ -1,4 +1,3 @@
-
 {
     "name": "sslo_obj_SERVICE_CREATE_ssloS_proxy1a",
     "inputProperties":[
@@ -6,7 +5,7 @@
           "id":"f5-ssl-orchestrator-operation-context",
           "type":"JSON",
           "value": {
-                "version": 8.0,
+                "version": 7.5,
                 "partition": "Common",
                 "strictness": false,
                 "operationType": "CREATE",
@@ -18,6 +17,7 @@
           "id":"f5-ssl-orchestrator-network",
           "type":"JSON",
           "value": [
+
                 {
                     "name": "ssloN_proxy1a_out",
                     "partition": "Common",
@@ -32,9 +32,9 @@
                         "interface":[
                             "1.1"
                         ],
+                        "networkInterface": "1.1",
                         "tag": 50,
-                        "networkTag": 50,
-                        "networkInterface": "1.1"
+                        "networkTag": 50
                 },
                 "selfIpConfig":{
                     "create": true,
@@ -119,7 +119,8 @@
                 "snatConfiguration":{
                    "clientSnat": "existingSNAT",
                    "snat":{
-                      "referredObj": "/Common/proxy1a-snatpool",
+                      "referredObj": "/Common/proxy1a-snatpool"
+                      ,
                       "ipv4SnatAddresses": [],
                       "ipv6SnatAddresses": []
                    }
@@ -248,8 +249,8 @@
             "useTemplate": false,
             "serviceTemplate": "",
             "templateName": "HTTP Service",
-            "previousVersion": 8.0,
-            "version": 8.0
+            "previousVersion": 7.5,
+            "version": 7.5
           }
        },
        {

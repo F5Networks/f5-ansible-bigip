@@ -1,37 +1,4 @@
 delete = """
-{
-    "name": "{{ params.name }}",
-    "inputProperties": [
-        {
-            "id": "f5-ssl-orchestrator-operation-context",
-            "type": "JSON",
-            "value": {
-                "deploymentName": "{{ params.deployment_name }}",
-                "deploymentReference": "{{ params.dep_ref }}",
-                "deploymentType": "SERVICE",
-                "operationType": "{{ params.operation }}",
-                "version": {{ params.sslo_version }},
-                "partition": "Common"
-            }
-        },
-        {
-            "id": "f5-ssl-orchestrator-service",
-            "type": "JSON",
-            "value": {
-                "existingBlockId": "{{ params.block_id }}",
-                "name": "{{ params.deployment_name }}",
-                "partition": "Common",
-                "previousVersion": {{ params.sslo_version }},
-                "version": {{ params.sslo_version }}
-            }
-        }
-    ],
-    "dataProperties":[],
-    "configurationProcessorReference": {
-        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
-    },
-    "state": "BINDING"
-}
 """
 create_modify = """
 {
@@ -53,7 +20,7 @@ create_modify = """
        {
           "id":"f5-ssl-orchestrator-network",
           "type":"JSON",
-          "value": [{%  if params.devices_to is defined  and 'interface' in params.devices_to %}
+          "value": [{%  if params.devices_to is defined  and 'interface' in params.devices_to -%}
             {
                 "name": "{{ params.devices_to.name }}",
                 "partition": "Common",
@@ -67,10 +34,11 @@ create_modify = """
                     "networkError": false,
                     "interface":[
                         "{{ params.devices_to.interface }}"
-                    ],{% if params.devices_to.tag is defined %}
+                    ],
+                    "networkInterface": "{{ params.devices_to.interface }}",
+                    {% if params.devices_to.tag is defined -%}
                     "tag": {{ params.devices_to.tag }},
-                    "networkTag": {{ params.devices_to.tag }},{% endif %}
-                    "networkInterface": "{{ params.devices_to.interface }}"
+                    "networkTag": {{ params.devices_to.tag }}{% endif %}
                 },
                 "selfIpConfig":{
                     "create": true,
@@ -85,8 +53,8 @@ create_modify = """
                     "create": false
                 },
                 "existingBlockId": ""
-             }{% if params.devices_from is defined  and 'interface' in params.devices_from %},{% endif %}{% endif %}
-             {% if params.devices_from is defined  and 'interface' in params.devices_from %}
+             }{% if params.devices_from is defined  and 'interface' in params.devices_from -%},{% endif %}{% endif %}
+             {% if params.devices_from is defined  and 'interface' in params.devices_from -%}
                 {
                     "name": "{{ params.devices_from.name }}",
                     "partition": "Common",
@@ -100,10 +68,11 @@ create_modify = """
                         "networkError": false,
                         "interface":[
                             "{{ params.devices_from.interface }}"
-                        ],{% if params.devices_from.tag is defined %}
+                        ],
+                        "networkInterface": "{{ params.devices_from.interface }}",
+                        {% if params.devices_from.tag is defined -%}
                         "tag": {{ params.devices_from.tag }},
-                        "networkTag": {{ params.devices_from.tag }},{% endif %}
-                        "networkInterface": "{{ params.devices_from.interface }}"
+                        "networkTag": {{ params.devices_from.tag }}{% endif %}
                 },
                 "selfIpConfig":{
                     "create": true,
@@ -194,11 +163,11 @@ create_modify = """
                 "snatConfiguration":{
                    "clientSnat": "{{ params.snat }}",
                    "snat":{
-                      "referredObj": {% if params.snat_ref_id is defined %}"{{ params.snat_ref_id }}"
+                      "referredObj": {% if params.snat_ref_id is defined -%}"{{ params.snat_ref_id }}"
                       {% else %}""{% endif %},
-                      "ipv4SnatAddresses": {% if params.ip_family == 'ipv4' and params.snat_list is defined %}
+                      "ipv4SnatAddresses": {% if params.ip_family == 'ipv4' and params.snat_list is defined -%}
                       {{ params.snat_list | tojson }}{% else %}[]{% endif %},
-                      "ipv6SnatAddresses": {% if params.ip_family == 'ipv6' and params.snat_list is defined %}
+                      "ipv6SnatAddresses": {% if params.ip_family == 'ipv6' and params.snat_list is defined -%}
                       {{ params.snat_list | tojson }}{% else %}[]{% endif %}
                    }
                 },
@@ -212,8 +181,8 @@ create_modify = """
                 "ipFamily": "{{ params.ip_family }}",
                 "isAutoManage": true,
                 "portRemap": {% if params.port_remap is defined %}true{% else %}false{% endif %},
-                "httpPortRemapValue": {% if params.port_remap is defined %}{{ params.port_remap }}
-                {% else %}80{% endif %},
+                "httpPortRemapValue": {% if params.port_remap is defined -%}{{ params.port_remap }},{% else %}80,
+                {% endif %}
                 "serviceDownAction": "{{ params.service_down_action }}",
                 "iRuleList": {% if params.rules is defined %}{{ params.rules | tojson }}{% else %}[]{% endif %},
                 "managedNetwork":{
@@ -267,11 +236,11 @@ create_modify = """
                     "networkError": false,
                     "interface": {% if 'interface' in params.devices_to %}"{{ params.devices_to.interface }}"
                     {% else %}[]{% endif %},
-                    "tag": {% if 'interface' in params.devices_to and 'tag' in params.devices_to %}
+                    "tag": {% if 'interface' in params.devices_to and 'tag' in params.devices_to -%}
                     {{ params.devices_to.tag }}{% else %}0{% endif %},
-                    "networkInterface": {% if 'interface' in params.devices_to %}
+                    "networkInterface": {% if 'interface' in params.devices_to -%}
                     "{{ params.devices_to.interface }}"{% else %}""{% endif %},
-                    "networkTag": {% if 'interface' in params.devices_to and 'tag' in params.devices_to %}
+                    "networkTag": {% if 'interface' in params.devices_to and 'tag' in params.devices_to -%}
                     {{ params.devices_to.tag }}{% else %}0{% endif %}
                 },
                 "selfIpConfig":{
@@ -303,13 +272,13 @@ create_modify = """
                     "name": "{{ params.devices_from.name }}",
                     "path": "{{ params.devices_from.path }}",
                     "networkError": false,
-                    "interface": {% if 'interface' in params.devices_from %}
+                    "interface": {% if 'interface' in params.devices_from -%}
                     "{{ params.devices_from.interface }}"{% else %}[]{% endif %},
-                    "tag": {% if 'interface' in params.devices_from and 'tag' in params.devices_from %}
+                    "tag": {% if 'interface' in params.devices_from and 'tag' in params.devices_from -%}
                     {{ params.devices_from.tag }}{% else %}0{% endif %},
-                    "networkInterface": {% if 'interface' in params.devices_from %}
+                    "networkInterface": {% if 'interface' in params.devices_from -%}
                     "{{ params.devices_from.interface }}"{% else %}""{% endif %},
-                    "networkTag": {% if 'interface' in params.devices_from and 'tag' in params.devices_from %}
+                    "networkTag": {% if 'interface' in params.devices_from and 'tag' in params.devices_from -%}
                     {{ params.devices_from.tag }}{% else %}0{% endif %}
                 },
                 "selfIpConfig":{
