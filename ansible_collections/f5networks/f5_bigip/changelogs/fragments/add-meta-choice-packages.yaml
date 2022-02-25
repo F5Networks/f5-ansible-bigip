@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - bigip_device_info - Added a new meta choice, packages, which groups information about as3, do, cfe and ts. This change was done to ensure users with non admin access can use this module to get information that does not require admin access.
