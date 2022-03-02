@@ -1,0 +1,418 @@
+{
+    "name": "ssloS_tap_test",
+    "vendorInfo": {
+        "name": "Generic TAP Service"
+    },
+    "createNewNetworkObj": {
+        "name": "ssloN_tap_test",
+        "networkError": false,
+        "networkInterface": "1.1"
+    },
+    "useExistingNetworkObj": {
+        "path": "",
+        "interface": ""
+    },
+    "customService": {
+        "name": "ssloS_tap_test",
+        "serviceType": "tap",
+        "portRemap": true,
+        "serviceDownAction": "ignore",
+        "httpPortRemapValue": 80.0,
+        "managedNetwork": {
+            "ipFamily": "both",
+            "serviceType": "tap",
+            "ipv4": {
+                "serviceType": "tap",
+                "ipFamily": "ipv4",
+                "serviceSubnet": "198.19.182.0",
+                "serviceIndex": 2.0,
+                "subnetMask": "255.255.255.252",
+                "serviceSelfIp": "198.19.182.8",
+                "serviceHASelfIp": "198.19.182.9",
+                "deviceIp": "198.19.182.10"
+            },
+            "ipv6": {
+                "serviceType": "tap",
+                "ipFamily": "ipv6",
+                "serviceSubnet": "2001:200:0:ca9a::",
+                "serviceIndex": 2.0,
+                "subnetMask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:fff0",
+                "serviceSelfIp": "2001:200:0:ca9a::8",
+                "serviceHASelfIp": "2001:200:0:ca9a::9",
+                "deviceIp": "2001:200:0:ca9a::a"
+            },
+            "operation": "RESERVEANDCOMMIT"
+        },
+        "serviceSpecific": {
+            "description": "",
+            "macAddress": "fa:16:3e:a1:42:a8",
+            "name": "ssloS_tap_test",
+            "vlan": {
+                "create": false,
+                "path": "/Common/ssloN_tap_test.app/ssloN_tap_test",
+                "networkInterface": "1.1",
+                "interface": "1.1",
+                "tag": 400.0,
+                "name": "ssloN_tap_test",
+                "networkTag": 400.0,
+                "networkBlockId": "b12143ff-3a7e-4ede-bcf0-24779e666dce"
+            },
+            "vendorConfig": {
+                "name": "TAP Service"
+            }
+        }
+    },
+    "partition": "Common",
+    "templateName": "TAP Service",
+    "useTemplate": false,
+    "previousVersion": 7.5,
+    "version": 7.5,
+    "strictness": false,
+    "virtuals": {
+        "ssloS_tap_test04": {
+            "name": "ssloS_tap_test-t-4",
+            "internal": true,
+            "ip": "0.0.0.0",
+            "source": "0.0.0.0/0",
+            "port": "0",
+            "mask": "any",
+            "ipProto": "tcp",
+            "description": "Receive-only service (2022-2-18 03:47:24)",
+            "clientVlanRestrict": "enableSome",
+            "translateAddress": "disabled",
+            "translatePort": "disabled",
+            "profiles": {
+                "names": [],
+                "references": [
+                    "ssloS_tap_test-service",
+                    "ssloS_tap_test-tcp-wan",
+                    "ssloS_tap_test-tcp-lan"
+                ]
+            },
+            "clonePoolsRef": {
+                "reference": "ssloS_tap_test-4"
+            },
+            "iRules": {
+                "references": [
+                    "ssloS_tap_test-ro"
+                ]
+            },
+            "additionalConfig": [
+                {
+                    "configKey": "clonePools",
+                    "referedObj": true
+                },
+                {
+                    "configKey": "internal",
+                    "referredObj": true
+                }
+            ],
+            "clonePools": [
+                {
+                    "name": "ssloS_tap_test-4",
+                    "context": "serverside"
+                }
+            ],
+            "skipSnat": true
+        },
+        "ssloS_tap_test06": {
+            "name": "ssloS_tap_test-t-6",
+            "internal": true,
+            "ip": "0.0.0.0",
+            "source": "0.0.0.0/0",
+            "port": "0",
+            "mask": "any",
+            "ipProto": "tcp",
+            "description": "Receive-only service (2022-2-18 03:47:24)",
+            "clientVlanRestrict": "enableSome",
+            "translateAddress": "disabled",
+            "translatePort": "disabled",
+            "profiles": {
+                "names": [],
+                "references": [
+                    "ssloS_tap_test-service",
+                    "ssloS_tap_test-tcp-wan",
+                    "ssloS_tap_test-tcp-lan"
+                ]
+            },
+            "clonePoolsRef": {
+                "reference": "ssloS_tap_test-6"
+            },
+            "iRules": {
+                "references": [
+                    "ssloS_tap_test-ro"
+                ]
+            },
+            "additionalConfig": [
+                {
+                    "configKey": "clonePools",
+                    "referedObj": true
+                },
+                {
+                    "configKey": "internal",
+                    "referredObj": true
+                }
+            ],
+            "clonePools": [
+                {
+                    "name": "ssloS_tap_test-6",
+                    "context": "serverside"
+                }
+            ],
+            "skipSnat": true
+        },
+        "ssloS_tap_test14": {
+            "name": "ssloS_tap_test-u-4",
+            "internal": true,
+            "ip": "0.0.0.0",
+            "source": "0.0.0.0/0",
+            "port": "0",
+            "mask": "any",
+            "ipProto": "udp",
+            "description": "Receive-only service (2022-2-18 03:47:24)",
+            "clientVlanRestrict": "enableSome",
+            "translateAddress": "disabled",
+            "translatePort": "disabled",
+            "profiles": {
+                "names": [],
+                "references": [
+                    "ssloS_tap_test-service"
+                ]
+            },
+            "clonePoolsRef": {
+                "reference": "ssloS_tap_test-4"
+            },
+            "iRules": {
+                "references": [
+                    "ssloS_tap_test-ro"
+                ]
+            },
+            "additionalConfig": [
+                {
+                    "configKey": "clonePools",
+                    "referedObj": true
+                },
+                {
+                    "configKey": "internal",
+                    "referredObj": true
+                }
+            ],
+            "clonePools": [
+                {
+                    "name": "ssloS_tap_test-4",
+                    "context": "serverside"
+                }
+            ],
+            "skipSnat": true
+        },
+        "ssloS_tap_test16": {
+            "name": "ssloS_tap_test-u-6",
+            "internal": true,
+            "ip": "0.0.0.0",
+            "source": "0.0.0.0/0",
+            "port": "0",
+            "mask": "any",
+            "ipProto": "udp",
+            "description": "Receive-only service (2022-2-18 03:47:24)",
+            "clientVlanRestrict": "enableSome",
+            "translateAddress": "disabled",
+            "translatePort": "disabled",
+            "profiles": {
+                "names": [],
+                "references": [
+                    "ssloS_tap_test-service"
+                ]
+            },
+            "clonePoolsRef": {
+                "reference": "ssloS_tap_test-6"
+            },
+            "iRules": {
+                "references": [
+                    "ssloS_tap_test-ro"
+                ]
+            },
+            "additionalConfig": [
+                {
+                    "configKey": "clonePools",
+                    "referedObj": true
+                },
+                {
+                    "configKey": "internal",
+                    "referredObj": true
+                }
+            ],
+            "clonePools": [
+                {
+                    "name": "ssloS_tap_test-6",
+                    "context": "serverside"
+                }
+            ],
+            "skipSnat": true
+        }
+    },
+    "fdbs": {},
+    "arps": {
+        "ssloS_tap_test": {
+            "name": "ssloS_tap_test4",
+            "ipAddress": "198.19.182.10",
+            "macAddress": "fa:16:3e:a1:42:a8"
+        }
+    },
+    "ndps": {
+        "ssloS_tap_test": {
+            "name": "ssloS_tap_test6",
+            "ipAddress": "2001:200:0:ca9a::a",
+            "macAddress": "fa:16:3e:a1:42:a8"
+        }
+    },
+    "pools": {
+        "ssloS_tap_test-4": {
+            "name": "ssloS_tap_test-4",
+            "loadBalancingMode": "round-robin",
+            "minActiveMembers": "0",
+            "unhandledPool": true,
+            "members": [
+                {
+                    "port": "0",
+                    "ip": "198.19.182.10",
+                    "appService": "ssloS_tap_test.app/ssloS_tap_test",
+                    "subPath": "ssloS_tap_test.app"
+                }
+            ],
+            "callerContext": "serviceConfigProcessor"
+        },
+        "ssloS_tap_test-6": {
+            "name": "ssloS_tap_test-6",
+            "loadBalancingMode": "round-robin",
+            "minActiveMembers": "0",
+            "unhandledPool": true,
+            "members": [
+                {
+                    "port": "0",
+                    "ip": "2001:200:0:ca9a::a",
+                    "appService": "ssloS_tap_test.app/ssloS_tap_test",
+                    "subPath": "ssloS_tap_test.app"
+                }
+            ],
+            "callerContext": "serviceConfigProcessor"
+        },
+        "ssloS_tap_test-4_portremap": {
+            "name": "ssloS_tap_test-4_portremap",
+            "loadBalancingMode": "round-robin",
+            "minActiveMembers": "0",
+            "unhandledPool": true,
+            "members": [
+                {
+                    "port": 80.0,
+                    "ip": "198.19.182.10",
+                    "appService": "ssloS_tap_test.app/ssloS_tap_test",
+                    "subPath": "ssloS_tap_test.app"
+                }
+            ],
+            "callerContext": "serviceConfigProcessor"
+        },
+        "ssloS_tap_test-6_portremap": {
+            "name": "ssloS_tap_test-6_portremap",
+            "loadBalancingMode": "round-robin",
+            "minActiveMembers": "0",
+            "unhandledPool": true,
+            "members": [
+                {
+                    "port": 80.0,
+                    "ip": "2001:200:0:ca9a::a",
+                    "appService": "ssloS_tap_test.app/ssloS_tap_test",
+                    "subPath": "ssloS_tap_test.app"
+                }
+            ],
+            "callerContext": "serviceConfigProcessor"
+        }
+    },
+    "iRules": {
+        "ssloS_tap_test-ro": {
+            "name": "ssloS_tap_test-ro",
+            "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\nwhen CLIENT_ACCEPTED {\n sharedvar ctx\n\n if {not [info exists ctx]} {\n  return\n }\n\n set fromIP [IP::client_addr]\n set toIP [IP::local_addr]\n if {[set pn [IP::protocol]] == 6} {\n  set proto TCP\n } elseif {$pn == 17} {\n  set proto UDP\n } else {\n  log local0.error \"cannot handle IP protocol ${pn} from ${fromIP}\"\n  reject\n  return\n }\n set fromPort [eval \"${proto}::client_port\"]\n set toPort [eval \"${proto}::local_port\"]\n\n # remap destination port on known traffic over secure port\n switch $ctx(ptcl) {\n  \"https\" { set toPort 80 }\n  \"http-connect\" { set toPort 80 }\n }\n\n translate address enable\n translate port enable\n set msg [concat \"use\" \"virtual\" [join [list \"_tmm_service_return_\" [string tolower $proto] \"_vip\" \"_ipv\" [IP::version]] \"\"] $toIP $toPort]\n eval $msg\n} ; #CLIENT_ACCEPTED\n",
+            "validUnreferenced": true
+        }
+    },
+    "profiles": {
+        "ssloS_tap_test-service": {
+            "name": "ssloS_tap_test-service",
+            "profile": "service",
+            "type": "tap",
+            "context": "all"
+        },
+        "ssloS_tap_test-t-4-connector": {
+            "name": "ssloS_tap_test-t-4-connector",
+            "profile": "connector",
+            "connectionTimeout": 0.0,
+            "entryVirtualServer": "ssloS_tap_test-t-4",
+            "serviceDownAction": "ignore",
+            "context": "all",
+            "unhandledProfile": "true"
+        },
+        "ssloS_tap_test-tcp-wan": {
+            "name": "ssloS_tap_test-tcp-wan",
+            "slowStart": "disabled",
+            "nagle": "disabled",
+            "profile": "tcp",
+            "parent": "sslo-default-tcp-wan",
+            "context": "serverside"
+        },
+        "ssloS_tap_test-tcp-lan": {
+            "name": "ssloS_tap_test-tcp-lan",
+            "slowStart": "disabled",
+            "nagle": "disabled",
+            "profile": "tcp",
+            "parent": "sslo-default-tcp-lan",
+            "context": "clientside"
+        },
+        "ssloS_tap_test-t-6-connector": {
+            "name": "ssloS_tap_test-t-6-connector",
+            "profile": "connector",
+            "connectionTimeout": 0.0,
+            "entryVirtualServer": "ssloS_tap_test-t-6",
+            "serviceDownAction": "ignore",
+            "context": "all",
+            "unhandledProfile": "true"
+        },
+        "ssloS_tap_test-u-4-connector": {
+            "name": "ssloS_tap_test-u-4-connector",
+            "profile": "connector",
+            "connectionTimeout": 0.0,
+            "entryVirtualServer": "ssloS_tap_test-u-4",
+            "serviceDownAction": "ignore",
+            "context": "all",
+            "unhandledProfile": "true"
+        },
+        "ssloS_tap_test-u-6-connector": {
+            "name": "ssloS_tap_test-u-6-connector",
+            "profile": "connector",
+            "connectionTimeout": 0.0,
+            "entryVirtualServer": "ssloS_tap_test-u-6",
+            "serviceDownAction": "ignore",
+            "context": "all",
+            "unhandledProfile": "true"
+        }
+    },
+    "selfIps": {
+        "ssloS_tap_test04": {
+            "name": "ssloS_tap_test4",
+            "address": "198.19.182.8",
+            "floating": "disabled",
+            "netmask": "255.255.255.252",
+            "vlanOrTunnel": "/Common/ssloN_tap_test.app/ssloN_tap_test",
+            "trafficGroup": "traffic-group-local-only",
+            "deviceSpecific": "10.144.74.85"
+        },
+        "ssloS_tap_test06": {
+            "name": "ssloS_tap_test6",
+            "address": "2001:200:0:ca9a::8",
+            "floating": "disabled",
+            "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:fff0",
+            "vlanOrTunnel": "/Common/ssloN_tap_test.app/ssloN_tap_test",
+            "trafficGroup": "traffic-group-local-only",
+            "deviceSpecific": "10.144.74.85"
+        }
+    },
+    "existingBlockId": "30906ea4-7ad2-4d16-b950-60b0c79d2840"
+}
