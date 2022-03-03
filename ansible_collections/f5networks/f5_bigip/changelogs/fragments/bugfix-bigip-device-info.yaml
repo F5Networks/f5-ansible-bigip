@@ -1,3 +1,0 @@
----
-bugfixes:
-  - bigip_device_info - fixed bug regarding handling of negated meta options.

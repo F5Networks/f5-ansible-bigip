@@ -1,2 +1,0 @@
-bugfixes:
-  - bigip_as3_deploy - better error reporting for AS3 multitenant deployments.

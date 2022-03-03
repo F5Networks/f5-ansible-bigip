@@ -1,3 +1,0 @@
----
-bugfixes:
-  - velos_partition - removed misleading information from the documentation, fixed invalid validation for ipv6_mgmt_address and ipv4_mgmt_address parameters.

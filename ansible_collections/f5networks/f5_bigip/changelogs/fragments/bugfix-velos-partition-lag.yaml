@@ -1,3 +1,0 @@
----
-bugfixes:
-  - velos_partition_lag - fixed bugs related to the payload structure, improved functional tests.
