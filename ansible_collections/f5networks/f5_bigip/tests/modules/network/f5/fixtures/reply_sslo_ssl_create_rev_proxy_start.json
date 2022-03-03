@@ -1,0 +1,105 @@
+{
+    "id": "415d7406-7557-4ee4-a958-ff1327e57158",
+    "name": "sslo_obj_SSL_SETTINGS_CREATE_ssloT_foobar",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "version": 9.0,
+                "partition": "Common",
+                "strictness": false,
+                "operationType": "CREATE",
+                "deploymentName": "ssloT_foobar",
+                "deploymentType": "SSL_SETTINGS"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-tls",
+            "type": "JSON",
+            "value": {
+                "sslSettingsReference": "",
+                "sslSettingsName": "",
+                "description": "",
+                "generalSettings": {
+                    "isForwardProxy": false,
+                    "bypassHandshakeAlert": false,
+                    "bypassClientCertFailure": false
+                },
+                "clientSettings": {
+                    "ciphers": {
+                        "isCipherString": true,
+                        "cipherString": "DEFAULT",
+                        "cipherGroup": "/Common/f5-default"
+                    },
+                    "certKeyChain": [
+                        {
+                            "cert": "/Common/default.crt",
+                            "key": "/Common/default.key",
+                            "chain": "",
+                            "passphrase": "",
+                            "name": "CERT_KEY_CHAIN_0"
+                        }
+                    ],
+                    "caCertKeyChain": [],
+                    "forwardByPass": false,
+                    "enabledSSLProcessingOptions": [
+                        {
+                            "name": "TLSv1.3",
+                            "value": "TLSv1.3"
+                        }
+                    ],
+                    "logPublisher": "/Common/sys-ssl-publisher"
+                },
+                "serverSettings": {
+                    "ciphers": {
+                        "isCipherString": true,
+                        "cipherString": "DEFAULT",
+                        "cipherGroup": "/Common/f5-default"
+                    },
+                    "caBundle": "/Common/ca-bundle.crt",
+                    "expiredCertificates": false,
+                    "untrustedCertificates": false,
+                    "ocsp": "",
+                    "crl": "",
+                    "enabledSSLProcessingOptions": [
+                        {
+                            "name": "TLSv1.3",
+                            "value": "TLSv1.3"
+                        }
+                    ],
+                    "logPublisher": "/Common/sys-ssl-publisher"
+                },
+                "name": "ssloT_foobar",
+                "advancedMode": "off",
+                "previousVersion": 9.0,
+                "version": 9.0,
+                "strictness": false
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-topology",
+            "type": "JSON"
+        }
+    ],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "configProcessorTimeoutSeconds": 120,
+    "statsProcessorTimeoutSeconds": 60,
+    "configProcessorAffinity": {
+        "processorPolicy": "LOCAL",
+        "affinityProcessorReference": {
+            "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+        },
+        "machineId": "a1a0800d-260a-4633-a369-df9c8fd9f332"
+    },
+    "state": "BINDING",
+    "presentationHtmlReference": {
+        "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+    },
+    "generation": 1,
+    "lastUpdateMicros": 1638202544980456,
+    "kind": "shared:iapp:blocks:blockstate",
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks/415d7406-7557-4ee4-a958-ff1327e57158"
+}

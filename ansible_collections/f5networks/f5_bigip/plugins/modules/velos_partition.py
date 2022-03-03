@@ -26,9 +26,8 @@ options:
     description:
       - Specifies the IPv4 address and subnet or subnet mask that you use to access
         the partition.
-      - When creating a new partition, if you do not specify a network or network mask,
-        a default of C(/24) is used.
-      - The value C(none) can be used during an update to remove this value.
+      - When creating a new partition, if the CIDR notation is not used a default of C(/24) is appended to the address.
+      - "The address must be specified in CIDR notation e.g. 192.168.1.1/24"
     type: str
   ipv4_mgmt_gateway:
     description:
@@ -39,9 +38,8 @@ options:
     description:
       - Specifies the IPv6 address and subnet or subnet mask that you use to access
         the partition.
-      - When creating a new partition, if you do not specify a network or network mask,
-        a default of C(/96) is used.
-      - The value C(none) can be used during an update to remove this value.
+      - When creating a new partition, if the CIDR notation is not used a default of C(/96) is appended to the address.
+      - "The address must be specified in CIDR notation e.g. 2002::1234:abcd:ffff:c0a8:101/64"
     type: str
   ipv6_mgmt_gateway:
     description:
@@ -143,16 +141,13 @@ slots:
   sample: [3, 4]
 '''
 
-from ipaddress import ip_interface
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import Connection
 from ..module_utils.velos_client import F5Client
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters,
 )
-from ..module_utils.ipaddress import (
-    is_valid_ip,
-)
+from ..module_utils.ipaddress import is_valid_ip
 
 
 class Parameters(AnsibleF5Parameters):
@@ -249,13 +244,15 @@ class ModuleParameters(Parameters):
     def ipv4_mgmt_address(self):
         if self._values['ipv4_mgmt_address'] is None:
             return None
-        try:
-            addr = ip_interface(u'%s' % str(self._values['ipv4_mgmt_address']))
-            return str(addr.with_prefixlen)
-        except ValueError:
-            raise F5ModuleError(
-                "The specified 'ipv4_mgmt_address' is not a valid IP address."
-            )
+        if len(self._values['ipv4_mgmt_address'].split('/')) == 1:
+            if is_valid_ip(self._values['ipv4_mgmt_address']):
+                return self._values['ipv4_mgmt_address']
+        else:
+            if is_valid_ip(self._values['ipv4_mgmt_address'].split('/')[0]):
+                return self._values['ipv4_mgmt_address']
+        raise F5ModuleError(
+            "The specified 'ipv4_mgmt_address' is not a valid IP address."
+        )
 
     @property
     def ipv6_mgmt_gateway(self):
@@ -274,13 +271,15 @@ class ModuleParameters(Parameters):
     def ipv6_mgmt_address(self):
         if self._values['ipv6_mgmt_address'] is None:
             return None
-        try:
-            addr = ip_interface(u'%s' % str(self._values['ipv6_mgmt_address']))
-            return str(addr.with_prefixlen)
-        except ValueError:
-            raise F5ModuleError(
-                "The specified 'ipv6_mgmt_address' is not a valid IP address."
-            )
+        if len(self._values['ipv6_mgmt_address'].split('/')) == 1:
+            if is_valid_ip(self._values['ipv6_mgmt_address']):
+                return self._values['ipv6_mgmt_address']
+        else:
+            if is_valid_ip(self._values['ipv6_mgmt_address'].split('/')[0]):
+                return self._values['ipv6_mgmt_address']
+        raise F5ModuleError(
+            "The specified 'ipv6_mgmt_address' is not a valid IP address."
+        )
 
     @property
     def state(self):
@@ -296,10 +295,8 @@ class ModuleParameters(Parameters):
     def slots(self):
         if self._values['slots'] is None:
             return None
-
-        if len(self._values['slots']) == 0:
+        if not self._values['slots']:
             return []
-
         result = [int(x) for x in self._values['slots']]
         result.sort()
         if min(result) < 0 or max(result) > 32:
@@ -636,8 +633,7 @@ class ArgumentSpec(object):
             service_version=dict(),
             slots=dict(
                 type='list',
-                elements='int',
-                default=[]
+                elements='int'
             ),
             wait_time=dict(
                 type='int',

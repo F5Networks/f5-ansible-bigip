@@ -236,3 +236,64 @@ releases:
     - bigip-device-info-filter-and-paging.yaml
     - fix-bigip-device-info-tests.yaml
     release_date: '2022-01-19'
+  1.6.0:
+    changes:
+      bugfixes:
+      - bigip_as3_deploy - better error reporting for AS3 multitenant deployments.
+      - bigip_device_info - fixed bug regarding handling of negated meta options.
+      - velos_partition - removed misleading information from the documentation, fixed
+        invalid validation for ipv6_mgmt_address and ipv4_mgmt_address parameters.
+      - velos_partition_change_password - fixed a bug that resulted in request being
+        sent to the wrong url.
+      - velos_partition_intrface - removed the logic to create new interfaces as they
+        were not required, along with change in payload and endpoint.
+      - velos_partition_lag - fixed bugs related to the payload structure, improved
+        functional tests.
+      - velos_partition_vlan - changed the payload structure.
+      - velos_tenant_image - minor changes to module to prevent early failures
+      minor_changes:
+      - bigip_device_info - Added a new meta choice, packages, which groups information
+        about as3, do, cfe and ts. This change was done to ensure users with non admin
+        access can use this module to get information that does not require admin
+        access.
+    fragments:
+    - add-meta-choice-packages.yaml
+    - bugfix-as3-error-reporting.yaml
+    - bugfix-bigip-device-info.yaml
+    - bugfix-tenant-image-upload.yaml
+    - bugfix-velos-partition-changepassword.yaml
+    - bugfix-velos-partition-interface-and-vlan.yaml
+    - bugfix-velos-partition-lag.yaml
+    - bugfix-velos-partition.yaml
+    modules:
+    - description: Manage an SSL Orchestrator authentication object
+      name: bigip_sslo_config_authentication
+      namespace: ''
+    - description: Manage the SSL Orchestrator DNS resolver config
+      name: bigip_sslo_config_resolver
+      namespace: ''
+    - description: Manage an SSL Orchestrator service chain
+      name: bigip_sslo_config_service_chain
+      namespace: ''
+    - description: Manage an SSL Orchestrator SSL configuration
+      name: bigip_sslo_config_ssl
+      namespace: ''
+    - description: Manage the set of SSL Orchestrator utility functions
+      name: bigip_sslo_config_utility
+      namespace: ''
+    - description: Manage an SSL Orchestrator http security device
+      name: bigip_sslo_service_http
+      namespace: ''
+    - description: Manage an SSL Orchestrator ICAP security device
+      name: bigip_sslo_service_icap
+      namespace: ''
+    - description: Manage an SSL Orchestrator layer 2 security device
+      name: bigip_sslo_service_layer2
+      namespace: ''
+    - description: Manage an SSL Orchestrator layer 3 security device
+      name: bigip_sslo_service_layer3
+      namespace: ''
+    - description: Manage an SSL Orchestrator TAP security device
+      name: bigip_sslo_service_tap
+      namespace: ''
+    release_date: '2022-03-03'

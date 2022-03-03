@@ -31,3 +31,17 @@ TEEM_ENDPOINT = 'product.apis.f5.com',
 TEEM_KEY = 'mmhJU2sCd63BznXAXDh4kxLIyfIMm3Ar'
 TEEM_TIMEOUT = 10
 TEEM_VERIFY = False
+
+min_sslo_version = '7.5'
+max_sslo_version = '9.0'
+
+resolver_logging_config = {
+    "logLevel": 0,
+    "logPublisher": "none",
+    "statsToRecord": 0
+}
+
+json_enable_tls13 = {
+    "name": "TLSv1.3",
+    "value": "TLSv1.3"
+}

@@ -1,0 +1,88 @@
+{
+    "id": "e3e74740-4ac2-4d72-b260-43974c482c3c",
+    "name": "sslo_obj_GENERAL_SETTINGS_MODIFY_ssloGS_global",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "version": 9.0,
+                "operationType": "MODIFY",
+                "deploymentType": "GENERAL_SETTINGS",
+                "deploymentName": "ssloGS_Global",
+                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/46082dbc-bb06-4968-909f-6fceb55206e5",
+                "partition": "Common",
+                "strictness": false
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-general-settings",
+            "type": "JSON",
+            "value": {
+                "name": "ssloGS_global",
+                "previousVersion": 9.0,
+                "version": 9.0,
+                "configModified": true,
+                "ipFamily": "both",
+                "dns": {
+                    "enableDnsSecurity": false,
+                    "enableLocalDnsQueryResolution": true,
+                    "enableLocalDnsZones": false,
+                    "localDnsZones": [],
+                    "localDnsNameservers": [
+                        "10.1.20.1",
+                        "10.1.20.2",
+                        "fd66:2735:1533:46c1:68c8:0:0:7110",
+                        "fd66:2735:1533:46c1:68c8:0:0:7111"
+                    ]
+                },
+                "egressNetwork": {
+                    "gatewayOptions": "useDefault",
+                    "outboundGateways": {
+                        "referredObj": "",
+                        "ipv4OutboundGateways": [
+                            {
+                                "ip": "",
+                                "ratio": 1.0
+                            }
+                        ],
+                        "ipv6NonPublicGateways": [
+                            {
+                                "ip": ""
+                            }
+                        ],
+                        "ipv6OutboundGateways": [
+                            {
+                                "ip": "",
+                                "ratio": 1.0
+                            }
+                        ]
+                    }
+                },
+                "partition": "Common",
+                "strictness": false,
+                "existingBlockId": "46082dbc-bb06-4968-909f-6fceb55206e5"
+            }
+        }
+    ],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "configProcessorTimeoutSeconds": 120,
+    "statsProcessorTimeoutSeconds": 60,
+    "configProcessorAffinity": {
+        "processorPolicy": "LOCAL",
+        "affinityProcessorReference": {
+            "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+        },
+        "machineId": "948881e0-c6fa-4218-a253-d655077c9fe4"
+    },
+    "state": "BINDING",
+    "presentationHtmlReference": {
+        "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+    },
+    "generation": 1,
+    "lastUpdateMicros": 1637256391930228,
+    "kind": "shared:iapp:blocks:blockstate",
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks/e3e74740-4ac2-4d72-b260-43974c482c3c"
+}

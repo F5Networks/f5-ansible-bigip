@@ -5,6 +5,40 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v1.6.0
+======
+
+Minor Changes
+-------------
+
+- bigip_device_info - Added a new meta choice, packages, which groups information about as3, do, cfe and ts. This change was done to ensure users with non admin access can use this module to get information that does not require admin access.
+
+Bugfixes
+--------
+
+- bigip_as3_deploy - better error reporting for AS3 multitenant deployments.
+- bigip_device_info - fixed bug regarding handling of negated meta options.
+- velos_partition - removed misleading information from the documentation, fixed invalid validation for ipv6_mgmt_address and ipv4_mgmt_address parameters.
+- velos_partition_change_password - fixed a bug that resulted in request being sent to the wrong url.
+- velos_partition_intrface - removed the logic to create new interfaces as they were not required, along with change in payload and endpoint.
+- velos_partition_lag - fixed bugs related to the payload structure, improved functional tests.
+- velos_partition_vlan - changed the payload structure.
+- velos_tenant_image - minor changes to module to prevent early failures
+
+New Modules
+-----------
+
+- bigip_sslo_config_authentication - Manage an SSL Orchestrator authentication object
+- bigip_sslo_config_resolver - Manage the SSL Orchestrator DNS resolver config
+- bigip_sslo_config_service_chain - Manage an SSL Orchestrator service chain
+- bigip_sslo_config_ssl - Manage an SSL Orchestrator SSL configuration
+- bigip_sslo_config_utility - Manage the set of SSL Orchestrator utility functions
+- bigip_sslo_service_http - Manage an SSL Orchestrator http security device
+- bigip_sslo_service_icap - Manage an SSL Orchestrator ICAP security device
+- bigip_sslo_service_layer2 - Manage an SSL Orchestrator layer 2 security device
+- bigip_sslo_service_layer3 - Manage an SSL Orchestrator layer 3 security device
+- bigip_sslo_service_tap - Manage an SSL Orchestrator TAP security device
+
 v1.5.0
 ======
 

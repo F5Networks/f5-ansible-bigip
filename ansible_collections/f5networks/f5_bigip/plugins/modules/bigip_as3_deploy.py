@@ -275,6 +275,8 @@ class ModuleManager(object):
                     results.append(message['message'])
                 if 'errors' in message:
                     results += message['errors']
+                if 'response' in message:
+                    results.append(message['response'])
         return results
 
     def _check_task_on_device(self, path):

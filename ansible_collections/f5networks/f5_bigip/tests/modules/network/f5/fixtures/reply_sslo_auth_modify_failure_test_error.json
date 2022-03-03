@@ -1,0 +1,99 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "1841b2a3-5279-4472-b013-b80e8e771538",
+            "name": "sslo_obj_AUTHENTICATION_MODIFY_ssloA_foobar",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-operation-context",
+                    "type": "JSON",
+                    "value": {
+                        "version": 9.0,
+                        "partition": "Common",
+                        "strictness": false,
+                        "operationType": "MODIFY",
+                        "deploymentName": "ssloA_foobar",
+                        "deploymentType": "AUTHENTICATION",
+                        "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/3c5ca876-78c4-4e0e-a241-4c9ca0ddb168"
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-authentication",
+                    "type": "JSON",
+                    "value": {
+                        "name": "ssloA_foobar",
+                        "description": "OCSP Responder",
+                        "authType": "ocsp",
+                        "serverDef": {
+                            "source": "0.0.0.0%0/0",
+                            "destination": {
+                                "address": "192.168.1.1%0/32",
+                                "port": 80.0,
+                                "mask": ""
+                            },
+                            "vlans": [
+                                {
+                                    "name": "/Common/client-vlan",
+                                    "value": "/Common/client-vlan"
+                                },
+                                {
+                                    "name": "/Common/dlp-vlan",
+                                    "value": "/Common/dlp-vlan"
+                                }
+                            ],
+                            "serverTcpProfile": "/Common/f5-tcp-wan",
+                            "clientTcpProfile": "/Common/f5-tcp-lan",
+                            "httpProfile": "/Common/http",
+                            "sslSettingReference": "ssloT_fake_ssl"
+                        },
+                        "vendorInfo": {
+                            "name": "OCSP Responder",
+                            "product": "",
+                            "model": "",
+                            "version": ""
+                        },
+                        "ocsp": {
+                            "useExisting": false,
+                            "ocspProfile": "",
+                            "maxAge": 604800.0,
+                            "nonce": "enabled",
+                            "fqdn": "baz.bar.net"
+                        },
+                        "useTemplate": false,
+                        "authTemplate": "",
+                        "partition": "Common",
+                        "previousVersion": 9.0,
+                        "version": 9.0,
+                        "strictness": false,
+                        "existingBlockId": "3c5ca876-78c4-4e0e-a241-4c9ca0ddb168"
+                    }
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+            },
+            "configProcessorTimeoutSeconds": 30,
+            "statsProcessorTimeoutSeconds": 15,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOAD_BALANCED",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/processors/affinity/load-balanced"
+                }
+            },
+            "state": "ERROR",
+            "error": "[OrchestratorConfigProcessor] Deployment failed for Error: [HAAwareICRDeployProcessor] Error: transaction failed:01020036:3: The requested profile (/Common/ssloT_fake_ssl.app/ssloT_fake_ssl-cssl-vht) was not found.",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1636966892631885,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/1841b2a3-5279-4472-b013-b80e8e771538"
+        }
+    ],
+    "generation": 474,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1636966892645249
+}

@@ -1,0 +1,831 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "85c0dc50-54f4-4851-ac5e-68cc0fbfd383",
+            "name": "ssloS_proxy1a",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-service",
+                    "type": "JSON",
+                    "value": {
+                        "customService": {
+                            "connectionInformation": {
+                                "fromBigipNetwork": {
+                                    "name": "ssloN_proxy1a_in",
+                                    "networkBlockId": "b0ee9558-2bc7-499a-aed2-0a88a98610c5",
+                                    "routeDomain": {
+                                        "create": false,
+                                        "id": 0.0
+                                    },
+                                    "selfIpConfig": {
+                                        "HAstaticIpMap": [],
+                                        "autoValue": "198.19.64.7/25",
+                                        "create": false,
+                                        "floating": false,
+                                        "modify": false,
+                                        "netmask": "255.255.255.128",
+                                        "selectedValue": "",
+                                        "selfIp": "198.19.69.7"
+                                    },
+                                    "vlan": {
+                                        "create": false,
+                                        "modify": false,
+                                        "networkVlanValue": "",
+                                        "path": "/Common/ssloN_proxy1a_in.app/ssloN_proxy1a_in",
+                                        "selectedValue": ""
+                                    }
+                                },
+                                "toBigipNetwork": {
+                                    "name": "ssloN_proxy1a_out",
+                                    "networkBlockId": "513f6925-3559-4eea-9131-b0c663e182eb",
+                                    "routeDomain": {
+                                        "create": false,
+                                        "id": 0.0
+                                    },
+                                    "selfIpConfig": {
+                                        "HAstaticIpMap": [],
+                                        "autoValue": "198.19.64.245/25",
+                                        "create": false,
+                                        "floating": false,
+                                        "modify": false,
+                                        "netmask": "255.255.255.128",
+                                        "selectedValue": "",
+                                        "selfIp": "198.19.69.245"
+                                    },
+                                    "vlan": {
+                                        "create": false,
+                                        "modify": false,
+                                        "networkVlanValue": "",
+                                        "path": "/Common/ssloN_proxy1a_out.app/ssloN_proxy1a_out",
+                                        "selectedValue": ""
+                                    }
+                                }
+                            },
+                            "httpPortRemapValue": 8080.0,
+                            "iRuleList": [],
+                            "initialIpFamily": "ipv4",
+                            "ipFamily": "ipv4",
+                            "isAutoManage": true,
+                            "loadBalancing": {
+                                "devices": [
+                                    {
+                                        "ip": "198.19.69.30",
+                                        "port": 80.0
+                                    },
+                                    {
+                                        "ip": "198.19.69.31",
+                                        "port": 80.0
+                                    },
+                                    {
+                                        "ip": "198.19.69.33",
+                                        "port": 80.0
+                                    }
+                                ],
+                                "monitor": {
+                                    "fromSystem": "/Common/gateway_icmp"
+                                }
+                            },
+                            "managedNetwork": {
+                                "ipFamily": "ipv4",
+                                "ipv4": {
+                                    "fromServiceMask": "255.255.255.128",
+                                    "fromServiceNetwork": "198.19.69.128",
+                                    "fromServiceSelfIp": "198.19.69.245",
+                                    "ipFamily": "ipv4",
+                                    "serviceIndex": 0.0,
+                                    "serviceSubnet": "198.19.69.0",
+                                    "serviceType": "http-proxy",
+                                    "subnetMask": "255.255.255.0",
+                                    "toServiceMask": "255.255.255.128",
+                                    "toServiceNetwork": "198.19.69.0",
+                                    "toServiceSelfIp": "198.19.69.7"
+                                },
+                                "ipv6": {},
+                                "isAutoManage": true,
+                                "operation": "RESERVEANDCOMMIT",
+                                "serviceType": "http-proxy"
+                            },
+                            "name": "ssloS_proxy1a",
+                            "portRemap": true,
+                            "serviceDownAction": "ignore",
+                            "serviceSpecific": {
+                                "authOffload": false,
+                                "name": "ssloS_proxy1a",
+                                "proxyType": "Transparent"
+                            },
+                            "serviceType": "http-proxy",
+                            "snatConfiguration": {
+                                "clientSnat": "SNAT",
+                                "snat": {
+                                    "ipv4SnatAddresses": [
+                                        {
+                                            "ip": "198.19.63.14"
+                                        },
+                                        {
+                                            "ip": "198.19.63.15"
+                                        },
+                                        {
+                                            "ip": "198.19.63.16"
+                                        }
+                                    ],
+                                    "ipv6SnatAddresses": [],
+                                    "referredObj": "/Common/ssloS_proxy1a.app/ssloS_proxy1a-svc-snatpool"
+                                }
+                            }
+                        },
+                        "description": "Type: HTTP",
+                        "existingBlockId": "85c0dc50-54f4-4851-ac5e-68cc0fbfd383",
+                        "fromNetworkObj": {
+                            "create": true,
+                            "name": "ssloN_proxy1a_in",
+                            "partition": "Common",
+                            "routeDomain": {
+                                "create": false,
+                                "id": 0.0
+                            },
+                            "selfIpConfig": {
+                                "HAstaticIpMap": [],
+                                "create": true,
+                                "floating": false,
+                                "modify": false,
+                                "netmask": "255.255.255.128",
+                                "selfIp": "198.19.69.7"
+                            },
+                            "strictness": false,
+                            "vlan": {
+                                "create": true,
+                                "interface": [
+                                    "1.3"
+                                ],
+                                "modify": false,
+                                "name": "ssloN_proxy1a_in",
+                                "networkError": false,
+                                "networkInterface": "1.3",
+                                "networkTag": 450.0,
+                                "path": "/Common/ssloN_proxy1a_in.app/ssloN_proxy1a_in",
+                                "tag": 450.0
+                            }
+                        },
+                        "fromVlanNetworkObj": {
+                            "create": true,
+                            "modify": false,
+                            "networkError": false
+                        },
+                        "name": "ssloS_proxy1a",
+                        "partition": "Common",
+                        "previousVersion": 7.5,
+                        "serviceTemplate": "",
+                        "strictness": false,
+                        "templateName": "HTTP Service",
+                        "toNetworkObj": {
+                            "create": true,
+                            "name": "ssloN_proxy1a_out",
+                            "partition": "Common",
+                            "routeDomain": {
+                                "create": false,
+                                "id": 0.0
+                            },
+                            "selfIpConfig": {
+                                "HAstaticIpMap": [],
+                                "create": true,
+                                "floating": false,
+                                "modify": false,
+                                "netmask": "255.255.255.128",
+                                "selfIp": "198.19.69.245"
+                            },
+                            "strictness": true,
+                            "vlan": {
+                                "create": true,
+                                "interface": "1.3",
+                                "modify": false,
+                                "name": "ssloN_proxy1a_out",
+                                "networkError": false,
+                                "networkInterface": "1.3",
+                                "networkTag": 451.0,
+                                "path": "/Common/ssloN_proxy1a_out.app/ssloN_proxy1a_out",
+                                "tag": 451.0
+                            }
+                        },
+                        "toVlanNetworkObj": {
+                            "create": true,
+                            "modify": false,
+                            "networkError": false
+                        },
+                        "useTemplate": false,
+                        "vendorInfo": {
+                            "name": "Generic HTTP Service"
+                        },
+                        "version": 7.5,
+                        "virtuals": {
+                            "ssloS_proxy1a-0-0": {
+                                "name": "ssloS_proxy1a-D-0-t-4",
+                                "ip": "0.0.0.0",
+                                "port": "0",
+                                "mask": "any",
+                                "ipProto": "tcp",
+                                "description": "In-line service (2022-2-19 05:03:59)",
+                                "clientVlanRestrict": "enableSome",
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled",
+                                "profiles": {
+                                    "names": [],
+                                    "references": [
+                                        "ssloS_proxy1a-service",
+                                        "ssloS_proxy1a-tcp-wan",
+                                        "ssloS_proxy1a-tcp-lan",
+                                        "ssloS_proxy1a-ss-server"
+                                    ]
+                                },
+                                "iRules": {
+                                    "references": [
+                                        "ssloS_proxy1a-ilD"
+                                    ]
+                                },
+                                "vlans": [
+                                    "/Common/ssloN_proxy1a_out.app/ssloN_proxy1a_out"
+                                ],
+                                "source": "0.0.0.0/0",
+                                "skipSnat": true
+                            },
+                            "ssloS_proxy1a-2-0": {
+                                "name": "ssloS_proxy1a-t-4",
+                                "ip": "0.0.0.0",
+                                "port": "0",
+                                "mask": "any",
+                                "ipProto": "tcp",
+                                "description": "In-line service (2022-2-19 05:03:59)",
+                                "clientVlanRestrict": "enableSome",
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled",
+                                "profiles": {
+                                    "names": [],
+                                    "references": [
+                                        "ssloS_proxy1a-service",
+                                        "ssloS_proxy1a-tcp-wan",
+                                        "ssloS_proxy1a-tcp-lan",
+                                        "ssloS_proxy1a-ss-client"
+                                    ]
+                                },
+                                "iRules": {
+                                    "references": [
+                                        "ssloS_proxy1a-ilS"
+                                    ]
+                                },
+                                "pool": {
+                                    "name": "ssloS_proxy1a",
+                                    "reference": "ssloS_proxy1atgt",
+                                    "defaultPort": "80"
+                                },
+                                "source": "0.0.0.0/0",
+                                "skipSnat": true,
+                                "internal": true,
+                                "additionalConfig": [
+                                    {
+                                        "configKey": "internal",
+                                        "referredObj": true
+                                    }
+                                ],
+                                "sourceAddressTranslation": {
+                                    "type": "snat",
+                                    "pool": "ssloS_proxy1a-svc-snatpool"
+                                }
+                            }
+                        },
+                        "vlans": {},
+                        "selfIps": {
+                            "ssloS_proxy1a-70-0-flt-S4": {
+                                "vlanOrTunnel": "/Common/ssloN_proxy1a_in.app/ssloN_proxy1a_in",
+                                "trafficGroup": "traffic-group-local-only",
+                                "netmask": "255.255.255.128",
+                                "name": "ssloS_proxy1a-70-0-flt-S4",
+                                "address": "198.19.69.7",
+                                "floating": "disabled"
+                            },
+                            "ssloS_proxy1a-70-0-S41": {
+                                "netmask": "255.255.255.128",
+                                "vlanOrTunnel": "/Common/ssloN_proxy1a_in.app/ssloN_proxy1a_in",
+                                "trafficGroup": "traffic-group-local-only",
+                                "address": "198.19.69.8",
+                                "name": "ssloS_proxy1a-70-0-S4",
+                                "floating": "disabled",
+                                "deviceSpecific": "10.144.72.149"
+                            },
+                            "ssloS_proxy1a-70-0-flt-D4": {
+                                "vlanOrTunnel": "/Common/ssloN_proxy1a_out.app/ssloN_proxy1a_out",
+                                "trafficGroup": "traffic-group-local-only",
+                                "routeDomain": 0.0,
+                                "netmask": "255.255.255.128",
+                                "name": "ssloS_proxy1a-70-0-flt-D4",
+                                "address": "198.19.69.245",
+                                "floating": "disabled"
+                            },
+                            "ssloS_proxy1a-70-0-D41": {
+                                "netmask": "255.255.255.128",
+                                "vlanOrTunnel": "/Common/ssloN_proxy1a_out.app/ssloN_proxy1a_out",
+                                "trafficGroup": "traffic-group-local-only",
+                                "routeDomain": 0.0,
+                                "address": "198.19.69.244",
+                                "name": "ssloS_proxy1a-70-0-D4",
+                                "floating": "disabled",
+                                "deviceSpecific": "10.144.72.149"
+                            }
+                        },
+                        "routeDomains": {},
+                        "pools": {
+                            "ssloS_proxy1atgt": {
+                                "name": "ssloS_proxy1a",
+                                "loadBalancingMode": "predictive-node",
+                                "monitors": {
+                                    "names": [
+                                        "/Common/gateway_icmp"
+                                    ]
+                                },
+                                "members": [
+                                    {
+                                        "port": 80.0,
+                                        "ip": "198.19.69.30",
+                                        "ratio": 1.0,
+                                        "appService": "ssloS_proxy1a.app/ssloS_proxy1a",
+                                        "subPath": "ssloS_proxy1a.app"
+                                    },
+                                    {
+                                        "port": 80.0,
+                                        "ip": "198.19.69.31",
+                                        "ratio": 1.0,
+                                        "appService": "ssloS_proxy1a.app/ssloS_proxy1a",
+                                        "subPath": "ssloS_proxy1a.app"
+                                    },
+                                    {
+                                        "port": 80.0,
+                                        "ip": "198.19.69.33",
+                                        "ratio": 1.0,
+                                        "appService": "ssloS_proxy1a.app/ssloS_proxy1a",
+                                        "subPath": "ssloS_proxy1a.app"
+                                    }
+                                ],
+                                "slowRampTime": "10",
+                                "minActiveMembers": "0",
+                                "applicationMonitor": true
+                            },
+                            "ssloS_proxy1atgt_portremap": {
+                                "name": "ssloS_proxy1a_portremap",
+                                "loadBalancingMode": "predictive-node",
+                                "monitors": {
+                                    "names": [
+                                        "/Common/gateway_icmp"
+                                    ]
+                                },
+                                "members": [
+                                    {
+                                        "port": 8080.0,
+                                        "ip": "198.19.69.30",
+                                        "ratio": 1.0,
+                                        "appService": "ssloS_proxy1a.app/ssloS_proxy1a",
+                                        "subPath": "ssloS_proxy1a.app"
+                                    },
+                                    {
+                                        "port": 8080.0,
+                                        "ip": "198.19.69.31",
+                                        "ratio": 1.0,
+                                        "appService": "ssloS_proxy1a.app/ssloS_proxy1a",
+                                        "subPath": "ssloS_proxy1a.app"
+                                    },
+                                    {
+                                        "port": 8080.0,
+                                        "ip": "198.19.69.33",
+                                        "ratio": 1.0,
+                                        "appService": "ssloS_proxy1a.app/ssloS_proxy1a",
+                                        "subPath": "ssloS_proxy1a.app"
+                                    }
+                                ],
+                                "slowRampTime": "10",
+                                "minActiveMembers": "0",
+                                "applicationMonitor": true,
+                                "unhandledPool": true,
+                                "callerContext": "serviceConfigProcessor"
+                            }
+                        },
+                        "snatPools": {
+                            "ssloS_proxy1a-svc-snatpool": {
+                                "name": "ssloS_proxy1a-svc-snatpool",
+                                "members": [
+                                    {
+                                        "ip": "198.19.63.14"
+                                    },
+                                    {
+                                        "ip": "198.19.63.15"
+                                    },
+                                    {
+                                        "ip": "198.19.63.16"
+                                    }
+                                ]
+                            }
+                        },
+                        "routes": {},
+                        "iRules": {
+                            "ssloS_proxy1a-ilS": {
+                                "name": "ssloS_proxy1a-ilS",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\nwhen CLIENT_ACCEPTED {\n sharedvar ctx\n\n if {not [info exists ctx]} {\n  event LB_SELECTED disable\n  return\n }\n\n if {[set pn [IP::protocol]] == 6} {\n  set proto TCP\n } elseif {$pn == 17} {\n  set proto UDP\n } else {\n  log local0.error \"cannot handle IP protocol ${pn} from ${fromIP}\"\n  reject\n  return\n }\n\n set default_pool [LB::server pool]\n append default_pool \"_portremap\"\n\n # remap destination port on known traffic over secure port\n switch $ctx(ptcl) {\n  \"https\" {\n    translate port enable\n    pool ${default_pool}\n  }\n  \"http-connect\" {\n    translate port enable\n    pool ${default_pool}\n  }\n }\n} ; #CLIENT_ACCEPTED\n",
+                                "validUnreferenced": true
+                            },
+                            "ssloS_proxy1a-ilD": {
+                                "name": "ssloS_proxy1a-ilD",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\n",
+                                "validUnreferenced": true
+                            },
+                            "ssloS_proxy1a-ilS_auth": {
+                                "name": "ssloS_proxy1a-ilS_auth",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\nwhen HTTP_REQUEST {\n    if { [ACCESS::session exists] } {\n        set sessionID [ACCESS::session sid]\n        set user [ACCESS::session data get \"session.logon.last.username\"]\n        HTTP::header insert \"X-Authenticated-User\" $user\n    }\n}\n",
+                                "validUnreferenced": true
+                            },
+                            "ssloS_proxy1a-ilD_auth": {
+                                "name": "ssloS_proxy1a-ilD_auth",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\nwhen HTTP_REQUEST {\n    HTTP::header remove \"X-Authenticated-User\"\n}\n",
+                                "validUnreferenced": true
+                            }
+                        },
+                        "profiles": {
+                            "ssloS_proxy1a-service": {
+                                "name": "ssloS_proxy1a-service",
+                                "profile": "service",
+                                "type": "inline-http",
+                                "context": "all"
+                            },
+                            "ssloS_proxy1a-ss-server": {
+                                "name": "ssloS_proxy1a-ss-server",
+                                "profile": "splitsessionserver",
+                                "httpHeader": "X-F5-SplitSession",
+                                "listenIp": "any",
+                                "listenPort": 0.0,
+                                "localPeer": true,
+                                "sessionLookupType": "http-header",
+                                "splitsessionclient": "/Common/ssloS_proxy1a.app/ssloS_proxy1a-ss-client"
+                            },
+                            "ssloS_proxy1a-t-4-connector": {
+                                "name": "ssloS_proxy1a-t-4-connector",
+                                "profile": "connector",
+                                "connectionTimeout": 0.0,
+                                "entryVirtualServer": "ssloS_proxy1a-t-4",
+                                "serviceDownAction": "ignore",
+                                "context": "all",
+                                "unhandledProfile": "true"
+                            },
+                            "ssloS_proxy1a-tcp-wan": {
+                                "name": "ssloS_proxy1a-tcp-wan",
+                                "slowStart": "disabled",
+                                "nagle": "disabled",
+                                "profile": "tcp",
+                                "parent": "sslo-default-tcp-wan",
+                                "context": "serverside"
+                            },
+                            "ssloS_proxy1a-tcp-lan": {
+                                "name": "ssloS_proxy1a-tcp-lan",
+                                "slowStart": "disabled",
+                                "nagle": "disabled",
+                                "profile": "tcp",
+                                "parent": "sslo-default-tcp-lan",
+                                "context": "clientside"
+                            },
+                            "ssloS_proxy1a-ss-client": {
+                                "name": "ssloS_proxy1a-ss-client",
+                                "profile": "splitsessionclient",
+                                "httpHeader": "X-F5-SplitSession",
+                                "listenIp": "any",
+                                "listenPort": 0.0,
+                                "localPeer": true,
+                                "sessionLookupType": "http-header"
+                            }
+                        },
+                        "dataGroupInternals": {
+                            "ssloS_proxy1a-service": {
+                                "name": "ssloS_proxy1a-service",
+                                "type": "string",
+                                "records": [
+                                    {
+                                        "name": "70",
+                                        "data": "ssloS_proxy1a 0 1"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-network",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "create": true,
+                            "existingBlockId": "",
+                            "name": "ssloN_proxy1a_in",
+                            "partition": "Common",
+                            "routeDomain": {
+                                "create": false,
+                                "id": 0.0
+                            },
+                            "selfIpConfig": {
+                                "HAstaticIpMap": [],
+                                "create": true,
+                                "floating": false,
+                                "modify": false,
+                                "netmask": "",
+                                "selfIp": ""
+                            },
+                            "strictness": false,
+                            "vlan": {
+                                "create": true,
+                                "interface": [
+                                    "1.3"
+                                ],
+                                "modify": false,
+                                "name": "ssloN_proxy1a_in",
+                                "networkError": false,
+                                "networkInterface": "1.3",
+                                "networkTag": 450.0,
+                                "path": "/Common/ssloN_proxy1a_in.app/ssloN_proxy1a_in",
+                                "tag": 450.0
+                            }
+                        },
+                        {
+                            "create": true,
+                            "existingBlockId": "",
+                            "name": "ssloN_proxy1a_out",
+                            "partition": "Common",
+                            "routeDomain": {
+                                "create": false,
+                                "id": 0.0
+                            },
+                            "selfIpConfig": {
+                                "HAstaticIpMap": [],
+                                "create": true,
+                                "floating": false,
+                                "modify": false,
+                                "netmask": "",
+                                "selfIp": ""
+                            },
+                            "strictness": false,
+                            "vlan": {
+                                "create": true,
+                                "interface": [
+                                    "1.3"
+                                ],
+                                "modify": false,
+                                "name": "ssloN_proxy1a_out",
+                                "networkError": false,
+                                "networkInterface": "1.3",
+                                "networkTag": 451.0,
+                                "path": "/Common/ssloN_proxy1a_out.app/ssloN_proxy1a_out",
+                                "tag": 451.0
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "processorContext",
+                    "type": "JSON",
+                    "value": {}
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": [
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/connector/~Common~ssloS_proxy1a.app~ssloS_proxy1a-t-4-connector",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/connector/~Common~ssloS_proxy1a.app~ssloS_proxy1a-t-4-connector"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/data-group/internal/~Common~ssloS_proxy1a.app~ssloS_proxy1a-service",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/data-group/internal/~Common~ssloS_proxy1a.app~ssloS_proxy1a-service"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/net/self/~Common~ssloS_proxy1a.app~ssloS_proxy1a-70-0-flt-S4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/self/~Common~ssloS_proxy1a.app~ssloS_proxy1a-70-0-flt-S4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/net/self/~Common~ssloS_proxy1a.app~ssloS_proxy1a-70-0-flt-D4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/self/~Common~ssloS_proxy1a.app~ssloS_proxy1a-70-0-flt-D4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/snatpool/~Common~ssloS_proxy1a.app~ssloS_proxy1a-svc-snatpool",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/snatpool/~Common~ssloS_proxy1a.app~ssloS_proxy1a-svc-snatpool"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/pool/~Common~ssloS_proxy1a.app~ssloS_proxy1a_portremap",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/pool/~Common~ssloS_proxy1a.app~ssloS_proxy1a_portremap"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/pool/~Common~ssloS_proxy1a.app~ssloS_proxy1a",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/pool/~Common~ssloS_proxy1a.app~ssloS_proxy1a"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_proxy1a.app~ssloS_proxy1a-ilS",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_proxy1a.app~ssloS_proxy1a-ilS"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_proxy1a.app~ssloS_proxy1a-ilD",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_proxy1a.app~ssloS_proxy1a-ilD"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_proxy1a.app~ssloS_proxy1a-ilS_auth",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_proxy1a.app~ssloS_proxy1a-ilS_auth"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_proxy1a.app~ssloS_proxy1a-ilD_auth",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~ssloS_proxy1a.app~ssloS_proxy1a-ilD_auth"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/service/~Common~ssloS_proxy1a.app~ssloS_proxy1a-service",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/service/~Common~ssloS_proxy1a.app~ssloS_proxy1a-service"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/splitsessionserver/~Common~ssloS_proxy1a.app~ssloS_proxy1a-ss-server",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/splitsessionserver/~Common~ssloS_proxy1a.app~ssloS_proxy1a-ss-server"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~ssloS_proxy1a.app~ssloS_proxy1a-tcp-wan",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~ssloS_proxy1a.app~ssloS_proxy1a-tcp-wan"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~ssloS_proxy1a.app~ssloS_proxy1a-tcp-lan",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~ssloS_proxy1a.app~ssloS_proxy1a-tcp-lan"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/splitsessionclient/~Common~ssloS_proxy1a.app~ssloS_proxy1a-ss-client",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/splitsessionclient/~Common~ssloS_proxy1a.app~ssloS_proxy1a-ss-client"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_proxy1a.app~ssloS_proxy1a-D-0-t-4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_proxy1a.app~ssloS_proxy1a-D-0-t-4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_proxy1a.app~ssloS_proxy1a-t-4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~ssloS_proxy1a.app~ssloS_proxy1a-t-4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/node/~Common~ssloS_proxy1a.app~198.19.69.30",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/node/~Common~ssloS_proxy1a.app~198.19.69.30"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/node/~Common~ssloS_proxy1a.app~198.19.69.31",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/node/~Common~ssloS_proxy1a.app~198.19.69.31"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/node/~Common~ssloS_proxy1a.app~198.19.69.33",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/node/~Common~ssloS_proxy1a.app~198.19.69.33"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/net/self/~Common~ssloS_proxy1a.app~ssloS_proxy1a-70-0-D4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/self/~Common~ssloS_proxy1a.app~ssloS_proxy1a-70-0-D4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/net/self/~Common~ssloS_proxy1a.app~ssloS_proxy1a-70-0-S4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/self/~Common~ssloS_proxy1a.app~ssloS_proxy1a-70-0-S4"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.144.72.149",
+                            "strictness": false,
+                            "potentialDrift": false
+                        }
+                    ]
+                },
+                {
+                    "id": "dependencyInfo",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "type": "f5-ssl-orchestrator-service",
+                            "name": "/Common/ssloS_proxy1a.app/ssloS_proxy1a",
+                            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/85c0dc50-54f4-4851-ac5e-68cc0fbfd383",
+                            "dependsOn": {
+                                "references": [
+                                    {
+                                        "type": "f5-ssl-orchestrator-network",
+                                        "names": [
+                                            "/Common/ssloN_proxy1a_in.app/ssloN_proxy1a_in",
+                                            "/Common/ssloN_proxy1a_out.app/ssloN_proxy1a_out"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "configToDeploy",
+                    "type": "BOOLEAN",
+                    "value": true
+                },
+                {
+                    "id": "deviceSpecific",
+                    "type": "JSON"
+                },
+                {
+                    "id": "error",
+                    "type": "STRING",
+                    "value": ""
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-service"
+            },
+            "configProcessorTimeoutSeconds": 30,
+            "statsProcessorTimeoutSeconds": 15,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "UNBOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1645275849302782,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/85c0dc50-54f4-4851-ac5e-68cc0fbfd383"
+        }
+    ],
+    "generation": 1154,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1645275850632590
+}

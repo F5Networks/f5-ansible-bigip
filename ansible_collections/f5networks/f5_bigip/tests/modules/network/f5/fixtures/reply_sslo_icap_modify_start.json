@@ -1,0 +1,104 @@
+{
+    "id": "b541cf55-4619-453e-be00-70114f679113",
+    "name": "sslo_obj_SERVICE_MODIFY_ssloS_foobar",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "version": 9.0,
+                "partition": "Common",
+                "strictness": false,
+                "operationType": "MODIFY",
+                "deploymentName": "ssloS_foobar",
+                "deploymentType": "SERVICE",
+                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/d69822e2-6ddf-4129-a475-a96bf753e91a"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-service",
+            "type": "JSON",
+            "value": [
+                {
+                    "name": "ssloS_foobar",
+                    "vendorInfo": {
+                        "name": "Generic ICAP Service"
+                    },
+                    "customService": {
+                        "name": "ssloS_foobar",
+                        "ipFamily": "ipv4",
+                        "serviceType": "icap",
+                        "loadBalancing": {
+                            "devices": [
+                                {
+                                    "ip": "1.1.1.1",
+                                    "port": 1344.0
+                                },
+                                {
+                                    "ip": "2.2.2.2",
+                                    "port": 1348.0
+                                }
+                            ],
+                            "monitor": {
+                                "fromSystem": "/Common/tcp"
+                            }
+                        },
+                        "serviceSpecific": {
+                            "name": "ssloS_foobar",
+                            "headers": {
+                                "mode": false,
+                                "headerConfig": {}
+                            },
+                            "requestUri": "icap://${SERVER_IP}:${SERVER_PORT}/avscan",
+                            "allowHttp10": true,
+                            "responseUri": "icap://${SERVER_IP}:${SERVER_PORT}/avscan",
+                            "previewLength": 1024.0,
+                            "enableOneConnect": false
+                        },
+                        "serviceDownAction": "ignore"
+                    },
+                    "partition": "Common",
+                    "previousVersion": 9.0,
+                    "version": 9.0,
+                    "strictness": false,
+                    "existingBlockId": "d69822e2-6ddf-4129-a475-a96bf753e91a"
+                }
+            ]
+        },
+        {
+            "id": "f5-ssl-orchestrator-service-chain",
+            "type": "JSON",
+            "value": []
+        },
+        {
+            "id": "f5-ssl-orchestrator-network",
+            "type": "JSON",
+            "value": []
+        },
+        {
+            "id": "f5-ssl-orchestrator-policy",
+            "type": "JSON",
+            "value": []
+        }
+    ],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "configProcessorTimeoutSeconds": 120,
+    "statsProcessorTimeoutSeconds": 60,
+    "configProcessorAffinity": {
+        "processorPolicy": "LOCAL",
+        "affinityProcessorReference": {
+            "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+        },
+        "machineId": "a1a0800d-260a-4633-a369-df9c8fd9f332"
+    },
+    "state": "BINDING",
+    "presentationHtmlReference": {
+        "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+    },
+    "generation": 1,
+    "lastUpdateMicros": 1639683084378310,
+    "kind": "shared:iapp:blocks:blockstate",
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks/b541cf55-4619-453e-be00-70114f679113"
+}

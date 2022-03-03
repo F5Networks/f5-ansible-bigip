@@ -1,0 +1,33 @@
+{
+    "name": "sslo_obj_SERVICE_DELETE_ssloS_swg_custom",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "deploymentName": "ssloS_swg_custom",
+                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/13d80ac8-ff7a-43de-ae44-d89115fe7675",
+                "deploymentType": "SERVICE",
+                "operationType": "DELETE",
+                "version": 9.0,
+                "partition": "Common"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-service",
+            "type": "JSON",
+            "value": {
+                "existingBlockId": "13d80ac8-ff7a-43de-ae44-d89115fe7675",
+                "name": "ssloS_swg_custom",
+                "partition": "Common",
+                "previousVersion": 9.0,
+                "version": 9.0
+            }
+        }
+    ],
+    "dataProperties":[],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "state": "BINDING"
+}

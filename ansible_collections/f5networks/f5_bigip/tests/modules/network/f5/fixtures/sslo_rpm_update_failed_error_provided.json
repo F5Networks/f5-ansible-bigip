@@ -1,0 +1,22 @@
+{
+    "packageFilePath": "/var/config/rest/downloads/MyApp-0.1.0-0001.noarch.rpm",
+    "operation": "INSTALL",
+    "id": "6b70ee12-f7f9-4de3-8bdc-05ebba85d4d9",
+    "status": "FAILED",
+    "startTime": "2021-11-06T16:47:18.719+0000",
+    "endTime": "2021-11-06T16:47:19.292+0000",
+    "errorMessage": "Package MyApp-0.1.0-0001.noarch.rpm is corrupted, aborting.",
+    "userReference": {
+        "link": "https://localhost/mgmt/shared/authz/users/admin"
+    },
+    "identityReferences": [
+        {
+            "link": "https://localhost/mgmt/shared/authz/users/admin"
+        }
+    ],
+    "ownerMachineId": "948881e0-c6fa-4218-a253-d655077c9fe4",
+    "generation": 3,
+    "lastUpdateMicros": 1636217239292384,
+    "kind": "shared:iapp:package-management-tasks:iapppackagemanagementtaskstate",
+    "selfLink": "https://localhost/mgmt/shared/iapp/package-management-tasks/6b70ee12-f7f9-4de3-8bdc-05ebba85d4d9"
+}

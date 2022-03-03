@@ -1,0 +1,62 @@
+{
+    "id": "fcfaa7e3-9cbf-4b54-9481-dcf4607e1d09",
+    "name": "sslo_obj_SERVICE_CHAIN_CREATE_ssloSC_foobar",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "version": 9.0,
+                "partition": "Common",
+                "strictness": false,
+                "operationType": "CREATE",
+                "deploymentName": "ssloSC_foobar",
+                "deploymentType": "SERVICE_CHAIN"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-service-chain",
+            "type": "JSON",
+            "value": {
+                "name": "ssloSC_foobar",
+                "description": "",
+                "orderedServiceList": [
+                    {
+                        "ipFamily": "ipv4",
+                        "name": "ssloS_icap1",
+                        "serviceType": "icap"
+                    }
+                ],
+                "partition": "Common",
+                "previousVersion": 9.0,
+                "version": 9.0,
+                "strictness": false
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-policy",
+            "type": "JSON",
+            "value": []
+        }
+    ],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "configProcessorTimeoutSeconds": 120,
+    "statsProcessorTimeoutSeconds": 60,
+    "configProcessorAffinity": {
+        "processorPolicy": "LOCAL",
+        "affinityProcessorReference": {
+            "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+        },
+        "machineId": "948881e0-c6fa-4218-a253-d655077c9fe4"
+    },
+    "state": "BINDING",
+    "presentationHtmlReference": {
+        "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+    },
+    "generation": 1,
+    "lastUpdateMicros": 1637658931279870,
+    "kind": "shared:iapp:blocks:blockstate",
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks/fcfaa7e3-9cbf-4b54-9481-dcf4607e1d09"
+}

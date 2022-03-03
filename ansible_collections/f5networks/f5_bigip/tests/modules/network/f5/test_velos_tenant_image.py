@@ -95,7 +95,7 @@ class TestManager(unittest.TestCase):
         )
         expected = {'input': [{'protocol': 'scp', 'remote-host': 'fake.imageserver.foo.bar.com',
                                'remote-file': '/test/BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip',
-                               'username': 'admin', 'password': 'admin', 'local-file': ('IMAGES',), 'insecure': ''}]
+                               'username': 'admin', 'password': 'admin', 'local-file': 'images', 'insecure': ''}]
                     }
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)

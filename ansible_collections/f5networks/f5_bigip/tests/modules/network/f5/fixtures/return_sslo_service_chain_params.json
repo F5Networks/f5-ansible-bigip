@@ -1,0 +1,21 @@
+{
+    "name": "ssloSC_demo_chain_1",
+    "description": "",
+    "orderedServiceList": [
+        {
+            "name": "ssloS_icap1",
+            "ipFamily": "ipv4",
+            "serviceType": "icap"
+        },
+        {
+            "name": "ssloS_layer3a",
+            "ipFamily": "ipv4",
+            "serviceType": "L3"
+        }
+    ],
+    "partition": "Common",
+    "version": 9.0,
+    "strictness": false,
+    "previousVersion": 9.0,
+    "existingBlockId": "f74a717f-5dd9-437c-a22e-d0a3a5320815"
+}

@@ -1,0 +1,133 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "060f68f4-9d5c-43d2-9153-30ffe9e8fa74",
+            "name": "sslo_obj_SSL_SETTINGS_MODIFY_ssloT_foobar",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-operation-context",
+                    "type": "JSON",
+                    "value": {
+                        "version": 9.0,
+                        "partition": "Common",
+                        "strictness": false,
+                        "operationType": "MODIFY",
+                        "deploymentName": "ssloT_foobar",
+                        "deploymentType": "SSL_SETTINGS",
+                        "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/d0b1adaf-a860-4fe3-8d66-ab7937a0cb75"
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-tls",
+                    "type": "JSON",
+                    "value": {
+                        "sslSettingsReference": "",
+                        "sslSettingsName": "",
+                        "description": "",
+                        "generalSettings": {
+                            "isForwardProxy": false,
+                            "bypassHandshakeAlert": false,
+                            "bypassClientCertFailure": false
+                        },
+                        "clientSettings": {
+                            "ciphers": {
+                                "isCipherString": true,
+                                "cipherString": "DEFAULT",
+                                "cipherGroup": "/Common/f5-default"
+                            },
+                            "certKeyChain": [
+                                {
+                                    "cert": "/Common/sslo_test.crt",
+                                    "key": "/Common/sslo_test.key",
+                                    "chain": "",
+                                    "passphrase": "",
+                                    "name": "CERT_KEY_CHAIN_0"
+                                }
+                            ],
+                            "caCertKeyChain": [],
+                            "forwardByPass": false,
+                            "enabledSSLProcessingOptions": [
+                                {
+                                    "name": "TLSv1.3",
+                                    "value": "TLSv1.3"
+                                }
+                            ],
+                            "logPublisher": "/Common/sys-ssl-publisher"
+                        },
+                        "serverSettings": {
+                            "ciphers": {
+                                "isCipherString": true,
+                                "cipherString": "DEFAULT",
+                                "cipherGroup": "/Common/f5-default"
+                            },
+                            "caBundle": "/Common/ca-bundle.crt",
+                            "expiredCertificates": false,
+                            "untrustedCertificates": false,
+                            "ocsp": "",
+                            "crl": "",
+                            "enabledSSLProcessingOptions": [
+                                {
+                                    "name": "TLSv1.3",
+                                    "value": "TLSv1.3"
+                                }
+                            ],
+                            "logPublisher": "/Common/sys-ssl-publisher"
+                        },
+                        "name": "ssloT_foobar",
+                        "advancedMode": "off",
+                        "previousVersion": 9.0,
+                        "version": 9.0,
+                        "strictness": false,
+                        "existingBlockId": "d0b1adaf-a860-4fe3-8d66-ab7937a0cb75"
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-topology",
+                    "type": "JSON"
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": []
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.144.72.149",
+                            "strictness": false,
+                            "potentialDrift": true
+                        }
+                    ]
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+            },
+            "configProcessorTimeoutSeconds": 120,
+            "statsProcessorTimeoutSeconds": 60,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "BOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1638222651496092,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/060f68f4-9d5c-43d2-9153-30ffe9e8fa74"
+        }
+    ],
+    "generation": 331,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1638222651497372
+}

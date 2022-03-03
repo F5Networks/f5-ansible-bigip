@@ -1,0 +1,353 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "61c76573-df8f-4b47-9eb0-6e0b12914b77",
+            "name": "ssloT_barfoo",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-tls",
+                    "type": "JSON",
+                    "value": {
+                        "sslSettingsReference": "",
+                        "sslSettingsName": "",
+                        "description": "",
+                        "generalSettings": {
+                            "isForwardProxy": true,
+                            "bypassHandshakeAlert": true,
+                            "bypassClientCertFailure": false
+                        },
+                        "clientSettings": {
+                            "ciphers": {
+                                "isCipherString": false,
+                                "cipherString": "DEFAULT",
+                                "cipherGroup": "/Common/f5-default"
+                            },
+                            "certKeyChain": [
+                                {
+                                    "cert": "/Common/default.crt",
+                                    "key": "/Common/default.key",
+                                    "chain": "",
+                                    "passphrase": "",
+                                    "name": "CERT_KEY_CHAIN_0"
+                                }
+                            ],
+                            "caCertKeyChain": [
+                                {
+                                    "cert": "/Common/default.crt",
+                                    "key": "/Common/default.key",
+                                    "chain": "",
+                                    "isCa": true,
+                                    "usage": "CA",
+                                    "port": "0",
+                                    "passphrase": "",
+                                    "certKeyChainMismatch": false,
+                                    "isDuplicateVal": false,
+                                    "name": "CA_CERT_KEY_CHAIN_0"
+                                }
+                            ],
+                            "forwardByPass": true,
+                            "enabledSSLProcessingOptions": [
+                                {
+                                    "name": "TLSv1.3",
+                                    "value": "TLSv1.3"
+                                }
+                            ],
+                            "logPublisher": "/Common/sys-ssl-publisher",
+                            "alpn": true
+                        },
+                        "serverSettings": {
+                            "ciphers": {
+                                "isCipherString": false,
+                                "cipherString": "DEFAULT",
+                                "cipherGroup": "/Common/f5-default"
+                            },
+                            "caBundle": "/Common/ca-bundle.crt",
+                            "expiredCertificates": true,
+                            "untrustedCertificates": true,
+                            "ocsp": "",
+                            "crl": "",
+                            "enabledSSLProcessingOptions": [
+                                {
+                                    "name": "TLSv1.3",
+                                    "value": "TLSv1.3"
+                                }
+                            ],
+                            "logPublisher": "/Common/sys-ssl-publisher"
+                        },
+                        "name": "ssloT_barfoo",
+                        "advancedMode": "off",
+                        "previousVersion": 9.0,
+                        "version": 9.0,
+                        "strictness": false,
+                        "partition": "Common",
+                        "profiles": {
+                            "ssloT_barfoo-cssl-vhf": {
+                                "name": "ssloT_barfoo-cssl-vhf",
+                                "profile": "client-ssl",
+                                "parent": "sslo-default-clientssl",
+                                "context": "clientside",
+                                "partition": "Common",
+                                "cipherGroup": "/Common/f5-default",
+                                "ciphers": "none",
+                                "certKeyChain": [
+                                    {
+                                        "cert": "/Common/default.crt",
+                                        "key": "/Common/default.key",
+                                        "chain": "",
+                                        "name": "CERT_KEY_CHAIN_0"
+                                    },
+                                    {
+                                        "cert": "/Common/default.crt",
+                                        "key": "/Common/default.key",
+                                        "chain": "",
+                                        "isCa": true,
+                                        "usage": "CA",
+                                        "port": "0",
+                                        "certKeyChainMismatch": false,
+                                        "isDuplicateVal": false,
+                                        "name": "CA_CERT_KEY_CHAIN_0"
+                                    }
+                                ],
+                                "allowNonSsl": "enabled",
+                                "sslForwardProxy": "enabled",
+                                "certExtensionIncludes": [
+                                    "basic-constraints",
+                                    "extended-key-usage",
+                                    "subject-alternative-name"
+                                ],
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "bypassOnHandshakeAlert": "enabled",
+                                "bypassOnClientCertFail": "disabled",
+                                "sslForwardProxyVerifiedHandshake": "disabled",
+                                "forwardProxyBypassDefaultAction": "intercept",
+                                "sslC3d": "disabled",
+                                "sslForwardProxyBypass": "enabled",
+                                "uncleanShutdown": "disabled",
+                                "logPublisher": "/Common/sys-ssl-publisher"
+                            },
+                            "ssloT_barfoo-cssl-vht": {
+                                "name": "ssloT_barfoo-cssl-vht",
+                                "profile": "client-ssl",
+                                "parent": "sslo-default-clientssl",
+                                "context": "clientside",
+                                "partition": "Common",
+                                "cipherGroup": "/Common/f5-default",
+                                "ciphers": "none",
+                                "certKeyChain": [
+                                    {
+                                        "cert": "/Common/default.crt",
+                                        "key": "/Common/default.key",
+                                        "chain": "",
+                                        "name": "CERT_KEY_CHAIN_0"
+                                    },
+                                    {
+                                        "cert": "/Common/default.crt",
+                                        "key": "/Common/default.key",
+                                        "chain": "",
+                                        "isCa": true,
+                                        "usage": "CA",
+                                        "port": "0",
+                                        "certKeyChainMismatch": false,
+                                        "isDuplicateVal": false,
+                                        "name": "CA_CERT_KEY_CHAIN_0"
+                                    }
+                                ],
+                                "allowNonSsl": "enabled",
+                                "sslForwardProxy": "enabled",
+                                "certExtensionIncludes": [
+                                    "basic-constraints",
+                                    "extended-key-usage",
+                                    "subject-alternative-name"
+                                ],
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "bypassOnHandshakeAlert": "enabled",
+                                "bypassOnClientCertFail": "disabled",
+                                "sslForwardProxyVerifiedHandshake": "enabled",
+                                "forwardProxyBypassDefaultAction": "intercept",
+                                "sslC3d": "disabled",
+                                "sslForwardProxyBypass": "enabled",
+                                "uncleanShutdown": "disabled",
+                                "helloExtensionIncludes": [
+                                    "application-layer-protocol-negotiation"
+                                ],
+                                "logPublisher": "/Common/sys-ssl-publisher"
+                            },
+                            "ssloT_barfoo-sssl-vhf": {
+                                "name": "ssloT_barfoo-sssl-vhf",
+                                "profile": "server-ssl",
+                                "parent": "sslo-default-serverssl",
+                                "context": "serverside",
+                                "partition": "Common",
+                                "cipherGroup": "/Common/f5-default",
+                                "ciphers": "none",
+                                "caFile": "/Common/ca-bundle.crt",
+                                "expireCertResponseControl": "drop",
+                                "untrustedCertResponseControl": "drop",
+                                "sslForwardProxy": "enabled",
+                                "ocsp": "none",
+                                "crl": "none",
+                                "peerCertMode": "require",
+                                "secureRenegotiation": "request",
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "bypassOnHandshakeAlert": "enabled",
+                                "bypassOnClientCertFail": "disabled",
+                                "sslForwardProxyVerifiedHandshake": "disabled",
+                                "sslC3d": "disabled",
+                                "uncleanShutdown": "disabled",
+                                "sslForwardProxyBypass": "enabled",
+                                "logPublisher": "/Common/sys-ssl-publisher"
+                            },
+                            "ssloT_barfoo-sssl-vht": {
+                                "name": "ssloT_barfoo-sssl-vht",
+                                "profile": "server-ssl",
+                                "parent": "sslo-default-serverssl",
+                                "context": "serverside",
+                                "partition": "Common",
+                                "cipherGroup": "/Common/f5-default",
+                                "ciphers": "none",
+                                "caFile": "/Common/ca-bundle.crt",
+                                "expireCertResponseControl": "drop",
+                                "untrustedCertResponseControl": "drop",
+                                "sslForwardProxy": "enabled",
+                                "ocsp": "none",
+                                "crl": "none",
+                                "peerCertMode": "require",
+                                "secureRenegotiation": "request",
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "bypassOnHandshakeAlert": "enabled",
+                                "bypassOnClientCertFail": "disabled",
+                                "sslForwardProxyVerifiedHandshake": "enabled",
+                                "sslC3d": "disabled",
+                                "uncleanShutdown": "disabled",
+                                "sslForwardProxyBypass": "enabled",
+                                "logPublisher": "/Common/sys-ssl-publisher"
+                            }
+                        },
+                        "existingBlockId": "61c76573-df8f-4b47-9eb0-6e0b12914b77"
+                    }
+                },
+                {
+                    "id": "processorContext",
+                    "type": "JSON",
+                    "value": {}
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": [
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~ssloT_barfoo.app~ssloT_barfoo-cssl-vhf",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~ssloT_barfoo.app~ssloT_barfoo-cssl-vhf"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~ssloT_barfoo.app~ssloT_barfoo-cssl-vht",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~ssloT_barfoo.app~ssloT_barfoo-cssl-vht"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~ssloT_barfoo.app~ssloT_barfoo-sssl-vhf",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~ssloT_barfoo.app~ssloT_barfoo-sssl-vhf"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~ssloT_barfoo.app~ssloT_barfoo-sssl-vht",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~ssloT_barfoo.app~ssloT_barfoo-sssl-vht"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.144.72.149",
+                            "strictness": false,
+                            "potentialDrift": false
+                        }
+                    ]
+                },
+                {
+                    "id": "dependencyInfo",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "type": "f5-ssl-orchestrator-tls",
+                            "name": "/Common/ssloT_barfoo.app/ssloT_barfoo",
+                            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/61c76573-df8f-4b47-9eb0-6e0b12914b77",
+                            "dependsOn": {
+                                "references": [
+                                    {
+                                        "type": "",
+                                        "names": []
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "configToDeploy",
+                    "type": "BOOLEAN",
+                    "value": true
+                },
+                {
+                    "id": "deviceSpecific",
+                    "type": "JSON"
+                },
+                {
+                    "id": "error",
+                    "type": "STRING",
+                    "value": ""
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-tls"
+            },
+            "configProcessorTimeoutSeconds": 90,
+            "statsProcessorTimeoutSeconds": 15,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "UNBOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1638221306360538,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/61c76573-df8f-4b47-9eb0-6e0b12914b77"
+        }
+    ],
+    "generation": 334,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1638222774526503
+}

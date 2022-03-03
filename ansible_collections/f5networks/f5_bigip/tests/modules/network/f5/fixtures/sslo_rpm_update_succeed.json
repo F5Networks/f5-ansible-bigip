@@ -1,0 +1,27 @@
+{
+    "packageFilePath": "/var/config/rest/downloads/f5-iappslx-ssl-orchestrator-16.1.0-9.0.24.noarch.rpm",
+    "packageName": "f5-iappslx-ssl-orchestrator-16.1.0-9.0.24.noarch",
+    "operation": "INSTALL",
+    "packageManifest": {
+        "tags": [
+            "IAPP"
+        ]
+    },
+    "id": "5995f041-e9ee-449c-8162-59eda4e18867",
+    "status": "FINISHED",
+    "startTime": "2021-11-06T16:45:19.245+0000",
+    "endTime": "2021-11-06T16:45:24.961+0000",
+    "userReference": {
+        "link": "https://localhost/mgmt/shared/authz/users/admin"
+    },
+    "identityReferences": [
+        {
+            "link": "https://localhost/mgmt/shared/authz/users/admin"
+        }
+    ],
+    "ownerMachineId": "948881e0-c6fa-4218-a253-d655077c9fe4",
+    "generation": 3,
+    "lastUpdateMicros": 1636217124961768,
+    "kind": "shared:iapp:package-management-tasks:iapppackagemanagementtaskstate",
+    "selfLink": "https://localhost/mgmt/shared/iapp/package-management-tasks/5995f041-e9ee-449c-8162-59eda4e18867"
+}

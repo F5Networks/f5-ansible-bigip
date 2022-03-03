@@ -1,0 +1,106 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "a7433749-c87e-49ea-b508-91f6ed0f4a18",
+            "name": "ssloSC_foobar",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-service-chain",
+                    "type": "JSON",
+                    "value": {
+                        "name": "ssloSC_foobar",
+                        "description": "",
+                        "orderedServiceList": [
+                            {
+                                "ipFamily": "ipv4",
+                                "name": "ssloS_icap1",
+                                "serviceType": "icap"
+                            }
+                        ],
+                        "partition": "Common",
+                        "previousVersion": 9.0,
+                        "version": 9.0,
+                        "strictness": false,
+                        "existingBlockId": "a7433749-c87e-49ea-b508-91f6ed0f4a18"
+                    }
+                },
+                {
+                    "id": "processorContext",
+                    "type": "JSON",
+                    "value": {}
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": []
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": []
+                },
+                {
+                    "id": "dependencyInfo",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "type": "f5-ssl-orchestrator-service-chain",
+                            "name": "/Common/ssloSC_foobar.app/ssloSC_foobar",
+                            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/a7433749-c87e-49ea-b508-91f6ed0f4a18",
+                            "dependsOn": {
+                                "references": [
+                                    {
+                                        "type": "f5-ssl-orchestrator-service",
+                                        "names": [
+                                            "/Common/ssloS_icap1.app/ssloS_icap1"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "configToDeploy",
+                    "type": "BOOLEAN",
+                    "value": false
+                },
+                {
+                    "id": "deviceSpecific",
+                    "type": "JSON"
+                },
+                {
+                    "id": "error",
+                    "type": "STRING",
+                    "value": ""
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-service-chain"
+            },
+            "configProcessorTimeoutSeconds": 90,
+            "statsProcessorTimeoutSeconds": 15,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "UNBOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1637658934739099,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/a7433749-c87e-49ea-b508-91f6ed0f4a18"
+        }
+    ],
+    "generation": 1155,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1637659059327308
+}

@@ -90,6 +90,19 @@ def tmos_version(client):
     raise F5ModuleError(response['contents'])
 
 
+def sslo_version(client):
+    uri = "/mgmt/shared/iapp/installed-packages"
+    response = client.get(uri)
+    if response['code'] in [200, 201, 202]:
+        if response['contents']["items"]:
+            for x in response['contents']["items"]:
+                if x["appName"] == "f5-iappslx-ssl-orchestrator":
+                    tmpversion = x["release"].split(".")
+                    version = tmpversion[0] + "." + tmpversion[1]
+                    return version
+    raise F5ModuleError("SSL Orchestrator package does not appear to be installed. Aborting.")
+
+
 def bigiq_version(client):
     uri = "/mgmt/shared/resolver/device-groups/cm-shared-all-big-iqs/devices"
     query = "?$select=version"

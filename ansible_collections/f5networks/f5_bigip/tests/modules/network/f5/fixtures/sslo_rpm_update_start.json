@@ -1,0 +1,19 @@
+{
+    "packageFilePath": "/var/config/rest/downloads/MyApp-0.1.0-0001.noarch.rpm",
+    "operation": "INSTALL",
+    "id": "4580013b-d347-4346-a8bd-70f5a9aee61c",
+    "status": "CREATED",
+    "userReference": {
+        "link": "https://localhost/mgmt/shared/authz/users/admin"
+    },
+    "identityReferences": [
+        {
+            "link": "https://localhost/mgmt/shared/authz/users/admin"
+        }
+    ],
+    "ownerMachineId": "948881e0-c6fa-4218-a253-d655077c9fe4",
+    "generation": 1,
+    "lastUpdateMicros": 1636216784842209,
+    "kind": "shared:iapp:package-management-tasks:iapppackagemanagementtaskstate",
+    "selfLink": "https://localhost/mgmt/shared/iapp/package-management-tasks/4580013b-d347-4346-a8bd-70f5a9aee61c"
+}

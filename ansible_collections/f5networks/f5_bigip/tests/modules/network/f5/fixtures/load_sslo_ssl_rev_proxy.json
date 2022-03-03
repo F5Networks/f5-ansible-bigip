@@ -1,0 +1,289 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "d0b1adaf-a860-4fe3-8d66-ab7937a0cb75",
+            "name": "ssloT_foobar",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-tls",
+                    "type": "JSON",
+                    "value": {
+                        "sslSettingsReference": "",
+                        "sslSettingsName": "",
+                        "description": "",
+                        "generalSettings": {
+                            "isForwardProxy": false,
+                            "bypassHandshakeAlert": false,
+                            "bypassClientCertFailure": false
+                        },
+                        "clientSettings": {
+                            "ciphers": {
+                                "isCipherString": true,
+                                "cipherString": "DEFAULT",
+                                "cipherGroup": "/Common/f5-default"
+                            },
+                            "certKeyChain": [
+                                {
+                                    "cert": "/Common/default.crt",
+                                    "key": "/Common/default.key",
+                                    "chain": "",
+                                    "passphrase": "",
+                                    "name": "CERT_KEY_CHAIN_0"
+                                }
+                            ],
+                            "caCertKeyChain": [],
+                            "forwardByPass": false,
+                            "enabledSSLProcessingOptions": [
+                                {
+                                    "name": "TLSv1.3",
+                                    "value": "TLSv1.3"
+                                }
+                            ],
+                            "logPublisher": "/Common/sys-ssl-publisher"
+                        },
+                        "serverSettings": {
+                            "ciphers": {
+                                "isCipherString": true,
+                                "cipherString": "DEFAULT",
+                                "cipherGroup": "/Common/f5-default"
+                            },
+                            "caBundle": "/Common/ca-bundle.crt",
+                            "expiredCertificates": false,
+                            "untrustedCertificates": false,
+                            "ocsp": "",
+                            "crl": "",
+                            "enabledSSLProcessingOptions": [
+                                {
+                                    "name": "TLSv1.3",
+                                    "value": "TLSv1.3"
+                                }
+                            ],
+                            "logPublisher": "/Common/sys-ssl-publisher"
+                        },
+                        "name": "ssloT_foobar",
+                        "advancedMode": "off",
+                        "previousVersion": 9.0,
+                        "version": 9.0,
+                        "strictness": false,
+                        "partition": "Common",
+                        "profiles": {
+                            "ssloT_foobar-cssl-vhf": {
+                                "name": "ssloT_foobar-cssl-vhf",
+                                "profile": "client-ssl",
+                                "parent": "sslo-default-clientssl",
+                                "context": "clientside",
+                                "partition": "Common",
+                                "cipherGroup": "none",
+                                "ciphers": "DEFAULT",
+                                "certKeyChain": [
+                                    {
+                                        "cert": "/Common/default.crt",
+                                        "key": "/Common/default.key",
+                                        "chain": "",
+                                        "name": "CERT_KEY_CHAIN_0"
+                                    }
+                                ],
+                                "allowNonSsl": "enabled",
+                                "sslForwardProxy": "disabled",
+                                "certExtensionIncludes": [
+                                    "basic-constraints",
+                                    "extended-key-usage",
+                                    "subject-alternative-name"
+                                ],
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "logPublisher": "/Common/sys-ssl-publisher"
+                            },
+                            "ssloT_foobar-cssl-vht": {
+                                "name": "ssloT_foobar-cssl-vht",
+                                "profile": "client-ssl",
+                                "parent": "sslo-default-clientssl",
+                                "context": "clientside",
+                                "partition": "Common",
+                                "cipherGroup": "none",
+                                "ciphers": "DEFAULT",
+                                "certKeyChain": [
+                                    {
+                                        "cert": "/Common/default.crt",
+                                        "key": "/Common/default.key",
+                                        "chain": "",
+                                        "name": "CERT_KEY_CHAIN_0"
+                                    }
+                                ],
+                                "allowNonSsl": "enabled",
+                                "sslForwardProxy": "disabled",
+                                "certExtensionIncludes": [
+                                    "basic-constraints",
+                                    "extended-key-usage",
+                                    "subject-alternative-name"
+                                ],
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "helloExtensionIncludes": "none",
+                                "logPublisher": "/Common/sys-ssl-publisher"
+                            },
+                            "ssloT_foobar-sssl-vhf": {
+                                "name": "ssloT_foobar-sssl-vhf",
+                                "profile": "server-ssl",
+                                "parent": "sslo-default-serverssl",
+                                "context": "serverside",
+                                "partition": "Common",
+                                "cipherGroup": "none",
+                                "ciphers": "DEFAULT",
+                                "caFile": "/Common/ca-bundle.crt",
+                                "expireCertResponseControl": "ignore",
+                                "untrustedCertResponseControl": "ignore",
+                                "sslForwardProxy": "disabled",
+                                "ocsp": "none",
+                                "crl": "none",
+                                "peerCertMode": "require",
+                                "secureRenegotiation": "request",
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "logPublisher": "/Common/sys-ssl-publisher"
+                            },
+                            "ssloT_foobar-sssl-vht": {
+                                "name": "ssloT_foobar-sssl-vht",
+                                "profile": "server-ssl",
+                                "parent": "sslo-default-serverssl",
+                                "context": "serverside",
+                                "partition": "Common",
+                                "cipherGroup": "none",
+                                "ciphers": "DEFAULT",
+                                "caFile": "/Common/ca-bundle.crt",
+                                "expireCertResponseControl": "ignore",
+                                "untrustedCertResponseControl": "ignore",
+                                "sslForwardProxy": "disabled",
+                                "ocsp": "none",
+                                "crl": "none",
+                                "peerCertMode": "require",
+                                "secureRenegotiation": "request",
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "logPublisher": "/Common/sys-ssl-publisher"
+                            }
+                        },
+                        "existingBlockId": "d0b1adaf-a860-4fe3-8d66-ab7937a0cb75"
+                    }
+                },
+                {
+                    "id": "processorContext",
+                    "type": "JSON",
+                    "value": {}
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": [
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~ssloT_foobar.app~ssloT_foobar-cssl-vhf",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~ssloT_foobar.app~ssloT_foobar-cssl-vhf"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~ssloT_foobar.app~ssloT_foobar-cssl-vht",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~ssloT_foobar.app~ssloT_foobar-cssl-vht"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~ssloT_foobar.app~ssloT_foobar-sssl-vhf",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~ssloT_foobar.app~ssloT_foobar-sssl-vhf"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~ssloT_foobar.app~ssloT_foobar-sssl-vht",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~ssloT_foobar.app~ssloT_foobar-sssl-vht"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.144.72.149",
+                            "strictness": false,
+                            "potentialDrift": false
+                        }
+                    ]
+                },
+                {
+                    "id": "dependencyInfo",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "type": "f5-ssl-orchestrator-tls",
+                            "name": "/Common/ssloT_foobar.app/ssloT_foobar",
+                            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/d0b1adaf-a860-4fe3-8d66-ab7937a0cb75",
+                            "dependsOn": {
+                                "references": [
+                                    {
+                                        "type": "",
+                                        "names": []
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "configToDeploy",
+                    "type": "BOOLEAN",
+                    "value": true
+                },
+                {
+                    "id": "deviceSpecific",
+                    "type": "JSON"
+                },
+                {
+                    "id": "error",
+                    "type": "STRING",
+                    "value": ""
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-tls"
+            },
+            "configProcessorTimeoutSeconds": 90,
+            "statsProcessorTimeoutSeconds": 15,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "UNBOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1638202553033797,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/d0b1adaf-a860-4fe3-8d66-ab7937a0cb75"
+        }
+    ],
+    "generation": 271,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1638219869689979
+}

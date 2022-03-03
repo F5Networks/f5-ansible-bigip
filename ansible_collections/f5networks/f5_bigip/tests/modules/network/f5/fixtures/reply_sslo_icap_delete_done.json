@@ -1,0 +1,55 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "e2f687be-42f5-4f09-bbe9-f23e98ab0545",
+            "name": "sslo_obj_SERVICE_DELETE_ssloS_foobar",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-operation-context",
+                    "type": "JSON",
+                    "value": {
+                        "deploymentName": "ssloS_foobar",
+                        "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/d69822e2-6ddf-4129-a475-a96bf753e91a",
+                        "deploymentType": "SERVICE",
+                        "operationType": "DELETE",
+                        "version": 9.0,
+                        "partition": "Common"
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-tls",
+                    "type": "JSON",
+                    "value": {
+                        "existingBlockId": "d69822e2-6ddf-4129-a475-a96bf753e91a",
+                        "name": "ssloS_foobar",
+                        "partition": "Common",
+                        "previousVersion": 9.0,
+                        "version": 9.0
+                    }
+                }
+            ],
+            "dataProperties": [],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+            },
+            "configProcessorTimeoutSeconds": 30,
+            "statsProcessorTimeoutSeconds": 15,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOAD_BALANCED",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/processors/affinity/load-balanced"
+                }
+            },
+            "state": "BOUND",
+            "generation": 2,
+            "lastUpdateMicros": 1639683388342766,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/e2f687be-42f5-4f09-bbe9-f23e98ab0545"
+        }
+    ],
+    "generation": 671,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1639683388347394
+}
