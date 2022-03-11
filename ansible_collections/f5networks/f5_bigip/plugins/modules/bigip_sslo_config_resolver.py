@@ -13,44 +13,44 @@ DOCUMENTATION = r'''
 module: bigip_sslo_config_resolver
 short_description: Manage the SSL Orchestrator DNS resolver config
 description:
-  - Manage the SSL Orchestrator DNS resolver config.
+  - Manage the SSL Orchestrator DNS resolver configuration.
 version_added: "1.6.0"
 options:
   fwd_name_servers:
     description:
       - Specifies the list of IP addresses for forwarding nameservers.
-      - Parameter is mutually exclusive with C(fwd_zones).
+      - This parameter is mutually exclusive with C(fwd_zones).
     type: list
     elements: str
   fwd_zones:
     description:
       - Specifies the list of zone and servers key pairs.
-      - Parameter is mutually exclusive with C(fwd_name_servers).
+      - This parameter is mutually exclusive with C(fwd_name_servers).
     type: list
     elements: dict
     suboptions:
       zone:
         description:
           - Defines the zone pattern.
-          - The C(zone) and C(servers) parameters are required together when defining zone.
+          - The C(zone) and C(servers) parameters are required together when defining a zone.
         type: str
       servers:
         description:
           - Defines the list of nameserver IP addresses for this zone.
-          - The C(zone) and C(servers) parameters are required together when defining zone.
+          - The C(zone) and C(servers) parameters are required together when defining a zone.
         type: list
         elements: str
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes) does not make any changes on device and always returns C(changed=False).
+      - When C(yes), does not make any changes on device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
-        C(MODIFY) on an existing service no json output will be generated.
+        C(MODIFY) on an existing service, no JSON output is generated.
     type: bool
     default: no
   timeout:
     description:
-      - The amount of time in seconds to wait for the C(CREATE) or C(MODIFY) task to complete.
+      - The amount of time to wait for the C(CREATE) or C(MODIFY) task to complete, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300

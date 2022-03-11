@@ -12,7 +12,7 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_partition_interface
-short_description: Manage network interfaces on the VELOS partitions
+short_description: Manage network interfaces on VELOS partitions
 description:
   - Manage network interfaces on VELOS partitions.
 version_added: "1.4.0"
@@ -24,7 +24,7 @@ options:
     required: true
   trunk_vlans:
     description:
-      - Configures multiple VLAN IDs to be associated with the interface. The C(trunk_vlans) parameter is used for
+      - Configures multiple VLAN IDs to associate with the interface. The C(trunk_vlans) parameter is used for
         untagged traffic.
       - The C(native_vlan) and C(trunk_vlans) parameters are mutually exclusive.
       - The order of these VLANs is ignored, the module orders the VLANs automatically.
@@ -32,7 +32,7 @@ options:
     elements: int
   native_vlan:
     description:
-      - Configures the VLAN ID to be associated with the interface.
+      - Configures the VLAN ID to associate with the interface.
       - The C(native_vlan) and C(trunk_vlans) parameters are mutually exclusive.
     type: int
   state:

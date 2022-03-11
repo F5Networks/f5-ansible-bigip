@@ -19,14 +19,14 @@ options:
   name:
     description:
       - Specifies the name of the SWG service object.
-      - Configuration auto-prepends C(ssloS_) to the object.
+      - The configuration auto-prepends C(ssloS_) to the object.
       - Names should be less than 14 characters and not contain dashes C(-).
     type: str
     required: True
   swg_policy:
     description:
       - Specifies the name of the SWG per-request policy to attach to the service configuration.
-      - Parameter is required when creating a new service.
+      - This parameter is required when creating a new service.
     type: str
   profile_scope:
     description:
@@ -38,14 +38,14 @@ options:
       - named
   named_scope:
     description:
-      - Required when C(profile_scope) is C(named) and specifies a name string that the authentication
+      - Required when C(profile_scope) is C(named), and specifies a name string the authentication
         and SWG policies share to allow access to identity information.
-      - Parameter is ignored when C(profile_scope) is C(profile).
+      - This parameter is ignored when C(profile_scope) is C(profile).
     type: str
   access_profile:
     description:
       - Specifies a custom SWG-Transparent access profile to apply to the SWG service.
-      - During creation of new SWG service, when the parameter is not specified the configuration auto generates
+      - During creation of new SWG service, when the parameter is not specified, the configuration auto generates
         the access profile.
     type: str
   service_down_action:
@@ -69,21 +69,21 @@ options:
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes) does not make any changes on device and always returns C(changed=False).
+      - When C(yes) does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
-        C(MODIFY) on an existing service no json output will be generated.
+        C(MODIFY) on an existing service no JSON output is generated.
     type: bool
     default: no
   timeout:
     description:
-      - The amount of time in seconds to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete.
+      - The amount of time to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
   state:
     description:
       - When C(state) is C(present), ensures the object is created or modified.
-      - When C(state) is C(absent), ensures that the service is removed.
+      - When C(state) is C(absent), ensures the service is removed.
     type: str
     choices:
       - present
@@ -147,7 +147,7 @@ profile_scope:
   sample: named
 named_scope:
   description:
-    - The name string that the authentication and SWG policies share to allow access to identity information.
+    - The name string the authentication and SWG policies share to allow access to identity information.
   returned: changed
   type: str
   sample: SSLO
