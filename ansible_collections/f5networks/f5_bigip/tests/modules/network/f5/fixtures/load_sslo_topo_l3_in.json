@@ -1,0 +1,678 @@
+                                      {
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "4e8730b2-9fd0-4ba1-a49d-1ae505e17a84",
+            "name": "sslo_l3_topo_in",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-topology",
+                    "type": "JSON",
+                    "value": {
+                        "name": "sslo_l3_topo_in",
+                        "type": "topology_l3_inbound",
+                        "version": 7.5,
+                        "previousVersion": 7.5,
+                        "partition": "Common",
+                        "strictness": false,
+                        "userCreated": false,
+                        "description": "",
+                        "deployedNetwork": "",
+                        "ipFamily": "ipv4",
+                        "ruleType": "Inbound",
+                        "ruleLabel": "Inbound",
+                        "dnsResolver": "",
+                        "serviceDef": {
+                            "description": "",
+                            "source": "0.0.0.0%0/0",
+                            "protocol": "tcp",
+                            "destination": {
+                                "mask": "",
+                                "port": 0.0,
+                                "prefix": 0.0,
+                                "address": "192.168.1.5%0/32"
+                            }
+                        },
+                        "pool": "",
+                        "tlsEnabled": true,
+                        "iRules": {
+                            "sslo_l3_topo_in-ptcl_https": {
+                                "name": "sslo_l3_topo_in-ptcl_https",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\nwhen CLIENT_ACCEPTED {\n    sharedvar ctx\n    set ctx(ptcl) \"https\"\n}\nwhen L7CHECK_CLIENT_DATA {\n    L7CHECK::protocol set $ctx(ptcl)\n}",
+                                "validUnreferenced": true
+                            },
+                            "sslo_l3_topo_in-http": {
+                                "name": "sslo_l3_topo_in-http",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\nwhen CLIENT_ACCEPTED {\n    TCP::collect\n}\n\nwhen CLIENT_DATA {\n    set said [TCP::payload]\n    TCP::release\n}\n\nwhen ACCESS_PER_REQUEST_AGENT_EVENT {\n    switch [ACCESS::perflow get perflow.irule_agent_id] {\n        \"sslo_get_category\" {\n            call /Common/sslo_l3_topo_in.app/sslo_l3_topo_in-lib::store_host_header $said\n        }\n        default {\n        }\n    }\n}\n",
+                                "validUnreferenced": true
+                            },
+                            "sslo_l3_topo_in-lib": {
+                                "name": "sslo_l3_topo_in-lib",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\n# emit a log message\n# uses ACCESS::log ssl-orchestrator.[debug|notice|error] $msg to make use of\n# the Common Logging Framework\nproc log {level msg} {\n if {$msg eq \"\"} { return }\n\n if {$level == 0} {\n  ACCESS::log ssl-orchestrator.error \"[virtual] $msg\"\n } elseif {$level == 1} {\n  ACCESS::log ssl-orchestrator.notice \"[virtual] $msg\"\n } elseif {$level == 2} {\n  ACCESS::log ssl-orchestrator.debug \"[virtual] $msg\"\n }\n} ; #proc log\n\n# try to ascertain protocol from first few bytes that server\n# sent. If unrecognized, return value of argument ptcl, else\n# suitable protocol string\nproc ssf_ptcl {ptcl taste} {\n if {[regexp {^(220 .+ (ESMTP|\\*) (OK|NO|BAD) ).*\\r\\n$} $taste]} {\n  # looks like SMTP (not a complete test)\n  return \"smtp\"\n }\n if {[string first \"SSH-2.0-\" $taste] == 0} {\n  #looks like SSH\n  return \"ssh\"\n }\n return $ptcl\n} ; #proc ssf_ptcl\n\n\n# try to ascertain protocol from first few bytes that client\n# sent. If unrecognized, return value of argument ptcl, else\n# suitable protocol string.\n#\n# For test against expected http methods, make sure we have enough\n# data \"mincollectlen\" bytes for comparison to be valid. If not, set\n# ptcl so caller can collect more data. Note that \"mincollectlen\"\n# is set to 8 which is the longest http method aka \"PROPFIND\". If we\n# update the expected set of http methods, we need to make sure\n# that \"mincollectlen\" is updated, as needed.\nproc csf_ptcl {ptcl taste len} {\n if {[regexp {^([A-Z]+) (?:/|https?://|[A-Za-z\\d-]{1,63}[.]|\\[[a-fA-F\\d:]+\\]|(?:[*]\\x20))} $taste junk method]} {\n  # looks like HTTP (not a complete test because we are disinclined\n  # to accumulate client data looking for full HTTP request)\n  if { $method eq \"CONNECT\" } {\n   return \"http-connect\"\n  }\n  if {([lsearch -exact -sorted {DELETE GET HEAD LOCK\n   OPTIONS PATCH POST PROPFIND PUT TRACE UNLOCK} $method] >= 0)} {\n   return \"http\"\n  }\n }\n if {$ptcl eq \"http\" || $ptcl eq \"https\" || $ptcl eq \"http-connect\"} {\n  if { $len < 8 } {\n   set ptcl \"incomplete\"\n  } else {\n   set ptcl \"unknown\"\n  }\n  return $ptcl\n }\n if {[string first \"SSH-2.0-\" $taste] == 0} {\n  #looks like SSH, which is ssf (chuckle) so we shouldn't be here,\n  #but in future after we hear from server we may check on what\n  #client says to better discriminate application protocol (like\n  #if server says SSH-2.0 and client says SSH-1.99 we suspect older\n  #client, maybe vulnerable to protocol downgrade attack)\n  return \"ssh\"\n }\n return $ptcl\n} ; #proc csf_ptcl\n\nproc store_host_header said {\n if {[regexp {^([A-Z]+) (?:/|https?://|[A-Za-z\\d-]{1,63}[.]|\\[[a-fA-F\\d:]+\\]|(?:[*]\\x20))} $said junk method] &&\n     ([lsearch -exact -sorted {CONNECT DELETE GET HEAD LOCK OPTIONS PATCH POST PROPFIND PUT TRACE UNLOCK} $method] >= 0)} {\n  set host_hdr [findstr ${said} \"Host: \" 6 \"\\r\\n\"]\n  if { [SSL::mode] == 0 } {\n   set scheme \"http://\"\n  } else {\n   set scheme \"https://\"\n  }\n  if { ${host_hdr} ne \"\" } {\n   set cat_result [CATEGORY::lookup \"${scheme}${host_hdr}/\" -id custom]\n   set custom \"| [join ${cat_result} { | }] |\"\n   set scratchpad [lindex ${cat_result} 0]\n   if { ${custom} eq \"|  |\" } {\n    set custom \"| 153 |\"\n    set scratchpad \"153\"\n   }\n   ACCESS::perflow set perflow.custom ${custom}\n   ACCESS::perflow set perflow.scratchpad ${scratchpad}\n } else {\n   # Empty host header found\"\n  }\n } else {\n  # Not HTTP or HTTPS, or unable to parse header.\"\n }\n} ; #proc store_host_header\n",
+                                "validUnreferenced": true
+                            }
+                        },
+                        "l7Protocols": [],
+                        "l7Profile": "/Common/http",
+                        "l7ProfileType": "http",
+                        "tcpSettings": {
+                            "clientTcpProfile": "/Common/f5-tcp-wan",
+                            "serverTcpProfile": "/Common/f5-tcp-lan"
+                        },
+                        "udpSettings": {
+                            "clientUdpProfile": "",
+                            "serverUdpProfile": ""
+                        },
+                        "fastL4Settings": {
+                            "all": ""
+                        },
+                        "ingressNetwork": {
+                            "vlans": [
+                                {
+                                    "name": "/Common/fake1",
+                                    "value": "/Common/fake1"
+                                }
+                            ]
+                        },
+                        "egressNetwork": {
+                            "clientSnat": "",
+                            "snat": {
+                                "referredObj": "",
+                                "ipv4SnatAddresses": [],
+                                "ipv6SnatAddresses": []
+                            },
+                            "gatewayOptions": "",
+                            "outboundGateways": {
+                                "referredObj": "",
+                                "ipv4SnatAddresses": [],
+                                "ipv6SnatAddresses": []
+                            }
+                        },
+                        "proxySettings": {
+                            "proxyType": "",
+                            "forwardProxy": {
+                                "explicitProxy": {
+                                    "ipv4Port": 3128.0,
+                                    "ipv6Port": 3128.0,
+                                    "ipv4Address": "",
+                                    "ipv6Address": ""
+                                },
+                                "transparentProxy": {
+                                    "passNonTcpNonUdpTraffic": false,
+                                    "tcpTrafficPassThroughType": true
+                                }
+                            },
+                            "reverseProxy": {
+                                "ipv4Address": "",
+                                "ipv4Port": 0.0,
+                                "ipv6Address": "",
+                                "ipv6Port": 0.0
+                            }
+                        },
+                        "advancedMode": "off",
+                        "iRulesList": [
+                            {
+                                "name": "/Common/sslo_l3_topo_in.app/sslo_l3_topo_in-ptcl_https",
+                                "value": "/Common/sslo_l3_topo_in.app/sslo_l3_topo_in-ptcl_https"
+                            },
+                            {
+                                "name": "/Common/sslo_l3_topo_in.app/sslo_l3_topo_in-http",
+                                "value": "/Common/sslo_l3_topo_in.app/sslo_l3_topo_in-http"
+                            },
+                            {
+                                "name": "/Common/sslo_l3_topo_in.app/sslo_l3_topo_in-lib",
+                                "value": "/Common/sslo_l3_topo_in.app/sslo_l3_topo_in-lib"
+                            }
+                        ],
+                        "loggingConfig": {
+                            "logPublisher": "none",
+                            "statsToRecord": 0.0,
+                            "perRequestPolicy": "err",
+                            "ftp": "err",
+                            "imap": "err",
+                            "pop3": "err",
+                            "smtps": "err",
+                            "sslOrchestrator": "err"
+                        },
+                        "authProfile": "",
+                        "sslSettingReference": "ssloT_foobar",
+                        "securityPolicyReference": "",
+                        "accessProfile": "",
+                        "deployMode": "Topology",
+                        "profiles": {
+                            "tlsServerProfile": [
+                                {
+                                    "fullPath": "/Common/ssloT_foobar.app/ssloT_foobarsssl-vht",
+                                    "bypassFlag": false
+                                },
+                                {
+                                    "fullPath": "/Common/ssloT_foobar.app/ssloT_foobarsssl-vhf",
+                                    "bypassFlag": false
+                                }
+                            ],
+                            "tlsClientProfile": [
+                                {
+                                    "fullPath": "/Common/ssloT_foobar.app/ssloT_foobarcssl-vht",
+                                    "bypassFlag": false
+                                },
+                                {
+                                    "fullPath": "/Common/ssloT_foobar.app/ssloT_foobarcssl-vhf",
+                                    "bypassFlag": false
+                                }
+                            ]
+                        },
+                        "virtuals": {
+                            "sslo_l3_topo_in": {
+                                "name": "sslo_l3_topo_in",
+                                "port": "0",
+                                "mask": "255.255.255.255",
+                                "description": "",
+                                "profiles": {
+                                    "names": []
+                                },
+                                "iRules": {
+                                    "names": [
+                                        "/Common/sslo_l3_topo_in.app/sslo_l3_topo_in-ptcl_https",
+                                        "/Common/sslo_l3_topo_in.app/sslo_l3_topo_in-http",
+                                        "/Common/sslo_l3_topo_in.app/sslo_l3_topo_in-lib"
+                                    ]
+                                },
+                                "skipHTTPRedirect": true,
+                                "ip": "192.168.1.5%0",
+                                "ipProto": "tcp",
+                                "source": "0.0.0.0%0/0",
+                                "vlans": [
+                                    "/Common/fake1"
+                                ],
+                                "clientVlanRestrict": "enableSome",
+                                "skipSnat": true,
+                                "sourceAddressTranslation": {
+                                    "type": "none",
+                                    "pool": "none"
+                                },
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled"
+                            }
+                        },
+                        "pools": {},
+                        "routes": {},
+                        "dataGroupInternals": {},
+                        "logSettings": {
+                            "sslo_l3_topo_in-log-setting": {
+                                "name": "sslo_l3_topo_in-log-setting",
+                                "access": [
+                                    {
+                                        "name": "general-log",
+                                        "enabled": "true",
+                                        "logLevel": {
+                                            "accessControl": "err",
+                                            "accessPerRequest": "err",
+                                            "ftp": "err",
+                                            "imap": "err",
+                                            "pop3": "err",
+                                            "smtps": "err",
+                                            "sslOrchestrator": "err"
+                                        },
+                                        "publisher": "/Common/sys-sslo-publisher",
+                                        "type": "ssl-orchestrator"
+                                    }
+                                ],
+                                "urlFilters": [
+                                    {
+                                        "name": "urlf",
+                                        "enabled": "true",
+                                        "filter": {
+                                            "logAllowedUrl": "false",
+                                            "logBlockedUrl": "true",
+                                            "logConfimedUrl": "true"
+                                        },
+                                        "publisher": "/Common/sys-sslo-publisher"
+                                    }
+                                ],
+                                "appService": "sslo_l3_topo_in.app/sslo_l3_topo_in",
+                                "partition": "Common",
+                                "subPath": "sslo_l3_topo_in.app"
+                            }
+                        },
+                        "snatPools": {},
+                        "accessPolicies": {
+                            "defaultSSLOAccessPolicy": {}
+                        },
+                        "tunnels": {},
+                        "existingBlockId": "4e8730b2-9fd0-4ba1-a49d-1ae505e17a84"
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-general-settings",
+                    "type": "JSON",
+                    "value": {
+                        "configModified": true,
+                        "dns": {
+                            "enableDnsSecurity": false,
+                            "enableLocalDnsQueryResolution": false,
+                            "enableLocalDnsZones": false,
+                            "localDnsNameservers": [],
+                            "localDnsZones": []
+                        },
+                        "egressNetwork": {
+                            "gatewayOptions": "useDefault",
+                            "outboundGateways": {
+                                "ipv4OutboundGateways": [
+                                    {
+                                        "ip": "",
+                                        "ratio": 1.0
+                                    }
+                                ],
+                                "ipv6NonPublicGateways": [
+                                    {
+                                        "ip": ""
+                                    }
+                                ],
+                                "ipv6OutboundGateways": [
+                                    {
+                                        "ip": "",
+                                        "ratio": 1.0
+                                    }
+                                ],
+                                "referredObj": ""
+                            }
+                        },
+                        "existingBlockId": "22a9c5bd-50e5-4b58-bb09-f4e4c84419ec",
+                        "ipFamily": "ipv4",
+                        "name": "ssloGS_global",
+                        "partition": "Common",
+                        "previousVersion": "7.4",
+                        "strictness": false,
+                        "version": "7.4"
+                    }
+                },
+                {
+                    "id": "processorContext",
+                    "type": "JSON",
+                    "value": {}
+                },
+                {
+                    "id": "f5-ssl-orchestrator-tls",
+                    "type": "JSON",
+                    "value": {
+                        "sslSettingsReference": "",
+                        "sslSettingsName": "",
+                        "description": "",
+                        "previousVersion": "7.4",
+                        "version": "7.4",
+                        "generalSettings": {
+                            "isForwardProxy": true,
+                            "bypassHandshakeAlert": false,
+                            "bypassClientCertFailure": false
+                        },
+                        "clientSettings": {
+                            "ciphers": {
+                                "isCipherString": true,
+                                "cipherString": "DEFAULT",
+                                "cipherGroup": "/Common/f5-default"
+                            },
+                            "certKeyChain": [
+                                {
+                                    "cert": "/Common/default.crt",
+                                    "key": "/Common/default.key",
+                                    "chain": "",
+                                    "passphrase": "",
+                                    "name": "CERT_KEY_CHAIN_0"
+                                }
+                            ],
+                            "caCertKeyChain": [
+                                {
+                                    "cert": "/Common/default.crt",
+                                    "key": "/Common/default.key",
+                                    "chain": "",
+                                    "passphrase": "",
+                                    "isCa": true,
+                                    "usage": "CA",
+                                    "port": "0",
+                                    "name": "CA_CERT_KEY_CHAIN_0"
+                                }
+                            ],
+                            "forwardByPass": true,
+                            "enabledSSLProcessingOptions": [
+                                {
+                                    "name": "TLSv1.3",
+                                    "value": "TLSv1.3"
+                                }
+                            ]
+                        },
+                        "serverSettings": {
+                            "ciphers": {
+                                "isCipherString": true,
+                                "cipherString": "DEFAULT",
+                                "cipherGroup": "/Common/f5-default"
+                            },
+                            "caBundle": "/Common/ca-bundle.crt",
+                            "expiredCertificates": true,
+                            "untrustedCertificates": true,
+                            "ocsp": "",
+                            "crl": "",
+                            "enabledSSLProcessingOptions": [
+                                {
+                                    "name": "TLSv1.3",
+                                    "value": "TLSv1.3"
+                                }
+                            ]
+                        },
+                        "name": "ssloT_foobar",
+                        "advancedMode": "off",
+                        "strictness": true,
+                        "partition": "Common",
+                        "profiles": {
+                            "ssloT_foobar-cssl-vht": {
+                                "name": "ssloT_foobar-cssl-vht",
+                                "profile": "client-ssl",
+                                "parent": "sslo-default-clientssl",
+                                "context": "clientside",
+                                "partition": "Common",
+                                "cipherGroup": "none",
+                                "ciphers": "DEFAULT",
+                                "certKeyChain": [
+                                    {
+                                        "cert": "/Common/default.crt",
+                                        "key": "/Common/default.key",
+                                        "chain": "",
+                                        "passphrase": "",
+                                        "name": "CERT_KEY_CHAIN_0"
+                                    },
+                                    {
+                                        "cert": "/Common/default.crt",
+                                        "key": "/Common/default.key",
+                                        "chain": "",
+                                        "passphrase": "",
+                                        "isCa": true,
+                                        "usage": "CA",
+                                        "port": "0",
+                                        "name": "CA_CERT_KEY_CHAIN_0"
+                                    }
+                                ],
+                                "allowNonSsl": "enabled",
+                                "sslForwardProxy": "enabled",
+                                "certExtensionIncludes": [
+                                    "basic-constraints",
+                                    "extended-key-usage",
+                                    "subject-alternative-name"
+                                ],
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "bypassOnHandshakeAlert": "disabled",
+                                "bypassOnClientCertFail": "disabled",
+                                "sslForwardProxyVerifiedHandshake": "enabled",
+                                "forwardProxyBypassDefaultAction": "intercept",
+                                "sslC3d": "disabled",
+                                "sslForwardProxyBypass": "enabled",
+                                "uncleanShutdown": "disabled"
+                            },
+                            "ssloT_foobar-cssl-vhf": {
+                                "name": "ssloT_foobar-cssl-vhf",
+                                "profile": "client-ssl",
+                                "parent": "sslo-default-clientssl",
+                                "context": "clientside",
+                                "partition": "Common",
+                                "cipherGroup": "none",
+                                "ciphers": "DEFAULT",
+                                "certKeyChain": [
+                                    {
+                                        "cert": "/Common/default.crt",
+                                        "key": "/Common/default.key",
+                                        "chain": "",
+                                        "passphrase": "",
+                                        "name": "CERT_KEY_CHAIN_0"
+                                    },
+                                    {
+                                        "cert": "/Common/default.crt",
+                                        "key": "/Common/default.key",
+                                        "chain": "",
+                                        "passphrase": "",
+                                        "isCa": true,
+                                        "usage": "CA",
+                                        "port": "0",
+                                        "name": "CA_CERT_KEY_CHAIN_0"
+                                    }
+                                ],
+                                "allowNonSsl": "enabled",
+                                "sslForwardProxy": "enabled",
+                                "certExtensionIncludes": [
+                                    "basic-constraints",
+                                    "extended-key-usage",
+                                    "subject-alternative-name"
+                                ],
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "bypassOnHandshakeAlert": "disabled",
+                                "bypassOnClientCertFail": "disabled",
+                                "sslForwardProxyVerifiedHandshake": "disabled",
+                                "forwardProxyBypassDefaultAction": "intercept",
+                                "sslC3d": "disabled",
+                                "sslForwardProxyBypass": "enabled",
+                                "uncleanShutdown": "disabled"
+                            },
+                            "ssloT_foobar-sssl-vht": {
+                                "name": "ssloT_foobar-sssl-vht",
+                                "profile": "server-ssl",
+                                "parent": "sslo-default-serverssl",
+                                "context": "serverside",
+                                "partition": "Common",
+                                "cipherGroup": "none",
+                                "ciphers": "DEFAULT",
+                                "caFile": "/Common/ca-bundle.crt",
+                                "expireCertResponseControl": "drop",
+                                "untrustedCertResponseControl": "drop",
+                                "sslForwardProxy": "enabled",
+                                "ocsp": "none",
+                                "crl": "none",
+                                "peerCertMode": "require",
+                                "secureRenegotiation": "request",
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "bypassOnHandshakeAlert": "disabled",
+                                "bypassOnClientCertFail": "disabled",
+                                "sslForwardProxyVerifiedHandshake": "enabled",
+                                "sslC3d": "disabled",
+                                "uncleanShutdown": "disabled",
+                                "sslForwardProxyBypass": "enabled"
+                            },
+                            "ssloT_foobar-sssl-vhf": {
+                                "name": "ssloT_foobar-sssl-vhf",
+                                "profile": "server-ssl",
+                                "parent": "sslo-default-serverssl",
+                                "context": "serverside",
+                                "partition": "Common",
+                                "cipherGroup": "none",
+                                "ciphers": "DEFAULT",
+                                "caFile": "/Common/ca-bundle.crt",
+                                "expireCertResponseControl": "drop",
+                                "untrustedCertResponseControl": "drop",
+                                "sslForwardProxy": "enabled",
+                                "ocsp": "none",
+                                "crl": "none",
+                                "peerCertMode": "require",
+                                "secureRenegotiation": "request",
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "bypassOnHandshakeAlert": "disabled",
+                                "bypassOnClientCertFail": "disabled",
+                                "sslForwardProxyVerifiedHandshake": "disabled",
+                                "sslC3d": "disabled",
+                                "uncleanShutdown": "disabled",
+                                "sslForwardProxyBypass": "enabled"
+                            }
+                        },
+                        "existingBlockId": "29c9476e-32b0-44ec-b248-7c40543987bb"
+                    }
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "dependencyInfo",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "type": "f5-ssl-orchestrator-topology",
+                            "name": "/Common/sslo_l3_topo_in.app/sslo_l3_topo_in",
+                            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/4e8730b2-9fd0-4ba1-a49d-1ae505e17a84",
+                            "dependsOn": {
+                                "references": [
+                                    {
+                                        "type": "f5-ssl-orchestrator-tls",
+                                        "names": [
+                                            "/Common/ssloT_foobar.app/ssloT_foobar"
+                                        ]
+                                    },
+                                    {
+                                        "type": "f5-ssl-orchestrator-policy",
+                                        "names": [
+                                            "/Common/.app/"
+                                        ]
+                                    },
+                                    {
+                                        "type": "f5-ssl-orchestrator-general-settings",
+                                        "names": [
+                                            "/Common/ssloGS_global.app/ssloGS_global"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "configToDeploy",
+                    "type": "BOOLEAN",
+                    "value": true
+                },
+                {
+                    "id": "deviceSpecific",
+                    "type": "JSON"
+                },
+                {
+                    "id": "error",
+                    "type": "STRING",
+                    "value": ""
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.144.72.149",
+                            "strictness": false,
+                            "potentialDrift": false
+                        }
+                    ]
+                },
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": [
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/log-setting/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in-log-setting",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/log-setting/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in-log-setting"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in-ptcl_https",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in-ptcl_https"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in-http",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in-http"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in-lib",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in-lib"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in_ent",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in_ent"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in_end_allow",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in_end_allow"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/ending-allow/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in_end_allow_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/ending-allow/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in_end_allow_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in_accessPolicy",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in_accessPolicy"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/profile/access/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in_accessProfile",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/profile/access/~Common~sslo_l3_topo_in.app~sslo_l3_topo_in_accessProfile"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-topology"
+            },
+            "configProcessorTimeoutSeconds": 30,
+            "statsProcessorTimeoutSeconds": 15,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "UNBOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 4,
+            "lastUpdateMicros": 1648021765604586,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/4e8730b2-9fd0-4ba1-a49d-1ae505e17a84"
+        }
+    ],
+    "generation": 2976,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1648022560504531
+}

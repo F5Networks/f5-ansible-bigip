@@ -1,0 +1,34 @@
+
+{
+    "name": "sslo_obj_TOPOLOGY_DELETE_sslo_expl_topo",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "deploymentName": "sslo_expl_topo",
+                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/fc5e91ab-a1b1-4a38-9bc4-6a2735b1d8c8",
+                "deploymentType": "TOPOLOGY",
+                "operationType": "DELETE",
+                "version": 7.5,
+                "partition": "Common"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-topology",
+            "type": "JSON",
+            "value": {
+                "existingBlockId": "fc5e91ab-a1b1-4a38-9bc4-6a2735b1d8c8",
+                "name": "sslo_expl_topo",
+                "partition": "Common",
+                "previousVersion": 7.5,
+                "version": 7.5
+            }
+        }
+    ],
+    "dataProperties":[],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "state": "BINDING"
+}

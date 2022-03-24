@@ -1,0 +1,223 @@
+{
+    "id": "e16087a1-7eb3-47e5-8023-f03a8b7ad0c4",
+    "name": "sslo_obj_TOPOLOGY_CREATE_sslo_l3_topo_out",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "version": 7.5,
+                "partition": "Common",
+                "strictness": false,
+                "operationType": "CREATE",
+                "deploymentName": "sslo_l3_topo_out",
+                "deploymentType": "TOPOLOGY"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-topology",
+            "type": "JSON",
+            "value": {
+                "name": "sslo_l3_topo_out",
+                "type": "topology_l3_outbound",
+                "version": 7.5,
+                "previousVersion": 7.5,
+                "partition": "Common",
+                "strictness": false,
+                "userCreated": false,
+                "description": "",
+                "deployedNetwork": "",
+                "ipFamily": "ipv4",
+                "ruleType": "Outbound",
+                "ruleLabel": "Outbound",
+                "dnsResolver": "",
+                "serviceDef": {
+                    "description": "",
+                    "source": "0.0.0.0%0/0",
+                    "protocol": "tcp",
+                    "destination": {
+                        "mask": "",
+                        "port": 0.0,
+                        "prefix": 0.0,
+                        "address": "192.168.1.4%0/32"
+                    }
+                },
+                "pool": "",
+                "tlsEnabled": true,
+                "iRules": [
+                    {
+                        "name": "",
+                        "value": ""
+                    }
+                ],
+                "l7Protocols": [],
+                "l7Profile": "/Common/http",
+                "l7ProfileType": "http",
+                "tcpSettings": {
+                    "clientTcpProfile": "/Common/f5-tcp-lan",
+                    "serverTcpProfile": "/Common/f5-tcp-wan"
+                },
+                "udpSettings": {
+                    "clientUdpProfile": "",
+                    "serverUdpProfile": ""
+                },
+                "fastL4Settings": {
+                    "all": ""
+                },
+                "ingressNetwork": {
+                    "vlans": [
+                        {
+                            "name": "/Common/fake1",
+                            "value": "/Common/fake1"
+                        }
+                    ]
+                },
+                "egressNetwork": {
+                    "clientSnat": "",
+                    "snat": {
+                        "referredObj": "",
+                        "ipv4SnatAddresses": [],
+                        "ipv6SnatAddresses": []
+                    },
+                    "gatewayOptions": "",
+                    "outboundGateways": {
+                        "referredObj": "",
+                        "ipv4SnatAddresses": [],
+                        "ipv6SnatAddresses": []
+                    }
+                },
+                "proxySettings": {
+                    "proxyType": "transparent",
+                    "forwardProxy": {
+                        "explicitProxy": {
+                            "ipv4Port": 3128.0,
+                            "ipv6Port": 3128.0,
+                            "ipv4Address": "",
+                            "ipv6Address": ""
+                        },
+                        "transparentProxy": {
+                            "passNonTcpNonUdpTraffic": false,
+                            "tcpTrafficPassThroughType": true
+                        }
+                    },
+                    "reverseProxy": {
+                        "ipv4Address": "",
+                        "ipv4Port": 0.0,
+                        "ipv6Address": "",
+                        "ipv6Port": 0.0
+                    }
+                },
+                "advancedMode": "off",
+                "iRulesList": [],
+                "loggingConfig": {
+                    "logPublisher": "none",
+                    "statsToRecord": 0.0,
+                    "perRequestPolicy": "err",
+                    "ftp": "err",
+                    "imap": "err",
+                    "pop3": "err",
+                    "smtps": "err",
+                    "sslOrchestrator": "err"
+                },
+                "authProfile": "",
+                "sslSettingReference": "ssloT_foobar",
+                "securityPolicyReference": "",
+                "accessProfile": ""
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-general-settings",
+            "type": "JSON",
+            "value": {
+                "configModified": true,
+                "dns": {
+                    "enableDnsSecurity": false,
+                    "enableLocalDnsQueryResolution": false,
+                    "enableLocalDnsZones": false,
+                    "localDnsNameservers": [],
+                    "localDnsZones": []
+                },
+                "egressNetwork": {
+                    "gatewayOptions": "useDefault",
+                    "outboundGateways": {
+                        "ipv4OutboundGateways": [
+                            {
+                                "ip": "",
+                                "ratio": 1.0
+                            }
+                        ],
+                        "ipv6NonPublicGateways": [
+                            {
+                                "ip": ""
+                            }
+                        ],
+                        "ipv6OutboundGateways": [
+                            {
+                                "ip": "",
+                                "ratio": 1.0
+                            }
+                        ],
+                        "referredObj": ""
+                    }
+                },
+                "existingBlockId": "22a9c5bd-50e5-4b58-bb09-f4e4c84419ec",
+                "ipFamily": "ipv4",
+                "name": "ssloGS_global",
+                "partition": "Common",
+                "previousVersion": "7.4",
+                "strictness": true,
+                "version": "7.4"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-tls",
+            "type": "JSON",
+            "value": {}
+        },
+        {
+            "id": "f5-ssl-orchestrator-service-chain",
+            "type": "JSON",
+            "value": []
+        },
+        {
+            "id": "f5-ssl-orchestrator-service",
+            "type": "JSON",
+            "value": []
+        },
+        {
+            "id": "f5-ssl-orchestrator-network",
+            "type": "JSON",
+            "value": []
+        },
+        {
+            "id": "f5-ssl-orchestrator-intercept-rule",
+            "type": "JSON",
+            "value": []
+        },
+        {
+            "id": "f5-ssl-orchestrator-policy",
+            "type": "JSON",
+            "value": {}
+        }
+    ],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "configProcessorTimeoutSeconds": 120,
+    "statsProcessorTimeoutSeconds": 60,
+    "configProcessorAffinity": {
+        "processorPolicy": "LOCAL",
+        "affinityProcessorReference": {
+            "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+        },
+        "machineId": "d0f711b6-acc1-4471-8240-3be7d481646b"
+    },
+    "state": "BINDING",
+    "presentationHtmlReference": {
+        "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+    },
+    "generation": 1,
+    "lastUpdateMicros": 1648021488959364,
+    "kind": "shared:iapp:blocks:blockstate",
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks/e16087a1-7eb3-47e5-8023-f03a8b7ad0c4"
+}
