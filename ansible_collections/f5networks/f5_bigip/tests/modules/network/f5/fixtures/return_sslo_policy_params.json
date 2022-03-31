@@ -1,0 +1,153 @@
+{
+    "existingReference": "",
+    "policyName": "",
+    "description": "",
+    "isTemplate": "",
+    "rules": [
+        {
+            "action": "reject",
+            "actionOptions": {
+                "serviceChain": "",
+                "ssl": ""
+            },
+            "conditions": [
+                {
+                    "options": {
+                        "category": [
+                            "Financial Data and Services",
+                            "General Email"
+                        ]
+                    },
+                    "type": "Category Lookup"
+                },
+                {
+                    "options": {
+                        "port": [
+                            "80",
+                            "90"
+                        ]
+                    },
+                    "type": "Client Port Match"
+                },
+                {
+                    "options": {
+                        "geolocations": [
+                            {
+                                "matchType": "countryCode",
+                                "value": "US"
+                            },
+                            {
+                                "matchType": "countryCode",
+                                "value": "UK"
+                            }
+                        ]
+                    },
+                    "type": "Client IP Geolocation"
+                }
+            ],
+            "mode": "edit",
+            "name": "testrule",
+            "operation": "OR",
+            "phase": 2.0,
+            "injectServerCertMacro": true,
+            "injectCategorizationMacro": true
+        },
+        {
+            "action": "reject",
+            "actionOptions": {
+                "serviceChain": "",
+                "ssl": ""
+            },
+            "conditions": [
+                {
+                    "options": {
+                        "category": [
+                            "Financial Data and Services",
+                            "General Email"
+                        ]
+                    },
+                    "type": "Category Lookup"
+                },
+                {
+                    "options": {
+                        "port": [
+                            "80",
+                            "90"
+                        ]
+                    },
+                    "type": "Client Port Match"
+                }
+            ],
+            "mode": "edit",
+            "name": "testrule2",
+            "operation": "AND",
+            "phase": 2.0
+        },
+        {
+            "action": "allow",
+            "actionOptions": {
+                "serviceChain": "",
+                "ssl": ""
+            },
+            "isDefault": true,
+            "mode": "edit",
+            "name": "All Traffic",
+            "phase": 2.0
+        }
+    ],
+    "defaultAction": "",
+    "defaultActionOptions": {},
+    "serverCertStatusCheck": true,
+    "templateOptions": {},
+    "policyConsumer": {
+        "type": "Outbound",
+        "subType": "Outbound"
+    },
+    "isDefaultPinnersSet": true,
+    "proxyConfigurations": {
+        "isProxyChainEnabled": true,
+        "password": "",
+        "pool": {
+            "create": true,
+            "members": [
+                {
+                    "ip": "192.168.30.10",
+                    "port": "100"
+                }
+            ],
+            "name": "/Common/ssloP_testpolicy.app/ssloP_testpolicy_proxyChainPool"
+        },
+        "username": "testuser"
+    },
+    "type": "custom",
+    "strictness": false,
+    "partition": "Common",
+    "serviceChains": {},
+    "pools": {
+        "ssloP_testpolicy_proxyChainPool": {
+            "name": "ssloP_testpolicy_proxyChainPool",
+            "loadBalancingMode": "predictive-node",
+            "monitors": {
+                "names": [
+                    "/Common/gateway_icmp"
+                ]
+            },
+            "members": [
+                {
+                    "ip": "192.168.30.10",
+                    "port": "100",
+                    "appService": "ssloP_testpolicy.app/ssloP_testpolicy",
+                    "subPath": "ssloP_testpolicy.app"
+                }
+            ],
+            "unhandledPool": true,
+            "minActiveMembers": "0",
+            "callerContext": "policyConfigProcessor"
+        }
+    },
+    "name": "ssloP_testpolicy",
+    "language": "en",
+    "previousVersion": 7.5,
+    "version": 7.5,
+    "existingBlockId": "872136a4-c31d-4bb1-9118-94603bd19e66"
+}
