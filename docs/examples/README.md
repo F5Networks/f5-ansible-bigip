@@ -14,3 +14,4 @@ This is a set of examples for demonstrating the use of the f5_bigip collection. 
 * [TS Basics](ts_basics/)
 * [DO Basics](do_basics/)
 * [Create an app with f5_modules vs f5_bigip](f5_modules-f5_bigip-comparison/)
+* [Using f5_modules and f5_bigip together](f5_modules_and_f5_bigip/)
