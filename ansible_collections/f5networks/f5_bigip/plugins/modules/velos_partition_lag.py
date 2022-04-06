@@ -11,27 +11,27 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_partition_lag
-short_description: Manage network interfaces on the VELOS partitions
+short_description: Manage network interfaces on the VELOS chassis partitions
 description:
-  - Manage network interfaces on the VELOS partitions.
+  - Manage network interfaces on the VELOS chassis partitions.
 version_added: "1.4.0"
 options:
   name:
     description:
-      - Name of the partition interface to configure.
+      - Name of the chassis partition interface to configure.
     type: str
     required: true
   trunk_vlans:
     description:
-      - Configures multiple VLAN IDs to associate with the interface. The C(trunk_vlans) parameter is used for
-        untagged traffic.
+      - Configures multiple VLAN IDs to associate with the Link Aggregation Group.
+      - The C(trunk_vlans) parameter is used for tagged traffic.
       - The C(native_vlan) and C(trunk_vlans) parameters are mutually exclusive.
       - The order of these VLANs is ignored, the module orders the VLANs automatically.
     type: list
     elements: int
   native_vlan:
     description:
-      - Configures the VLAN ID to associate with the interface.
+      - Configures the VLAN ID to associate with the Link Aggregation Group.
       - The C(native_vlan) and C(trunk_vlans) parameters are mutually exclusive.
     type: int
   lag_type:
@@ -43,7 +43,7 @@ options:
       - STATIC
   config_members:
     description:
-      - Configures the list of interfaces to be grouped for LAG.
+      - "Configures the list of interfaces to be grouped for Link Aggregation Group (LAG)."
     type: list
     elements: str
   state:

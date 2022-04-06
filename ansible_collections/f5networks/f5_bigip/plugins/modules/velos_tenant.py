@@ -23,12 +23,12 @@ options:
     required: True
   image_name:
     description:
-      - Name of the image to be used as present on controller.
+      - Name of the tenant image to be used, must be present on the chassis partition.
       - Required for create operations.
     type: str
   nodes:
     description:
-      - List of integers, specify which blades the VM may be on.
+      - List of integers, specify which blades C(nodes) the tenant will be deployed on.
       - Required for create operations.
     type: list
     elements: int
@@ -47,16 +47,16 @@ options:
     type: str
   vlans:
     description:
-      - The existing VLAN IDs in the partition that should be added to the VM.
-      - The order of these VLANs is ignored. This module orders the VLANs automatically.
-        Therefore, if you deliberately re-order them in subsequent tasks,
+      - The existing VLAN IDs in the chassis partition that should be added to the tenant.
+      - The order of these VLANs is ignored.
+      - This module orders the VLANs automatically, therefore, if you deliberately re-order them in subsequent tasks,
         this module will B(not) register a change.
       - Required for create operations.
     type: list
     elements: int
   cpu_cores:
     description:
-      - How many CPUs should be added to VM.
+      - How many vCPUs should be added to the Tenant.
       - Required for create operations.
     type: int
     choices:
@@ -72,24 +72,22 @@ options:
       - 18
       - 20
       - 22
-      - 24
-      - 26
-      - 28
   memory:
     description:
-      - How much memory should be provided to the VM, in KB.
+      - How much memory should be provided to the tenant, in KB.
       - Required for create operations.
     type: int
   cryptos:
     description:
-      - Should Crypto be enabled for the tenant.
+      - Should crypto and compression hardware offload be enabled on the tenant.
+      - The recommendation is to have this enabled, otherwise crypto and compression may will be processed in CPU.
     type: str
     choices:
       - enabled
       - disabled
   running_state:
     description:
-      - Desired running_state of the tenant.
+      - Desired C(running_state) of the tenant.
     type: str
     choices:
       - configured
@@ -159,7 +157,7 @@ image_name:
   type: str
   sample: BIGIP-bigip.TMOS-VEL.qcow2.zip
 nodes:
-  description: Specify on which blades the VM is configured.
+  description: Specify on which blades the tenant is configured.
   returned: changed
   type: list
   sample: [1]
@@ -179,22 +177,22 @@ mgmt_gateway:
   type: str
   sample: 192.168.1.254
 vlans:
-  description: Existing VLAN IDs in the partition to be added to the VM.
+  description: Existing VLAN IDs in the chassis partition to be added to the tenant.
   returned: changed
   type: list
   sample: [444, 333]
 cpu_cores:
-  description: The number of CPUs added to VM.
+  description: The number of vCPUs added to tenant.
   returned: changed
   type: int
   sample: 4
 memory:
-  description: The amount of memory in KB provided to the VM.
+  description: The amount of memory in KB provided to the tenant.
   returned: changed
   type: int
   sample: 4096
 cryptos:
-  description: Specify if crypto is enabled for the tenant.
+  description: Specify if crypto and compression hardware offload is enabled for the tenant.
   returned: changed
   type: str
   sample: enabled
@@ -548,7 +546,7 @@ class ArgumentSpec(object):
             vlans=dict(type='list', elements='int'),
             cpu_cores=dict(
                 type='int',
-                choices=[1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28]
+                choices=[1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22]
             ),
             memory=dict(type='int'),
             cryptos=dict(

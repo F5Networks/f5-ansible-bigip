@@ -11,14 +11,14 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_partition_vlan
-short_description: Manage VLANs on VELOS partitions
+short_description: Manage VLANs on VELOS chassis partitions
 description:
-  - Manage VLANs on VELOS partitions.
+  - Manage VLANs on VELOS chassis partitions.
 version_added: "1.3.0"
 options:
   name:
     description:
-      - Specifies the name of the VLAN to configure on partition.
+      - Specifies the name of the VLAN to configure on the chassis partition.
       - This parameter is optional, if it is not provided, the parameter name is derived from C(vlan_id).
     type: str
   vlan_id:

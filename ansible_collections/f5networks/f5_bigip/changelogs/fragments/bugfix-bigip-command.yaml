@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - bigip_command - fixed a bug that interpreted a pipe symbol inside an input string as pipe used to combine commands

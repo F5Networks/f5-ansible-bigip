@@ -11,14 +11,14 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_partition_change_password
-short_description: Provides access to VELOS partition user authentication methods
+short_description: Provides access to VELOS chassis partition user authentication methods
 description:
-  - Provides access to VELOS partition user authentication change password methods.
+  - Provides access to VELOS chassis partition user authentication change password methods.
 version_added: "1.3.0"
 options:
   user_name:
     description:
-      - Name of the partition user account.
+      - Name of the chassis partition user account.
     type: str
     required: True
   old_password:

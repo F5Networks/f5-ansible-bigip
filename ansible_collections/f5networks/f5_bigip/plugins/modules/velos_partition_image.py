@@ -10,9 +10,9 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_partition_image
-short_description: Manage VELOS partition images
+short_description: Manage VELOS chassis partition images
 description:
-  - Manage VELOS partition images.
+  - Manage VELOS chassis partition images.
 version_added: "1.1.0"
 options:
   image_name:
@@ -23,7 +23,7 @@ options:
     required: True
   iso_version:
     description:
-      - Version of the ISO image.
+      - The F5OS-C OS version.
       - When not provided, the value is extracted from the provided C(image_name).
     type: str
   remote_host:
