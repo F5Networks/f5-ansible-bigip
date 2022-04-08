@@ -32,6 +32,7 @@ options:
   native_vlan:
     description:
       - Configures the VLAN ID to associate with the Link Aggregation Group.
+      - The C(native_vlans) parameter is used for untagged traffic.
       - The C(native_vlan) and C(trunk_vlans) parameters are mutually exclusive.
     type: int
   lag_type:
