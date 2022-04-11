@@ -29,6 +29,12 @@ options:
       - The license key to put in the pool.
     type: str
     required: True
+  addon_keys:
+    description:
+      - The addon keys to put in the pool.
+    type: list
+    elements: str
+    version_added: "1.7.0"
   description:
     description:
       - Description of the license.
@@ -75,6 +81,15 @@ EXAMPLES = r'''
         license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
         accept_eula: yes
 
+    - name: Add a registration key license with addon keys to a pool
+      bigiq_regkey_license:
+        regkey_pool: foo-pool
+        license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+        addon_keys:
+          - YYYY-YYY-YYY
+          - ZZZZ-ZZZ-ZZZ
+        accept_eula: yes
+
     - name: Remove a registration key license from a pool
       bigiq_regkey_license:
         regkey_pool: foo-pool
@@ -106,11 +121,12 @@ from ..module_utils.common import (
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-        'regKey': 'license_key'
+        'regKey': 'license_key',
+        'addOnKeys': 'addon_keys'
     }
 
     api_attributes = [
-        'regKey', 'description'
+        'regKey', 'description', 'addOnKeys'
     ]
 
     returnables = [
@@ -390,6 +406,7 @@ class ArgumentSpec(object):
         argument_spec = dict(
             regkey_pool=dict(required=True),
             license_key=dict(required=True, no_log=True),
+            addon_keys=dict(type='list', elements='str', no_log=True),
             description=dict(),
             accept_eula=dict(type='bool'),
             state=dict(
