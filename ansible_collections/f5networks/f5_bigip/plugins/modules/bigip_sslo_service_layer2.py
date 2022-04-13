@@ -11,21 +11,21 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_sslo_service_layer2
-short_description: Manage an SSL Orchestrator layer 2 security device
+short_description: Manage an SSL Orchestrator Layer 2 security device
 description:
-  - Manage an SSL Orchestrator layer 2 security device.
+  - Manage an SSL Orchestrator Layer 2 security device.
 version_added: "1.6.0"
 options:
   name:
     description:
-      - Specifies the name of the layer 2 security service.
-      - Configuration auto-prepends "ssloS_" to service.
-      - Service name should be less than 14 characters and not contain dashes "-".
+      - Specifies the name of the Layer 2 security service.
+      - The configuration auto-prepends "ssloS_" to the service.
+      - The service name should be less than 14 characters and not contain dashes "-".
     type: str
     required: True
   devices:
     description:
-      - Specifies the set of network settings for traffic going to the service from BIG-IP.
+      - Specifies the set of network settings for traffic going to the service from the BIG-IP.
       - Multiple devices are defined as separate list items.
     type: list
     elements: dict
@@ -62,7 +62,7 @@ options:
       interface_out:
         description:
           - Defines the interface on the from-service side.
-          - The C(vlan_out) and C(interface_out) and C(tag_out) options are mutually exclusive
+          - The C(vlan_out) and C(interface_out) and C(tag_out) options are mutually exclusive.
         type: str
       tag_out:
         description:
@@ -70,16 +70,16 @@ options:
         type: int
   monitor:
     description:
-      - Specifies the monitor attached the L2 security device pool.
+      - Specifies the monitor attached to the L2 security device pool.
       - The monitor must already exist on the BIG-IP.
-      - When creating L2 service if the parameter is not provided a default of C(/Common/gateway_icmp) is assumed.
+      - When creating a L2 service, if the parameter is not provided a default of C(/Common/gateway_icmp) is assumed.
     type: str
   ip_offset:
     description:
       - Defines an IP offset integer to be used in the internal IP addressing.
-      - The parameter is required when creating a new L2 service.
-      - Accepted values are in the range or C(0) to C(30).
-      - This is typically used in a tiered architecture, where a layer 2 service is shared between multiple
+      - This parameter is required when creating a new L2 service.
+      - Accepted values are in the range of C(0) to C(30).
+      - This is typically used in a tiered architecture, where a Layer 2 service is shared between multiple
         standalone SSL Orchestrator instances.
     type: int
   port_remap:
@@ -94,9 +94,9 @@ options:
   service_down_action:
     description:
       - Specifies the action to take on monitor failure.
-      - Setting to C(ignore) bypass the security device in the service chain.
+      - Setting to C(ignore) bypasses the security device in the service chain.
       - Setting to C(reset) or C(drop) resets or drops the connection, respectively if the service monitor fails.
-      - When creating icap service if the parameter is not provided a default value of C(ignore) is assumed.
+      - When creating an ICAP service, if the parameter is not provided a default value of C(ignore) is assumed.
     type: str
     choices:
       - ignore
@@ -105,21 +105,21 @@ options:
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes) does not make any changes on device and always returns C(changed=False).
+      - When C(yes), does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
-        C(MODIFY) on an existing service no json output will be generated.
+        C(MODIFY) on an existing service no JSON output is generated.
     type: bool
     default: no
   timeout:
     description:
-      - The amount of time in seconds to wait for the C(CREATE) or C(MODIFY) task to complete.
+      - The amount of time to wait for the C(CREATE) or C(MODIFY) task to complete, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
   state:
     description:
       - When C(state) is C(present), ensures the object is created or modified.
-      - When C(state) is C(absent), ensures that the service is removed.
+      - When C(state) is C(absent), ensures the service is removed.
     type: str
     choices:
       - present
@@ -187,7 +187,7 @@ networks:
   sample: [hash/dictionary of values]
 devices_ips:
   description:
-    - The list of ip addresses created for each specified device.
+    - The list of IP addresses created for each specified device.
   returned: changed
   type: list
   sample: [hash/dictionary of values]
@@ -199,7 +199,7 @@ service_subnet:
   sample: [hash/dictionary of values]
 monitor:
   description:
-    - The monitor attached the L2 security device pool.
+    - The monitor attached to the L2 security device pool.
   returned: changed
   type: str
   sample: /Common/gateway_icmp

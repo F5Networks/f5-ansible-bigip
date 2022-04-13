@@ -19,14 +19,14 @@ options:
   name:
     description:
       - Specifies the name of the service chain.
-      - Configuration auto-prepends "ssloSC_" to service if not present.
-      - Service name should be less than 14 characters and not contain dashes "-".
+      - The configuration auto-prepends "ssloSC_" to the service if not present.
+      - The service name should be less than 14 characters and not contain dashes "-".
     type: str
     required: True
   services:
     description:
       - Specifies the client-side SSL settings.
-      - Parameter is required when C(state) is C(present)
+      - This parameter is required when C(state) is C(present)
     type: list
     elements: dict
     suboptions:
@@ -47,7 +47,7 @@ options:
       ip_family:
         description:
           - Defines the IP family for this service.
-          - If missing, C(ipv4) value is assumed.
+          - If missing, C(ipv4) is assumed.
         type: str
         choices:
           - ipv4
@@ -55,28 +55,28 @@ options:
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes) does not make any changes on device and always returns C(changed=False).
+      - When C(yes), does not make any changes on device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
-        C(MODIFY) on an existing service no json output will be generated.
+        C(MODIFY) on an existing service, no JSON output is generated.
     type: bool
     default: no
   timeout:
     description:
-      - The amount of time in seconds to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete.
+      - The amount of time to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
   state:
     description:
       - When C(state) is C(present), ensures the object is created or modified.
-      - When C(state) is C(absent), ensures that the service is removed.
+      - When C(state) is C(absent), ensures the service is removed.
     type: str
     choices:
       - present
       - absent
     default: present
 notes:
-  - Service chain creation/management does not verify that the defined services exist.
+  - Service chain creation/management does not verify the defined services exist.
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -128,12 +128,12 @@ name:
   type: str
   sample: demo_chain_1
 services:
-  description: list of services to include in the service chain
+  description: List of services to include in the service chain
   returned: changed
   type: complex
   contains:
     service_name:
-       description: Tthe name of the service.
+       description: The name of the service.
        type: str
        sample: icap3
     ip_family:

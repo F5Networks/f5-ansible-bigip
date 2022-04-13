@@ -45,3 +45,34 @@ json_enable_tls13 = {
     "name": "TLSv1.3",
     "value": "TLSv1.3"
 }
+
+json_template_gs = {
+    "name": "ssloGS_global",
+    "previousVersion": "7.2",
+    "version": "7.2",
+    "configModified": True,
+    "ipFamily": "ipv4",
+    "dns": {
+        "enableDnsSecurity": False,
+        "enableLocalDnsQueryResolution": False,
+        "enableLocalDnsZones": False,
+        "localDnsZones": [],
+        "localDnsNameservers": []
+    },
+    "loggingConfig": {
+        "logLevel": 0,
+        "logPublisher": "none",
+        "statsToRecord": 0
+    },
+    "egressNetwork": {
+        "gatewayOptions": "useDefault",
+        "outboundGateways": {
+            "referredObj": "",
+            "ipv4OutboundGateways": [{"ip": "", "ratio": 1}],
+            "ipv6NonPublicGateways": [{"ip": ""}],
+            "ipv6OutboundGateways": [{"ip": "", "ratio": 1}]
+        }
+    },
+    "partition": "Common",
+    "strictness": False
+}

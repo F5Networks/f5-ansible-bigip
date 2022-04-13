@@ -19,13 +19,13 @@ options:
   name:
     description:
       - Specifies the name of the TAP security service.
-      - Configuration auto-prepends "ssloS_" to service.
-      - Service name should be less than 14 characters and not contain dashes "-".
+      - The configuration auto-prepends "ssloS_" to the service.
+      - The service name should be less than 14 characters and not contain dashes "-".
     type: str
     required: True
   devices:
     description:
-      - Specifies the network attachment for the TAP security device
+      - Specifies the network attachment for the TAP security device.
     type: dict
     suboptions:
       vlan:
@@ -55,14 +55,14 @@ options:
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes) does not make any changes on device and always returns C(changed=False).
+      - When C(yes), does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
-        C(MODIFY) on an existing service no json output will be generated.
+        C(MODIFY) on an existing service, no JSON output is generated.
     type: bool
     default: no
   timeout:
     description:
-      - The amount of time in seconds to wait for the C(CREATE) or C(MODIFY) task to complete.
+      - The amount of time to wait for the C(CREATE) or C(MODIFY) task to complete, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
@@ -133,11 +133,11 @@ devices:
        type: int
        sample: 40
     ipv4_deviceip:
-       description: Defines the to-service VLAN self-IP.
+       description: Defines the to-service VLAN self IP.
        type: str
        sample: 198.19.64.7
     ipv6_deviceip:
-       description: Defines the to-service VLAN self-IP netmask.
+       description: Defines the to-service VLAN self IP netmask.
        type: str
        sample: 255.255.255.128
 mac_address:

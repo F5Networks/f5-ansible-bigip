@@ -1,0 +1,61 @@
+---
+- name: Deploy L2 Service
+  hosts: all
+  collections:
+    - f5networks.f5_bigip
+  connection: httpapi
+
+  vars:
+    provider:
+      user: "admin"
+      server: "{{ ansible_host }}"
+      server_port: 8443
+      password: "admin"
+      validate_certs: false
+    ansible_user: "{{ provider.user }}"
+    ansible_httpapi_password: "{{ provider.password }}"
+    ansible_httpapi_port: "{{ provider.server_port }}"
+    ansible_network_os: f5networks.f5_bigip.bigip
+    ansible_httpapi_use_ssl: yes
+    ansible_httpapi_validate_certs: "{{ provider.validate_certs }}"
+    ansible_command_timeout: 1800
+    ansible_httpapi_use_proxy: false
+    f5_telemetry: false
+
+  tasks:
+    - name: Create a monitor
+      f5networks.f5_modules.bigip_monitor_gateway_icmp:
+        name: gw2
+        state: present
+        provider: "{{ provider }}"
+      delegate_to: localhost
+
+    - name: create L2 service inbound VLAN
+      f5networks.f5_modules.bigip_vlan:
+        name: L2service_vlan_in
+        tagged_interface: 1.1
+        tag: 600
+        provider: "{{ provider }}"
+      delegate_to: localhost
+
+    - name: create L2 service outbound VLAN
+      f5networks.f5_modules.bigip_vlan:
+        name: L2service_vlan_out
+        tagged_interface: 1.1
+        tag: 601
+        provider: "{{ provider }}"
+      delegate_to: localhost
+
+    - name: SSLO LAYER2 service - use created vlans and gateway
+      bigip_sslo_service_layer2:
+        name: "layer2a"
+        devices:
+          - name: "FEYE1"
+            ratio: 1
+            vlan_in: "/Common/L2service_vlan_in"
+            vlan_out: "/Common/L2service_vlan_out"
+        monitor: "/Common/gw2"
+        service_down_action: "reset"
+        ip_offset: 1
+        port_remap: 8283
+      delegate_to: localhost

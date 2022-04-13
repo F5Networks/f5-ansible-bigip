@@ -1,0 +1,846 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "fc5e91ab-a1b1-4a38-9bc4-6a2735b1d8c8",
+            "name": "sslo_expl_topo",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-topology",
+                    "type": "JSON",
+                    "value": {
+                        "name": "sslo_expl_topo",
+                        "type": "topology_l3_explicit_proxy",
+                        "version": 7.5,
+                        "previousVersion": 7.5,
+                        "partition": "Common",
+                        "strictness": false,
+                        "userCreated": false,
+                        "description": "",
+                        "deployedNetwork": "",
+                        "ipFamily": "ipv4",
+                        "ruleType": "Outbound",
+                        "ruleLabel": "Outbound",
+                        "dnsResolver": "",
+                        "serviceDef": {
+                            "description": "",
+                            "source": "0.0.0.0%0/0",
+                            "protocol": "tcp",
+                            "destination": {
+                                "mask": "",
+                                "port": 0.0,
+                                "prefix": 0.0,
+                                "address": "0.0.0.0%0/0"
+                            }
+                        },
+                        "pool": "",
+                        "tlsEnabled": true,
+                        "iRules": {
+                            "sslo_expl_topo-lib": {
+                                "name": "sslo_expl_topo-lib",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\n# emit a log message\n# uses ACCESS::log ssl-orchestrator.[debug|notice|error] $msg to make use of\n# the Common Logging Framework\nproc log {level msg} {\n if {$msg eq \"\"} { return }\n\n if {$level == 0} {\n  ACCESS::log ssl-orchestrator.error \"[virtual] $msg\"\n } elseif {$level == 1} {\n  ACCESS::log ssl-orchestrator.notice \"[virtual] $msg\"\n } elseif {$level == 2} {\n  ACCESS::log ssl-orchestrator.debug \"[virtual] $msg\"\n }\n} ; #proc log\n\n# try to ascertain protocol from first few bytes that server\n# sent. If unrecognized, return value of argument ptcl, else\n# suitable protocol string\nproc ssf_ptcl {ptcl taste} {\n if {[regexp {^(220 .+ (ESMTP|\\*) (OK|NO|BAD) ).*\\r\\n$} $taste]} {\n  # looks like SMTP (not a complete test)\n  return \"smtp\"\n }\n if {[string first \"SSH-2.0-\" $taste] == 0} {\n  #looks like SSH\n  return \"ssh\"\n }\n return $ptcl\n} ; #proc ssf_ptcl\n\n\n# try to ascertain protocol from first few bytes that client\n# sent. If unrecognized, return value of argument ptcl, else\n# suitable protocol string.\n#\n# For test against expected http methods, make sure we have enough\n# data \"mincollectlen\" bytes for comparison to be valid. If not, set\n# ptcl so caller can collect more data. Note that \"mincollectlen\"\n# is set to 8 which is the longest http method aka \"PROPFIND\". If we\n# update the expected set of http methods, we need to make sure\n# that \"mincollectlen\" is updated, as needed.\nproc csf_ptcl {ptcl taste len} {\n if {[regexp {^([A-Z]+) (?:/|https?://|[A-Za-z\\d-]{1,63}[.]|\\[[a-fA-F\\d:]+\\]|(?:[*]\\x20))} $taste junk method]} {\n  # looks like HTTP (not a complete test because we are disinclined\n  # to accumulate client data looking for full HTTP request)\n  if { $method eq \"CONNECT\" } {\n   return \"http-connect\"\n  }\n  if {([lsearch -exact -sorted {DELETE GET HEAD LOCK\n   OPTIONS PATCH POST PROPFIND PUT TRACE UNLOCK} $method] >= 0)} {\n   return \"http\"\n  }\n }\n if {$ptcl eq \"http\" || $ptcl eq \"https\" || $ptcl eq \"http-connect\"} {\n  if { $len < 8 } {\n   set ptcl \"incomplete\"\n  } else {\n   set ptcl \"unknown\"\n  }\n  return $ptcl\n }\n if {[string first \"SSH-2.0-\" $taste] == 0} {\n  #looks like SSH, which is ssf (chuckle) so we shouldn't be here,\n  #but in future after we hear from server we may check on what\n  #client says to better discriminate application protocol (like\n  #if server says SSH-2.0 and client says SSH-1.99 we suspect older\n  #client, maybe vulnerable to protocol downgrade attack)\n  return \"ssh\"\n }\n return $ptcl\n} ; #proc csf_ptcl\n\nproc store_host_header said {\n if {[regexp {^([A-Z]+) (?:/|https?://|[A-Za-z\\d-]{1,63}[.]|\\[[a-fA-F\\d:]+\\]|(?:[*]\\x20))} $said junk method] &&\n     ([lsearch -exact -sorted {CONNECT DELETE GET HEAD LOCK OPTIONS PATCH POST PROPFIND PUT TRACE UNLOCK} $method] >= 0)} {\n  set host_hdr [findstr ${said} \"Host: \" 6 \"\\r\\n\"]\n  if { [SSL::mode] == 0 } {\n   set scheme \"http://\"\n  } else {\n   set scheme \"https://\"\n  }\n  if { ${host_hdr} ne \"\" } {\n   set cat_result [CATEGORY::lookup \"${scheme}${host_hdr}/\" -id custom]\n   set custom \"| [join ${cat_result} { | }] |\"\n   set scratchpad [lindex ${cat_result} 0]\n   if { ${custom} eq \"|  |\" } {\n    set custom \"| 153 |\"\n    set scratchpad \"153\"\n   }\n   ACCESS::perflow set perflow.custom ${custom}\n   ACCESS::perflow set perflow.scratchpad ${scratchpad}\n } else {\n   # Empty host header found\"\n  }\n } else {\n  # Not HTTP or HTTPS, or unable to parse header.\"\n }\n} ; #proc store_host_header\n",
+                                "validUnreferenced": true
+                            },
+                            "sslo_expl_topo-in_t": {
+                                "name": "sslo_expl_topo-in_t",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\nwhen CLIENT_ACCEPTED {\n SSL::disable clientside\n SSL::disable serverside\n HTTP::disable\n\n sharedvar ctx\n\n set ctx(log) 0\n set srcIP [IP::client_addr]\n set dstIP [IP::local_addr]\n set srcPort [TCP::client_port]\n set dstPort [TCP::local_port]\n set ctx(SNI) \"\"\n set ctx(ptcl) \"unknown\"\n set ctx(xpinfo) \"\"\n\n sharedvar XPHOST\n if { [info exists XPHOST] } {\n  if { $XPHOST eq \"\" } {\n   call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 0 \"CLIENT_ACCEPTED invalid host (${XPHOST}) for explicit-proxy client ${srcIP}_${srcPort}\"\n   TCP::respond \"HTTP/1.1 500 Server Error\\r\\nConnection: close\\r\\n\\r\\n\"\n   TCP::close\n   return\n  }\n\n  if {$ctx(log)} {\n   set ctx(xpinfo) \"\\x20explicit-proxy request ${XPHOST}\"\n  }\n\n  set ctx(ptcl) \"http\"\n } else {\n  # maintain the next two lists in lockstep (!)\n  if {[set x [lsearch -integer -sorted [list 21 22 25 53 80 110 115 143 443 465 587 990 993 995 3128 8080] [TCP::local_port]]] >= 0} {\n   set ctx(ptcl) [lindex [list \"ftp\" \"ssh\" \"smtp\" \"dns\" \"http\" \"pop3\" \"sftp\" \"imap\" \"https\" \"smtps\" \"smtp\" \"ftps\" \"imaps\" \"pop3s\" \"http\" \"http\"] $x]\n  }\n }\n\n if {$ctx(log) > 1} {\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"CLIENT_ACCEPTED TCP from ${srcIP}_${srcPort} to ${dstIP}_${dstPort}${ctx(xpinfo)} L7 guess=$ctx(ptcl)\"\n }\n\n TCP::collect 1 0 ; # dispatch probe\n} ; #CLIENT_ACCEPTED\n\n\nwhen SERVER_CONNECTED {\n if { not [info exists ctx(csf)] } {\n  #initial connection, currently a probe, listen for SSF\n  TCP::collect 1\n }\n\n if {$ctx(log) > 1} {\n  set didsnat \"\"\n  set snatIP [IP::local_addr]\n  set snatPort [TCP::local_port]\n  if {($snatIP ne $srcIP) || ($snatPort ne $srcPort)} {\n   # even when we do not deliberately SNAT (e.g., when in split mode)\n   # TMOS may give us a fresh client ephemeral port.  Possible reasons\n   # include DAG on the exit VLAN and \"at the moment, the requested\n   # client port belongs to the TCB for an earlier connection now\n   # stuck in TCP TIME/WAIT state\"\n   set didsnat \"SNAT ${snatIP}_${snatPort}\"\n  }\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"SERVER_CONNECTED ${srcIP}_${srcPort} to ${dstIP}_${dstPort} ${didsnat}\"\n }\n} ; #SERVER_CONNECTED\n\nwhen SERVER_DATA {\n set len [TCP::payload length]\n if { [info exists ctx(csf)] } {\n  #someone beat us to it\n  TCP::release\n  return\n } elseif {!$len} {\n  if {$ctx(log) > 1} {\n   call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"SERVER_DATA got empty payload, retrying\"\n  }\n  TCP::collect\n  return\n } elseif {[info exists proxyconnect] && ($proxyconnect)} {\n  TCP::release\n  TCP::collect\n  return\n } else {\n  set ctx(ssf) true\n  set said [TCP::payload]\n }\n\n set ctx(ptcl) [call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::ssf_ptcl $ctx(ptcl) $said]\n\n call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"SERVER_DATA server spoke first ${len} bytes, L7 guess=$ctx(ptcl)\"\n\n TCP::release\n} ; #SERVER_DATA\n\nwhen HTTP_PROXY_CONNECT  {\n set proxyconnect true\n}\n\nwhen HTTP_PROXY_RESPONSE {\n  set proxyconnect false\n}\n\nwhen HTTP_REQUEST {\n if {[HTTP::method] eq \"CONNECT\"} {\n  if {$ctx(log) > 1} {\n   call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"HTTP_REQUEST [HTTP::method] [HTTP::uri] $dstIP:$dstPort.\"\n  }\n  set connhost \"\" ; set connport \"\"\n  if {[regexp {^([A-Za-z\\d\\.-]+):(\\d+)} [HTTP::uri] junk connhost connport] ||\n      [regexp {^\\[([a-fA-F\\d:]+)\\]:(\\d+)} [HTTP::uri] junk connhost connport]} {\n   set connhost [string tolower $connhost]\n  } else { unset connhost; unset connport }\n } else {\n   event HTTP_RESPONSE_RELEASE disable\n }\n} ; #HTTP_REQUEST\n\nwhen HTTP_RESPONSE_RELEASE {\n if { [HTTP::status] == 200 } {\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"HTTP_RESPONSE_RELEASE HTTP CONNECT success. Ready for HTTP tunnel.\"\n  set ctx(httpconn) 1\n  SSL::disable clientside\n  SSL::disable serverside\n\n  if { [info exists ctx(csf)] } {\n   unset ctx(csf)\n   call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"HTTP_RESPONSE_RELEASE HTTP-CONNECT $connhost:$connport, L7 guess=$ctx(ptcl)\"\n  }\n  if { [info exists ctx(ssf)] } {\n   unset ctx(ssf)\n  }\n\n  TCP::collect\n  serverside {TCP::collect}\n } else {\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"HTTP_RESPONSE_RELEASE HTTP response code [HTTP::status].\"\n }\n} ; #HTTP_RESPONSE_RELEASE\n\nwhen CLIENT_DATA {\n set len [TCP::payload length]\n if { [info exists ctx(ssf)] } {\n  #someone beat us to it\n  TCP::release\n  return\n } elseif {!$len} {\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"CLIENT_DATA got empty payload, retrying\"\n  TCP::collect\n  return\n } else {\n  set ctx(csf) true\n  set said [TCP::payload]\n  # release accepted event, if held, to proxy for creating connection to server\n  TCP::release 0\n }\n\n # got at least one octet\n\n if {($len < 44) &&\n     ( ([binary scan $said c type] == 1) &&\n       (($type & 0xff) == 22) )} {\n  # may be partial TLS Client Hello (unusual)\n  # allow up to 7 seconds for the rest to arrive\n  # by modifying the connection idle timer. This will be\n  # reset after we get the complete hello (or plaintext data)\n  if {$ctx(log) > 1} {\n   call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"CLIENT_DATA Incomplete Client Hello, set idle timeout to 7 sec\"\n  }\n  set ipIdleTmo [IP::idle_timeout]\n  IP::idle_timeout 7\n } ; #(partial Client Hello)\n\n if {[info exists ctx(httpconn)] && ([ACCESS::perflow get perflow.ssl_bypass_set] == 1)} {\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"CLIENT_DATA SSL bypass set inside HTTP CONNECT\"\n  CONNECTOR::enable\n }\n\n SSL::enable clientside\n\n after 0 { TCP::release }\n} ; #CLIENT_DATA\n\n\nwhen CLIENTSSL_PASSTHROUGH {\n #Reset connection idle timer\n if {[info exists ipIdleTmo]} {\n  IP::idle_timeout $ipIdleTmo\n }\n\n #csf_ptcl needs at least 8 bytes for http traffic to find the\n #http method. SSL ingress processing ensures we have at least\n #9 bytes before it calls CLIENTSSL_PASSTHROUGH. So, we don't\n #need any timers to collect data here, however, add a check\n #in case ssl behavior changes.\n if {($ctx(ptcl) eq \"http\" || $ctx(ptcl) eq \"https\") && ${len} < 8} {\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 1 \"CLIENTSSL_PASSTHROUGH http insuffient bytes ${len}\"\n  reject\n  return\n }\n\n # not TLS\n set ctx(ptcl) [call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::csf_ptcl $ctx(ptcl) $said $len]\n call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"CLIENTSSL_PASSTHROUGH client spoke first ${len} bytes, not TLS, L7 guess=$ctx(ptcl)\"\n\n #Explicit proxy connection\n if { $ctx(ptcl) eq \"http-connect\" } {\n  if { [info exists ctx(httpconn)] } {\n   call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 1 \"CLIENTSSL_PASSTHROUGH Recursive HTTP CONNECT is not supported. Reject.\"\n   reject\n   return\n  }\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"CLIENTSSL_PASSTHROUGH Monitoring CONNECT handshake.\"\n  if {[PROFILE::exists http]} {\n   HTTP::enable\n  }\n  return\n }\n}\n\nwhen CLIENTSSL_CLIENTHELLO {\n #Reset connection idle timer\n if {[info exists ipIdleTmo]} {\n  IP::idle_timeout $ipIdleTmo\n }\n\n if {$ctx(log) > 1} {\n  if {[SSL::extensions exists -type 0]} {\n   binary scan [SSL::extensions -type 0] @9a* SNI\n   if {[regexp {(?i)[^a-z0-9.-]} $SNI]} {\n    call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 1 \"CLIENTSSL_CLIENTHELLO client offered bogus SNI\"\n   } else {\n    set ctx(SNI) [string tolower $SNI]\n   }\n  }\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"CLIENTSSL_CLIENTHELLO client spoke [SSL::cipher version] Client Hello ${len} bytes, SNI='$ctx(SNI)', L7 guess=$ctx(ptcl), pre-HS\"\n }\n\n SSL::enable serverside\n} ; #CLIENTSSL_CLIENTHELLO\n\n\nwhen CLIENTSSL_HANDSHAKE {\n SSL::unclean_shutdown enable\n\n if {$ctx(log) > 1} {\n  set m [expr {($ctx(SNI) eq \"\") ? \"NO_SNI\" : $ctx(SNI)}]\n  append m \"-[SSL::cipher version]-[SSL::cipher name]-[SSL::cipher bits]\"\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"CLIENTSSL_HANDSHAKE ${m}\"\n }\n\n set clientssl_handshake 1\n if { [info exists serverssl_data_collected] } {\n  peer { SSL::release }\n }\n\n SSL::collect\n} ; #CLIENTSSL_HANDSHAKE\n\n\nwhen CLIENTSSL_DATA {\n #Get inner protocol\n set inner_ptcl [call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::csf_ptcl $ctx(ptcl) [SSL::payload] [SSL::payload length]]\n\n #HTTP CONNECT inside SSL?\n if { $inner_ptcl eq \"http-connect\" } {\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 1 \"CLIENTSSL_DATA Detected HTTP CONNECT inside TLS. Reject.\"\n  reject\n  return\n }\n\n if { [info exists ctx(httpconn)] } {\n  # Not enabling HTTP on CONNECT tunnel data\n  HTTP::disable\n }\n\n if { [info exists ctx(ssf_ssl)] } {\n  SSL::release\n  return\n } else {\n  set ctx(csf_ssl) true\n }\n\n # If csf_ptcl returns incomplete, then there is insufficient data collected\n # to determine HTTP method (this could be for example due to split HTTP\n # requests to prevent BEAST attack). Set a timer to collect more bytes.\n # If timer expires, then release whatever data we got to process further.\n if { $inner_ptcl eq \"incomplete\" } {\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"CLIENTSSL_DATA ${srcIP}_${srcPort} to ${dstIP}_${dstPort} insufficient decrypted SSL payload, set timer\"\n  if { ![info exists rccollecttmr] } {\n   set rccollecttmr [after 1000 {\n    call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 1 \"CLIENTSSL_DATA ${srcIP}_${srcPort} to ${dstIP}_${dstPort} 1234 insufficient decrypted SSL payload, reset L7 ptcl to unknown\"\n    set ctx(ptcl) \"unknown\"\n    unset rccollecttmr\n    event CLIENTSSL_DATA disable ; # prevent more CLIENTSSL_DATA event\n    SSL::release\n   }]\n  }\n  return\n }\n if {[info exists rccollecttmr]} {\n  after cancel $rccollecttmr\n  unset rccollecttmr\n }\n\n # Update ctx(ptcl) to the inner protocol unless this is http.\n # For http, update to https\n if { $inner_ptcl ne \"http\" } {\n  set ctx(ptcl) $inner_ptcl\n } else {\n  set ctx(ptcl) \"https\"\n }\n\n event CLIENTSSL_DATA disable ; # prevent more CLIENTSSL_DATA event\n\n if {$ctx(log) > 1} {\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"CLIENTSSL_DATA client spoke first within TLS [SSL::payload length] bytes, inner-protocol $inner_ptcl, L7 guess=$ctx(ptcl), post-HS\"\n }\n\n SSL::release\n} ; #CLIENTSSL_DATA\n\nwhen SERVERSSL_HANDSHAKE {\n SSL::unclean_shutdown enable\n SSL::collect\n} ; #SERVERSSL_HANDSHAKE\n\nwhen L7CHECK_CLIENT_DATA {\n  L7CHECK::protocol set $ctx(ptcl)\n  if { $ctx(ptcl) eq \"http\" || $ctx(ptcl) eq \"https\" } {\n   catch {\n    HTTP::enable\n    CONNECTOR::enable\n   }\n  }\n}\n\nwhen L7CHECK_SERVER_DATA {\n  L7CHECK::protocol set $ctx(ptcl)\n}\n\nwhen SERVERSSL_DATA {\n if { [info exists ctx(csf_ssl)] } {\n  SSL::release\n  return\n } else {\n  set ctx(ssf_ssl) true\n }\n\n set ctx(ptcl) [call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::ssf_ptcl $ctx(ptcl) [SSL::payload]]\n\n if {$ctx(ptcl) eq \"imap\"} {\n  set ctx(ptcl) \"imaps\"\n } elseif {$ctx(ptcl) eq \"smtp\"} {\n  set ctx(ptcl) \"smtps\"\n } elseif {$ctx(ptcl) eq \"pop3\"} {\n  set ctx(ptcl) \"pop3s\"\n } elseif {$ctx(ptcl) eq \"ftp\"} {\n  set ctx(ptcl) \"ftps\"\n }\n\n if {$ctx(log) > 1} {\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"SERVERSSL_DATA server spoke first within TLS [SSL::payload length] bytes, L7 guess=$ctx(ptcl)\"\n }\n\n if { [info exists clientssl_handshake] } {\n  SSL::release\n } else {\n  set serverssl_data_collected 1\n }\n} ; #SERVERSSL_DATA\n\nwhen ACCESS_PER_REQUEST_AGENT_EVENT {\n    switch [ACCESS::perflow get perflow.irule_agent_id] {\n        \"sslo_get_category\" {\n            call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::store_host_header $said\n        }\n        default {\n        }\n    }\n}\n",
+                                "validUnreferenced": true
+                            },
+                            "sslo_expl_topo-xp": {
+                                "name": "sslo_expl_topo-xp",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\nwhen CLIENT_ACCEPTED {\n if {![regexp {^(.+)-[^/-]+-[^/-]+$} [virtual] myvs mypfx]} {\n  call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 0 \"CLIENT_ACCEPTED cannot parse virtual-server name (client [IP::client_addr])\"\n  reject\n  return\n }\n\n set ctx(log) 0\n\n set qry [expr {([set af [IP::version]] == 4) ? \"-a\" : \"-aaaa\"}]\n\n sharedvar XPHOST\n\n set dom \"?\" ; set addr \"?\" ; set port \"?\"\n\n set prev_server \"\"\n} ; #CLIENT_ACCEPTED\n\nwhen HTTP_PROXY_REQUEST {\n if {[HTTP::method] eq \"CONNECT\"} {\n  # HTTP Profile will forward via tunnel to transparent proxy\n\n  # ?? perhaps we could pass target hostname to transparent\n  # proxy for use like SNI, in case client doesn't supply\n  # SNI (with the optimization that since we resolve name,\n  # DDB need not resolve it) ??\n\n  if {$prev_server ne \"\"} {\n   if {![catch {IP::server_addr} tmp] && ($tmp ne \"0\")} {\n    LB::detach\n   }\n  }\n  return\n }\n\n #otherwise\n for {} 1 {break} {\n  if {([set dom [string tolower [URI::host [HTTP::uri]]]] eq \"\") ||\n      ([string length $dom] > 253) ||\n      ![regexp {^((\\x5b[0-9a-f:.]{1,45}\\x5d)|[a-z0-9.-]+)$} $dom]} {\n   #(we only check for really arrogant attacks on our resolver)\n   set dom [string range $dom 0 253]\n   set e \"Cannot decode explicit-proxy request hostname\"\n   set rslt 400\n   break\n  }\n\n  if {[string range $dom 0 0] eq \"\\x5b\"} {\n   set addr [string range $dom 1 end-1]\n\n   ##############################################################\n   # we should be able to support IPv4 client to IPv6 server    #\n   # but that will require some additional code                 #\n   #                                                            #\n\n   if {$af == 4} {\n    set e \"Cannot explicit-proxy IPv4 client to IPv6 literal host\"\n    set rslt 501\n    break\n   }\n\n   #                                                            #\n   ##############################################################\n  } elseif {[regexp {^([0-9]{1,3}[.]){3}[0-9]{1,3}$} $dom]} {\n   set addr $dom\n  } elseif {[string is integer -strict $dom]} {\n   set e \"Explicit proxy to pure numeric IPv4 literal forbidden\"\n   set rslt 403\n   break\n  } elseif {[catch \"RESOLV::lookup ${qry} ${dom}\" addrs] ||\n            ([set addr [lindex $addrs 0]] eq \"\")} {\n   set e \"Cannot resolve hostname '${dom}' in explicit-proxy request\"\n   set rslt 404\n   break\n  }\n\n  if {( ($af == 4) &&\n        ( [IP::addr $addr equals 0.0.0.0/32] ||\n          [IP::addr $addr equals 127.0.0.0/8] ||\n          [IP::addr $addr equals 169.254.0.0/16] ||\n          [IP::addr $addr equals 224.0.0.0/3] ) ) ||\n      ( ($af == 6) &&\n        ( ([string first \":\" $addr] < 0) ||\n          [IP::addr $addr equals ::/16] ||\n          [IP::addr $addr equals fe80::/10] ||\n          [IP::addr $addr equals ff00::/8] ) )} {\n   # we refuse loopback or multicast targets, and IPv4 within IPv6 brackets\n   set e \"Explicit proxy to non-unicast IP address forbidden\"\n   set rslt 403\n   break\n  }\n\n  # iRules URI::port command returns 80/443 for empty http/https port\n  if {[set port [URI::port [HTTP::uri]]] eq \"0\"} {\n   set e \"Explicit proxy server port not recognized\"\n   set rslt 403\n   break\n  }\n  set server \"${dom}:${port}\"\n\n  if {([set h [string tolower [HTTP::host]]] ne \"\") &&\n      ( ([string length $h] > 259) ||\n        ( (([set x [string first \"\\x5d\" $h]] > 0) || [set x 1]) &&\n          ( (([string first \":\" $h $x] > 0) || ([append h \":80\"] ne \"\")) &&\n            ($h ne $server) ) ) )} {\n   # someone is trying to trick us\n   set e \"Explicit-proxy request hostname and Host header disagree\"\n   set rslt 403\n   break\n  }\n\n  if {$server ne $prev_server} {\n   if {($prev_server ne \"\") &&\n       ![catch {IP::server_addr} tmp] && ($tmp ne \"0\")} {\n    LB::detach\n   }\n   set prev_server $server\n\n   # inform transparent virtual of requested destination\n   set XPHOST $dom\n\n   virtual \"${mypfx}-in-t-[IP::version]\" $addr $port\n  }\n  return\n } ; #do-once\n\n if {[info exists e] && ($e ne \"\")} {\n  if {[info exists rslt] &&\n      ( [catch {HTTP::respond $rslt content \"${e}.\\n\" Content-Type \"text/plain; charset=UTF8\" Connection close}] ||\n        [catch {HTTP::close}] )} {\n   reject\n  }\n  if {$ctx(log)} {\n   call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 1 \"HTTP_PROXY_REQUEST ${e} ([IP::client_addr]_[TCP::client_port] to '${dom}' ${addr}_${port})\"\n  }\n }\n} ; #HTTP_PROXY_REQUEST\n\nwhen HTTP_REQUEST {\n virtual \"${mypfx}-in-t-[IP::version]\" [HTTP::proxy addr] [HTTP::proxy port]\n}\n",
+                                "validUnreferenced": true
+                            },
+                            "sslo_expl_topo-xp_auth": {
+                                "name": "sslo_expl_topo-xp_auth",
+                                "rule": "# Copyright (c) 2018.  F5 Networks, Inc.  See End User License Agreement (EULA) for license terms.\n# Notwithstanding anything to the contrary in the EULA, Licensee may copy and modify\n# this software product for its internal business purposes. Further, Licensee may upload,\n# publish and distribute the modified version of the software product on devcentral.f5.com.\n\nwhen ACCESS_ACL_ALLOWED {\n   set addr [HTTP::proxy addr]\n   set port [HTTP::proxy port]\n   if {$ctx(log) > 1} {\n      call /Common/sslo_expl_topo.app/sslo_expl_topo-lib::log 2 \"ACCESS_ACL_ALLOWED HTTP proxy DNS resolves connection to $addr:$port\"\n   }\n   virtual \"${mypfx}-in-t-[IP::version]\" $addr $port\n}\n",
+                                "validUnreferenced": true
+                            }
+                        },
+                        "l7Protocols": [],
+                        "l7Profile": "/Common/http",
+                        "l7ProfileType": "http",
+                        "tcpSettings": {
+                            "clientTcpProfile": "",
+                            "serverTcpProfile": ""
+                        },
+                        "udpSettings": {
+                            "clientUdpProfile": "",
+                            "serverUdpProfile": ""
+                        },
+                        "fastL4Settings": {
+                            "all": ""
+                        },
+                        "ingressNetwork": {
+                            "vlans": [
+                                {
+                                    "name": "/Common/fake1",
+                                    "value": "/Common/fake1"
+                                }
+                            ]
+                        },
+                        "egressNetwork": {
+                            "clientSnat": "",
+                            "snat": {
+                                "referredObj": "",
+                                "ipv4SnatAddresses": [],
+                                "ipv6SnatAddresses": []
+                            },
+                            "gatewayOptions": "",
+                            "outboundGateways": {
+                                "referredObj": "",
+                                "ipv4SnatAddresses": [],
+                                "ipv6SnatAddresses": []
+                            }
+                        },
+                        "proxySettings": {
+                            "proxyType": "explicit",
+                            "forwardProxy": {
+                                "explicitProxy": {
+                                    "ipv4Port": 3211.0,
+                                    "ipv6Port": 3128.0,
+                                    "ipv4Address": "192.168.1.1",
+                                    "ipv6Address": ""
+                                },
+                                "transparentProxy": {
+                                    "passNonTcpNonUdpTraffic": false,
+                                    "tcpTrafficPassThroughType": true
+                                }
+                            },
+                            "reverseProxy": {
+                                "ipv4Address": "",
+                                "ipv4Port": 0.0,
+                                "ipv6Address": "",
+                                "ipv6Port": 0.0
+                            }
+                        },
+                        "advancedMode": "off",
+                        "iRulesList": [
+                            {
+                                "name": "/Common/sslo_expl_topo.app/sslo_expl_topo-xp",
+                                "value": "/Common/sslo_expl_topo.app/sslo_expl_topo-xp"
+                            }
+                        ],
+                        "loggingConfig": {
+                            "logPublisher": "none",
+                            "statsToRecord": 0.0,
+                            "perRequestPolicy": "err",
+                            "ftp": "err",
+                            "imap": "err",
+                            "pop3": "err",
+                            "smtps": "err",
+                            "sslOrchestrator": "err"
+                        },
+                        "authProfile": "",
+                        "sslSettingReference": "ssloT_foobar",
+                        "securityPolicyReference": "ssloP_from_gui",
+                        "accessProfile": "/Common/sslo_expl_topo.app/sslo_expl_topo_accessProfile",
+                        "deployMode": "Topology",
+                        "profiles": {
+                            "tlsServerProfile": [
+                                {
+                                    "fullPath": "/Common/ssloT_foobar.app/ssloT_foobarsssl-vht",
+                                    "bypassFlag": false
+                                },
+                                {
+                                    "fullPath": "/Common/ssloT_foobar.app/ssloT_foobarsssl-vhf",
+                                    "bypassFlag": false
+                                }
+                            ],
+                            "tlsClientProfile": [
+                                {
+                                    "fullPath": "/Common/ssloT_foobar.app/ssloT_foobarcssl-vht",
+                                    "bypassFlag": false
+                                },
+                                {
+                                    "fullPath": "/Common/ssloT_foobar.app/ssloT_foobarcssl-vhf",
+                                    "bypassFlag": false
+                                }
+                            ],
+                            "sslo_expl_topo-tcp-lan": {
+                                "name": "sslo_expl_topo-tcp-lan",
+                                "slowStart": "disabled",
+                                "nagle": "disabled",
+                                "profile": "tcp",
+                                "resetOnTimeout": "enabled",
+                                "minimumRto": 250.0,
+                                "parent": "sslo-default-tcp-lan",
+                                "context": "clientside"
+                            },
+                            "sslo_expl_topo-tcp-wan": {
+                                "name": "sslo_expl_topo-tcp-wan",
+                                "slowStart": "disabled",
+                                "nagle": "disabled",
+                                "profile": "tcp",
+                                "resetOnTimeout": "enabled",
+                                "fastOpen": "enabled",
+                                "parent": "sslo-default-tcp-wan",
+                                "context": "serverside"
+                            },
+                            "sslo_expl_topo-ot": {
+                                "name": "sslo_expl_topo-ot",
+                                "profile": "fastl4",
+                                "parent": "sslo-default-fastL4",
+                                "idleTimeout": 300.0,
+                                "looseInitialization": "enabled",
+                                "resetOnTimeout": "disabled"
+                            },
+                            "sslo_expl_topo-http": {
+                                "name": "sslo_expl_topo-http",
+                                "enforcement": {
+                                    "maxHeaderCount": 128.0,
+                                    "maxHeaderSize": 65536.0,
+                                    "maxRequests": 0.0
+                                },
+                                "parent": "sslo-default-http",
+                                "profile": "http",
+                                "context": "all"
+                            },
+                            "sslo_expl_topo-http-proxy-connect": {
+                                "name": "sslo_expl_topo-http-proxy-connect",
+                                "parent": "sslo-default-http-proxy-connect",
+                                "profile": "http-proxy-connect",
+                                "defaultState": "disabled",
+                                "unhandledProfile": true,
+                                "context": "all"
+                            },
+                            "sslo_expl_topo-xp-http": {
+                                "name": "sslo_expl_topo-xp-http",
+                                "requestChunking": "sustain",
+                                "responseChunking": "unchunk",
+                                "profile": "http",
+                                "proxyType": "explicit",
+                                "unhandledProfile": true,
+                                "enforcement": {
+                                    "maxHeaderCount": 128.0,
+                                    "maxHeaderSize": 65536.0,
+                                    "maxRequests": 0.0
+                                },
+                                "explicitProxy": {
+                                    "defaultConnectHandling": "deny",
+                                    "badRequestMessage": "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' 'http://www.w3.org/TR/html4/loose.dtd'> \r\n<html> \r\n <head> \r\n  <title>HTTP Proxy Alert</title> \r\n  <meta http-equiv='Content-Type' content='text/html; charset=US-ASCII'> \r\n  <meta http-equiv='Content-Language' content='en-US'> \r\n  <meta http-equiv='Cache-Control' content='no-cache'> \r\n <meta http-equiv='Pragma' content='no-cache'> \r\n  <meta http-equiv='Expires' content='Fri, 31 Dec 1999 23:59:59 GMT'> \r\n  <!-- styles\\? -->\r\n </head> \r\n <body> \r\n \r\n   <h2>Bad Request</h2> \r\n   <h3>HTTP proxy request not recognized</h3> \r\n </body> \r\n</html> \r\n \r\n",
+                                    "badResponseMessage": "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' 'http://www.w3.org/TR/html4/loose.dtd'> \r\n<html> \r\n <head> \r\n  <title>HTTP Proxy Alert</title> \r\n  <meta http-equiv='Content-Type' content='text/html; charset=US-ASCII'> \r\n  <meta http-equiv='Content-Language' content='en-US'> \r\n  <meta http-equiv='Cache-Control' content='no-cache'> \r\n  <meta http-equiv='Pragma' content='no-cache'> \r\n  <meta http-equiv='Expires' content='Fri, 31 Dec 1999 23:59:59 GMT'> \r\n  <!-- styles\\? --> \r\n </head> \r\n <body> \r\n \r\n   <h2>Bad Response</h2> \r\n   <h3>HTTP response from server [HTTP::host] not recognized</h3> \r\n </body> \r\n</html> \r\n \r\n",
+                                    "connectErrorMessage": "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' 'http://www.w3.org/TR/html4/loose.dtd'>\r\n<html> \r\n <head> \r\n  <title>HTTP Proxy Alert</title> \r\n  <meta http-equiv='Content-Type' content='text/html; charset=US-ASCII'> \r\n  <meta http-equiv='Content-Language' content='en-US'> \r\n  <meta http-equiv='Cache-Control' content='no-cache'> \r\n  <meta http-equiv='Pragma' content='no-cache'> \r\n  <meta http-equiv='Expires' content='Fri, 31 Dec 1999 23:59:59 GMT'> \r\n  <!-- styles\\? --> \r\n </head> \r\n <body> \r\n \r\n   <h2>Connection Error</h2> \r\n   <h3>Unable to connect to server [HTTP::host]</h3> \r\n </body> \r\n</html> \r\n \r\n",
+                                    "dnsErrorMessage": "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' 'http://www.w3.org/TR/html4/loose.dtd'> \r\n<html> \r\n <head> \r\n  <title>HTTP Proxy Alert</title> \r\n  <meta http-equiv='Content-Type' content='text/html; charset=US-ASCII'> \r\n  <meta http-equiv='Content-Language' content='en-US'> \r\n  <meta http-equiv='Cache-Control' content='no-cache'> \r\n  <meta http-equiv='Pragma' content='no-cache'> \r\n  <meta http-equiv='Expires' content='Fri, 31 Dec 1999 23:59:59 GMT'> \r\n  <!-- styles\\? --> \r\n </head> \r\n <body> \r\n \r\n   <h2>DNS Error</h2> \r\n   <h3>Unable to resolve server name [HTTP::host]</h3> \r\n </body> \r\n</html> \r\n \r\n",
+                                    "dnsResolver": "/Common/ssloGS_global.app/ssloGS-net-resolver",
+                                    "tunnelName": "sslo_expl_topo-xp-tunnel",
+                                    "ipv6": "no"
+                                },
+                                "parent": "/Common/sslo-default-http-explicit"
+                            }
+                        },
+                        "virtuals": {
+                            "sslo_expl_topo-in-t-4": {
+                                "name": "sslo_expl_topo-in-t-4",
+                                "port": "0",
+                                "mask": "0.0.0.0",
+                                "description": "transparent proxy (2022-3-23 00:49:10)",
+                                "ipProto": "tcp",
+                                "profiles": {
+                                    "names": [
+                                        "sslo_expl_topo-http-proxy-connect"
+                                    ],
+                                    "references": [
+                                        "sslo_expl_topo-tcp-lan",
+                                        "sslo_expl_topo-tcp-wan",
+                                        "sslo_expl_topo-http"
+                                    ]
+                                },
+                                "iRules": {
+                                    "references": [
+                                        "sslo_expl_topo-in_t"
+                                    ]
+                                },
+                                "skipHTTPRedirect": true,
+                                "ip": "0.0.0.0%0",
+                                "source": "0.0.0.0%0/0",
+                                "vlans": [
+                                    "sslo_expl_topo.app/sslo_expl_topo-xp-tunnel"
+                                ],
+                                "clientVlanRestrict": "enableSome",
+                                "accessPolicy": {},
+                                "perFlowRequestAccessPolicy": "/Common/ssloP_from_gui.app/ssloP_from_gui_per_req_policy",
+                                "additionalConfig": {
+                                    "configKey": "perFlowRequestAccessPolicy",
+                                    "referedObj": false
+                                },
+                                "translateAddress": "disabled",
+                                "translatePort": "disabled",
+                                "skipSnat": true,
+                                "sourceAddressTranslation": {
+                                    "type": "none",
+                                    "pool": "none"
+                                }
+                            },
+                            "sslo_expl_topo-xp--4": {
+                                "name": "sslo_expl_topo-xp-4",
+                                "ip": "192.168.1.1",
+                                "port": 3211.0,
+                                "ipProto": "tcp",
+                                "description": "explicit proxy (2022-3-23 00:49:10)",
+                                "clientVlanRestrict": "enableSome",
+                                "profiles": {
+                                    "names": []
+                                },
+                                "iRules": {
+                                    "references": [
+                                        "sslo_expl_topo-xp"
+                                    ]
+                                },
+                                "translateAddress": "enabled",
+                                "translatePort": "enabled",
+                                "vlans": [
+                                    "/Common/fake1"
+                                ],
+                                "mask": "255.255.255.255",
+                                "source": "0.0.0.0/0",
+                                "skipSnat": true,
+                                "sourceAddressTranslation": {
+                                    "type": "none",
+                                    "pool": "none"
+                                }
+                            }
+                        },
+                        "pools": {},
+                        "routes": {},
+                        "dataGroupInternals": {},
+                        "logSettings": {
+                            "sslo_expl_topo-log-setting": {
+                                "name": "sslo_expl_topo-log-setting",
+                                "access": [
+                                    {
+                                        "name": "general-log",
+                                        "enabled": "true",
+                                        "logLevel": {
+                                            "accessControl": "err",
+                                            "accessPerRequest": "err",
+                                            "ftp": "err",
+                                            "imap": "err",
+                                            "pop3": "err",
+                                            "smtps": "err",
+                                            "sslOrchestrator": "err"
+                                        },
+                                        "publisher": "/Common/sys-sslo-publisher",
+                                        "type": "ssl-orchestrator"
+                                    }
+                                ],
+                                "urlFilters": [
+                                    {
+                                        "name": "urlf",
+                                        "enabled": "true",
+                                        "filter": {
+                                            "logAllowedUrl": "false",
+                                            "logBlockedUrl": "true",
+                                            "logConfimedUrl": "true"
+                                        },
+                                        "publisher": "/Common/sys-sslo-publisher"
+                                    }
+                                ],
+                                "appService": "sslo_expl_topo.app/sslo_expl_topo",
+                                "partition": "Common",
+                                "subPath": "sslo_expl_topo.app"
+                            }
+                        },
+                        "snatPools": {},
+                        "accessPolicies": {
+                            "defaultSSLOAccessPolicy": {}
+                        },
+                        "tunnels": {
+                            "sslo_expl_topo-xp-tunnel": {
+                                "name": "sslo_expl_topo-xp-tunnel",
+                                "profile": "tcp-forward"
+                            }
+                        },
+                        "existingBlockId": "fc5e91ab-a1b1-4a38-9bc4-6a2735b1d8c8"
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-general-settings",
+                    "type": "JSON",
+                    "value": {
+                        "configModified": true,
+                        "dns": {
+                            "enableDnsSecurity": false,
+                            "enableLocalDnsQueryResolution": false,
+                            "enableLocalDnsZones": false,
+                            "localDnsNameservers": [],
+                            "localDnsZones": []
+                        },
+                        "egressNetwork": {
+                            "gatewayOptions": "useDefault",
+                            "outboundGateways": {
+                                "ipv4OutboundGateways": [
+                                    {
+                                        "ip": "",
+                                        "ratio": 1.0
+                                    }
+                                ],
+                                "ipv6NonPublicGateways": [
+                                    {
+                                        "ip": ""
+                                    }
+                                ],
+                                "ipv6OutboundGateways": [
+                                    {
+                                        "ip": "",
+                                        "ratio": 1.0
+                                    }
+                                ],
+                                "referredObj": ""
+                            }
+                        },
+                        "existingBlockId": "22a9c5bd-50e5-4b58-bb09-f4e4c84419ec",
+                        "ipFamily": "ipv4",
+                        "name": "ssloGS_global",
+                        "partition": "Common",
+                        "previousVersion": "7.4",
+                        "strictness": false,
+                        "version": "7.4"
+                    }
+                },
+                {
+                    "id": "processorContext",
+                    "type": "JSON",
+                    "value": {}
+                },
+                {
+                    "id": "f5-ssl-orchestrator-tls",
+                    "type": "JSON",
+                    "value": {
+                        "sslSettingsReference": "",
+                        "sslSettingsName": "",
+                        "description": "",
+                        "previousVersion": "7.4",
+                        "version": "7.4",
+                        "generalSettings": {
+                            "isForwardProxy": true,
+                            "bypassHandshakeAlert": false,
+                            "bypassClientCertFailure": false
+                        },
+                        "clientSettings": {
+                            "ciphers": {
+                                "isCipherString": true,
+                                "cipherString": "DEFAULT",
+                                "cipherGroup": "/Common/f5-default"
+                            },
+                            "certKeyChain": [
+                                {
+                                    "cert": "/Common/default.crt",
+                                    "key": "/Common/default.key",
+                                    "chain": "",
+                                    "passphrase": "",
+                                    "name": "CERT_KEY_CHAIN_0"
+                                }
+                            ],
+                            "caCertKeyChain": [
+                                {
+                                    "cert": "/Common/default.crt",
+                                    "key": "/Common/default.key",
+                                    "chain": "",
+                                    "passphrase": "",
+                                    "isCa": true,
+                                    "usage": "CA",
+                                    "port": "0",
+                                    "name": "CA_CERT_KEY_CHAIN_0"
+                                }
+                            ],
+                            "forwardByPass": true,
+                            "enabledSSLProcessingOptions": [
+                                {
+                                    "name": "TLSv1.3",
+                                    "value": "TLSv1.3"
+                                }
+                            ]
+                        },
+                        "serverSettings": {
+                            "ciphers": {
+                                "isCipherString": true,
+                                "cipherString": "DEFAULT",
+                                "cipherGroup": "/Common/f5-default"
+                            },
+                            "caBundle": "/Common/ca-bundle.crt",
+                            "expiredCertificates": true,
+                            "untrustedCertificates": true,
+                            "ocsp": "",
+                            "crl": "",
+                            "enabledSSLProcessingOptions": [
+                                {
+                                    "name": "TLSv1.3",
+                                    "value": "TLSv1.3"
+                                }
+                            ]
+                        },
+                        "name": "ssloT_foobar",
+                        "advancedMode": "off",
+                        "strictness": true,
+                        "partition": "Common",
+                        "profiles": {
+                            "ssloT_foobar-cssl-vht": {
+                                "name": "ssloT_foobar-cssl-vht",
+                                "profile": "client-ssl",
+                                "parent": "sslo-default-clientssl",
+                                "context": "clientside",
+                                "partition": "Common",
+                                "cipherGroup": "none",
+                                "ciphers": "DEFAULT",
+                                "certKeyChain": [
+                                    {
+                                        "cert": "/Common/default.crt",
+                                        "key": "/Common/default.key",
+                                        "chain": "",
+                                        "passphrase": "",
+                                        "name": "CERT_KEY_CHAIN_0"
+                                    },
+                                    {
+                                        "cert": "/Common/default.crt",
+                                        "key": "/Common/default.key",
+                                        "chain": "",
+                                        "passphrase": "",
+                                        "isCa": true,
+                                        "usage": "CA",
+                                        "port": "0",
+                                        "name": "CA_CERT_KEY_CHAIN_0"
+                                    }
+                                ],
+                                "allowNonSsl": "enabled",
+                                "sslForwardProxy": "enabled",
+                                "certExtensionIncludes": [
+                                    "basic-constraints",
+                                    "extended-key-usage",
+                                    "subject-alternative-name"
+                                ],
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "bypassOnHandshakeAlert": "disabled",
+                                "bypassOnClientCertFail": "disabled",
+                                "sslForwardProxyVerifiedHandshake": "enabled",
+                                "forwardProxyBypassDefaultAction": "intercept",
+                                "sslC3d": "disabled",
+                                "sslForwardProxyBypass": "enabled",
+                                "uncleanShutdown": "disabled"
+                            },
+                            "ssloT_foobar-cssl-vhf": {
+                                "name": "ssloT_foobar-cssl-vhf",
+                                "profile": "client-ssl",
+                                "parent": "sslo-default-clientssl",
+                                "context": "clientside",
+                                "partition": "Common",
+                                "cipherGroup": "none",
+                                "ciphers": "DEFAULT",
+                                "certKeyChain": [
+                                    {
+                                        "cert": "/Common/default.crt",
+                                        "key": "/Common/default.key",
+                                        "chain": "",
+                                        "passphrase": "",
+                                        "name": "CERT_KEY_CHAIN_0"
+                                    },
+                                    {
+                                        "cert": "/Common/default.crt",
+                                        "key": "/Common/default.key",
+                                        "chain": "",
+                                        "passphrase": "",
+                                        "isCa": true,
+                                        "usage": "CA",
+                                        "port": "0",
+                                        "name": "CA_CERT_KEY_CHAIN_0"
+                                    }
+                                ],
+                                "allowNonSsl": "enabled",
+                                "sslForwardProxy": "enabled",
+                                "certExtensionIncludes": [
+                                    "basic-constraints",
+                                    "extended-key-usage",
+                                    "subject-alternative-name"
+                                ],
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "bypassOnHandshakeAlert": "disabled",
+                                "bypassOnClientCertFail": "disabled",
+                                "sslForwardProxyVerifiedHandshake": "disabled",
+                                "forwardProxyBypassDefaultAction": "intercept",
+                                "sslC3d": "disabled",
+                                "sslForwardProxyBypass": "enabled",
+                                "uncleanShutdown": "disabled"
+                            },
+                            "ssloT_foobar-sssl-vht": {
+                                "name": "ssloT_foobar-sssl-vht",
+                                "profile": "server-ssl",
+                                "parent": "sslo-default-serverssl",
+                                "context": "serverside",
+                                "partition": "Common",
+                                "cipherGroup": "none",
+                                "ciphers": "DEFAULT",
+                                "caFile": "/Common/ca-bundle.crt",
+                                "expireCertResponseControl": "drop",
+                                "untrustedCertResponseControl": "drop",
+                                "sslForwardProxy": "enabled",
+                                "ocsp": "none",
+                                "crl": "none",
+                                "peerCertMode": "require",
+                                "secureRenegotiation": "request",
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "bypassOnHandshakeAlert": "disabled",
+                                "bypassOnClientCertFail": "disabled",
+                                "sslForwardProxyVerifiedHandshake": "enabled",
+                                "sslC3d": "disabled",
+                                "uncleanShutdown": "disabled",
+                                "sslForwardProxyBypass": "enabled"
+                            },
+                            "ssloT_foobar-sssl-vhf": {
+                                "name": "ssloT_foobar-sssl-vhf",
+                                "profile": "server-ssl",
+                                "parent": "sslo-default-serverssl",
+                                "context": "serverside",
+                                "partition": "Common",
+                                "cipherGroup": "none",
+                                "ciphers": "DEFAULT",
+                                "caFile": "/Common/ca-bundle.crt",
+                                "expireCertResponseControl": "drop",
+                                "untrustedCertResponseControl": "drop",
+                                "sslForwardProxy": "enabled",
+                                "ocsp": "none",
+                                "crl": "none",
+                                "peerCertMode": "require",
+                                "secureRenegotiation": "request",
+                                "tmOptions": [
+                                    "dont-insert-empty-fragments",
+                                    "no-tlsv1.3"
+                                ],
+                                "bypassOnHandshakeAlert": "disabled",
+                                "bypassOnClientCertFail": "disabled",
+                                "sslForwardProxyVerifiedHandshake": "disabled",
+                                "sslC3d": "disabled",
+                                "uncleanShutdown": "disabled",
+                                "sslForwardProxyBypass": "enabled"
+                            }
+                        },
+                        "existingBlockId": "29c9476e-32b0-44ec-b248-7c40543987bb"
+                    }
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": [
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/http-proxy-connect/~Common~sslo_expl_topo.app~sslo_expl_topo-http-proxy-connect",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/http-proxy-connect/~Common~sslo_expl_topo.app~sslo_expl_topo-http-proxy-connect"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/http/~Common~sslo_expl_topo.app~sslo_expl_topo-xp-http",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/http/~Common~sslo_expl_topo.app~sslo_expl_topo-xp-http"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/net/tunnels/tunnel/~Common~sslo_expl_topo.app~sslo_expl_topo-xp-tunnel",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/tunnels/tunnel/~Common~sslo_expl_topo.app~sslo_expl_topo-xp-tunnel"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/log-setting/~Common~sslo_expl_topo.app~sslo_expl_topo-log-setting",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/log-setting/~Common~sslo_expl_topo.app~sslo_expl_topo-log-setting"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~sslo_expl_topo.app~sslo_expl_topo-lib",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~sslo_expl_topo.app~sslo_expl_topo-lib"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~sslo_expl_topo.app~sslo_expl_topo-in_t",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~sslo_expl_topo.app~sslo_expl_topo-in_t"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~sslo_expl_topo.app~sslo_expl_topo-xp",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~sslo_expl_topo.app~sslo_expl_topo-xp"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/rule/~Common~sslo_expl_topo.app~sslo_expl_topo-xp_auth",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/rule/~Common~sslo_expl_topo.app~sslo_expl_topo-xp_auth"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~sslo_expl_topo.app~sslo_expl_topo-tcp-lan",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~sslo_expl_topo.app~sslo_expl_topo-tcp-lan"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~sslo_expl_topo.app~sslo_expl_topo-tcp-wan",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~sslo_expl_topo.app~sslo_expl_topo-tcp-wan"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/profile/http/~Common~sslo_expl_topo.app~sslo_expl_topo-http",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/profile/http/~Common~sslo_expl_topo.app~sslo_expl_topo-http"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~sslo_expl_topo.app~sslo_expl_topo-in-t-4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~sslo_expl_topo.app~sslo_expl_topo-in-t-4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/virtual/~Common~sslo_expl_topo.app~sslo_expl_topo-xp-4",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~sslo_expl_topo.app~sslo_expl_topo-xp-4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~sslo_expl_topo.app~sslo_expl_topo_ent",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~sslo_expl_topo.app~sslo_expl_topo_ent"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~sslo_expl_topo.app~sslo_expl_topo_end_allow",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~sslo_expl_topo.app~sslo_expl_topo_end_allow"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/ending-allow/~Common~sslo_expl_topo.app~sslo_expl_topo_end_allow_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/ending-allow/~Common~sslo_expl_topo.app~sslo_expl_topo_end_allow_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~sslo_expl_topo.app~sslo_expl_topo_accessPolicy",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~sslo_expl_topo.app~sslo_expl_topo_accessPolicy"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/profile/access/~Common~sslo_expl_topo.app~sslo_expl_topo_accessProfile",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/profile/access/~Common~sslo_expl_topo.app~sslo_expl_topo_accessProfile"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.144.72.149",
+                            "strictness": false,
+                            "potentialDrift": false
+                        }
+                    ]
+                },
+                {
+                    "id": "dependencyInfo",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "type": "f5-ssl-orchestrator-topology",
+                            "name": "/Common/sslo_expl_topo.app/sslo_expl_topo",
+                            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/fc5e91ab-a1b1-4a38-9bc4-6a2735b1d8c8",
+                            "dependsOn": {
+                                "references": [
+                                    {
+                                        "type": "f5-ssl-orchestrator-tls",
+                                        "names": [
+                                            "/Common/ssloT_foobar.app/ssloT_foobar"
+                                        ]
+                                    },
+                                    {
+                                        "type": "f5-ssl-orchestrator-policy",
+                                        "names": [
+                                            "/Common/ssloP_from_gui.app/ssloP_from_gui"
+                                        ]
+                                    },
+                                    {
+                                        "type": "f5-ssl-orchestrator-general-settings",
+                                        "names": [
+                                            "/Common/ssloGS_global.app/ssloGS_global"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "configToDeploy",
+                    "type": "BOOLEAN",
+                    "value": true
+                },
+                {
+                    "id": "deviceSpecific",
+                    "type": "JSON"
+                },
+                {
+                    "id": "error",
+                    "type": "STRING",
+                    "value": ""
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-topology"
+            },
+            "configProcessorTimeoutSeconds": 30,
+            "statsProcessorTimeoutSeconds": 15,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "UNBOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1648021765566110,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/fc5e91ab-a1b1-4a38-9bc4-6a2735b1d8c8"
+        }
+    ],
+    "generation": 2956,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1648022080281629
+}

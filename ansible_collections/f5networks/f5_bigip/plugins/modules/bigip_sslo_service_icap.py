@@ -18,31 +18,31 @@ options:
   name:
     description:
       - Specifies the name of the ICAP service object.
-      - Configuration auto-prepends C(ssloS_) to the object.
+      - The configuration auto-prepends C(ssloS_) to the object.
       - Names should be less than 14 characters and not contain dashes C(-).
     type: str
     required: True
   devices:
     description:
       - Specifies a list of listening IP:ports for each ICAP security device.
-      - Parameter is required when creating a new ICAP service object.
+      - This parameter is required when creating a new ICAP service object.
     type: list
     elements: dict
     suboptions:
       ip:
         description:
-          - Specifies the IP address for ICAP security device.
+          - Specifies the IP address for the ICAP security device.
         type: str
       port:
         description:
-          - Specifies the port for ICAP security device.
+          - Specifies the port for the ICAP security device.
           - Valid value range is from C(0) to C(65535).
         type: int
   ip_family:
     description:
-      - Specifies the IP family used for attached ICAP security devices.
-      - When creating icap service if the parameter is not provided a default of C(ipv4) is
-        assumed.
+      - Specifies the IP family used for attaching ICAP security devices.
+      - When creating an ICAP service, if the parameter is not provided a default of C(ipv4)
+        is assumed.
     type: str
     choices:
       - ipv4
@@ -51,7 +51,7 @@ options:
   monitor:
     description:
       - Specifies the monitor attached the ICAP security device pool. The monitor must already exist on the BIG-IP.
-      - When creating icap service if the parameter is not provided a default of C(/Common/tcp) is
+      - When creating an ICAP service, if the parameter is not provided a default of C(/Common/tcp) is
         assumed.
     type: str
   headers:
@@ -62,57 +62,57 @@ options:
       enable:
         description:
           - Enables or disables custom headers to be inserted to the ICAP server.
-          - If C(yes) the C(referrer), C(host), C(user_agent) and C(h_from) parameters are mandatory when creating a
+          - If C(yes), the C(referrer), C(host), C(user_agent) and C(h_from) parameters are mandatory when creating a
             new service object.
-          - When creating icap service if the parameter is not provided a default of value C(no) is assumed.
+          - When creating an ICAP service, if the parameter is not provided a default of value C(no) is assumed.
         type: bool
       referrer:
         description:
           - Specifies a Referrer header to pass to the ICAP service.
-          - Required when when creating a new service object with C(enable) value set to C(yes).
+          - Required when creating a new service object with C(enable) value set to C(yes).
         type: str
       host:
         description:
           - Specifies a Host header to pass to the ICAP service.
-          - Required when when creating a new service object with C(enable) value set to C(yes).
+          - Required when creating a new service object with C(enable) value set to C(yes).
         type: str
       user_agent:
         description:
           - Specifies a User-Agent header to pass to the ICAP service.
-          - Required when when creating a new service object with C(enable) value set to C(yes).
+          - Required when creating a new service object with C(enable) value set to C(yes).
         type: str
       h_from:
         description:
           - Specifies a From header to pass to the ICAP service.
-          - Required when when creating a new service object with C(enable) value set to C(yes).
+          - Required when creating a new service object with C(enable) value set to C(yes).
         type: str
   enable_one_connect:
     description:
       - Enables or disables OneConnect optimization to the ICAP server.
-      - When creating icap service if the parameter is not provided a default value of C(yes) is assumed.
+      - When creating an ICAP service, if the parameter is not provided a default value of C(yes) is assumed.
     type: bool
   request_uri:
     description:
       - Specifies the ICAP request URI. This URI must always start with a forward slash C(/) e.g. C(/avscan).
-      - When creating icap service if the parameter is not provided a default value of C(/) is assumed.
+      - When creating an ICAP service, if the parameter is not provided a default value of C(/) is assumed.
     type: str
   response_uri:
     description:
       - Specifies the ICAP response URI. This URI must always start with a forward slash C(/) e.g. C(/avscan).
-      - When creating icap service if the parameter is not provided a default value of C(/) is assumed.
+      - When creating an ICAP service, if the parameter is not provided a default value of C(/) is assumed.
     type: str
   preview_length:
     description:
       - Specifies the ICAP preview length value, in bytes.
-      - Valid value range is from C(0) to C(51200) bytes
-      - When creating icap service if the parameter is not provided a default value of C(1024) is assumed.
+      - Valid value range is from C(0) to C(51200) bytes.
+      - When creating an ICAP service, if the parameter is not provided a default value of C(1024) is assumed.
     type: int
   service_down_action:
     description:
       - Specifies the action to take on monitor failure.
-      - Setting to C(ignore) bypass the security device in the service chain.
-      - Setting to C(reset) or C(drop) resets or drops the connection, respectively if the service monitor fails.
-      - When creating icap service if the parameter is not provided a default value of C(ignore) is assumed.
+      - Setting to C(ignore) bypasses the security device in the service chain.
+      - Setting to C(reset) or C(drop) resets or drops the connection, respectively, if the service monitor fails.
+      - When creating an ICAP service, if the parameter is not provided a default value of C(ignore) is assumed.
     type: str
     choices:
       - ignore
@@ -121,26 +121,26 @@ options:
   allow_http10:
     description:
       - Enables or disables HTTP/1.0 support to ICAP.
-      - When creating icap service if the parameter is not provided a default value of C(no) is assumed.
+      - When creating an ICAP service, if the parameter is not provided a default value of C(no) is assumed.
     type: bool
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes) does not make any changes on device and always returns C(changed=False).
+      - When C(yes), does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
-        C(MODIFY) on an existing service no json output will be generated.
+        C(MODIFY) on an existing service, no JSON output is generated.
     type: bool
     default: no
   timeout:
     description:
-      - The amount of time in seconds to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete.
+      - The amount of time to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
   state:
     description:
       - When C(state) is C(present), ensures the object is created or modified.
-      - When C(state) is C(absent), ensures that the service is removed.
+      - When C(state) is C(absent), ensures the service is removed.
     type: str
     choices:
       - present
@@ -207,12 +207,12 @@ devices:
   returned: changed
   contains:
     ip:
-      description: The IP address for ICAP security device.
+      description: The IP address for the ICAP security device.
       returned: changed
       type: str
       sample: 1.1.1.1
     port:
-      description: The port for ICAP security device.
+      description: The port for the ICAP security device.
       returned: changed
       type: int
       sample: 1344
@@ -255,7 +255,7 @@ headers:
       type: str
       sample: my_user_agent
     h_from:
-      description: The From header to pass to the ICAP service..
+      description: The From header to pass to the ICAP service.
       returned: changed
       type: str
       sample: my_from

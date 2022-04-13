@@ -18,7 +18,7 @@ version_added: "1.0.0"
 options:
   content:
     description:
-      - Declaration to be configured on the system.
+      - The declaration to be configured on the system.
       - This parameter is most often used with the C(file) or C(template) lookup plugins.
         Refer to the examples section for correct usage.
       - For anything advanced or with formatting, consider using the C(template) lookup.

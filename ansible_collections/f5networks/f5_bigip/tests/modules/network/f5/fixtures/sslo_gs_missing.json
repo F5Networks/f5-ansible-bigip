@@ -1,0 +1,8 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 0,
+    "items": [],
+    "generation": 2481,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1648018527338308
+}

@@ -41,7 +41,7 @@ options:
       - "!vlans"
 notes:
   - This module is supported with all BIG-IQ versions
-  - With BIGIQ 7.0 and later, a few metadata fields not included/supported (for example, uptime, product_changelist, product_jobid)
+  - With BIG-IQ 7.0 and later, a few metadata fields are not included/supported (for example, uptime, product_changelist, product_jobid)
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -639,13 +639,13 @@ system_info:
     product_changelist:
       description:
         - Changelist that product branches from.
-        - Not supported with BIGIQ 7.0 and later versions
+        - Not supported with BIG-IQ 7.0 and later versions
       type: int
       sample: 2557198
     product_jobid:
       description:
         - ID of the job that built the product version.
-        - Not supported with BIGIQ 7.0 and later versions
+        - Not supported with BIG-IQ 7.0 and later versions
       type: int
       sample: 1012030
     chassis_serial:

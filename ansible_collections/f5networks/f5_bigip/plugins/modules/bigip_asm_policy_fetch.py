@@ -12,7 +12,7 @@ DOCUMENTATION = r'''
 module: bigip_asm_policy_fetch
 short_description: Exports the ASM policy from remote nodes.
 description:
-  - Exports the ASM policy from remote nodes.
+  - Exports the BIG-IP ASM policy from remote nodes.
 version_added: "1.0.0"
 options:
   name:
@@ -22,13 +22,13 @@ options:
     required: True
   dest:
     description:
-      - A directory to save the policy file into.
+      - A directory where you want to save the policy file.
       - This option is ignored when C(inline) is set to c(yes).
     type: path
   file:
     description:
       - The name of the file to be created on the remote device for downloading.
-      - When C(binary) is set to C(no) the ASM policy will be in XML format.
+      - When C(binary) is set to C(no), the ASM policy will be in XML format.
     type: str
   inline:
     description:
@@ -125,7 +125,7 @@ dest:
 file:
   description:
     - Name of the policy file on the remote BIG-IP to download. If not
-      specified, then this will be a randomly generated filename.
+      specified, this will be a randomly generated filename.
   returned: changed
   type: str
   sample: foobar.xml

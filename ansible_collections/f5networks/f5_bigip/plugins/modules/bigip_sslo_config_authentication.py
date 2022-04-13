@@ -19,7 +19,7 @@ options:
   name:
     description:
       - Specifies the name of the authentication object.
-      - Configuration auto-prepends C(ssloA_) to the object.
+      - The configuration auto-prepends C(ssloA_) to the object.
       - Names should be less than 14 characters and not contain dashes C(-).
     type: str
     required: True
@@ -31,26 +31,26 @@ options:
       fqdn:
         description:
           - Defines the fully qualified name of the OCSP authentication service.
-          - Parameter is required when creating new OCSP authentication service.
+          - This parameter is required when creating a new OCSP authentication service.
         type: str
       dest:
         description:
-          - Defines the OCSP authentication service destination IP address, the address must be valid
+          - Defines the OCSP authentication service destination IP address. The address must be valid
             and provided in CIDR notation.
-          - If a route domain is not indicated in the address a default C(%0) is inserted into the address.
-          - Parameter is required when creating new OCSP authentication service.
+          - If a route domain is not indicated in the address, a default C(%0) is inserted into the address.
+          - This parameter is required when creating new OCSP authentication service.
         type: str
       ssl_profile:
         description:
-          - Defines the existing SSL settings object to reference in the ocsp authentication.
-          - Configuration auto-prepends C(ssloT_) to the object.
-          - Parameter is required when creating new OCSP authentication service.
+          - Defines the existing SSL settings object to reference in the OCSP authentication.
+          - The configuration auto-prepends C(ssloT_) to the object.
+          - This parameter is required when creating new OCSP authentication service.
         type: str
       vlans:
         description:
-          - Defines the list of client-facing VLANs for the ocsp authentication service.
-          - The names of vlans must be provided in the C(full_path) format e.g. C(/Common/vlan1).
-          - Parameter is required when creating new OCSP authentication service.
+          - Defines the list of client-facing VLANs for the OCSP authentication service.
+          - The names of VLANs must be provided in the C(full_path) format e.g. C(/Common/vlan1).
+          - This parameter is required when creating new OCSP authentication service.
         type: list
         elements: str
       port:
@@ -60,29 +60,29 @@ options:
       source:
         description:
           - Defines a source IP address filter, the address must be valid and provided in CIDR notation.
-          - If a route domain is not indicated in the address a default C(%0) is inserted into the address.
-          - When creating ocsp authentication service if the parameter is not provided a default of C(0.0.0.0%0/0) is
+          - If a route domain is not indicated in the address, a default C(%0) is inserted into the address.
+          - When creating an OCSP authentication service, if the parameter is not provided a default of C(0.0.0.0%0/0) is
             assumed.
         type: str
       http_profile:
         description:
-          - Defines a custom http profile to apply to the ocsp authentication service virtual server.
-          - The name of profile must be provided in the C(full_path) format e.g. C(/Common/http).
-          - When creating ocsp authentication service if the parameter is not provided a default of C(/Common/http) is
+          - Defines a custom HTTP profile to apply to the OCSP authentication service virtual server.
+          - The name of profile must be provided in the C(full_path) format, for example C(/Common/http).
+          - When creating the OCSP authentication service, if the parameter is not provided a default of C(/Common/http) is
             assumed.
         type: str
       tcp_settings_client:
         description:
           - Defines a custom client TCP profile.
           - The name of profile must be provided in the C(full_path) format e.g. C(/Common/f5-tcp-wan).
-          - When creating ocsp authentication service if the parameter is not provided a default of
+          - When creating an OCSP authentication service, if the parameter is not provided a default of
             C(/Common/f5-tcp-wan) is assumed.
         type: str
       tcp_settings_server:
         description:
           - Defines a custom server TCP profile.
           - The name of profile must be provided in the C(full_path) format e.g. C(/Common/f5-tcp-lan).
-          - When creating ocsp authentication service if the parameter is not provided a default of
+          - When creating an OCSP authentication service, if the parameter is not provided a default of
             C(/Common/f5-tcp-lan) is assumed.
         type: str
       existing_ocsp:
@@ -92,34 +92,34 @@ options:
         type: str
       ocsp_max_age:
         description:
-          - Defines a max age value for the OCSP profile (if not using an existing OCSP profile).
-          - When creating ocsp authentication service if the parameter is not provided a default of
+          - Defines a maximum age value for the OCSP profile (if not using an existing OCSP profile).
+          - When creating an OCSP authentication service, if the parameter is not provided a default of
             C(604800) is assumed.
         type: int
       ocsp_nonce:
         description:
           - Enables or disables OCSP nonce (if not using an existing OCSP profile).
-          - When creating ocsp authentication service if the parameter is not provided and C(existing_ocsp)
-            is not set default of C(True) is assumed.
+          - When creating an OCSP authentication service, if the parameter is not provided and C(existing_ocsp)
+            is not set, the default of C(True) is assumed.
         type: bool
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes) does not make any changes on device and always returns C(changed=False).
+      - When C(yes), does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
-        C(MODIFY) on an existing service no json output will be generated.
+        C(MODIFY) on an existing service, no JSON output is generated.
     type: bool
     default: no
   timeout:
     description:
-      - The amount of time in seconds to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete.
+      - The amount of time to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
   state:
     description:
       - When C(state) is C(present), ensures the object is created or modified.
-      - When C(state) is C(absent), ensures that the service is removed.
+      - When C(state) is C(absent), ensures the service is removed.
     type: str
     choices:
       - present
@@ -191,7 +191,7 @@ ocsp:
   returned: changed
   contains:
     fqdn:
-      description: The fully qualified name that clients will use to access the OCSP authentication service.
+      description: The fully qualified name clients use to access the OCSP authentication service.
       type: str
       sample: ocsp.f5labs.com
     dest:
@@ -199,7 +199,7 @@ ocsp:
       type: str
       sample: 10.1.10.150/32
     ssl_profile:
-      description: The SSL settings object that the OCSP authentication service will monitor for revocation states.
+      description: The SSL settings object the OCSP authentication service monitors for revocation states.
       type: str
       sample: ssl_settings_1
     vlans:
@@ -215,7 +215,7 @@ ocsp:
       type: int
       sample: 80
     http_profile:
-      description: A custom http profile to use for the authentication service.
+      description: A custom HTTP profile to use for the authentication service.
       type: str
       sample: /Common/http
     tcp_settings_client:
@@ -235,7 +235,7 @@ ocsp:
       type: int
       sample: 604800
     ocsp_nonce:
-      description: enables or disables nonce in the OCSP profile (if not using an existing OCSP profile).
+      description: Enables or disables nonce in the OCSP profile (if not using an existing OCSP profile).
       type: bool
       sample: True
 '''

@@ -28,7 +28,7 @@ options:
     type: str
   remote_port:
     description:
-      - The port to connect to on the remote host.
+      - The port on the remote host to which you want to connect.
       - If the port is not provided, a default port for the selected C(protocol) is used.
     type: int
   protocol:
@@ -61,7 +61,7 @@ options:
   state:
     description:
       - The tenant image state.
-      - If C(import), starts the image import task if the image does not exist
+      - If C(import), starts the image import task if the image does not exist.
       - If C(present), checks for the status of the import task if the image does not exist.
       - If C(absent), deletes the tenant image if it exists.
     type: str
@@ -71,8 +71,8 @@ options:
       - absent
     default: import
 notes:
-  - Repeating the same image import task immediately after the previous is not idempotent if the image has not finished
-    downloading.
+  - Repeating the same image import task immediately after the previous is not idempotent
+    if the image has not finished downloading.
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -91,7 +91,7 @@ EXAMPLES = r'''
     ansible_httpapi_use_ssl: yes
 
   tasks:
-    - name: Import tenant image 'foo' onto the Velos provider
+    - name: Import tenant image 'foo' onto the VELOS provider
       velos_tenant_image:
         image_name: foo
         remote_host: builds.mydomain.com
@@ -100,7 +100,7 @@ EXAMPLES = r'''
         remote_path: /images/
         state: import
 
-    - name: Check the status of the image import onto the Velos provider
+    - name: Check the status of the image import onto the VELOS provider
       velos_tenant_image:
         image_name: foo
         timeout: 600
@@ -123,7 +123,7 @@ remote_host:
   type: str
   example: foo.bar.baz.net
 remote_port:
-  description: The port to connect to on the remote host.
+  description: The port on the remote host to which you want to connect.
   returned: changed
   type: int
   example: 443

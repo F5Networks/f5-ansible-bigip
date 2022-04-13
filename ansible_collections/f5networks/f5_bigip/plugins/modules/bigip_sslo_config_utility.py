@@ -18,17 +18,17 @@ version_added: "1.6.0"
 options:
   package:
     description:
-      - The SSLO package that you want to upload.
-      - Used when C(utility) is set to C(rpm-update)
-      - Attempting to rerun the task with the same version of RPM package is idempotent, which means no change operation
-        will be performed.
+      - The SSLO package you want to upload.
+      - Used when C(utility) is set to C(rpm-update).
+      - Attempting to rerun the task with the same version of the RPM package is idempotent, which means no change operation
+        is performed.
     type: path
   utility:
     description:
         - Specifies the utility function to perform.
-        - When C(delete-all) is set, the utility removes all related SSL Orchestrator objects from configuration.
+        - When C(delete-all) is set, the utility removes all related SSL Orchestrator objects from the configuration.
         - The C(delete-all) mode is not idempotent.
-        - When C(rpm-update) is set, the utility allows update of existing SSLO RPM package.
+        - When C(rpm-update) is set, the utility allows updating of existing SSLO RPM packages.
     type: str
     required: True
     choices:
@@ -36,18 +36,18 @@ options:
       - rpm-update
   timeout:
     description:
-      - The amount of time in seconds to wait for the C(rpm-update) or C(delete-all) task to complete.
+      - The amount of time to wait for the C(rpm-update) or C(delete-all) task to complete, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
 notes:
-  - Requires the rpm tool be installed on the host. This can be accomplished through
+  - Requires the RPM tool is installed on the host. This can be accomplished through
     different ways on each platform.
-  - On Debian based systems with C(apt); C(apt-get install rpm).
-  - On Mac with C(brew); C(brew install rpm).
+  - On Debian-based systems, use C(apt); C(apt-get install rpm).
+  - On Mac, use C(brew); C(brew install rpm).
   - This command is already present on RedHat based systems.
 requirements:
-  - The 'rpm' tool installed on the Ansible controller
+  - The 'rpm' tool installed on the Ansible controller.
 author:
   - Wojciech Wypior (@wojtek0806)
 '''

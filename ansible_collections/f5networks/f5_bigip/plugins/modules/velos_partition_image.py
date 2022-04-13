@@ -10,9 +10,9 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_partition_image
-short_description: Manage VELOS partition images
+short_description: Manage VELOS chassis partition images
 description:
-  - Manage VELOS partition images.
+  - Manage VELOS chassis partition images.
 version_added: "1.1.0"
 options:
   image_name:
@@ -23,7 +23,7 @@ options:
     required: True
   iso_version:
     description:
-      - Version of the ISO image.
+      - The F5OS-C OS version.
       - When not provided, the value is extracted from the provided C(image_name).
     type: str
   remote_host:
@@ -35,7 +35,7 @@ options:
   remote_port:
     description:
       - The port to connect to on the remote host.
-      - If the port is not provided, a default port for selected C(protocol) is used.
+      - If the port is not provided, a default port for the selected C(protocol) is used.
     type: int
   protocol:
     description:
@@ -67,9 +67,9 @@ options:
   state:
     description:
       - The partition image state.
-      - If C(import), start the image import task if the image does not exist.
+      - If C(import), starts the image import task if the image does not exist.
       - If C(present), checks for the status of the import task if the image does not exist.
-      - If C(absent), delete the partition image if it exists.
+      - If C(absent), deletes the partition image if it exists.
     type: str
     choices:
       - import

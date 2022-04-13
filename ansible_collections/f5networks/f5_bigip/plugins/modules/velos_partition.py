@@ -13,66 +13,67 @@ DOCUMENTATION = r'''
 module: velos_partition
 short_description: Manage VELOS chassis partitions
 description:
-  - Manage VELOS partitions.
-  - This module uses the controller API. The specified provider should be the IP of a VELOS system Controller.
+  - Manage VELOS chassis partitions.
 version_added: "1.3.0"
 options:
   name:
     description:
-      - Name of the partition.
+      - Name of the chassis partition.
     type: str
     required: True
   ipv4_mgmt_address:
     description:
-      - Specifies the IPv4 address and subnet or subnet mask that you use to access
-        the partition.
-      - When creating a new partition, if the CIDR notation is not used a default of C(/24) is appended to the address.
-      - "The address must be specified in CIDR notation e.g. 192.168.1.1/24"
+      - Specifies the IPv4 address and subnet or subnet mask you use to access
+        the chassis partition.
+      - When creating a new chassis partition, if the CIDR notation is not used a default of C(/24) is appended to
+        the address.
+      - "The address must be specified in CIDR notation e.g. 192.168.1.1/24."
     type: str
   ipv4_mgmt_gateway:
     description:
-      - Desired partition management gateway.
+      - Desired chassis partition management gateway.
       - The value C(none) can be used during an update to remove this value.
     type: str
   ipv6_mgmt_address:
     description:
       - Specifies the IPv6 address and subnet or subnet mask that you use to access
-        the partition.
-      - When creating a new partition, if the CIDR notation is not used a default of C(/96) is appended to the address.
-      - "The address must be specified in CIDR notation e.g. 2002::1234:abcd:ffff:c0a8:101/64"
+        the chassis partition.
+      - When creating a new chassis partition, if the CIDR notation is not used a default of C(/96) is appended
+        to the address.
+      - "The address must be specified in CIDR notation e.g. 2002::1234:abcd:ffff:c0a8:101/64."
     type: str
   ipv6_mgmt_gateway:
     description:
-      - Desired partition management gateway.
+      - Desired chassis partition management gateway.
       - The value C(none) can be used during an update to remove this value.
     type: str
   os_version:
     description:
-      - Partition OS version.
+      - Chassis partition F5OS-C OS version.
       - The value C(none) can be used during an update to remove this value.
     type: str
   slots:
     description:
-      - List (integers), specifies which slots with which the partition should associated.
-      - By default, the partition is not associated with any slots.
+      - List (integers), specifies which slots with which the chassis partition should associated.
+      - By default, the chassis partition is not associated with any slots.
     type: list
     elements: int
   service_version:
     description:
-      - Partition software version.
+      - Chassis partition F5OS-C Service version.
     type: str
   wait_time:
     description:
-      - Max number of seconds to wait after creating a partition for it to
+      - Max number of seconds to wait after creating a chassis partition for it to
         transition to the 'running' state.
     type: int
     default: 300
   state:
     description:
-      - The partition state. If C(absent), delete the partition
-        if it exists. C(present) creates the partition and enables it.
-        If C(enabled), enables the partition if it exists. If C(disabled),
-        creates the partition if needed, and sets state to C(disabled).
+      - The chassis partition state. If C(absent), deletes the chassis partition
+        if it exists. C(present) creates the chassis partition and enables it.
+        If C(enabled), enables the chassis partition if it exists. If C(disabled),
+        creates the chassis partition if needed, and sets state to C(disabled).
     type: str
     choices:
       - present

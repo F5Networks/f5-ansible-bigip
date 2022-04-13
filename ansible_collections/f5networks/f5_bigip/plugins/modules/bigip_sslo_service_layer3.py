@@ -10,27 +10,27 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_sslo_service_layer3
-short_description: Manage an SSL Orchestrator layer 3 security device
+short_description: Manage an SSL Orchestrator Layer 3 security device
 description:
-  - Manage an SSL Orchestrator layer 3 security device
+  - Manage an SSL Orchestrator Layer 3 security device
 version_added: "1.6.0"
 options:
   name:
     description:
-      - Specifies the name of the layer 3 security service.
-      - Configuration auto-prepends C(ssloS_) to service.
-      - Service name should be less than 14 characters and not contain dashes C(-).
+      - Specifies the name of the Layer 3 security service.
+      - The configuration auto-prepends C(ssloS_) to the service.
+      - The service name should be less than 14 characters and not contain dashes C(-).
     type: str
     required: True
   devices_to:
     description:
-      - Specifies the set of network settings for traffic going to the service from BIG-IP
+      - Specifies the set of network settings for traffic going to the service from the BIG-IP.
     type: dict
     suboptions:
       vlan:
         description:
           - Defines an existing VLAN to attach on the to-service side.
-          - Mutually exclusive with C(tag) or C(interface) parameter.
+          - Mutually exclusive with the C(tag) or C(interface) parameters.
         type: str
       interface:
         description:
@@ -44,15 +44,15 @@ options:
         type: int
       self_ip:
         description:
-          - Defines the to-service self-IP.
+          - Defines the to-service self IP.
         type: str
       netmask:
         description:
-          - Defines the to-service self-IP netmask.
+          - Defines the to-service self IP netmask.
         type: str
   devices_from:
     description:
-      - Specifies the set of network settings for traffic going to the BIG-IP from the service
+      - Specifies the set of network settings for traffic going to the BIG-IP from the service.
     type: dict
     suboptions:
       vlan:
@@ -72,15 +72,15 @@ options:
         type: int
       self_ip:
         description:
-          - Defines the from-service self-IP.
+          - Defines the from-service self IP.
         type: str
       netmask:
         description:
-          - Defines the from-service self-IP netmask.
+          - Defines the from-service self IP netmask.
         type: str
   devices:
     description:
-      - Defines a list of service IPs and ports.
+      - Defines a list of service IP addresses and ports.
     type: list
     elements: dict
     suboptions:
@@ -101,16 +101,16 @@ options:
       - ipv6
   monitor:
     description:
-      - Specifies the monitor attached the L3 Inline security device pool.
+      - Specifies the monitor attached to the L3 Inline security device pool.
       - The monitor must already exist on the BIG-IP.
       - "When creating L3 Inline service if the parameter is not provided a default of C(/Common/gateway_icmp) is assumed."
     type: str
   service_down_action:
     description:
       - Specifies the action to take on monitor failure.
-      - Setting to C(ignore) bypass the security device in the service chain.
-      - Setting to C(reset) or C(drop) resets or drops the connection, respectively if the service monitor fails.
-      - When creating L3 Inline service if the parameter is not provided a default value of C(ignore) is assumed.
+      - Setting to C(ignore) bypasses the security device in the service chain.
+      - Setting to C(reset) or C(drop) resets or drops the connection, respectively, if the service monitor fails.
+      - When creating a L3 Inline service, if the parameter is not provided a default value of C(ignore) is assumed.
     type: str
     choices:
       - ignore
@@ -123,11 +123,11 @@ options:
   snat:
     description:
       - Defines if and how a SNAT configuration is deployed.
-      - when C(none) no snat configuration is configured. This is the default choice when creating L3 inline service
+      - When C(none), no SNAT configuration is performed. This is the default choice when creating a L3 inline service
         if the parameter is not provided.
-      - When C(automap), snat automap is configured.
-      - When C(snatpool) the snat configuration points to existing snatpool defined by the C(snatpool) parameter.
-      - When C(snatlist) new snatpool is created from the provided C(snatlist).
+      - When C(automap), SNAT automap is configured.
+      - When C(snatpool), the SNAT configuration points to existing SNAT Pool defined by the C(snatpool) parameter.
+      - When C(snatlist), a new SNAT Pool is created from the provided C(snatlist).
     type: str
     choices:
       - none
@@ -137,12 +137,12 @@ options:
   snat_pool:
     description:
       - Defines an existing SNAT pool.
-      - Parameter required when C(snat) set to C(snatpool).
+      - This parameter is required when C(snat) is set to C(snatpool).
     type: str
   snat_list:
     description:
-      - Defines a list of IPs to use in a SNAT pool configuration.
-      - Parameter required when C(snat) set to C(snatlist).
+      - Defines a list of IP addresses to use in a SNAT pool configuration.
+      - This parameter is required when C(snat) set to C(snatlist).
     type: list
     elements: str
   rules:
@@ -153,14 +153,14 @@ options:
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes) does not make any changes on device and always returns C(changed=False).
+      - When C(yes), does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
-        C(MODIFY) on an existing service no json output will be generated.
+        C(MODIFY) on an existing service, no JSON output is generated.
     type: bool
     default: no
   timeout:
     description:
-      - The amount of time in seconds to wait for the C(CREATE) or C(MODIFY) task to complete.
+      - The amount of time to wait for the C(CREATE) or C(MODIFY) task to complete, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
@@ -260,11 +260,11 @@ devices_to:
        type: int
        sample: 40
     self_ip:
-       description: Defines the to-service VLAN self-IP.
+       description: Defines the to-service VLAN self IP.
        type: str
        sample: 198.19.64.7
     netmask:
-       description: Defines the to-service VLAN self-IP netmask.
+       description: Defines the to-service VLAN self IP netmask.
        type: str
        sample: 255.255.255.128
 devices_from:
@@ -286,16 +286,16 @@ devices_from:
        type: int
        sample: 50
     self_ip:
-       description: Defines the from-service VLAN self-IP.
+       description: Defines the from-service VLAN self IP.
        type: str
        sample: 198.19.64.245
     netmask:
-       description: Defines the from-service VLAN self-IP netmask.
+       description: Defines the from-service VLAN self IP netmask.
        type: str
        sample: 255.255.255.128
 devices:
   description:
-    - The list of service IPs and ports.
+    - The list of service IP addresses and ports.
   returned: changed
   type: complex
   contains:
@@ -315,7 +315,7 @@ ip_family:
   sample: ipv4
 monitor:
   description:
-    - The monitor attached the HTTP security device pool.
+    - The monitor attached to the HTTP security device pool.
   returned: changed
   type: str
   sample: /Common/gateway_icmp
@@ -333,7 +333,7 @@ port_remap:
   sample: 8080
 snat:
   description:
-    - Snat configuration type.
+    - SNAT configuration type.
   returned: changed
   type: str
   sample: none

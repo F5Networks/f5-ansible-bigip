@@ -18,7 +18,7 @@ version_added: "1.1.0"
 options:
   name:
     description:
-      - Name of the tenant
+      - Name of the tenant.
     type: str
     required: True
   state:

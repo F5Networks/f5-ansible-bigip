@@ -14,12 +14,12 @@ module: bigip_command
 short_description: Run TMSH and BASH commands on F5 devices
 description:
   - Sends a TMSH or BASH command to an BIG-IP node and returns the results
-    read from the device. This module includes an argument that will cause
+    read from the device. This module includes an argument that causes
     the module to wait for a specific condition before returning or timing
     out if the condition is not met.
-  - This module is B(not) idempotent, nor will it ever be. It is intended as
-    a stop-gap measure to satisfy automation requirements until such a time as
-    a real module has been developed to configure in the way you need.
+  - This module is B(not) idempotent, and will never be. It is intended as
+    a stop-gap measure to satisfy automation requirements until
+    a real module has been developed.
   - If you are using this module, you should probably also be filing an issue
     to have a B(real) module created for your needs.
 version_added: "1.0.0"
@@ -32,17 +32,17 @@ options:
         module is not returned until the condition is satisfied or
         the number of retries as expired.
       - Only C(tmsh) commands are supported. If you are piping or adding additional
-        logic that is outside of C(tmsh) (such as grep'ing, awk'ing or other shell
+        logic that is outside of C(tmsh) (such as using grep, awk or other shell
         related things that are not C(tmsh), this behavior is not supported.
     required: True
     type: raw
   wait_for:
     description:
       - Specifies what to evaluate from the output of the command
-        and what conditionals to apply.  This argument will cause
+        and what conditionals to apply.  This argument causes
         the task to wait for a particular conditional to be true
         before moving forward. If the conditional is not true
-        by the configured retries, the task fails. See examples.
+        by the configured number of retries, the task fails. See the examples.
     type: list
     elements: str
     aliases: ['waitfor']
@@ -69,8 +69,8 @@ options:
     default: 10
   interval:
     description:
-      - Configures the interval in seconds to wait between retries
-        of the command. If the command does not pass the specified
+      - Configures the interval to wait between retries of the command
+        in seconds. If the command does not pass the specified
         conditional, the interval indicates how to long to wait before
         trying the command again.
     type: int
@@ -95,7 +95,7 @@ options:
     type: bool
     default: no
 notes:
-  - When running this module in an HA environment, via SSH connection and using a role other than C(admin)
+  - When running this module in an HA environment via SSH connection and using a role other than C(admin)
     or C(root), you may see a C(Change Pending) status, even if you did not make any changes.
     This is being tracked with ID429869.
 author:
@@ -179,6 +179,7 @@ warn:
 
 
 import re
+import shlex
 import time
 from datetime import datetime
 
@@ -257,6 +258,12 @@ class Parameters(AnsibleF5Parameters):
             result = self._values['commands']
         return result
 
+    def cmd_has_pipe(self, cmd):
+        lex = shlex.shlex(cmd, posix=True)
+        lex.whitespace = '|'
+        lex.whitespace_split = True
+        return len(list(lex)) > 1
+
     def convert_commands(self, commands):
         result = []
         for command in commands:
@@ -266,7 +273,7 @@ class Parameters(AnsibleF5Parameters):
             )
 
             command = command.replace("'", "\\'")
-            pipeline = command.split('|', 1)
+            pipeline = command.split('|', 1) if self.cmd_has_pipe(command) else [command]
             tmp['command'] = pipeline[0]
             try:
                 tmp['pipeline'] = pipeline[1]
@@ -283,7 +290,7 @@ class Parameters(AnsibleF5Parameters):
                 pipeline=''
             )
 
-            pipeline = command.split('|', 1)
+            pipeline = command.split('|', 1) if self.cmd_has_pipe(command) else [command]
             tmp['command'] = pipeline[0]
             try:
                 tmp['pipeline'] = pipeline[1]

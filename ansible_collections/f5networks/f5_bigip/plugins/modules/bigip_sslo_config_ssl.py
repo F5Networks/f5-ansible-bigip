@@ -19,20 +19,20 @@ options:
   name:
     description:
       - Specifies the name of the authentication object.
-      - Configuration auto-prepends C(ssloT_) to the object.
+      - The configuration auto-prepends C(ssloT_) to the object.
       - Names should be less than 14 characters and not contain dashes C(-).
     type: str
     required: True
   client_settings:
     description:
-      - Specifies the client-side SSL settings
+      - Specifies the client-side SSL settings.
     type: dict
     suboptions:
       proxy_type:
         description:
           - Defines the type of proxy to configure.
-          - Parameter is immutable after object has been created.
-          - Parameter is required when C(state) is C(present).
+          - This parameter is immutable after the object has been created.
+          - This parameter is required when C(state) is C(present).
         type: str
         choices:
           - forward
@@ -47,24 +47,24 @@ options:
       cipher_string:
         description:
           - Defines the string used for cipher strings.
-          - Parameter mutually exclusive with C(cipher_group).
-          - Parameter required when C(cipher_type) is C(string).
+          - This parameter is mutually exclusive with C(cipher_group).
+          - This parameter is required when C(cipher_type) is C(string).
         type: str
       cipher_group:
         description:
           - Defines the existing cipher group.
-          - Parameter mutually exclusive with C(cipher_string).
-          - Parameter required when C(cipher_type) is C(group).
+          - This parameter is mutually exclusive with C(cipher_string).
+          - This parameter is required when C(cipher_type) is C(group).
         type: str
       cert:
         description:
           - Defines the certificate applied in the client side settings.
-          - Parameter required together with C(key).
+          - This parameter is required together with C(key).
         type: str
       key:
         description:
           - Defines the private key applied in the client side settings.
-          - Parameter required together with C(cert).
+          - This parameter is required together with C(cert).
         type: str
       chain:
         description:
@@ -73,33 +73,33 @@ options:
       ca_cert:
         description:
           - Defines the CA certificate applied in the client side settings.
-          - Parameter is required when C(proxy_type) is C(forward), this setting
-            is ignored otherwise.
-          - Parameter required together with C(ca_key).
+          - This parameter is required when C(proxy_type) is C(forward), otherwise this setting
+            is ignored.
+          - This parameter is required together with C(ca_key).
         type: str
       ca_key:
         description:
           - Defines the CA private key applied in the client side settings.
-          - Parameter is required when C(proxy_type) is C(forward), this setting
-            is ignored otherwise.
-          - Parameter required together with C(ca_key).
+          - This parameter is required when C(proxy_type) is C(forward), otherwise this setting
+            is ignored.
+          - This parameter is required together with C(ca_key).
         type: str
       ca_chain:
         description:
           - Defines the CA certificate keychain in the client side settings.
-          - Parameter is used C(proxy_type) is C(forward), this setting
-            is ignored otherwise.
+          - This parameter is required if C(proxy_type) is C(forward), otherwise this setting
+            is ignored.
         type: str
       alpn:
         description:
           - "Enables or disables ALPN HTTP/2 full proxy."
-          - Parameter can only be used when C(proxy_type) is C(forward).
-          - Parameter only available in SSLO version 9.0 and above.
+          - This parameter can only be used when C(proxy_type) is C(forward).
+          - This parameter is only available in SSLO version 9.0 and later.
         type: bool
       log_publisher:
         description:
           - Defines a specific log publisher to use for client-side SSL-related events.
-          - Parameter only available in SSLO version 9.0 and above.
+          - This parameter is only available in SSLO version 9.0 and later.
         type: str
   server_settings:
     description:
@@ -116,14 +116,14 @@ options:
       cipher_string:
         description:
           - Defines the string used for cipher strings.
-          - Parameter mutually exclusive with C(cipher_group).
-          - Parameter required when C(cipher_type) is C(string).
+          - This parameter is mutually exclusive with C(cipher_group).
+          - This parameter is required when C(cipher_type) is C(string).
         type: str
       cipher_group:
         description:
           - Defines the existing cipher group.
-          - Parameter mutually exclusive with C(cipher_string).
-          - Parameter required when C(cipher_type) is C(group).
+          - This parameter is mutually exclusive with C(cipher_string).
+          - This parameter is required when C(cipher_type) is C(group).
         type: str
       ca_bundle:
         description:
@@ -133,15 +133,15 @@ options:
       block_expired:
         description:
           - Defines the action to take if an expired remote server certificate is encountered.
-          - For reverse proxy the default is to ignore expired certificates C(no).
-          - For forward proxy the default is to drop expired certificates C(yes).
+          - For reverse proxy, the default is to ignore expired certificates C(no).
+          - For forward proxy, the default is to drop expired certificates C(yes).
         type: bool
       block_untrusted:
         description:
           - Defines the action to take if an untrusted remote server certificate is encountered,
             based on the defined C(ca_bundle).
-          - For reverse proxy the default is to ignore untrusted certificates C(no).
-          - For forward proxy the default is to drop untrusted certificates C(yes).
+          - For reverse proxy, the default is to ignore untrusted certificates C(no).
+          - For forward proxy, the default is to drop untrusted certificates C(yes).
         type: bool
       ocsp:
         description:
@@ -156,38 +156,38 @@ options:
       log_publisher:
         description:
           - Defines a specific log publisher to use for server-side SSL-related events.
-          - Parameter only available in SSLO version 9.0 and above.
+          - This parameter is only available in SSLO version 9.0 and above.
         type: str
   bypass_handshake_failure:
     description:
       - Defines the action to take if a server side TLS handshake failure is detected.
-      - A value of C(no) will cause the connection to fail.
-      - A value of C(no) will shutdown TLS decryption and allow the connection to proceed un-decrypted.
+      - A value of C(no) causes the connection to fail.
+      - A value of C(no) shuts down TLS decryption and allows the connection to proceed un-decrypted.
     type: bool
   bypass_client_cert_failure:
     description:
       - Defines the action to take if a server side TLS handshake client certificate request is detected.
-      - A value of C(no) will cause the connection to fail.
-      - A value of C(yes) will shutdown TLS decryption and allow the connection to proceed un-decrypted.
+      - A value of C(no) causes the connection to fail.
+      - A value of C(yes) shuts down TLS decryption and allows the connection to proceed un-decrypted.
     type: bool
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes) does not make any changes on device and always returns C(changed=False).
+      - When C(yes), does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
-        C(MODIFY) on an existing service no json output will be generated.
+        C(MODIFY) on an existing service no JSON output is generated.
     type: bool
     default: no
   timeout:
     description:
-      - The amount of time in seconds to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete.
+      - The amount of time to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
   state:
     description:
       - When C(state) is C(present), ensures the object is created or modified.
-      - When C(state) is C(absent), ensures that the service is removed.
+      - When C(state) is C(absent), ensures the service is removed.
     type: str
     choices:
       - present
@@ -269,7 +269,7 @@ client_settings:
        type: str
        sample: DEFAULT
     cipher_group:
-       description: The existing cipher group
+       description: The existing cipher group.
        type: str
        sample: /Common/f5-default
     cert:
@@ -330,7 +330,7 @@ server_settings:
        type: bool
        sample: True
     block_untrusted:
-       description: The action to take if an untrusted remote server certificate is encountered
+       description: The action to take if an untrusted remote server certificate is encountered.
        type: bool
        sample: True
     ocsp:

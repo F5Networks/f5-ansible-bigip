@@ -1,0 +1,142 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "22a9c5bd-50e5-4b58-bb09-f4e4c84419ec",
+            "name": "ssloGS_global",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-general-settings",
+                    "type": "JSON",
+                    "value": {
+                        "name": "ssloGS_global",
+                        "previousVersion": "7.4",
+                        "version": "7.4",
+                        "configModified": true,
+                        "ipFamily": "ipv4",
+                        "dns": {
+                            "enableDnsSecurity": false,
+                            "enableLocalDnsQueryResolution": false,
+                            "enableLocalDnsZones": false,
+                            "localDnsZones": [],
+                            "localDnsNameservers": []
+                        },
+                        "egressNetwork": {
+                            "gatewayOptions": "useDefault",
+                            "outboundGateways": {
+                                "referredObj": "",
+                                "ipv4OutboundGateways": [
+                                    {
+                                        "ip": "",
+                                        "ratio": 1.0
+                                    }
+                                ],
+                                "ipv6NonPublicGateways": [
+                                    {
+                                        "ip": ""
+                                    }
+                                ],
+                                "ipv6OutboundGateways": [
+                                    {
+                                        "ip": "",
+                                        "ratio": 1.0
+                                    }
+                                ]
+                            }
+                        },
+                        "partition": "Common",
+                        "strictness": true,
+                        "existingBlockId": "22a9c5bd-50e5-4b58-bb09-f4e4c84419ec"
+                    }
+                },
+                {
+                    "id": "processorContext",
+                    "type": "JSON",
+                    "value": {}
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": [
+                        {
+                            "id": "https://localhost/mgmt/tm/net/dns-resolver/~Common~ssloGS_global.app~ssloGS-net-resolver",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/net/dns-resolver/~Common~ssloGS_global.app~ssloGS-net-resolver"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.144.72.149",
+                            "strictness": true,
+                            "potentialDrift": false
+                        }
+                    ]
+                },
+                {
+                    "id": "dependencyInfo",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "type": "f5-ssl-orchestrator-general-settings",
+                            "name": "/Common/ssloGS_global.app/ssloGS_global",
+                            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/22a9c5bd-50e5-4b58-bb09-f4e4c84419ec",
+                            "dependsOn": {
+                                "references": [
+                                    {
+                                        "type": "",
+                                        "names": []
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "configToDeploy",
+                    "type": "BOOLEAN",
+                    "value": true
+                },
+                {
+                    "id": "deviceSpecific",
+                    "type": "JSON"
+                },
+                {
+                    "id": "error",
+                    "type": "STRING",
+                    "value": ""
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-general-settings"
+            },
+            "configProcessorTimeoutSeconds": 30,
+            "statsProcessorTimeoutSeconds": 15,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "UNBOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 2,
+            "lastUpdateMicros": 1648021032823156,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/22a9c5bd-50e5-4b58-bb09-f4e4c84419ec"
+        }
+    ],
+    "generation": 2758,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1648021180634948
+}
