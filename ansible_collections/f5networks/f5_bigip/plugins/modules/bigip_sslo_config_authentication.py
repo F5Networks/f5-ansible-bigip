@@ -31,7 +31,7 @@ options:
       fqdn:
         description:
           - Defines the fully qualified name of the OCSP authentication service.
-          - This parameter is required when creating new OCSP authentication service.
+          - This parameter is required when creating a new OCSP authentication service.
         type: str
       dest:
         description:
@@ -60,7 +60,7 @@ options:
       source:
         description:
           - Defines a source IP address filter, the address must be valid and provided in CIDR notation.
-          - If a route domain is not indicated in the address a default C(%0) is inserted into the address.
+          - If a route domain is not indicated in the address, a default C(%0) is inserted into the address.
           - When creating an OCSP authentication service, if the parameter is not provided a default of C(0.0.0.0%0/0) is
             assumed.
         type: str
@@ -105,7 +105,7 @@ options:
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes), does not make any changes on device and always returns C(changed=False).
+      - When C(yes), does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
         C(MODIFY) on an existing service, no JSON output is generated.
     type: bool

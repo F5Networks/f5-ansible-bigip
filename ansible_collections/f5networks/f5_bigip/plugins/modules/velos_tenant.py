@@ -18,23 +18,23 @@ version_added: "1.1.0"
 options:
   name:
     description:
-      - Name of the tenant
+      - Name of the tenant.
     type: str
     required: True
   image_name:
     description:
-      - Name of the tenant image to be used, must be present on the chassis partition.
+      - Name of the tenant image to be used. Must be present on the chassis partition.
       - Required for create operations.
     type: str
   nodes:
     description:
-      - List of integers, specify which blades C(nodes) the tenant will be deployed on.
+      - List of integers. Specifies which blades C(nodes) the tenant are deployed on.
       - Required for create operations.
     type: list
     elements: int
   mgmt_ip:
     description:
-      - IP address which will be used to connect to the deployed tenant.
+      - IP address which is used to connect to the deployed tenant.
       - Required for create operations.
     type: str
   mgmt_prefix:
@@ -56,7 +56,7 @@ options:
     elements: int
   cpu_cores:
     description:
-      - How many vCPUs should be added to the Tenant.
+      - The number of vCPUs that should be added to the Tenant.
       - Required for create operations.
     type: int
     choices:
@@ -74,13 +74,13 @@ options:
       - 22
   memory:
     description:
-      - How much memory should be provided to the tenant, in KB.
+      - The amount of memory that should be provided to the tenant, in KB.
       - Required for create operations.
     type: int
   cryptos:
     description:
       - Should crypto and compression hardware offload be enabled on the tenant.
-      - The recommendation is to have this enabled, otherwise crypto and compression may will be processed in CPU.
+      - The recommendation is to have this enabled, otherwise crypto and compression may be processed in CPU.
     type: str
     choices:
       - enabled
@@ -95,7 +95,7 @@ options:
       - deployed
   state:
     description:
-      - The tenant state. If C(absent), delete the tenant if it exists.
+      - The tenant state. If C(absent), deletes the tenant if it exists.
       - If C(present) the tenant is created and enabled.
     type: str
     choices:

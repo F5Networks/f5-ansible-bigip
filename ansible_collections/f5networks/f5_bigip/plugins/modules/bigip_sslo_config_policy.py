@@ -25,47 +25,44 @@ options:
     required: True
   policy_consumer:
     description:
-      - Specifies the type of policy, either "outbound" or "inbound"
+      - Specifies the type of policy, either "outbound" or "inbound".
     type: str
     choices:
       - outbound
       - inbound
   proxy_connect:
     description:
-      - Specifies the proxy-connect settings, as required, to establish an upstream proxy chain egress
+      - Specifies the proxy-connect settings, as required, to establish an upstream proxy chain egress.
     type: dict
     suboptions:
       pool_members:
         description:
           - Defines Pools members which we want to associate for new pool
-          - a list of 'ip' and 'port' keys
-          - Mutually exclusive with C(pool_name) parameter.
+          - Mutually exclusive with the C(pool_name) parameter.
         type: list
         elements: dict
         suboptions:
            ip:
              description:
-               - IP address of pool member to be added
+               - IP address of the pool member to be added
              type: str
              required: True
            port:
              description:
-               - Port number to be associated with poolmember IP.
+               - Port number to be associated with the pool member IP address.
              type: int
       pool_name:
         description:
-          - Defines Existing pool to be used for proxy connection
+          - Defines an existing pool to be used for proxy connection.
           - Mutually exclusive with C(pool_members).
         type: str
       username:
         description:
-          - Defines Existing pool to be used for proxy connection
-          - Mutually exclusive with C(pool_members).
+          - Defines username to be used for proxy connection.
         type: str
       password:
         description:
-          - Defines Existing pool to be used for proxy connection
-          - Mutually exclusive with C(pool_members).
+          - Defines password pool to be used for proxy connection.
         type: str
   servercert_check:
     description:
@@ -73,7 +70,7 @@ options:
     type: bool
   policy_rules:
     description:
-      - Defines the policy rules to apply to the security policy, in defined order
+      - Defines the policy rules to apply to the security policy, in defined order.
     type: list
     elements: dict
     suboptions:
@@ -90,7 +87,7 @@ options:
           - match_all
       conditions:
         description:
-          - Defines the list of conditions within this rule
+          - Defines the list of conditions within this rule.
         type: list
         elements: dict
         suboptions:
@@ -112,20 +109,20 @@ options:
               - server_ip_geolocation
           condition_option_category:
             description:
-              - a list of URL categories (ex. "Financial and Data Services")
-              - Should be used with when c(condition_type) matches c(category_lookup_all) or c(category_lookup_sni)
+              - A list of URL categories (ex. "Financial and Data Services").
+              - Should be used when c(condition_type) matches c(category_lookup_all) or c(category_lookup_sni).
             type: list
             elements: str
           geolocations:
             description:
-              - a list of 'type' and 'value' keys, where type can be 'countryCode', 'countryName', 'continent', or 'state'
-              - Should be used with when c(condition_type) matches c(client_ip_geolocation) or c(server_ip_geolocation)
+              - A list of 'type' and 'value' keys, where type can be 'countryCode', 'countryName', 'continent', or 'state'.
+              - Should be used when c(condition_type) matches c(client_ip_geolocation) or c(server_ip_geolocation).
             type: list
             elements: dict
           condition_option_ports:
             description:
-              - Defines a list of IP subnets.
-              - Should be used with when c(condition_type) matches c(client_port_match) or c(server_port_match)
+              - Defines a list of ports.
+              - Should be used when c(condition_type) matches c(client_port_match) or c(server_port_match).
             type: list
             elements: str
           condition_option_subnet:
@@ -136,7 +133,7 @@ options:
             elements: str
           condition_option_protocol:
             description:
-              - Defines the name of the policy rule.
+              - Defines the protocols.
             type: list
             elements: str
       policy_action:
@@ -161,24 +158,25 @@ options:
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes) does not make any changes on device and always returns C(changed=False).
+      - When C(yes) does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
-        C(MODIFY) on an existing service no json output will be generated.
+        C(MODIFY) on an existing service, no JSON output will be generated.
     type: bool
     default: no
   timeout:
     description:
-      - The amount of time in seconds to wait for the C(CREATE) or C(MODIFY) task to complete.
+      - The amount of time, to wait for the C(CREATE) or C(MODIFY) task to complete, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
   state:
     description:
-      - Specifies the present/absent state required.
+      - When C(state) is C(present), ensures the policy is created or modified.
+      - When C(state) is C(absent), ensures the policy is removed.
     type: str
     choices:
-      - absent
       - present
+      - absent
     default: present
 author:
   - Ravinder Reddy(@chinthalapalli)

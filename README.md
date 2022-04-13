@@ -13,8 +13,8 @@ This collection is supported on Python 3.6 and above.
 ## Collections Daily Build
 
 
-We offer a daily build of our most recent collection [dailybuild]. Please use this Collection to test the most
-recent Ansible module updates between releases. You can also install development build directly from GitHub see [repoinstall]
+We offer a daily build of our most recent collection [dailybuild]. Use this Collection to test the most
+recent Ansible module updates between releases. You can also install development build directly from GitHub see [repoinstall].
 
 ### Install from GitHub
 ```bash
@@ -22,7 +22,7 @@ recent Ansible module updates between releases. You can also install development
 ansible-galaxy collection install git+https://github.com/F5Networks/f5-ansible-bigip.git#ansible_collections/f5networks/f5_bigip
 ```
 
-### Install from daily build file
+### Install from the daily build file
 ```bash
 
     ansible-galaxy collection install <collection name> -p ./collections
@@ -31,7 +31,7 @@ ansible-galaxy collection install git+https://github.com/F5Networks/f5-ansible-b
 ```
 
 > **_NOTE:_**  `-p` is the location in which the collection will be installed. This location should be defined in the path for
-    ansible to search for collections. An example of this would be adding ``collections_paths = ./collections``
+    Ansible to search for collections. An example of this would be adding ``collections_paths = ./collections``
     to your **ansible.cfg**
     
 ## Tips

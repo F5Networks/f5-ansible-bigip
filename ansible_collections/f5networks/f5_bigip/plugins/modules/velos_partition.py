@@ -23,11 +23,11 @@ options:
     required: True
   ipv4_mgmt_address:
     description:
-      - Specifies the IPv4 address and subnet or subnet mask that you use to access
+      - Specifies the IPv4 address and subnet or subnet mask you use to access
         the chassis partition.
       - When creating a new chassis partition, if the CIDR notation is not used a default of C(/24) is appended to
         the address.
-      - "The address must be specified in CIDR notation e.g. 192.168.1.1/24"
+      - "The address must be specified in CIDR notation e.g. 192.168.1.1/24."
     type: str
   ipv4_mgmt_gateway:
     description:
@@ -40,7 +40,7 @@ options:
         the chassis partition.
       - When creating a new chassis partition, if the CIDR notation is not used a default of C(/96) is appended
         to the address.
-      - "The address must be specified in CIDR notation e.g. 2002::1234:abcd:ffff:c0a8:101/64"
+      - "The address must be specified in CIDR notation e.g. 2002::1234:abcd:ffff:c0a8:101/64."
     type: str
   ipv6_mgmt_gateway:
     description:
@@ -70,7 +70,7 @@ options:
     default: 300
   state:
     description:
-      - The chassis partition state. If C(absent), delete the chassis partition
+      - The chassis partition state. If C(absent), deletes the chassis partition
         if it exists. C(present) creates the chassis partition and enables it.
         If C(enabled), enables the chassis partition if it exists. If C(disabled),
         creates the chassis partition if needed, and sets state to C(disabled).

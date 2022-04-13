@@ -70,14 +70,14 @@ options:
         type: int
   monitor:
     description:
-      - Specifies the monitor attached the L2 security device pool.
+      - Specifies the monitor attached to the L2 security device pool.
       - The monitor must already exist on the BIG-IP.
       - When creating a L2 service, if the parameter is not provided a default of C(/Common/gateway_icmp) is assumed.
     type: str
   ip_offset:
     description:
       - Defines an IP offset integer to be used in the internal IP addressing.
-      - The parameter is required when creating a new L2 service.
+      - This parameter is required when creating a new L2 service.
       - Accepted values are in the range of C(0) to C(30).
       - This is typically used in a tiered architecture, where a Layer 2 service is shared between multiple
         standalone SSL Orchestrator instances.
@@ -94,7 +94,7 @@ options:
   service_down_action:
     description:
       - Specifies the action to take on monitor failure.
-      - Setting to C(ignore) bypass the security device in the service chain.
+      - Setting to C(ignore) bypasses the security device in the service chain.
       - Setting to C(reset) or C(drop) resets or drops the connection, respectively if the service monitor fails.
       - When creating an ICAP service, if the parameter is not provided a default value of C(ignore) is assumed.
     type: str
@@ -187,7 +187,7 @@ networks:
   sample: [hash/dictionary of values]
 devices_ips:
   description:
-    - The list of ip addresses created for each specified device.
+    - The list of IP addresses created for each specified device.
   returned: changed
   type: list
   sample: [hash/dictionary of values]
@@ -199,7 +199,7 @@ service_subnet:
   sample: [hash/dictionary of values]
 monitor:
   description:
-    - The monitor attached the L2 security device pool.
+    - The monitor attached to the L2 security device pool.
   returned: changed
   type: str
   sample: /Common/gateway_icmp

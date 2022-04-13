@@ -1,3 +1,0 @@
----
-bugfixes:
-  - bigip_device_info - backported PR https://github.com/F5Networks/f5-ansible/pull/2157

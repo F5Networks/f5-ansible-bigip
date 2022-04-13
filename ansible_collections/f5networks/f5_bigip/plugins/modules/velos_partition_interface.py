@@ -94,12 +94,12 @@ EXAMPLES = r'''
 
 RETURN = r'''
 name:
-  description: Name of the partition interface to configure
+  description: Name of the partition interface to configure.
   returned: changed
   type: str
   sample: new_name
 trunk_vlans:
-  description: trunk_vlans to attach to Interface
+  description: trunk_vlans to attach to Interface.
   returned: changed
   type: int
   sample: [444,555]

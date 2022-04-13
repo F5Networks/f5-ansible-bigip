@@ -94,7 +94,7 @@ partition_state:
   type: complex
   contains:
     controllers:
-      description: state of controllers
+      description: State of controllers
       returned: always
       type: str
       example: '

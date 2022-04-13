@@ -44,7 +44,7 @@ options:
       - STATIC
   config_members:
     description:
-      - "Configures the list of interfaces to be grouped for Link Aggregation Group (LAG)."
+      - "Configures the list of interfaces to be grouped for the Link Aggregation Group (LAG)."
     type: list
     elements: str
   state:

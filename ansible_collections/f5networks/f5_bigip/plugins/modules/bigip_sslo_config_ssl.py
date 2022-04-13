@@ -88,18 +88,18 @@ options:
         description:
           - Defines the CA certificate keychain in the client side settings.
           - This parameter is required if C(proxy_type) is C(forward), otherwise this setting
-            is ignored otherwise.
+            is ignored.
         type: str
       alpn:
         description:
           - "Enables or disables ALPN HTTP/2 full proxy."
           - This parameter can only be used when C(proxy_type) is C(forward).
-          - This parameter is only available in SSLO version 9.0 and above.
+          - This parameter is only available in SSLO version 9.0 and later.
         type: bool
       log_publisher:
         description:
           - Defines a specific log publisher to use for client-side SSL-related events.
-          - Parameter only available in SSLO version 9.0 and above.
+          - This parameter is only available in SSLO version 9.0 and later.
         type: str
   server_settings:
     description:
@@ -173,7 +173,7 @@ options:
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes), does not make any changes on device and always returns C(changed=False).
+      - When C(yes), does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
         C(MODIFY) on an existing service no JSON output is generated.
     type: bool

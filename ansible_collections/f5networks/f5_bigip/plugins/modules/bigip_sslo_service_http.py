@@ -80,8 +80,8 @@ options:
         type: str
   devices:
     description:
-      - Defines a list of service IPs and ports.
-      - Use IP only for transparent proxy, IP and port for explicit proxy.
+      - Defines a list of service IP addresses and ports.
+      - Use IP only for transparent proxy, and IP and port for explicit proxy.
     type: list
     elements: dict
     suboptions:
@@ -111,7 +111,7 @@ options:
     type: bool
   monitor:
     description:
-      - Specifies the monitor attached the HTTP security device pool.
+      - Specifies the monitor attached to the HTTP security device pool.
       - The monitor must already exist on the BIG-IP.
       - "When creating an HTTP service, if the parameter is not provided a default of C(/Common/gateway_icmp) is assumed."
     type: str
@@ -125,7 +125,7 @@ options:
       - When C(none) no SNAT configuration is performed. This is the default choice when creating HTTP service
         if the parameter is not provided.
       - When C(automap), SNAT automap is configured.
-      - When C(snatpool), the SNAT configuration points to existing SNAT Pool defined by the C(snatpool) parameter.
+      - When C(snatpool), the SNAT configuration points to an existing SNAT Pool defined by the C(snatpool) parameter.
       - When C(snatlist), a new SNAT Pool is created from the provided C(snatlist).
     type: str
     choices:
@@ -140,8 +140,8 @@ options:
     type: str
   snat_list:
     description:
-      - Defines a list of IPs to use in a SNAT pool configuration.
-      - Parameter required when C(snat) set to C(snatlist).
+      - Defines a list of IP addresses to use in a SNAT pool configuration.
+      - This parameter required when C(snat) set to C(snatlist).
     type: list
     elements: str
   rules:
@@ -172,7 +172,7 @@ options:
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes), does not make any changes on device and always returns C(changed=False).
+      - When C(yes), does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
         C(MODIFY) on an existing service, no JSON output is generated.
     type: bool
@@ -302,7 +302,7 @@ devices_from:
        sample: 255.255.255.128
 devices:
   description:
-    - The list of service IPs and ports.
+    - The list of service IP addresses and ports.
   returned: changed
   type: complex
   contains:
@@ -334,7 +334,7 @@ ip_family:
   sample: ipv4
 monitor:
   description:
-    - The monitor attached the HTTP security device pool.
+    - The monitor attached to the HTTP security device pool.
   returned: changed
   type: str
   sample: /Common/gateway_icmp

@@ -13,7 +13,7 @@ DOCUMENTATION = r'''
 module: bigip_sslo_service_swg
 short_description: Manage an SSL Orchestrator SWG service
 description:
-  - Manage an SSL Orchestrator SWG service.
+  - Manage an SSL Orchestrator Secure Web Gateway service.
 version_added: "1.0.0"
 options:
   name:
@@ -45,7 +45,7 @@ options:
   access_profile:
     description:
       - Specifies a custom SWG-Transparent access profile to apply to the SWG service.
-      - During creation of new SWG service, when the parameter is not specified, the configuration auto generates
+      - During creation of a new SWG service, when the parameter is not specified, the configuration auto generates
         the access profile.
     type: str
   service_down_action:
@@ -71,7 +71,7 @@ options:
       - Sets the module to output a JSON blob for further consumption.
       - When C(yes) does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
-        C(MODIFY) on an existing service no JSON output is generated.
+        C(MODIFY) on an existing service, no JSON output is generated.
     type: bool
     default: no
   timeout:

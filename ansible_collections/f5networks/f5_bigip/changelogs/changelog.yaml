@@ -297,3 +297,25 @@ releases:
       name: bigip_sslo_service_tap
       namespace: ''
     release_date: '2022-03-03'
+  1.7.0:
+    changes:
+      bugfixes:
+      - bigip_command - fixed a bug that interpreted a pipe symbol inside an input
+        string as pipe used to combine commands
+      - bigip_device_info - backported PR https://github.com/F5Networks/f5-ansible/pull/2157
+      minor_changes:
+      - bigip_device_info - add UCS archive info to data gathered
+      - bigiq_regkey_license - add addon_keys parameter to the module
+    fragments:
+    - add-addon-bigiq-license.yaml
+    - add-ucs-bigip-device-info.yaml
+    - backport-fix-bigip-device-info.yaml
+    - bugfix-bigip-command.yaml
+    modules:
+    - description: Manage an SSL Orchestrator security policy
+      name: bigip_sslo_config_policy
+      namespace: ''
+    - description: Manage an SSL Orchestrator Topology
+      name: bigip_sslo_config_topology
+      namespace: ''
+    release_date: '2022-04-13'

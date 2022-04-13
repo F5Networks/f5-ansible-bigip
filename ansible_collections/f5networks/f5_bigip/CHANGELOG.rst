@@ -5,6 +5,27 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v1.7.0
+======
+
+Minor Changes
+-------------
+
+- bigip_device_info - add UCS archive info to data gathered
+- bigiq_regkey_license - add addon_keys parameter to the module
+
+Bugfixes
+--------
+
+- bigip_command - fixed a bug that interpreted a pipe symbol inside an input string as pipe used to combine commands
+- bigip_device_info - backported PR https://github.com/F5Networks/f5-ansible/pull/2157
+
+New Modules
+-----------
+
+- bigip_sslo_config_policy - Manage an SSL Orchestrator security policy
+- bigip_sslo_config_topology - Manage an SSL Orchestrator Topology
+
 v1.6.0
 ======
 

@@ -36,7 +36,7 @@ options:
       - inbound_l2
   protocol:
     description:
-      - "Defines the topology protocol, either tcp, udp, or other (non-tcp/non-udp)."
+      - "Defines the topology protocol, either TCP, UDP, or other (non-tcp/non-udp)."
       - When not specified a value of C(tcp) is assumed when creating new topology object.
     type: str
     choices:
@@ -46,7 +46,7 @@ options:
   ip_family:
     description:
       - Defines the IP family for topology.
-      - When not specified a value of C(ipv4) is assumed when creating new topology object.
+      - When not specified a value of C(ipv4) is assumed when creating a new topology object.
     type: str
     choices:
       - ipv4
@@ -55,30 +55,30 @@ options:
     description:
       - Defines the source address filter and optional route domain for the topology listener.
       - The address must be specified in CIDR notation, with subnet mask not exceeding 32 bits.
-      - When not specified a value of C(0.0.0.0%0/0) is assumed when creating new topology object.
+      - When not specified a value of C(0.0.0.0%0/0) is assumed when creating a new topology object.
     type: str
   dest:
     description:
       - Defines the destination address filter and optional route domain for the topology listener.
       - The address must be specified in CIDR notation, with subnet mask not exceeding 32 bits.
-      - When not specified a value of C(0.0.0.0%0/0) is assumed when creating new topology object.
+      - When not specified a value of C(0.0.0.0%0/0) is assumed when creating a new topology object.
     type: str
   port:
     description:
       - Defines the port filter for the topology listener.
-      - When not specified a value of C(0) is assumed when creating new topology object.
+      - When not specified a value of C(0) is assumed when creating a new topology object.
       - Valid value range is from C(0) to C(65535).
     type: int
   snat:
     description:
       - Defines the type egress source NAT used.
-      - When C(none) no outbound snat configuration is configured. This is the default choice when creating topology
+      - When C(none) no outbound SNAT configuration is configured. This is the default choice when creating topology
         object if the parameter is not provided.
       - When C(topology_type) is either set to C(l2_outbound) or C(l2_inbound) a C(snat) is automatically
         set to C(none).
-      - When C(automap), snat automap is configured.
-      - When C(snatpool) the snat configuration points to existing snatpool defined by the C(snatpool) parameter.
-      - When C(snatlist) new snatpool is created from the provided C(snatlist).
+      - When C(automap), SNAT automap is configured.
+      - When C(snatpool) the SNAT configuration points to an existing snatpool defined by the C(snatpool) parameter.
+      - When C(snatlist) a new snatpool is created from the provided C(snatlist).
     type: str
     choices:
       - none
@@ -88,18 +88,18 @@ options:
   snat_pool:
     description:
       - Defines an existing SNAT pool.
-      - Parameter required when C(snat) set to C(snatpool).
+      - This parameter required when C(snat) is set to C(snatpool).
     type: str
   snat_list:
     description:
-      - Defines a list of IPs to use in a SNAT pool configuration.
-      - Parameter required when C(snat) set to C(snatlist).
+      - Defines a list of IP addresses to use in a SNAT pool configuration.
+      - Parameter required when C(snat) is set to C(snatlist).
     type: list
     elements: str
   vlans:
     description:
       - Defines the list of listening VLANs for the topology listener.
-      - Parameter is required when creating new topology object.
+      - This parameter is required when creating new topology object.
     type: list
     elements: str
   gateway:
@@ -107,10 +107,10 @@ options:
       - Defines the type of egress gateway to use for egress traffic.
       - When C(system) is set a system-defined gateway route is used. This is the default choice when creating topology
         object if the parameter is not provided.
-      - When C(topology_type) is either set to C(l2_outbound) or C(l2_inbound) a C(gateway) is automatically
+      - When C(topology_type) is either set to C(l2_outbound) or C(l2_inbound), a C(gateway) is automatically
         set to C(system).
-      - When C(pool) the gateway configuration points to existing gateway pool defined by the C(gateway_pool) parameter.
-      - When C(iplist) new gateway pool is created from the provided C(gateway_list).
+      - When C(pool) the gateway configuration points to an existing gateway pool defined by the C(gateway_pool) parameter.
+      - When C(iplist) a new gateway pool is created from the provided C(gateway_list).
     type: str
     choices:
       - system
@@ -119,12 +119,12 @@ options:
   gateway_pool:
     description:
       - Defines an existing gateway pool to use for egress traffic.
-      - Parameter required when C(gateway) set to C(pool).
+      - This parameter required when C(gateway) is set to C(pool).
     type: str
   gateway_list:
     description:
-      - Defines a list of IPs to use in a gateway pool configuration.
-      - Parameter required when C(gateway) set to C(iplist).
+      - Defines a list of IP addresses to use in a gateway pool configuration.
+      - This parameter required when C(gateway) is set to C(iplist).
     type: list
     elements: dict
     suboptions:
@@ -136,29 +136,29 @@ options:
       ratio:
         description:
           - The ratio used for load balancing egress traffic in the gateway pool.
-          - When not specified a value of C(1) is assumed when creating new topology object.
+          - When not specified a value of C(1) is assumed when creating a new topology object.
           - Valid value range is from C(1) to C(65535).
         type: int
   tcp_settings_client:
     description:
       - Defines a custom client side TCP profile to use.
-      - Parameter is ignored when C(topology_type) is set to C(outbound_explicit).
-      - When not specified the default creation value will be set depending on the C(topology_type). If C(topology_type)
-        is either set to C(l2_inbound) or C(l3_inbound) the value is set to C(/Common/f5-tcp-wan). If C(topology_type)
-        is either set to C(l2_outbound or C(l3_outbound) the value is set to C(/Common/f5-tcp-lan).
+      - This parameter is ignored when C(topology_type) is set to C(outbound_explicit).
+      - When not specified, the default creation value will be set depending on the C(topology_type). If C(topology_type)
+        is either set to C(l2_inbound) or C(l3_inbound), the value is set to C(/Common/f5-tcp-wan). If C(topology_type)
+        is either set to C(l2_outbound or C(l3_outbound), the value is set to C(/Common/f5-tcp-lan).
     type: str
   tcp_settings_server:
     description:
       - Defines a custom server side TCP profile to use.
-      - Parameter is ignored when C(topology_type) is set to C(outbound_explicit).
-      - When not specified the default creation value will be set depending on the C(topology_type). If C(topology_type)
+      - This parameter is ignored when C(topology_type) is set to C(outbound_explicit).
+      - When not specified, the default creation value will be set depending on the C(topology_type). If C(topology_type)
         is either set to C(l2_inbound) or C(l3_inbound) the value is set to C(/Common/f5-tcp-lan). If C(topology_type)
         is either set to C(l2_outbound or C(l3_outbound) the value is set to C(/Common/f5-tcp-wan).
     type: str
   l7_profile_type:
     description:
       - Defines the L7 protocol type, and can either be C(none) for all protocols, or C(http).
-      - When not specified a value of C(http) is assumed when creating new topology object.
+      - When not specified, a value of C(http) is assumed when creating a new topology object.
     type: str
     choices:
       - none
@@ -166,25 +166,25 @@ options:
   l7_profile:
     description:
       - Defines the specific HTTP profile if the C(l7_profile_type) is set to C(http).
-      - When not specified a value of C(/Common/http) is assumed when creating new topology object.
+      - When not specified, a value of C(/Common/http) is assumed when creating a new topology object.
     type: str
   additional_protocols:
     description:
       - Defines a list of additional protocols to create listeners for.
-      - Parameter is only valid when C(protocol) is set to C(tcp)
+      - This parameter is only valid when C(protocol) is set to C(tcp)
       - "Accepted values of list are: C(ftp), C(imap), C(pop3), C(smtps)"
     type: list
     elements: str
   access_profile:
     description:
       - Defines a custom access profile to use.
-      - When not specified a topology-defined access profile will be created.
-      - Parameter is mandatory when C(topology_type) is C(outbound_explicit) or when C(security_policy) is set.
+      - When not specified, a topology-defined access profile is created.
+      - This parameter is mandatory when C(topology_type) is C(outbound_explicit) or when C(security_policy) is set.
     type: str
   profile_scope:
     description:
       - Defines the access profile scope.
-      - Parameter introduced in SSLO version 8.2 and above.
+      - This parameter applies to SSLO version 8.2 and later.
     type: str
     choices:
       - public
@@ -193,39 +193,39 @@ options:
     description:
       - Defines a string name shared between the transparent proxy SSL Orchestrator profile and the captive
         portal authentication access profile.
-      - Parameter introduced in SSLO version 8.2 and above.
+      - This parameter applies to SSLO version 8.2 and later.
       - Required when the C(profile_scope) option is C(named).
     type: str
   primary_auth_uri:
     description:
       - "Defines the authentication service (ie. captive portal) to redirect new users to."
       - "This setting should contain a fully-qualified domain name (ex. https://auth.f5labs.com)."
-      - Parameter introduced in SSLO version 8.2 and above.
+      - This parameter applies to SSLO version 8.2 and later.
       - Required when the C(profile_scope) option is C(named).
     type: str
   verify_accept:
     description:
       - Enables TCP Verify Accept proxy through an outbound topology.
-      - Parameter available in SSLO version 9.0 and above.
+      - This parameter is available in SSLO version 9.0 and later.
     type: bool
   ocsp_auth:
     description:
       - This setting defines an OCSP Authentication profile.
-      - Parameter available in SSLO version 9.0 and above.
+      - This parameter is available in SSLO version 9.0 and later.
     type: str
   proxy_ip:
     description:
       - Defines the explicit proxy listener IP address.
-      - Parameter required when C(topology_type) is is C(outbound_explicit).
-      - Parameter mutually exclusive with C(dest) and C(port).
-      - Parameter must be specified together with C(proxy_port).
+      - This parameter is required when C(topology_type) is is C(outbound_explicit).
+      - This parameter is mutually exclusive with C(dest) and C(port).
+      - This parameter must be specified together with C(proxy_port).
     type: str
   proxy_port:
     description:
       - Defines the explicit proxy listener port.
-      - Parameter required when C(topology_type) is is C(outbound_explicit).
-      - Parameter mutually exclusive with C(dest) and C(port).
-      - Parameter must be specified together with C(proxy_ip).
+      - This parameter is required when C(topology_type) is is C(outbound_explicit).
+      - This parameter is mutually exclusive with C(dest) and C(port).
+      - This parameter must be specified together with C(proxy_ip).
     type: int
   auth_profile:
     description:
@@ -234,7 +234,7 @@ options:
   dns_resolver:
     description:
       - Defines a per-topology DNS resolver configuration object.
-      - Parameter available in SSLO version 9.0 and above.
+      - This parameter is available in SSLO version 9.0 and above.
     type: str
   pool:
     description:
@@ -273,7 +273,7 @@ options:
           - debug
       ftp:
         description:
-          - Defines the logging facility used for the SSL Orchestrator ftp listener logging.
+          - Defines the logging facility used for the SSL Orchestrator FTP listener logging.
         type: str
         choices:
           - emergency
@@ -286,7 +286,7 @@ options:
           - debug
       imap:
         description:
-          - Defines the logging facility used for the SSL Orchestrator imap listener logging.
+          - Defines the logging facility used for the SSL Orchestrator IMAP listener logging.
         type: str
         choices:
           - emergency
@@ -299,7 +299,7 @@ options:
           - debug
       pop3:
         description:
-          - Defines the logging facility used for the SSL Orchestrator pop3 listener logging.
+          - Defines the logging facility used for the SSL Orchestrator POP3 listener logging.
         type: str
         choices:
           - emergency
@@ -312,7 +312,7 @@ options:
           - debug
       smtps:
         description:
-          - Defines the logging facility used for the SSL Orchestrator smtps listener logging.
+          - Defines the logging facility used for the SSL Orchestrator SMTPS listener logging.
         type: str
         choices:
           - emergency
@@ -332,26 +332,26 @@ options:
     description:
       - Defines the name of the security policy object already created.
       - Configuration auto-prepends "ssloP_" to provided name if not present.
-      - Parameter is mandatory when C(proxy_type) is C(outbound_explicit).
+      - This parameter is mandatory when C(proxy_type) is C(outbound_explicit).
     type: str
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes) does not make any changes on device and always returns C(changed=False).
+      - When C(yes) does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
-        C(MODIFY) on an existing service no json output will be generated.
+        C(MODIFY) on an existing service, no JSON output is generated.
     type: bool
     default: no
   timeout:
     description:
-      - The amount of time in seconds to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete.
+      - The amount of time to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete, in seconds.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
   state:
     description:
       - When C(state) is C(present), ensures the object is created or modified.
-      - When C(state) is C(absent), ensures that the object is removed.
+      - When C(state) is C(absent), ensures the object is removed.
     type: str
     choices:
       - present

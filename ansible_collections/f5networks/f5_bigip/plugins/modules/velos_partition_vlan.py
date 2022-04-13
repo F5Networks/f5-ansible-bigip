@@ -23,7 +23,7 @@ options:
     type: str
   vlan_id:
     description:
-      - The ID for the vlan.
+      - The ID for the VLAN.
       - Valid value range is from C(0) to C(4095).
     required: True
     type: int

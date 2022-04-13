@@ -69,7 +69,7 @@ options:
       referrer:
         description:
           - Specifies a Referrer header to pass to the ICAP service.
-          - Required when when creating a new service object with C(enable) value set to C(yes).
+          - Required when creating a new service object with C(enable) value set to C(yes).
         type: str
       host:
         description:
@@ -110,8 +110,8 @@ options:
   service_down_action:
     description:
       - Specifies the action to take on monitor failure.
-      - Setting to C(ignore) bypass the security device in the service chain.
-      - Setting to C(reset) or C(drop) resets or drops the connection, respectively if the service monitor fails.
+      - Setting to C(ignore) bypasses the security device in the service chain.
+      - Setting to C(reset) or C(drop) resets or drops the connection, respectively, if the service monitor fails.
       - When creating an ICAP service, if the parameter is not provided a default value of C(ignore) is assumed.
     type: str
     choices:
@@ -126,7 +126,7 @@ options:
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes), does not make any changes on device and always returns C(changed=False).
+      - When C(yes), does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
         C(MODIFY) on an existing service, no JSON output is generated.
     type: bool

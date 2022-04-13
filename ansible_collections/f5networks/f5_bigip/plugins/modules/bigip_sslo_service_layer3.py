@@ -80,7 +80,7 @@ options:
         type: str
   devices:
     description:
-      - Defines a list of service IPs and ports.
+      - Defines a list of service IP addresses and ports.
     type: list
     elements: dict
     suboptions:
@@ -101,15 +101,15 @@ options:
       - ipv6
   monitor:
     description:
-      - Specifies the monitor attached the L3 Inline security device pool.
+      - Specifies the monitor attached to the L3 Inline security device pool.
       - The monitor must already exist on the BIG-IP.
       - "When creating L3 Inline service if the parameter is not provided a default of C(/Common/gateway_icmp) is assumed."
     type: str
   service_down_action:
     description:
       - Specifies the action to take on monitor failure.
-      - Setting to C(ignore) bypass the security device in the service chain.
-      - Setting to C(reset) or C(drop) resets or drops the connection, respectively if the service monitor fails.
+      - Setting to C(ignore) bypasses the security device in the service chain.
+      - Setting to C(reset) or C(drop) resets or drops the connection, respectively, if the service monitor fails.
       - When creating a L3 Inline service, if the parameter is not provided a default value of C(ignore) is assumed.
     type: str
     choices:
@@ -141,8 +141,8 @@ options:
     type: str
   snat_list:
     description:
-      - Defines a list of IPs to use in a SNAT pool configuration.
-      - Parameter required when C(snat) set to C(snatlist).
+      - Defines a list of IP addresses to use in a SNAT pool configuration.
+      - This parameter is required when C(snat) set to C(snatlist).
     type: list
     elements: str
   rules:
@@ -295,7 +295,7 @@ devices_from:
        sample: 255.255.255.128
 devices:
   description:
-    - The list of service IPs and ports.
+    - The list of service IP addresses and ports.
   returned: changed
   type: complex
   contains:
@@ -315,7 +315,7 @@ ip_family:
   sample: ipv4
 monitor:
   description:
-    - The monitor attached the HTTP security device pool.
+    - The monitor attached to the HTTP security device pool.
   returned: changed
   type: str
   sample: /Common/gateway_icmp
@@ -333,7 +333,7 @@ port_remap:
   sample: 8080
 snat:
   description:
-    - Snat configuration type.
+    - SNAT configuration type.
   returned: changed
   type: str
   sample: none
