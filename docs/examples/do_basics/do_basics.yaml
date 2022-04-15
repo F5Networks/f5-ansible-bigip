@@ -1,11 +1,10 @@
 - name: DO
   hosts: bigip
-  connection: local
+  connection: httpapi
   gather_facts: false
 
-  tasks:   
-
+  tasks:
     - name: Deploy DO Declaration
       f5networks.f5_bigip.bigip_do_deploy:
         content: "{{ lookup('file', 'declarations/do.json') }}"
-        tags: [ deploy ]
+      tags: [deploy]
