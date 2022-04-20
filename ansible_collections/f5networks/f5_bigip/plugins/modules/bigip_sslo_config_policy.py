@@ -645,7 +645,13 @@ class ModuleParameters(Parameters):
             if rule['policy_action'] == 'allow':
                 action_option['ssl'] = "" if rule['ssl_forwardproxy_action'] is None else rule[
                     'ssl_forwardproxy_action']
-                action_option['serviceChain'] = "" if rule['service_chain'] is None else rule['service_chain']
+                if rule['service_chain'] is None:
+                    action_option['serviceChain'] = ""
+                else:
+                    if not rule['service_chain'].startswith("ssloSC_"):
+                        action_option['serviceChain'] = "ssloSC_" + rule['service_chain']
+                    else:
+                        action_option['serviceChain'] = rule['service_chain']
 
             policy_rule['actionOptions'] = action_option
             condtns = rule['conditions'] if 'conditions' in rule else []
