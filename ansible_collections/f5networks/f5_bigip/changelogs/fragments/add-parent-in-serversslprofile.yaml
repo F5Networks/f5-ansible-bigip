@@ -1,0 +1,3 @@
+---
+minor_changes:
+    - bigip_device_info - add parent to the data gathered for ServerSSL Profiles

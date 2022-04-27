@@ -13440,6 +13440,7 @@ class ServerSslProfilesParameters(BaseParameters):
         'cacheTimeout': 'cache_timeout',
         'cipherGroup': 'cipher_group',
         'crlFile': 'crl_file',
+        'defaultsFrom': 'parent',
         'expireCertResponseControl': 'expire_cert_response_control',
         'genericAlert': 'generic_alert',
         'handshakeTimeout': 'handshake_timeout',
