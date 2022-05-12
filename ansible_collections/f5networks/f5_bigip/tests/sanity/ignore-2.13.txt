@@ -1,0 +1,13 @@
+plugins/action/bigip.py action-plugin-docs # undocumented action plugin to fix, existed before sanity test was added
+plugins/action/bigiq.py action-plugin-docs # undocumented action plugin to fix, existed before sanity test was added
+plugins/modules/bigip_imish_config.py validate-modules:parameter-type-not-in-doc
+plugins/modules/bigip_imish_config.py validate-modules:undocumented-parameter
+plugins/modules/bigip_ucs_fetch.py validate-modules:parameter-type-not-in-doc
+plugins/modules/bigip_ucs_fetch.py validate-modules:undocumented-parameter
+plugins/modules/bigip_imish_config.py validate-modules:doc-default-does-not-match-spec
+plugins/modules/bigip_ucs_fetch.py validate-modules:doc-default-does-not-match-spec
+plugins/modules/bigip_ssl_pkcs12.py validate-modules:parameter-type-not-in-doc
+plugins/modules/bigip_ssl_pkcs12.py validate-modules:undocumented-parameter
+plugins/modules/bigip_ssl_pkcs12.py validate-modules:doc-default-does-not-match-spec
+plugins/modules/bigiq_regkey_license.py validate-modules:no-log-needed
+plugins/modules/bigip_ssl_key_cert.py validate-modules:no-log-needed

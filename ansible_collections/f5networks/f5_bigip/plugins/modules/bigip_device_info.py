@@ -4116,6 +4116,36 @@ nodes:
       returned: queried
       type: str
       sample: and_list
+    fqdn_name:
+      description:
+        - FQDN name of the node.
+      returned: queried
+      type: str
+      sample: sample.host.foo.com
+    fqdn_auto_populate:
+      description:
+        - Indicates if the system automatically creates ephemeral nodes using DNS discovered IPs.
+      returned: queried
+      type: bool
+      sample: yes
+    fqdn_address_type:
+      description:
+        - The address family of the automatically created ephemeral nodes.
+      returned: queried
+      type: str
+      sample: ipv4
+    fqdn_up_interval:
+      description:
+        - The interval at which a query occurs, when the DNS server is up.
+      returned: queried
+      type: int
+      sample: 3600
+    fqdn_down_interval:
+      description:
+        - The interval in which a query occurs, when the DNS server is down.
+      returned: queried
+      type: int
+      sample: 15
   sample: hash/dictionary of values
 oneconnect_profiles:
   description: OneConnect profile related information.
@@ -12865,8 +12895,47 @@ class NodesParameters(BaseParameters):
         'status_reason',
         'monitor_rule',
         'monitors',
-        'monitor_type'
+        'monitor_type',
+        'fqdn_name',
+        'fqdn_auto_populate',
+        'fqdn_address_type',
+        'fqdn_up_interval',
+        'fqdn_down_interval',
     ]
+
+    @property
+    def fqdn_name(self):
+        if self._values['fqdn'] is None:
+            return None
+        return self._values['fqdn'].get('tmName', None)
+
+    @property
+    def fqdn_auto_populate(self):
+        if self._values['fqdn'] is None:
+            return None
+        return flatten_boolean(self._values['fqdn'].get('autopopulate', None))
+
+    @property
+    def fqdn_address_type(self):
+        if self._values['fqdn'] is None:
+            return None
+        return self._values['fqdn'].get('addressFamily', None)
+
+    @property
+    def fqdn_up_interval(self):
+        if self._values['fqdn'] is None:
+            return None
+        result = self._values['fqdn'].get('interval', None)
+        if result:
+            return int(result)
+
+    @property
+    def fqdn_down_interval(self):
+        if self._values['fqdn'] is None:
+            return None
+        result = self._values['fqdn'].get('downInterval', None)
+        if result:
+            return int(result)
 
     @property
     def monitors(self):
