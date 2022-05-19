@@ -45,7 +45,12 @@ class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
             name="testpolicy",
-            servercert_check=True,
+            default_rule=dict(
+                allow_block='block',
+                tls_intercept='intercept',
+                service_chain='foo_service'
+            ),
+            server_cert_check=True,
             proxy_connect=dict(
                 username='testuser',
                 password='',
@@ -86,7 +91,6 @@ class TestParameters(unittest.TestCase):
         )
 
         p = ModuleParameters(params=args)
-        assert p.policy_consumer == 'Outbound'
         assert p.policy_rules == [{'name': 'testrule', 'operation': 'OR', 'mode': 'edit', 'action': 'reject',
                                    'actionOptions': {'ssl': '', 'serviceChain': ''},
                                    'conditions': [{'type': 'Category Lookup',
@@ -104,18 +108,31 @@ class TestParameters(unittest.TestCase):
                                    'conditions': [{'type': 'Category Lookup',
                                                    'options': {'category': ['Financial Data and Services', 'General '
                                                                                                            'Email']}}]},
-                                  {'name': 'All Traffic', 'action': 'allow', 'mode': 'edit',
-                                   'actionOptions': {'ssl': '', 'serviceChain': ''}, 'isDefault': True}]
+                                  {'name': 'All Traffic', 'action': 'block', 'mode': 'edit',
+                                   'actionOptions': {'ssl': 'intercept', 'serviceChain': 'ssloSC_foo_service'},
+                                   'isDefault': True}
+                                  ]
+        assert p.default_rule_allow_block == 'block'
+        assert p.default_rule_service_chain == 'ssloSC_foo_service'
+        assert p.default_rule_tls_intercept == 'intercept'
         assert p.proxy_connect == {'isProxyChainEnabled': True, 'username': 'testuser', 'password': '',
-                                   'pool': {'create': True, 'members': [{'ip': '198.19.64.30', 'port': 100}],
+                                   'pool': {'create': True, 'members': [{'ip': '198.19.64.30', 'port': '100'}],
                                             'name': '/Common/ssloP_testpolicy.app/ssloP_testpolicy_proxyChainPool'}}
-        assert p.servercert_check
-        assert p.pools == {'ssloP_testpolicy_proxyChainPool': {'name': 'ssloP_testpolicy_proxyChainPool',
-                                                               'loadBalancingMode': 'predictive-node',
-                                                               'monitors': {'names': ['/Common/gateway_icmp']},
-                                                               'unhandledPool': True,
-                                                               'callerContext': 'policyConfigProcessor',
-                                                               'members': [{'ip': '198.19.64.30', 'port': 100}]}}
+        assert p.server_cert_check is True
+        assert p.pools == {
+            'ssloP_testpolicy_proxyChainPool': {'name': 'ssloP_testpolicy_proxyChainPool',
+                                                'loadBalancingMode': 'predictive-node',
+                                                'monitors': {'names': ['/Common/gateway_icmp']},
+                                                'unhandledPool': True,
+                                                'callerContext': 'policyConfigProcessor',
+                                                'minActiveMembers': '0',
+                                                'members': [{
+                                                    'appService': 'ssloP_testpolicy.app/ssloP_testpolicy',
+                                                    'ip': '198.19.64.30',
+                                                    'port': '100',
+                                                    'subPath': 'ssloP_testpolicy.app'}]
+                                                }}
+
         assert p.name == 'ssloP_testpolicy'
 
     def test_api_parameters(self):
@@ -223,14 +240,14 @@ class TestParameters(unittest.TestCase):
                 "members": [
                     {
                         "ip": "192.168.30.10",
-                        "port": 100
+                        "port": "100"
                     }
                 ],
                 "name": "/Common/ssloP_testpolicy.app/ssloP_testpolicy_proxyChainPool"
             },
             "username": "testuser"
         }
-        assert p.servercert_check
+        assert p.server_cert_check
         assert p.pools == {
             "ssloP_testpolicy_proxyChainPool": {
                 "name": "ssloP_testpolicy_proxyChainPool",
@@ -243,7 +260,7 @@ class TestParameters(unittest.TestCase):
                 "members": [
                     {
                         "ip": "192.168.30.10",
-                        "port": 100,
+                        "port": "100",
                         "appService": "ssloP_testpolicy.app/ssloP_testpolicy",
                         "subPath": "ssloP_testpolicy.app"
                     }
@@ -276,7 +293,7 @@ class TestManager(unittest.TestCase):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
             name="testpolicy",
-            servercert_check=True,
+            server_cert_check=True,
             proxy_connect=dict(
                 username='testuser',
                 password='',
@@ -332,15 +349,22 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['pools'] == {'ssloP_testpolicy_proxyChainPool': {'name': 'ssloP_testpolicy_proxyChainPool',
-                                                                        'loadBalancingMode': 'predictive-node',
-                                                                        'monitors': {'names': ['/Common/gateway_icmp']},
-                                                                        'unhandledPool': True,
-                                                                        'callerContext': 'policyConfigProcessor',
-                                                                        'members': [
-                                                                            {'ip': '198.19.64.30', 'port': 100}]}}
+        assert results['pools'] == {'ssloP_testpolicy_proxyChainPool': {
+            'name': 'ssloP_testpolicy_proxyChainPool',
+            'loadBalancingMode': 'predictive-node',
+            'monitors': {'names': ['/Common/gateway_icmp']},
+            'minActiveMembers': '0',
+            'unhandledPool': True,
+            'callerContext': 'policyConfigProcessor',
+            'members': [{'appService': 'ssloP_testpolicy.app/ssloP_testpolicy',
+                         'ip': '198.19.64.30',
+                         'port': '100',
+                         'subPath': 'ssloP_testpolicy.app'
+                         }]
+        }}
+
         assert results['proxy_connect'] == {'isProxyChainEnabled': True, 'username': 'testuser', 'password': '',
-                                            'pool': {'create': True, 'members': [{'ip': '198.19.64.30', 'port': 100}],
+                                            'pool': {'create': True, 'members': [{'ip': '198.19.64.30', 'port': '100'}],
                                                      'name': '/Common/ssloP_testpolicy.app'
                                                              '/ssloP_testpolicy_proxyChainPool'}}
         assert results['policy_rules'] == [{'name': 'testrule', 'operation': 'OR', 'mode': 'edit', 'action': 'reject',
@@ -362,4 +386,4 @@ class TestManager(unittest.TestCase):
                                                             'options': {'category': ['Financial Data and Services',
                                                                                      'General Email']}}]},
                                            {'name': 'All Traffic', 'action': 'allow', 'mode': 'edit',
-                                            'actionOptions': {'ssl': '', 'serviceChain': ''}, 'isDefault': True}]
+                                            'actionOptions': {'ssl': 'bypass', 'serviceChain': ''}, 'isDefault': True}]

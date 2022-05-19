@@ -359,6 +359,7 @@ options:
     default: present
 author:
   - Wojciech Wypior (@wojtek0806)
+  - Kevin Stewart (@kevingstewart)
 '''
 
 EXAMPLES = r'''
@@ -432,6 +433,7 @@ class Parameters(AnsibleF5Parameters):
         'dep_net',
         'dest',
         'proxy_ip',
+        'pool',
         'source',
         'port',
         'proxy_port',

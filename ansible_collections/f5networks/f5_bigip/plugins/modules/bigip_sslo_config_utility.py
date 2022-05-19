@@ -50,6 +50,7 @@ requirements:
   - The 'rpm' tool installed on the Ansible controller.
 author:
   - Wojciech Wypior (@wojtek0806)
+  - Kevin Stewart (@kevingstewart)
 '''
 
 EXAMPLES = r'''

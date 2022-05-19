@@ -154,7 +154,7 @@ create_modify = """
                             "create": true,
                             "modify": false,
                             "autoValue": {% if params.ip_family == 'ipv6' %}"2001:0200:0:0300::7/120"
-                            {% else %}"{{ params.devices_to.self_ip }}/25"{% endif %},
+                            {% else %}"198.19.64.7/25"{% endif %},
                             "selectedValue": {% if params.ip_family == 'ipv6' %}"2001:0200:0:0300::7/120"
                             {% else %}""{% endif %},
                             "selfIp": "{{ params.devices_to.self_ip }}",
@@ -182,7 +182,7 @@ create_modify = """
                             "create": true,
                             "modify": false,
                             "autoValue": {% if params.ip_family == 'ipv6' %}"2001:0200:0:0300::107/120"
-                            {% else %}"{{ params.devices_from.self_ip }}/25"{% endif %},
+                            {% else %}"198.19.64.245/25"{% endif %},
                             "selectedValue": {% if params.ip_family == 'ipv6' %}"2001:0200:0:0300::107/120"
                             {% else %}""{% endif %},
                             "selfIp": "{{ params.devices_from.self_ip }}",

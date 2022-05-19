@@ -56,6 +56,7 @@ options:
     default: 300
 author:
   - Wojciech Wypior (@wojtek0806)
+  - Kevin Stewart (@kevingstewart)
 '''
 
 

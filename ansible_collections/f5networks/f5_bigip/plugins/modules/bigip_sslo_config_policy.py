@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2021, F5 Networks Inc.
+# Copyright: (c) 2022, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -25,11 +25,40 @@ options:
     required: True
   policy_consumer:
     description:
-      - Specifies the type of policy, either "outbound" or "inbound".
+      - Specifies the type of policy.
     type: str
     choices:
       - outbound
       - inbound
+  default_rule:
+    description:
+      - Specifies the settings for the default C(All Traffic) security policy rule.
+      - When creating a new policy the rule will be created with default values.
+      - "When modifying existing policy, all values should be defined or they will be replaced by defaults (see below)."
+    type: dict
+    suboptions:
+      allow_block:
+        description:
+          - Defines the behavior for the default All Traffic rule.
+          - If not specified the C(allow) option will be set.
+        type: str
+        choices:
+          - allow
+          - block
+      tls_intercept:
+        description:
+          - Defines the TLS behavior for the default All Traffic rule.
+          - If not specified the C(bypass) option will be set.
+        type: str
+        choices:
+          - bypass
+          - intercept
+      service_chain:
+        description:
+          - Defines the service chain to attach to the default All Traffic rule.
+          - If not specified the C('') value will be set.
+        type: str
+    version_added: "1.8.0"
   proxy_connect:
     description:
       - Specifies the proxy-connect settings, as required, to establish an upstream proxy chain egress.
@@ -64,7 +93,7 @@ options:
         description:
           - Defines password pool to be used for proxy connection.
         type: str
-  servercert_check:
+  server_cert_check:
     description:
       - Enables or disables server certificate validation.
     type: bool
@@ -144,7 +173,7 @@ options:
           - allow
           - reject
           - abort
-      ssl_forwardproxy_action:
+      ssl_action:
         description:
           - Defines the TLS intercept/bypass behavior for this rule
         type: str
@@ -180,6 +209,7 @@ options:
     default: present
 author:
   - Ravinder Reddy(@chinthalapalli)
+  - Kevin Stewart (@kevingstewart)
 '''
 
 EXAMPLES = r'''
@@ -199,7 +229,7 @@ EXAMPLES = r'''
     - name: SSLO config policy
       bigip_sslo_config_policy:
         name: "testpolicy"
-        servercert_check: true
+        server_cert_check: true
         proxy_connect:
           username: "testuser"
           password: ""
@@ -241,7 +271,7 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-
+# only common fields returned
 '''
 
 import re
@@ -268,12 +298,12 @@ from ..module_utils.client import (
     F5Client, sslo_version
 )
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, process_json, flatten_boolean
+    F5ModuleError, AnsibleF5Parameters, process_json
 )
 from ..module_utils.constants import (
     min_sslo_version, max_sslo_version
 )
-from ..module_utils.compare import compare_complex_list, compare_dictionary
+from ..module_utils.compare import compare_complex_list
 from ..module_utils.sslo_templates.sslo_config_policy import (
     create_modify, delete
 )
@@ -483,14 +513,14 @@ class Parameters(AnsibleF5Parameters):
         'pools',
         'policy_consumer'
         'policy_rules',
-        'servercert_check',
+        'server_cert_check'
     ]
     returnables = [
         'proxy_connect',
         'pools',
         'policy_consumer',
         'policy_rules',
-        'servercert_check',
+        'server_cert_check'
     ]
 
 
@@ -504,7 +534,7 @@ class ApiParameters(Parameters):
         return self._values['rules']
 
     @property
-    def servercert_check(self):
+    def server_cert_check(self):
         return self._values['serverCertStatusCheck']
 
     @property
@@ -553,16 +583,32 @@ class ModuleParameters(Parameters):
 
     @property
     def policy_consumer(self):
-        policy_consumer = self._values['policy_consumer']
-        if policy_consumer is None:
-            return "Outbound"
-        return policy_consumer
+        result = self._values['policy_consumer']
+        if result:
+            return result.capitalize()
 
     @property
-    def servercert_check(self):
-        if self._values['servercert_check'] is None:
-            return False
-        return True
+    def default_rule_allow_block(self):
+        if self._values['default_rule'] is None:
+            return None
+        return self._values['default_rule'].get('allow_block', None)
+
+    @property
+    def default_rule_tls_intercept(self):
+        if self._values['default_rule'] is None:
+            return None
+        return self._values['default_rule'].get('tls_intercept', None)
+
+    @property
+    def default_rule_service_chain(self):
+        if self._values['default_rule'] is None:
+            return None
+        value = self._values['default_rule'].get('service_chain', None)
+        if value:
+            if value.startswith("ssloSC_"):
+                return value
+            else:
+                return "ssloSC_" + value
 
     @property
     def proxy_connect(self):
@@ -581,11 +627,10 @@ class ModuleParameters(Parameters):
                 tmpdict = dict()
                 tmpdict['ip'] = mem['ip']
                 if 'port' not in mem.keys() or not mem['port']:
-                    tmpdict['port'] = 80
+                    tmpdict['port'] = "80"
                 else:
-                    tmpdict['port'] = self._port_check(int(mem['port']))
-                # tmpdict['port'] = str(mem['port'])
-                # # self._port_check(mem['port'])
+                    port = self._port_check(int(mem['port']))
+                    tmpdict['port'] = str(port)
                 pool_members.append(tmpdict)
             proxy_config_pool['members'] = pool_members
             proxy_config_pool[
@@ -605,9 +650,10 @@ class ModuleParameters(Parameters):
         pools = dict()
         pool_detail = dict()
         pool_detail['name'] = f"ssloP_{self._values['name']}_proxyChainPool"
-        pool_detail['loadBalancingMode'] = "predictive-node"
-        pool_detail['monitors'] = {"names": ["/Common/gateway_icmp"]}
+        pool_detail['loadBalancingMode'] = 'predictive-node'
+        pool_detail['monitors'] = {'names': ['/Common/gateway_icmp']}
         pool_detail['unhandledPool'] = True
+        pool_detail['minActiveMembers'] = '0'
         pool_detail['callerContext'] = "policyConfigProcessor"
 
         if 'pool_members' in self._values['proxy_connect'] and \
@@ -617,9 +663,12 @@ class ModuleParameters(Parameters):
                 tmpdict = dict()
                 tmpdict['ip'] = mem['ip']
                 if 'port' not in mem.keys() or not mem['port']:
-                    tmpdict['port'] = 80
+                    tmpdict['port'] = "80"
                 else:
-                    tmpdict['port'] = self._port_check(int(mem['port']))
+                    port = self._port_check(int(mem['port']))
+                    tmpdict['port'] = str(port)
+                tmpdict['subPath'] = f"ssloP_{self._values['name']}.app"
+                tmpdict['appService'] = f"ssloP_{self._values['name']}.app/ssloP_{self._values['name']}"
                 pool_members.append(tmpdict)
             pool_detail['members'] = pool_members
 
@@ -629,7 +678,7 @@ class ModuleParameters(Parameters):
     @property
     def policy_rules(self):
         if self._values['policy_rules'] is None:
-            return {}
+            return []
         result = list()
         for rule in self._values['policy_rules']:
             policy_rule = dict()
@@ -643,8 +692,7 @@ class ModuleParameters(Parameters):
             action_option['ssl'] = ""
             action_option['serviceChain'] = ""
             if rule['policy_action'] == 'allow':
-                action_option['ssl'] = "" if rule['ssl_forwardproxy_action'] is None else rule[
-                    'ssl_forwardproxy_action']
+                action_option['ssl'] = "" if rule['ssl_action'] is None else rule['ssl_action']
                 if rule['service_chain'] is None:
                     action_option['serviceChain'] = ""
                 else:
@@ -671,7 +719,9 @@ class ModuleParameters(Parameters):
                         if opt in condition_category_list:
                             r1.append(opt)
                         else:
-                            raise F5ModuleError(f"condition_option_category '{opt}' must be one of : {condition_category_list}")
+                            raise F5ModuleError(
+                                f"condition_option_category '{opt}' must be one of : {condition_category_list}"
+                            )
                     cla['options'] = {
                         "category": r1
                     }
@@ -726,14 +776,23 @@ class ModuleParameters(Parameters):
 
             policy_rule['conditions'] = condition_result
             result.append(policy_rule)
-        default_rule = dict()
-        default_rule['name'] = "All Traffic"
-        default_rule['action'] = "allow"
-        default_rule['mode'] = "edit"
-        default_rule['actionOptions'] = {"ssl": "", "serviceChain": ""}
-        default_rule['isDefault'] = True
-        result.append(default_rule)
+        result = self._process_default_rule(result)
         return result
+
+    def _process_default_rule(self, rules):
+        if self.default_rule is None:
+            return rules
+        default_rule = dict()
+        default_rule['name'] = 'All Traffic'
+        default_rule['action'] = self.default_rule_allow_block if self.default_rule_allow_block else 'allow'
+        default_rule['mode'] = 'edit'
+        default_rule['actionOptions'] = {
+            'ssl': self.default_rule_tls_intercept if self.default_rule_tls_intercept else 'bypass',
+            'serviceChain': self.default_rule_service_chain if self.default_rule_service_chain else ''
+        }
+        default_rule['isDefault'] = True
+        rules.append(default_rule)
+        return rules
 
     @property
     def timeout(self):
@@ -824,11 +883,7 @@ class ModuleManager(object):
             if change is None:
                 continue
             else:
-                # if isinstance(change, dict):
-                #     changed.update(change)
-                # else:
                 changed[k] = change
-        del changed['pools']
         if changed:
             self.changes = UsableChanges(params=changed)
             return True
@@ -890,7 +945,6 @@ class ModuleManager(object):
         return False
 
     def create(self):
-        self.check_for_required_create_parameters()
         self._set_changed_options()
         if self.module.check_mode:
             return True
@@ -918,9 +972,6 @@ class ModuleManager(object):
             return False
         return True
 
-    def check_for_required_create_parameters(self):
-        pass
-
     def remove(self):
         if self.module.check_mode:
             return True
@@ -936,9 +987,26 @@ class ModuleManager(object):
     def add_create_values(self, params):
         if self.want.policy_consumer is None:
             params['policy_consumer'] = 'Outbound'
-        if self.want.servercert_check is None:
-            params['servercert_check'] = False
+        if self.want.server_cert_check is None:
+            params['server_cert_check'] = False
+        params = self.add_default_rule_values_for_create(params)
+        return params
 
+    def add_default_rule_values_for_create(self, params):
+        """ adds default rule values during create operation if undefined by the user """
+        if self.want.policy_rules is None:
+            return params
+        if self.want.default_rule is None:
+            default_rule = dict()
+            default_rule['name'] = 'All Traffic'
+            default_rule['action'] = 'allow'
+            default_rule['mode'] = 'edit'
+            default_rule['actionOptions'] = {
+                "ssl": 'bypass', "serviceChain": ''
+            }
+            default_rule['isDefault'] = True
+            params['policy_rules'].append(default_rule)
+            return params
         return params
 
     def add_missing_options(self, params):
@@ -950,8 +1018,8 @@ class ModuleManager(object):
             params['policy_rules'] = self.have.policy_rules
         if self.changes.pools is None:
             params['pools'] = self.have.pools
-        if self.changes.servercert_check is None:
-            params['servercert_check'] = self.have.servercert_check
+        if self.changes.server_cert_check is None:
+            params['server_cert_check'] = self.have.server_cert_check
         return params
 
     def add_json_metadata(self, payload=None):
@@ -1100,6 +1168,18 @@ class ArgumentSpec(object):
             policy_consumer=dict(
                 choices=['outbound', 'inbound'],
             ),
+            default_rule=dict(
+                type='dict',
+                options=dict(
+                    allow_block=dict(
+                        choices=['allow', 'block']
+                    ),
+                    tls_intercept=dict(
+                        choices=['bypass', 'intercept']
+                    ),
+                    service_chain=dict()
+                )
+            ),
             policy_rules=dict(
                 type='list',
                 elements='dict',
@@ -1129,7 +1209,7 @@ class ArgumentSpec(object):
                         ),
                         required_if=[
                             ('condition_type', 'client_port_match', ['condition_option_ports'], True),
-                            ('condition_type', 'client_port_match', ['condition_option_ports'], True),
+                            ('condition_type', 'server_port_match', ['condition_option_ports'], True),
                             ('condition_type', 'category_lookup_all', ['condition_option_category'], True),
                             ('condition_type', 'category_lookup_sni', ['condition_option_category'], True),
                             ('condition_type', 'category_lookup_httpconnect', ['condition_option_category'], True),
@@ -1145,13 +1225,13 @@ class ArgumentSpec(object):
                     policy_action=dict(
                         choices=['allow', 'reject', 'abort']
                     ),
-                    ssl_forwardproxy_action=dict(
+                    ssl_action=dict(
                         choices=['bypass', 'intercept']
                     ),
                     service_chain=dict(),
                 ),
                 required_if=[
-                    ('policy_action', 'allow', ('ssl_forwardproxy_action', 'service_chain'), True)]
+                    ('policy_action', 'allow', ('ssl_action', 'service_chain'), True)]
             ),
             proxy_connect=dict(
                 type='dict',
@@ -1173,7 +1253,7 @@ class ArgumentSpec(object):
                 mutually_exclusive=[
                     ['pool_members', 'pool_name']]
             ),
-            servercert_check=dict(type='bool'),
+            server_cert_check=dict(type='bool'),
             timeout=dict(
                 type='int',
                 default=300
@@ -1197,7 +1277,6 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        # required_if=spec.required_if
     )
 
     if not HAS_NETADDR:
