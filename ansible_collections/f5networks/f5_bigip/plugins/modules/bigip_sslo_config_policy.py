@@ -33,14 +33,14 @@ options:
   default_rule:
     description:
       - Specifies the settings for the default C(All Traffic) security policy rule.
-      - When creating a new policy the rule will be created with default values.
-      - "When modifying existing policy, all values should be defined or they will be replaced by defaults (see below)."
+      - When creating a new policy, the rule is created with default values.
+      - "When modifying existing policy, all values should be defined or they are replaced by defaults (see below)."
     type: dict
     suboptions:
       allow_block:
         description:
           - Defines the behavior for the default All Traffic rule.
-          - If not specified the C(allow) option will be set.
+          - If not specified, the C(allow) option is set.
         type: str
         choices:
           - allow
@@ -48,7 +48,7 @@ options:
       tls_intercept:
         description:
           - Defines the TLS behavior for the default All Traffic rule.
-          - If not specified the C(bypass) option will be set.
+          - If not specified, the C(bypass) option is set.
         type: str
         choices:
           - bypass
@@ -56,7 +56,7 @@ options:
       service_chain:
         description:
           - Defines the service chain to attach to the default All Traffic rule.
-          - If not specified the C('') value will be set.
+          - If not specified, the C('') value is set.
         type: str
     version_added: "1.8.0"
   proxy_connect:
@@ -66,14 +66,14 @@ options:
     suboptions:
       pool_members:
         description:
-          - Defines Pools members which we want to associate for new pool
+          - Defines pool members which we want to associate for the new pool.
           - Mutually exclusive with the C(pool_name) parameter.
         type: list
         elements: dict
         suboptions:
            ip:
              description:
-               - IP address of the pool member to be added
+               - IP address of the pool member you want to add.
              type: str
              required: True
            port:
@@ -82,16 +82,16 @@ options:
              type: int
       pool_name:
         description:
-          - Defines an existing pool to be used for proxy connection.
+          - Defines an existing pool for the proxy connection.
           - Mutually exclusive with C(pool_members).
         type: str
       username:
         description:
-          - Defines username to be used for proxy connection.
+          - Defines the username for the proxy connection.
         type: str
       password:
         description:
-          - Defines password pool to be used for proxy connection.
+          - Defines the password pool for the proxy connection.
         type: str
   server_cert_check:
     description:

@@ -19,7 +19,7 @@ options:
   name:
     description:
       - Specifies the name of the topology.
-      - Configuration auto-prepends "sslo_" to topology.
+      - Configuration auto-prepends "sslo_" to the topology.
       - Topology name should be less than 14 characters and not contain dashes "-".
     type: str
     required: True
@@ -37,7 +37,7 @@ options:
   protocol:
     description:
       - "Defines the topology protocol, either TCP, UDP, or other (non-tcp/non-udp)."
-      - When not specified a value of C(tcp) is assumed when creating new topology object.
+      - When creating a new topology object, if protocol is not specified, a value of C(tcp) is assumed.
     type: str
     choices:
       - tcp
@@ -45,8 +45,8 @@ options:
       - other
   ip_family:
     description:
-      - Defines the IP family for topology.
-      - When not specified a value of C(ipv4) is assumed when creating a new topology object.
+      - Defines the IP family for the topology.
+      - When creating a new topology object, if ip_family is not specified, a value of C(ipv4) is assumed.
     type: str
     choices:
       - ipv4
@@ -55,30 +55,30 @@ options:
     description:
       - Defines the source address filter and optional route domain for the topology listener.
       - The address must be specified in CIDR notation, with subnet mask not exceeding 32 bits.
-      - When not specified a value of C(0.0.0.0%0/0) is assumed when creating a new topology object.
+      - When creating a new topology object, if source is not specified, a value of C(0.0.0.0%0/0) is assumed.
     type: str
   dest:
     description:
       - Defines the destination address filter and optional route domain for the topology listener.
       - The address must be specified in CIDR notation, with subnet mask not exceeding 32 bits.
-      - When not specified a value of C(0.0.0.0%0/0) is assumed when creating a new topology object.
+      - When creating a new topology object, if dest is not specified, a value of C(0.0.0.0%0/0) is assumed.
     type: str
   port:
     description:
       - Defines the port filter for the topology listener.
-      - When not specified a value of C(0) is assumed when creating a new topology object.
+      - When creating a new topology object, if port is not specified, a value of C(0) is assumed.
       - Valid value range is from C(0) to C(65535).
     type: int
   snat:
     description:
       - Defines the type egress source NAT used.
-      - When C(none) no outbound SNAT configuration is configured. This is the default choice when creating topology
+      - When C(none), no outbound SNAT configuration is configured. This is the default choice when creating a topology
         object if the parameter is not provided.
-      - When C(topology_type) is either set to C(l2_outbound) or C(l2_inbound) a C(snat) is automatically
+      - When C(topology_type) is either set to C(l2_outbound) or C(l2_inbound), a C(snat) is automatically
         set to C(none).
-      - When C(automap), SNAT automap is configured.
-      - When C(snatpool) the SNAT configuration points to an existing snatpool defined by the C(snatpool) parameter.
-      - When C(snatlist) a new snatpool is created from the provided C(snatlist).
+      - When C(automap), SNAT auto map is configured.
+      - When C(snatpool), the SNAT configuration points to an existing SNAT pool defined by the C(snatpool) parameter.
+      - When C(snatlist), a new SNAT pool is created from the provided C(snatlist).
     type: str
     choices:
       - none
@@ -93,7 +93,7 @@ options:
   snat_list:
     description:
       - Defines a list of IP addresses to use in a SNAT pool configuration.
-      - Parameter required when C(snat) is set to C(snatlist).
+      - This parameter is required when C(snat) is set to C(snatlist).
     type: list
     elements: str
   vlans:
@@ -105,12 +105,12 @@ options:
   gateway:
     description:
       - Defines the type of egress gateway to use for egress traffic.
-      - When C(system) is set a system-defined gateway route is used. This is the default choice when creating topology
+      - When C(system) is set, a system-defined gateway route is used. This is the default choice when a creating topology
         object if the parameter is not provided.
       - When C(topology_type) is either set to C(l2_outbound) or C(l2_inbound), a C(gateway) is automatically
         set to C(system).
-      - When C(pool) the gateway configuration points to an existing gateway pool defined by the C(gateway_pool) parameter.
-      - When C(iplist) a new gateway pool is created from the provided C(gateway_list).
+      - When C(pool), the gateway configuration points to an existing gateway pool defined by the C(gateway_pool) parameter.
+      - When C(iplist), a new gateway pool is created from the provided C(gateway_list).
     type: str
     choices:
       - system
@@ -119,12 +119,12 @@ options:
   gateway_pool:
     description:
       - Defines an existing gateway pool to use for egress traffic.
-      - This parameter required when C(gateway) is set to C(pool).
+      - This parameter is required when C(gateway) is set to C(pool).
     type: str
   gateway_list:
     description:
       - Defines a list of IP addresses to use in a gateway pool configuration.
-      - This parameter required when C(gateway) is set to C(iplist).
+      - This parameter is required when C(gateway) is set to C(iplist).
     type: list
     elements: dict
     suboptions:
@@ -136,14 +136,14 @@ options:
       ratio:
         description:
           - The ratio used for load balancing egress traffic in the gateway pool.
-          - When not specified a value of C(1) is assumed when creating a new topology object.
+          - When creating a new topology object, if ratio is not specified, a value of C(1) is assumed.
           - Valid value range is from C(1) to C(65535).
         type: int
   tcp_settings_client:
     description:
       - Defines a custom client side TCP profile to use.
       - This parameter is ignored when C(topology_type) is set to C(outbound_explicit).
-      - When not specified, the default creation value will be set depending on the C(topology_type). If C(topology_type)
+      - When not specified, the default creation value is set depending on the C(topology_type). If C(topology_type)
         is either set to C(l2_inbound) or C(l3_inbound), the value is set to C(/Common/f5-tcp-wan). If C(topology_type)
         is either set to C(l2_outbound or C(l3_outbound), the value is set to C(/Common/f5-tcp-lan).
     type: str
@@ -151,14 +151,14 @@ options:
     description:
       - Defines a custom server side TCP profile to use.
       - This parameter is ignored when C(topology_type) is set to C(outbound_explicit).
-      - When not specified, the default creation value will be set depending on the C(topology_type). If C(topology_type)
+      - When not specified, the default creation value is set depending on the C(topology_type). If C(topology_type)
         is either set to C(l2_inbound) or C(l3_inbound) the value is set to C(/Common/f5-tcp-lan). If C(topology_type)
         is either set to C(l2_outbound or C(l3_outbound) the value is set to C(/Common/f5-tcp-wan).
     type: str
   l7_profile_type:
     description:
       - Defines the L7 protocol type, and can either be C(none) for all protocols, or C(http).
-      - When not specified, a value of C(http) is assumed when creating a new topology object.
+      - When creating a new topology object, if l7_profile_type is not specified, a value of C(http) is assumed.
     type: str
     choices:
       - none
@@ -166,13 +166,13 @@ options:
   l7_profile:
     description:
       - Defines the specific HTTP profile if the C(l7_profile_type) is set to C(http).
-      - When not specified, a value of C(/Common/http) is assumed when creating a new topology object.
+      - When creating a new topology object, if l7_profile is not specified, a value of C(/Common/http) is assumed.
     type: str
   additional_protocols:
     description:
       - Defines a list of additional protocols to create listeners for.
-      - This parameter is only valid when C(protocol) is set to C(tcp)
-      - "Accepted values of list are: C(ftp), C(imap), C(pop3), C(smtps)"
+      - This parameter is only valid when C(protocol) is set to C(tcp).
+      - "Accepted values of this list are: C(ftp), C(imap), C(pop3), C(smtps)."
     type: list
     elements: str
   access_profile:

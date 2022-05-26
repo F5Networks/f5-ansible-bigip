@@ -4136,13 +4136,13 @@ nodes:
       sample: ipv4
     fqdn_up_interval:
       description:
-        - The interval at which a query occurs, when the DNS server is up.
+        - The interval at which a query occurs when the DNS server is up.
       returned: queried
       type: int
       sample: 3600
     fqdn_down_interval:
       description:
-        - The interval in which a query occurs, when the DNS server is down.
+        - The interval in which a query occurs when the DNS server is down.
       returned: queried
       type: int
       sample: 15

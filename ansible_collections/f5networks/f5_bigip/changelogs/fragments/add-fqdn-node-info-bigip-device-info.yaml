@@ -1,3 +1,0 @@
----
-minor_changes:
-    - bigip_device_info - add fqdn related parameters to be gathered on nodes
