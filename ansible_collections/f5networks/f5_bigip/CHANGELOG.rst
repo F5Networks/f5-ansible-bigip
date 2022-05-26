@@ -5,6 +5,24 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v1.8.0
+======
+
+Minor Changes
+-------------
+
+- bigip_device_info - add fqdn related parameters to be gathered on nodes
+- bigip_device_info - add parent to the data gathered for ServerSSL Profiles
+- bigip_sslo_config_policy - add default rule customization option
+- bigip_sslo_config_policy - renamed servercert_check parameter to server_cert_check
+- bigip_sslo_config_policy - renamed ssl_forwardproxy_action parameter to ssl_action (https://github.com/F5Networks/f5-ansible-bigip/issues/24)
+
+Bugfixes
+--------
+
+- bigip_sslo_config_policy - corrected typo in module parameters (https://github.com/F5Networks/f5-ansible-bigip/issues/26)
+- bigip_sslo_config_policy - fix for 'pools' key error when rerunning module (https://github.com/F5Networks/f5-ansible-bigip/issues/30)
+
 v1.7.0
 ======
 

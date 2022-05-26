@@ -79,6 +79,7 @@ notes:
   - Service chain creation/management does not verify the defined services exist.
 author:
   - Wojciech Wypior (@wojtek0806)
+  - Kevin Stewart (@kevingstewart)
 '''
 
 EXAMPLES = r'''

@@ -91,6 +91,7 @@ options:
     default: present
 author:
   - Wojciech Wypior (@wojtek0806)
+  - Kevin Stewart (@kevingstewart)
 notes:
   - Requires SSLO >= 9.0
 '''

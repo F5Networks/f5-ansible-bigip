@@ -127,6 +127,7 @@ options:
     default: present
 author:
   - Wojciech Wypior (@wojtek0806)
+  - Kevin Stewart (@kevingstewart)
 '''
 
 EXAMPLES = r'''
