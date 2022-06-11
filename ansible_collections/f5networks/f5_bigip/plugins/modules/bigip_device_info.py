@@ -17104,7 +17104,7 @@ class VlansFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 10
+            n = n + 5
         return result
 
     def read_collection_from_device(self, skip=0):
