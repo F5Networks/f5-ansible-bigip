@@ -152,6 +152,12 @@ class ModuleParameters(Parameters):
         name = os.path.basename(self.source)
         return name
 
+    @property
+    def cert_pass(self):
+        if self._values['cert_pass'] is not None:
+            return self._values['cert_pass']
+        return None
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -297,6 +303,8 @@ class ModuleManager(object):
         params = self.changes.api_params()
         params['name'] = self.want.name
         params['command'] = "install"
+        if self.want.cert_pass is not None:
+            params['passphrase'] = self.want.cert_pass
         params["from-local-file"] = "/var/config/rest/downloads/{0}".format(self.want.filename)
         uri = "/mgmt/tm/sys/crypto/pkcs12"
 
