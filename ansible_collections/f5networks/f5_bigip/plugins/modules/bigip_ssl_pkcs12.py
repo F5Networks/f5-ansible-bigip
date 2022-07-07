@@ -13,7 +13,7 @@ DOCUMENTATION = r'''
 module: bigip_ssl_pkcs12
 short_description: Manage BIG-IP PKCS12 certificates/keys
 description:
-  - Installs, updates and removes PKCS12 certificates/keys on/from the BIG-IP.
+  - Installs, updates, and removes PKCS12 certificates and keys on/from the BIG-IP.
 version_added: 1.0.0
 options:
   name:
@@ -25,27 +25,27 @@ options:
     type: str
   source:
     description:
-      - Full path to a PKCS12 file to be imported into the BIG-IP.
-      - Parameter is mandatory when C(state) is C(present)
+      - Full path to a PKCS12 file to be imported onto the BIG-IP.
+      - Parameter is mandatory when C(state) is C(present).
     type: path
   cert_pass:
     description:
-      - Passphrase that the PKCS12 file is encrypted with.
+      - Passphrase with which the PKCS12 file is encrypted.
     type: str
   force:
     description:
-      - When set to C(yes) any existing certificate/key with the same name will be overwritten by the new import.
+      - When set to C(yes), any existing certificate/key with the same name is overwritten by the new import.
     default: no
     type: bool
   partition:
     description:
-      - Used to check for existence and removal of installed PKCS12 keys and certs.
+      - Used to check for the existence and removal of installed PKCS12 keys and certificates.
     type: str
     default: Common
   state:
     description:
       - Certificate and key state. This determines if the provided certificate
-        and key is to be made C(present) on the device or C(absent).
+        and key are to be made C(present) on the device or C(absent).
     type: str
     choices:
       - present
@@ -151,6 +151,12 @@ class ModuleParameters(Parameters):
             return None
         name = os.path.basename(self.source)
         return name
+
+    @property
+    def cert_pass(self):
+        if self._values['cert_pass'] is not None:
+            return self._values['cert_pass']
+        return None
 
 
 class Changes(Parameters):
@@ -297,6 +303,8 @@ class ModuleManager(object):
         params = self.changes.api_params()
         params['name'] = self.want.name
         params['command'] = "install"
+        if self.want.cert_pass is not None:
+            params['passphrase'] = self.want.cert_pass
         params["from-local-file"] = "/var/config/rest/downloads/{0}".format(self.want.filename)
         uri = "/mgmt/tm/sys/crypto/pkcs12"
 

@@ -65,7 +65,7 @@ EXAMPLES = r'''
     ansible_host: "lb.mydomain.com"
     ansible_user: "admin"
     ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
+    ansible_network_os: f5networks.f5_bigip.velos
     ansible_httpapi_use_ssl: yes
   tasks:
     - name: Wait for the specified partition to be in the running state.

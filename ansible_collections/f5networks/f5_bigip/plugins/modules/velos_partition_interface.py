@@ -26,7 +26,7 @@ options:
     description:
       - Configures multiple VLAN IDs to associate with the interface.
       - The C(trunk_vlans) parameter is used for tagged traffic.
-      - VLANs should not be assigned to interfaces if Link Aggregation Groups. In that case VLANs should be added to
+      - VLANs should not be assigned to interfaces if Link Aggregation Groups. In that case, VLANs should be added to
         the the LAG configuration with C(velos_partition_lag) module instead.
       - The C(native_vlan) and C(trunk_vlans) parameters are mutually exclusive.
       - The order of these VLANs is ignored, the module orders the VLANs automatically.
@@ -59,7 +59,7 @@ EXAMPLES = r'''
     ansible_host: "lb.mydomain.com"
     ansible_user: "admin"
     ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
+    ansible_network_os: f5networks.f5_bigip.velos
     ansible_httpapi_use_ssl: yes
 
   tasks:
