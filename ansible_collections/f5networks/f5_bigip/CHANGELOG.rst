@@ -5,6 +5,14 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v1.8.1
+======
+
+Bugfixes
+--------
+
+- bigip_device_info - fixed pagination bug for VLANS data
+
 v1.8.0
 ======
 

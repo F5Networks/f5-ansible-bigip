@@ -1,3 +1,0 @@
----
-bugfixes:
-    - bigip_device_info - fixed pagination bug for VLANS data

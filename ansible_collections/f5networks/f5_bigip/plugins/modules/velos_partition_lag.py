@@ -11,9 +11,9 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: velos_partition_lag
-short_description: Manage network interfaces on the VELOS chassis partitions
+short_description: Manage network interfaces on VELOS chassis partitions
 description:
-  - Manage network interfaces on the VELOS chassis partitions.
+  - Manage network interfaces on VELOS chassis partitions.
 version_added: "1.4.0"
 options:
   name:

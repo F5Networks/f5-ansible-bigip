@@ -337,3 +337,10 @@ releases:
     - add-parent-in-serversslprofile.yaml
     - sslo-fixes.yaml
     release_date: '2022-05-26'
+  1.8.1:
+    changes:
+      bugfixes:
+      - bigip_device_info - fixed pagination bug for VLANS data
+    fragments:
+    - fix-pagination-bug-bigip-device-info.yaml
+    release_date: '2022-07-07'

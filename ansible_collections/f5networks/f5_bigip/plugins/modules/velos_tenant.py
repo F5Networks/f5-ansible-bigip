@@ -28,13 +28,13 @@ options:
     type: str
   nodes:
     description:
-      - List of integers. Specifies which blades C(nodes) the tenant are deployed on.
+      - List of integers. Specifies which blades C(nodes) the tenants are deployed on.
       - Required for create operations.
     type: list
     elements: int
   mgmt_ip:
     description:
-      - IP address which is used to connect to the deployed tenant.
+      - IP address used to connect to the deployed tenant.
       - Required for create operations.
     type: str
   mgmt_prefix:
@@ -49,14 +49,14 @@ options:
     description:
       - The existing VLAN IDs in the chassis partition that should be added to the tenant.
       - The order of these VLANs is ignored.
-      - This module orders the VLANs automatically, therefore, if you deliberately re-order them in subsequent tasks,
+      - This module orders the VLANs automatically, if you deliberately re-order them in subsequent tasks,
         this module will B(not) register a change.
       - Required for create operations.
     type: list
     elements: int
   cpu_cores:
     description:
-      - The number of vCPUs that should be added to the Tenant.
+      - The number of vCPUs that should be added to the tenant.
       - Required for create operations.
     type: int
     choices:
@@ -80,7 +80,7 @@ options:
   cryptos:
     description:
       - Should crypto and compression hardware offload be enabled on the tenant.
-      - The recommendation is to have this enabled, otherwise crypto and compression may be processed in CPU.
+      - We recommend it is enabled, otherwise crypto and compression may be processed in CPU.
     type: str
     choices:
       - enabled

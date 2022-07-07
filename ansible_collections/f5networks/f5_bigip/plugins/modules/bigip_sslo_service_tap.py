@@ -62,7 +62,7 @@ options:
     default: no
   timeout:
     description:
-      - The amount of time to wait for the C(CREATE) or C(MODIFY) task to complete, in seconds.
+      - The number of seconds to wait for the C(CREATE) or C(MODIFY) task to complete.
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
