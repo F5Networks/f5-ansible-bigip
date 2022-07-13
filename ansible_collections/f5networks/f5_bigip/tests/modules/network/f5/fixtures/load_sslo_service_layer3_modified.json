@@ -69,10 +69,20 @@
                                 }
                             },
                             "snatConfiguration": {
-                                "clientSnat": "None",
+                                "clientSnat": "SNAT",
                                 "snat": {
-                                    "referredObj": "",
-                                    "ipv4SnatAddresses": [],
+                                    "referredObj": "/Common/ssloS_layer3a.app/ssloS_layer3a-svc-snatpool",
+                                    "ipv4SnatAddresses": [
+                                        {
+                                            "ip": "198.19.64.10"
+                                        },
+                                        {
+                                            "ip": "198.19.64.11"
+                                        },
+                                        {
+                                            "ip": "198.19.64.12"
+                                        }
+                                    ],
                                     "ipv6SnatAddresses": []
                                 }
                             },
@@ -97,7 +107,6 @@
                             "portRemap": true,
                             "httpPortRemapValue": 8081.0,
                             "serviceDownAction": "ignore",
-                            "iRuleList": [],
                             "managedNetwork": {
                                 "serviceType": "L3",
                                 "ipFamily": "ipv4",
@@ -203,6 +212,7 @@
                         "templateName": "Layer 3 Service",
                         "previousVersion": 7.5,
                         "version": 7.5,
+                        "existingBlockId": "66009abd-da39-477f-b48c-6b97eca4c34b",
                         "virtuals": {
                             "ssloS_layer3a-0-0": {
                                 "name": "ssloS_layer3a-D-0-t-4",
@@ -210,7 +220,7 @@
                                 "port": "0",
                                 "mask": "any",
                                 "ipProto": "tcp",
-                                "description": "In-line service (2022-7-12 01:19:43)",
+                                "description": "In-line service (2022-7-12 01:26:22)",
                                 "clientVlanRestrict": "enableSome",
                                 "translateAddress": "disabled",
                                 "translatePort": "disabled",
@@ -240,7 +250,7 @@
                                 "port": "0",
                                 "mask": "any",
                                 "ipProto": "udp",
-                                "description": "In-line service (2022-7-12 01:19:43)",
+                                "description": "In-line service (2022-7-12 01:26:22)",
                                 "clientVlanRestrict": "enableSome",
                                 "translateAddress": "disabled",
                                 "translatePort": "disabled",
@@ -264,7 +274,7 @@
                                 "port": "0",
                                 "mask": "any",
                                 "ipProto": "tcp",
-                                "description": "In-line service (2022-7-12 01:19:43)",
+                                "description": "In-line service (2022-7-12 01:26:22)",
                                 "clientVlanRestrict": "enableSome",
                                 "translateAddress": "disabled",
                                 "translatePort": "disabled",
@@ -297,8 +307,8 @@
                                     }
                                 ],
                                 "sourceAddressTranslation": {
-                                    "type": "none",
-                                    "pool": "none"
+                                    "type": "snat",
+                                    "pool": "ssloS_layer3a-svc-snatpool"
                                 }
                             },
                             "ssloS_layer3a-3-0": {
@@ -307,7 +317,7 @@
                                 "port": "0",
                                 "mask": "any",
                                 "ipProto": "udp",
-                                "description": "In-line service (2022-7-12 01:19:43)",
+                                "description": "In-line service (2022-7-12 01:26:22)",
                                 "clientVlanRestrict": "enableSome",
                                 "translateAddress": "disabled",
                                 "translatePort": "disabled",
@@ -338,8 +348,8 @@
                                     }
                                 ],
                                 "sourceAddressTranslation": {
-                                    "type": "none",
-                                    "pool": "none"
+                                    "type": "snat",
+                                    "pool": "ssloS_layer3a-svc-snatpool"
                                 }
                             }
                         },
@@ -443,7 +453,22 @@
                                 "callerContext": "serviceConfigProcessor"
                             }
                         },
-                        "snatPools": {},
+                        "snatPools": {
+                            "ssloS_layer3a-svc-snatpool": {
+                                "name": "ssloS_layer3a-svc-snatpool",
+                                "members": [
+                                    {
+                                        "ip": "198.19.64.10"
+                                    },
+                                    {
+                                        "ip": "198.19.64.11"
+                                    },
+                                    {
+                                        "ip": "198.19.64.12"
+                                    }
+                                ]
+                            }
+                        },
                         "routes": {},
                         "iRules": {
                             "ssloS_layer3a-ilS": {
@@ -539,8 +564,7 @@
                                     }
                                 ]
                             }
-                        },
-                        "existingBlockId": "66009abd-da39-477f-b48c-6b97eca4c34b"
+                        }
                     }
                 },
                 {
@@ -621,6 +645,53 @@
             ],
             "dataProperties": [
                 {
+                    "id": "dependencyInfo",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "type": "f5-ssl-orchestrator-service",
+                            "name": "/Common/ssloS_layer3a.app/ssloS_layer3a",
+                            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/66009abd-da39-477f-b48c-6b97eca4c34b",
+                            "dependsOn": {
+                                "references": [
+                                    {
+                                        "type": "f5-ssl-orchestrator-network",
+                                        "names": [
+                                            "/Common/ssloN_layer3a_in.app/ssloN_layer3a_in",
+                                            "/Common/ssloN_layer3a_out.app/ssloN_layer3a_out"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "configToDeploy",
+                    "type": "BOOLEAN",
+                    "value": true
+                },
+                {
+                    "id": "deviceSpecific",
+                    "type": "JSON"
+                },
+                {
+                    "id": "error",
+                    "type": "STRING",
+                    "value": ""
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.144.72.149",
+                            "strictness": false,
+                            "potentialDrift": false
+                        }
+                    ]
+                },
+                {
                     "id": "icrLinks",
                     "type": "PROPERTIES",
                     "value": [
@@ -657,6 +728,13 @@
                             "type": "REFERENCE",
                             "value": {
                                 "link": "https://localhost/mgmt/tm/net/self/~Common~ssloS_layer3a.app~ssloS_layer3a-70-0-flt-D4"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/snatpool/~Common~ssloS_layer3a.app~ssloS_layer3a-svc-snatpool",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/snatpool/~Common~ssloS_layer3a.app~ssloS_layer3a-svc-snatpool"
                             }
                         },
                         {
@@ -793,53 +871,6 @@
                             }
                         }
                     ]
-                },
-                {
-                    "id": "strictness",
-                    "type": "JSON",
-                    "value": [
-                        {
-                            "device": "10.144.72.149",
-                            "strictness": false,
-                            "potentialDrift": false
-                        }
-                    ]
-                },
-                {
-                    "id": "dependencyInfo",
-                    "type": "JSON",
-                    "value": [
-                        {
-                            "type": "f5-ssl-orchestrator-service",
-                            "name": "/Common/ssloS_layer3a.app/ssloS_layer3a",
-                            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/66009abd-da39-477f-b48c-6b97eca4c34b",
-                            "dependsOn": {
-                                "references": [
-                                    {
-                                        "type": "f5-ssl-orchestrator-network",
-                                        "names": [
-                                            "/Common/ssloN_layer3a_in.app/ssloN_layer3a_in",
-                                            "/Common/ssloN_layer3a_out.app/ssloN_layer3a_out"
-                                        ]
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "id": "configToDeploy",
-                    "type": "BOOLEAN",
-                    "value": true
-                },
-                {
-                    "id": "deviceSpecific",
-                    "type": "JSON"
-                },
-                {
-                    "id": "error",
-                    "type": "STRING",
-                    "value": ""
                 }
             ],
             "configurationProcessorReference": {
@@ -857,13 +888,13 @@
             "presentationHtmlReference": {
                 "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
             },
-            "generation": 2,
-            "lastUpdateMicros": 1657613992841573,
+            "generation": 4,
+            "lastUpdateMicros": 1657614391551978,
             "kind": "shared:iapp:blocks:blockstate",
             "selfLink": "https://localhost/mgmt/shared/iapp/blocks/66009abd-da39-477f-b48c-6b97eca4c34b"
         }
     ],
-    "generation": 4558,
+    "generation": 4602,
     "kind": "shared:iapp:blocks:blockcollectionstate",
-    "lastUpdateMicros": 1657613994193935
+    "lastUpdateMicros": 1657614697228363
 }

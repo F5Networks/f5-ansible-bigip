@@ -1,17 +1,17 @@
 {
-    "id": "8dcfd06b-0699-4be3-9380-8a182bcdb825",
+    "id": "39389ec6-b064-443e-a812-79ce30705793",
     "name": "sslo_obj_SERVICE_CREATE_ssloS_layer3a",
     "inputProperties": [
         {
             "id": "f5-ssl-orchestrator-operation-context",
             "type": "JSON",
             "value": {
-                "deploymentName": "ssloS_layer3a",
-                "deploymentType": "SERVICE",
-                "operationType": "CREATE",
+                "version": 7.5,
                 "partition": "Common",
                 "strictness": false,
-                "version": 7.5
+                "operationType": "CREATE",
+                "deploymentName": "ssloS_layer3a",
+                "deploymentType": "SERVICE"
             }
         },
         {
@@ -19,68 +19,68 @@
             "type": "JSON",
             "value": [
                 {
-                    "create": true,
-                    "existingBlockId": "",
                     "name": "ssloN_layer3a_in",
                     "partition": "Common",
-                    "routeDomain": {
-                        "create": false,
-                        "id": 0
-                    },
-                    "selfIpConfig": {
-                        "HAstaticIpMap": [],
-                        "create": true,
-                        "floating": false,
-                        "modify": false,
-                        "netmask": "",
-                        "selfIp": ""
-                    },
                     "strictness": false,
+                    "create": true,
                     "vlan": {
+                        "name": "ssloN_layer3a_in",
+                        "path": "/Common/ssloN_layer3a_in.app/ssloN_layer3a_in",
                         "create": true,
+                        "modify": false,
+                        "networkError": false,
                         "interface": [
                             "1.1"
                         ],
+                        "tag": 40.0,
+                        "networkTag": 40.0,
+                        "networkInterface": "1.1"
+                    },
+                    "selfIpConfig": {
+                        "create": true,
                         "modify": false,
-                        "name": "ssloN_layer3a_in",
-                        "networkError": false,
-                        "networkInterface": "1.1",
-                        "networkTag": 40,
-                        "path": "/Common/ssloN_layer3a_in.app/ssloN_layer3a_in",
-                        "tag": 40
-                    }
+                        "selfIp": "",
+                        "netmask": "",
+                        "floating": false,
+                        "HAstaticIpMap": []
+                    },
+                    "routeDomain": {
+                        "id": 0.0,
+                        "create": false
+                    },
+                    "existingBlockId": ""
                 },
                 {
-                    "create": true,
-                    "existingBlockId": "",
                     "name": "ssloN_layer3a_out",
                     "partition": "Common",
-                    "routeDomain": {
-                        "create": false,
-                        "id": 0
-                    },
-                    "selfIpConfig": {
-                        "HAstaticIpMap": [],
-                        "create": true,
-                        "floating": false,
-                        "modify": false,
-                        "netmask": "",
-                        "selfIp": ""
-                    },
                     "strictness": false,
+                    "create": true,
                     "vlan": {
+                        "name": "ssloN_layer3a_out",
+                        "path": "/Common/ssloN_layer3a_out.app/ssloN_layer3a_out",
                         "create": true,
+                        "modify": false,
+                        "networkError": false,
                         "interface": [
                             "1.1"
                         ],
+                        "tag": 50.0,
+                        "networkTag": 50.0,
+                        "networkInterface": "1.1"
+                    },
+                    "selfIpConfig": {
+                        "create": true,
                         "modify": false,
-                        "name": "ssloN_layer3a_out",
-                        "networkError": false,
-                        "networkInterface": "1.1",
-                        "networkTag": 50,
-                        "path": "/Common/ssloN_layer3a_out.app/ssloN_layer3a_out",
-                        "tag": 50
-                    }
+                        "selfIp": "",
+                        "netmask": "",
+                        "floating": false,
+                        "HAstaticIpMap": []
+                    },
+                    "routeDomain": {
+                        "id": 0.0,
+                        "create": false
+                    },
+                    "existingBlockId": ""
                 }
             ]
         },
@@ -89,144 +89,112 @@
             "type": "JSON",
             "value": {
                 "customService": {
+                    "name": "ssloS_layer3a",
+                    "serviceType": "L3",
+                    "serviceSpecific": {
+                        "name": "ssloS_layer3a"
+                    },
                     "connectionInformation": {
                         "fromBigipNetwork": {
                             "name": "ssloN_layer3a_in",
-                            "networkBlockId": "",
+                            "vlan": {
+                                "path": "/Common/ssloN_layer3a_in.app/ssloN_layer3a_in",
+                                "create": true,
+                                "selectedValue": "",
+                                "modify": false,
+                                "networkVlanValue": ""
+                            },
                             "routeDomain": {
-                                "create": false,
-                                "id": 0
+                                "id": 0.0,
+                                "create": false
                             },
                             "selfIpConfig": {
-                                "HAstaticIpMap": [],
+                                "create": true,
+                                "modify": false,
                                 "autoValue": "198.19.64.7/25",
-                                "create": true,
-                                "floating": false,
-                                "modify": false,
-                                "netmask": "255.255.255.128",
                                 "selectedValue": "",
-                                "selfIp": "198.19.64.7"
+                                "selfIp": "198.19.64.7",
+                                "netmask": "255.255.255.128",
+                                "floating": false,
+                                "HAstaticIpMap": []
                             },
-                            "vlan": {
-                                "create": true,
-                                "modify": false,
-                                "networkVlanValue": "",
-                                "path": "/Common/ssloN_layer3a_in.app/ssloN_layer3a_in",
-                                "selectedValue": ""
-                            }
+                            "networkBlockId": ""
                         },
                         "toBigipNetwork": {
                             "name": "ssloN_layer3a_out",
-                            "networkBlockId": "",
+                            "vlan": {
+                                "path": "/Common/ssloN_layer3a_out.app/ssloN_layer3a_out",
+                                "create": true,
+                                "modify": false,
+                                "selectedValue": "",
+                                "networkVlanValue": ""
+                            },
                             "routeDomain": {
-                                "create": false,
-                                "id": 0
+                                "id": 0.0,
+                                "create": false
                             },
                             "selfIpConfig": {
-                                "HAstaticIpMap": [],
+                                "create": true,
+                                "modify": false,
                                 "autoValue": "198.19.64.245/25",
-                                "create": true,
-                                "floating": false,
-                                "modify": false,
-                                "netmask": "255.255.255.128",
                                 "selectedValue": "",
-                                "selfIp": "198.19.64.245"
+                                "selfIp": "198.19.64.245",
+                                "netmask": "255.255.255.128",
+                                "floating": false,
+                                "HAstaticIpMap": []
                             },
-                            "vlan": {
-                                "create": true,
-                                "modify": false,
-                                "networkVlanValue": "",
-                                "path": "/Common/ssloN_layer3a_out.app/ssloN_layer3a_out",
-                                "selectedValue": ""
-                            }
+                            "networkBlockId": ""
                         }
                     },
-                    "httpPortRemapValue": 8081,
-                    "iRuleList": [],
-                    "initialIpFamily": "ipv4",
-                    "ipFamily": "ipv4",
-                    "isAutoManage": true,
+                    "snatConfiguration": {
+                        "clientSnat": "None",
+                        "snat": {
+                            "referredObj": "",
+                            "ipv4SnatAddresses": [],
+                            "ipv6SnatAddresses": []
+                        }
+                    },
                     "loadBalancing": {
                         "devices": [
                             {
                                 "ip": "198.19.64.30",
-                                "port": 80
+                                "port": 80.0
                             },
                             {
                                 "ip": "198.19.64.31",
-                                "port": 80
+                                "port": 80.0
                             }
                         ],
                         "monitor": {
                             "fromSystem": "/Common/gateway_icmp"
                         }
                     },
+                    "initialIpFamily": "ipv4",
+                    "ipFamily": "ipv4",
+                    "isAutoManage": true,
+                    "portRemap": true,
+                    "httpPortRemapValue": 8081.0,
+                    "serviceDownAction": "ignore",
+                    "iRuleList": [],
                     "managedNetwork": {
+                        "serviceType": "L3",
                         "ipFamily": "ipv4",
+                        "isAutoManage": true,
                         "ipv4": {
-                            "fromServiceMask": "255.255.255.128",
-                            "fromServiceNetwork": "198.19.64.128",
-                            "fromServiceSelfIp": "198.19.64.245",
-                            "ipFamily": "ipv4",
-                            "serviceIndex": 0,
-                            "serviceSubnet": "198.19.64.0",
                             "serviceType": "L3",
+                            "ipFamily": "ipv4",
+                            "serviceSubnet": "198.19.64.0",
+                            "serviceIndex": 0.0,
                             "subnetMask": "255.255.255.0",
-                            "toServiceMask": "255.255.255.128",
                             "toServiceNetwork": "198.19.64.0",
-                            "toServiceSelfIp": "198.19.64.7"
+                            "toServiceMask": "255.255.255.128",
+                            "toServiceSelfIp": "198.19.64.7",
+                            "fromServiceNetwork": "198.19.64.128",
+                            "fromServiceMask": "255.255.255.128",
+                            "fromServiceSelfIp": "198.19.64.245"
                         },
                         "ipv6": {},
-                        "isAutoManage": true,
-                        "operation": "RESERVEANDCOMMIT",
-                        "serviceType": "L3"
-                    },
-                    "name": "ssloS_layer3a",
-                    "portRemap": true,
-                    "serviceDownAction": "ignore",
-                    "serviceSpecific": {
-                        "name": "ssloS_layer3a"
-                    },
-                    "serviceType": "L3",
-                    "snatConfiguration": {
-                        "clientSnat": "None",
-                        "snat": {
-                            "ipv4SnatAddresses": [],
-                            "ipv6SnatAddresses": [],
-                            "referredObj": ""
-                        }
-                    }
-                },
-                "description": "Type: L3",
-                "fromNetworkObj": {
-                    "create": true,
-                    "name": "ssloN_layer3a_in",
-                    "partition": "Common",
-                    "routeDomain": {
-                        "create": false,
-                        "id": 0
-                    },
-                    "selfIpConfig": {
-                        "HAstaticIpMap": [],
-                        "create": true,
-                        "floating": false,
-                        "modify": false,
-                        "netmask": "255.255.255.128",
-                        "selfIp": "198.19.64.7"
-                    },
-                    "strictness": false,
-                    "vlan": {
-                        "create": true,
-                        "interface": [
-                            "1.1"
-                        ],
-                        "modify": false,
-                        "name": "ssloN_layer3a_in",
-                        "networkError": false,
-                        "networkInterface": "1.1",
-                        "networkTag": 40,
-                        "path": "/Common/ssloN_layer3a_in.app/ssloN_layer3a_in",
-                        "tag": 40
+                        "operation": "RESERVEANDCOMMIT"
                     }
                 },
                 "fromVlanNetworkObj": {
@@ -234,41 +202,35 @@
                     "modify": false,
                     "networkError": false
                 },
-                "name": "ssloS_layer3a",
-                "partition": "Common",
-                "previousVersion": 7.5,
-                "serviceTemplate": "",
-                "strictness": false,
-                "templateName": "Layer 3 Service",
-                "toNetworkObj": {
+                "fromNetworkObj": {
+                    "name": "ssloN_layer3a_in",
                     "create": true,
-                    "name": "ssloN_layer3a_out",
                     "partition": "Common",
-                    "routeDomain": {
-                        "create": false,
-                        "id": 0
-                    },
-                    "selfIpConfig": {
-                        "HAstaticIpMap": [],
-                        "create": true,
-                        "floating": false,
-                        "modify": false,
-                        "netmask": "255.255.255.128",
-                        "selfIp": "198.19.64.245"
-                    },
-                    "strictness": true,
+                    "strictness": false,
                     "vlan": {
                         "create": true,
+                        "modify": false,
+                        "name": "ssloN_layer3a_in",
+                        "path": "/Common/ssloN_layer3a_in.app/ssloN_layer3a_in",
+                        "networkError": false,
                         "interface": [
                             "1.1"
                         ],
-                        "modify": false,
-                        "name": "ssloN_layer3a_out",
-                        "networkError": false,
+                        "tag": 40.0,
                         "networkInterface": "1.1",
-                        "networkTag": 50,
-                        "path": "/Common/ssloN_layer3a_out.app/ssloN_layer3a_out",
-                        "tag": 50
+                        "networkTag": 40.0
+                    },
+                    "selfIpConfig": {
+                        "create": true,
+                        "modify": false,
+                        "selfIp": "198.19.64.7",
+                        "netmask": "255.255.255.128",
+                        "floating": false,
+                        "HAstaticIpMap": []
+                    },
+                    "routeDomain": {
+                        "id": 0.0,
+                        "create": false
                     }
                 },
                 "toVlanNetworkObj": {
@@ -276,10 +238,48 @@
                     "modify": false,
                     "networkError": false
                 },
-                "useTemplate": false,
+                "toNetworkObj": {
+                    "name": "ssloN_layer3a_out",
+                    "create": true,
+                    "partition": "Common",
+                    "strictness": true,
+                    "vlan": {
+                        "create": true,
+                        "modify": false,
+                        "name": "ssloN_layer3a_out",
+                        "path": "/Common/ssloN_layer3a_out.app/ssloN_layer3a_out",
+                        "networkError": false,
+                        "interface": [
+                            "1.1"
+                        ],
+                        "tag": 50.0,
+                        "networkInterface": "1.1",
+                        "networkTag": 50.0
+                    },
+                    "selfIpConfig": {
+                        "create": true,
+                        "modify": false,
+                        "selfIp": "198.19.64.245",
+                        "netmask": "255.255.255.128",
+                        "floating": false,
+                        "HAstaticIpMap": []
+                    },
+                    "routeDomain": {
+                        "id": 0.0,
+                        "create": false
+                    }
+                },
                 "vendorInfo": {
                     "name": "Generic Inline Layer 3"
                 },
+                "name": "ssloS_layer3a",
+                "partition": "Common",
+                "description": "Type: L3",
+                "strictness": false,
+                "useTemplate": false,
+                "serviceTemplate": "",
+                "templateName": "Layer 3 Service",
+                "previousVersion": 7.5,
                 "version": 7.5
             }
         },
@@ -294,20 +294,24 @@
             "value": []
         }
     ],
-    "configProcessorAffinity": {
-        "affinityProcessorReference": {
-            "link": "https://localhost/mgmt/shared/iapp/affinity/local"
-        },
-        "processorPolicy": "LOCAL"
-    },
-    "configProcessorTimeoutSeconds": 120,
     "configurationProcessorReference": {
         "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
     },
-    "operation": "CREATE",
+    "configProcessorTimeoutSeconds": 120,
+    "statsProcessorTimeoutSeconds": 60,
+    "configProcessorAffinity": {
+        "processorPolicy": "LOCAL",
+        "affinityProcessorReference": {
+            "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+        },
+        "machineId": "d0f711b6-acc1-4471-8240-3be7d481646b"
+    },
+    "state": "BINDING",
     "presentationHtmlReference": {
         "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
     },
-    "state": "BINDING",
-    "statsProcessorTimeoutSeconds": 60
+    "generation": 1,
+    "lastUpdateMicros": 1657613983193617,
+    "kind": "shared:iapp:blocks:blockstate",
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks/39389ec6-b064-443e-a812-79ce30705793"
 }
