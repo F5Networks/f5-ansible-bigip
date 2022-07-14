@@ -1,0 +1,38 @@
+{
+    "name": "sslo_obj_SERVICE_DELETE_ssloS_tap_test",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "deploymentName": "ssloS_tap_test",
+                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/30906ea4-7ad2-4d16-b950-60b0c79d2840",
+                "deploymentType": "SERVICE",
+                "operationType": "DELETE",
+                "version": 7.5,
+                "partition": "Common"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-network",
+            "type": "JSON",
+            "value": []
+        },
+        {
+            "id": "f5-ssl-orchestrator-service",
+            "type": "JSON",
+            "value": {
+                "partition": "Common",
+                "name": "ssloS_tap_test",
+                "previousVersion": 7.5,
+                "version": 7.5,
+                "existingBlockId": "30906ea4-7ad2-4d16-b950-60b0c79d2840"
+            }
+        }
+    ],
+    "dataProperties": [],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "state": "BINDING"
+}

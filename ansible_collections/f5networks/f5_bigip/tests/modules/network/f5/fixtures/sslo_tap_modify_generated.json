@@ -5,12 +5,13 @@
             "id": "f5-ssl-orchestrator-operation-context",
             "type": "JSON",
             "value": {
-                "deploymentName": "ssloS_tap_test",
-                "deploymentType": "SERVICE",
-                "operationType": "MODIFY",
+                "version": 7.5,
                 "partition": "Common",
                 "strictness": false,
-                "version": 7.5
+                "operationType": "MODIFY",
+                "deploymentName": "ssloS_tap_test",
+                "deploymentType": "SERVICE",
+                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/30906ea4-7ad2-4d16-b950-60b0c79d2840"
             }
         },
         {
@@ -20,31 +21,31 @@
                 {
                     "name": "ssloN_tap_test",
                     "partition": "Common",
-                    "routeDomain": {
-                        "create": false,
-                        "id": 0,
-                        "path": ""
+                    "strictness": false,
+                    "vlan": {
+                        "create": true,
+                        "path": "/Common/ssloN_tap_test.app/ssloN_tap_test",
+                        "interface": [
+                            "1.1"
+                        ],
+                        "tag": 400,
+                        "networkTag": 400
                     },
                     "selfIpConfig": {
+                        "selfIp": "",
+                        "netmask": "",
+                        "floating": false,
                         "HAstaticIpMap": [
                             {
                                 "deviceMgmtIp": "",
                                 "selfIp": ""
                             }
-                        ],
-                        "floating": false,
-                        "netmask": "",
-                        "selfIp": ""
+                        ]
                     },
-                    "strictness": false,
-                    "vlan": {
-                        "create": true,
-                        "interface": [
-                            "1.1"
-                        ],
-                        "networkTag": 400,
-                        "path": "/Common/ssloN_tap_test.app/ssloN_tap_test",
-                        "tag": 400
+                    "routeDomain": {
+                        "create": false,
+                        "id": 0,
+                        "path": ""
                     }
                 }
             ]
@@ -54,73 +55,74 @@
             "type": "JSON",
             "value": [
                 {
+                    "name": "ssloS_tap_test",
+                    "vendorInfo": {
+                        "name": "Generic TAP Service"
+                    },
                     "createNewNetworkObj": {
                         "name": "ssloN_tap_test",
                         "networkError": false,
                         "networkInterface": "1.1"
                     },
+                    "useExistingNetworkObj": {
+                        "path": "",
+                        "interface": ""
+                    },
                     "customService": {
-                        "httpPortRemapValue": 80,
-                        "managedNetwork": {
-                            "ipFamily": "both",
-                            "ipv4": {
-                                "deviceIp": "198.19.227.10",
-                                "ipFamily": "ipv4",
-                                "serviceHASelfIp": "198.19.227.9",
-                                "serviceIndex": 2,
-                                "serviceSelfIp": "198.19.227.8",
-                                "serviceSubnet": "198.19.227.0",
-                                "serviceType": "tap",
-                                "subnetMask": "255.255.255.252"
-                            },
-                            "ipv6": {
-                                "deviceIp": "2001:200:0:e7bf::a",
-                                "ipFamily": "ipv6",
-                                "serviceHASelfIp": "2001:200:0:e7bf::9",
-                                "serviceIndex": 2,
-                                "serviceSelfIp": "2001:200:0:e7bf::8",
-                                "serviceSubnet": "2001:200:0:e7bf::",
-                                "serviceType": "tap",
-                                "subnetMask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:fff0"
-                            },
-                            "serviceType": "tap"
-                        },
                         "name": "ssloS_tap_test",
+                        "serviceType": "tap",
                         "portRemap": true,
                         "serviceDownAction": "ignore",
-                        "serviceSpecific": {
-                            "description": "",
-                            "macAddress": "fa:16:3e:a1:42:a8",
-                            "name": "ssloS_tap_test",
-                            "vendorConfig": {
-                                "name": "TAP Service"
+                        "httpPortRemapValue": 8081,
+                        "managedNetwork": {
+                            "ipFamily": "both",
+                            "serviceType": "tap",
+                            "ipv4": {
+                                "serviceType": "tap",
+                                "ipFamily": "ipv4",
+                                "serviceSubnet": "198.19.182.0",
+                                "serviceIndex": 2,
+                                "subnetMask": "255.255.255.252",
+                                "serviceSelfIp": "198.19.182.8",
+                                "serviceHASelfIp": "198.19.182.9",
+                                "deviceIp": "198.19.182.10"
                             },
-                            "vlan": {
-                                "create": true,
-                                "interface": "1.1",
-                                "name": "ssloN_tap_test",
-                                "networkInterface": "1.1",
-                                "networkTag": 400,
-                                "path": "/Common/ssloN_tap_test.app/ssloN_tap_test",
-                                "tag": 400
+                            "ipv6": {
+                                "serviceType": "tap",
+                                "ipFamily": "ipv6",
+                                "serviceSubnet": "2001:200:0:ca9a::",
+                                "serviceIndex": 2,
+                                "subnetMask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:fff0",
+                                "serviceSelfIp": "2001:200:0:ca9a::8",
+                                "serviceHASelfIp": "2001:200:0:ca9a::9",
+                                "deviceIp": "2001:200:0:ca9a::a"
                             }
                         },
-                        "serviceType": "tap"
+                        "serviceSpecific": {
+                            "description": "",
+                            "macAddress": "F5:F5:F5:F5:XX:YY",
+                            "name": "ssloS_tap_test",
+                            "vlan": {
+                                "create": true,
+                                "path": "/Common/ssloN_tap_test.app/ssloN_tap_test",
+                                "networkInterface": "1.1",
+                                "interface": "1.1",
+                                "tag": 400,
+                                "name": "ssloN_tap_test",
+                                "networkTag": 400
+                            },
+                            "vendorConfig": {
+                                "name": "TAP Service"
+                            }
+                        }
                     },
-                    "name": "ssloS_tap_test",
                     "partition": "Common",
-                    "previousVersion": 7.5,
-                    "strictness": false,
                     "templateName": "TAP Service",
-                    "useExistingNetworkObj": {
-                        "interface": "",
-                        "path": ""
-                    },
                     "useTemplate": false,
-                    "vendorInfo": {
-                        "name": "Generic TAP Service"
-                    },
-                    "version": 7.5
+                    "previousVersion": 7.5,
+                    "version": 7.5,
+                    "strictness": false,
+                    "existingBlockId": "30906ea4-7ad2-4d16-b950-60b0c79d2840"
                 }
             ]
         },
@@ -135,20 +137,20 @@
             "value": []
         }
     ],
-    "configProcessorAffinity": {
-        "affinityProcessorReference": {
-            "link": "https://localhost/mgmt/shared/iapp/affinity/local"
-        },
-        "processorPolicy": "LOCAL"
-    },
-    "configProcessorTimeoutSeconds": 120,
     "configurationProcessorReference": {
         "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
     },
-    "operation": "CREATE",
+    "configProcessorTimeoutSeconds": 120,
+    "statsProcessorTimeoutSeconds": 60,
+    "configProcessorAffinity": {
+        "processorPolicy": "LOCAL",
+        "affinityProcessorReference": {
+            "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+        }
+    },
+    "state": "BINDING",
     "presentationHtmlReference": {
         "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
     },
-    "state": "BINDING",
-    "statsProcessorTimeoutSeconds": 60
+    "operation": "CREATE"
 }

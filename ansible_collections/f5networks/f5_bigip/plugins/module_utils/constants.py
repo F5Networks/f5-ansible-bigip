@@ -33,7 +33,7 @@ TEEM_TIMEOUT = 10
 TEEM_VERIFY = False
 
 min_sslo_version = '7.5'
-max_sslo_version = '9.0'
+max_sslo_version = '10.0'
 
 resolver_logging_config = {
     "logLevel": 0,
