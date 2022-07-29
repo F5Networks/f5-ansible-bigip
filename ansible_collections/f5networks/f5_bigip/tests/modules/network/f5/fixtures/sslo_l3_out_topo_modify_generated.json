@@ -1,6 +1,6 @@
 
 {
-   "name": "sslo_obj_TOPOLOGY_CREATE_sslo_l3_topo_out",
+   "name": "sslo_obj_TOPOLOGY_MODIFY_sslo_l3_topo_out",
    "inputProperties": [
        {
            "id": "f5-ssl-orchestrator-operation-context",
@@ -9,9 +9,10 @@
                 "version": 7.5,
                 "partition": "Common",
                 "strictness": false,
-                "operationType": "CREATE",
+                "operationType": "MODIFY",
                 "deploymentName": "sslo_l3_topo_out",
-                "deploymentType": "TOPOLOGY"
+                "deploymentType": "TOPOLOGY",
+                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/64344723-7b1c-406f-9e2e-31204b602276"
            }
        },
        {
@@ -26,7 +27,7 @@
                "strictness": false,
                "userCreated": false,
                "description": "",
-               "deployedNetwork": "",
+               "deployedNetwork": "None",
                "ipFamily": "ipv4",
                "ruleType": "Outbound",
                "ruleLabel": "Outbound",
@@ -37,7 +38,7 @@
                    "protocol": "tcp",
                    "destination": {
                        "mask": "",
-                       "port": 0,
+                       "port": 8080,
                        "prefix": 0,
                        "address": "192.168.1.4%0/32"
                    }
@@ -65,25 +66,31 @@
                    "all": ""
                },
                "ingressNetwork": {
-                  "vlans": [{"name": "/Common/fake1", "value": "/Common/fake1"}]
+                  "vlans": [{"name": "/Common/fake2", "value": "/Common/fake2"}]
                },
                "egressNetwork": {
-                  "clientSnat": "",
+                  "clientSnat": "existingSNAT",
                   "snat": {
-                      "referredObj": "",
+                      "referredObj": "/Common/test_topo-snatpool"
+                      ,
                       "ipv4SnatAddresses": [],
                       "ipv6SnatAddresses": []
                    },
-                   "gatewayOptions": "",
+                   "gatewayOptions": "existingGatewayPool",
                    "outboundGateways": {
-                      "referredObj": "",
+                      "referredObj": "/Common/fake_gw"
+                      ,
                       "ipv4OutboundGateways": [],
                       "ipv6OutboundGateways": []
                    }
                },
+               "ocspAuth": "None",
                "proxySettings": {
                   "proxyType": "transparent"
                       ,
+                  "tcpProfile": {
+                      "verifyAccept": null
+                  },
                   "forwardProxy": {
                       "explicitProxy": {
                           "ipv4Port": 3128,
@@ -116,15 +123,19 @@
                     "sslOrchestrator": "err"
                },
                "authProfile": "",
-               "sslSettingReference": "ssloT_foobar",
+               "sslSettingReference": "ssloT_for_testing",
                "securityPolicyReference": "",
-               "accessProfile": ""
+               "accessProfile": "",
+               "accessProfileScope": "None",
+               "accessProfileNameScopeValue": "None",
+               "primaryAuthenticationURI": "None",
+               "existingBlockId": "64344723-7b1c-406f-9e2e-31204b602276"
            }
        },
        {
            "id": "f5-ssl-orchestrator-general-settings",
            "type": "JSON",
-           "value": {"configModified": true, "dns": {"enableDnsSecurity": false, "enableLocalDnsQueryResolution": false, "enableLocalDnsZones": false, "localDnsNameservers": [], "localDnsZones": []}, "egressNetwork": {"gatewayOptions": "useDefault", "outboundGateways": {"ipv4OutboundGateways": [{"ip": "", "ratio": 1.0}], "ipv6NonPublicGateways": [{"ip": ""}], "ipv6OutboundGateways": [{"ip": "", "ratio": 1.0}], "referredObj": ""}}, "existingBlockId": "22a9c5bd-50e5-4b58-bb09-f4e4c84419ec", "ipFamily": "ipv4", "name": "ssloGS_global", "partition": "Common", "previousVersion": "7.4", "strictness": true, "version": "7.4"}
+           "value": {"configModified": true, "dns": {"enableDnsSecurity": false, "enableLocalDnsQueryResolution": false, "enableLocalDnsZones": false, "localDnsNameservers": [], "localDnsZones": []}, "egressNetwork": {"gatewayOptions": "useDefault", "outboundGateways": {"ipv4OutboundGateways": [{"ip": "", "ratio": 1.0}], "ipv6NonPublicGateways": [{"ip": ""}], "ipv6OutboundGateways": [{"ip": "", "ratio": 1.0}], "referredObj": ""}}, "existingBlockId": "6d959bd2-c344-4df5-9544-2923c39a313a", "ipFamily": "ipv4", "loggingConfig": {"logLevel": 0.0, "logPublisher": "none", "statsToRecord": 0.0}, "name": "ssloGS_global", "partition": "Common", "previousVersion": "7.5", "strictness": false, "version": "7.5"}
        },
        {
            "id": "f5-ssl-orchestrator-tls",

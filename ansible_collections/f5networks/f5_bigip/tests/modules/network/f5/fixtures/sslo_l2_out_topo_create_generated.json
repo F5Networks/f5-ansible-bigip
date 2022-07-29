@@ -1,3 +1,4 @@
+
 {
    "name": "sslo_obj_TOPOLOGY_CREATE_sslo_l2_topo_out",
    "inputProperties": [
@@ -76,8 +77,8 @@
                    "gatewayOptions": "",
                    "outboundGateways": {
                       "referredObj": "",
-                      "ipv4SnatAddresses": [],
-                      "ipv6SnatAddresses": []
+                      "ipv4OutboundGateways": [],
+                      "ipv6OutboundGateways": []
                    }
                },
                "proxySettings": {

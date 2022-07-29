@@ -86,9 +86,9 @@ create_modify = """
                    "outboundGateways": {
                       "referredObj": {% if params.gw_ref_id is defined %}"{{ params.gw_ref_id }}"
                       {% else %}""{% endif %},
-                      "ipv4SnatAddresses": {% if params.ip_family == 'ipv4' and params.gateway_list is defined -%}
+                      "ipv4OutboundGateways": {% if params.ip_family == 'ipv4' and params.gateway_list is defined -%}
                       {{ params.gateway_list | tojson }}{% else %}[]{% endif %},
-                      "ipv6SnatAddresses": {% if params.ip_family == 'ipv6' and params.gateway_list is defined -%}
+                      "ipv6OutboundGateways": {% if params.ip_family == 'ipv6' and params.gateway_list is defined -%}
                       {{ params.gateway_list | tojson }}{% else %}[]{% endif %}
                    }
                },{% if params.ocsp_auth is defined %}

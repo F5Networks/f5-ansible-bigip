@@ -77,8 +77,8 @@
                    "gatewayOptions": "",
                    "outboundGateways": {
                       "referredObj": "",
-                      "ipv4SnatAddresses": [],
-                      "ipv6SnatAddresses": []
+                      "ipv4OutboundGateways": [],
+                      "ipv6OutboundGateways": []
                    }
                },
                "proxySettings": {
