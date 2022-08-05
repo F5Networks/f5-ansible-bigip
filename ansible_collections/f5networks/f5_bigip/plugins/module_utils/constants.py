@@ -32,6 +32,24 @@ TEEM_KEY = 'mmhJU2sCd63BznXAXDh4kxLIyfIMm3Ar'
 TEEM_TIMEOUT = 10
 TEEM_VERIFY = False
 
+CICD_ENV = {
+    'bamboo.buildKey': 'Bamboo',
+    'DRONE': 'Drone CI',
+    'BUILDKITE': 'Buildkite',
+    'CIRCLECI': 'Circle CI',
+    'CIRRUS_CI': 'Cirrus CI',
+    'CODEBUILD_BUILD_ID': 'AWS CodeBuild',
+    'GITHUB_ACTIONS': 'GitHub Actions',
+    'GITLAB_CI': 'GitLab CI',
+    'HUDSON_URL': 'Hudson CI',
+    'JENKINS_URL': 'Jenkins CI',
+    'TF_BUILD': 'Azure Pipelines',
+    'HEROKU_TEST_RUN_ID': 'Heroku CI',
+    'TEAMCITY_VERSION': 'TeamCity',
+    'TRAVIS': 'Travis CI',
+    'CI_NAME': 'CodeShip CI'
+}
+
 min_sslo_version = '7.5'
 max_sslo_version = '10.0'
 

@@ -1,0 +1,3 @@
+---
+minor_changes:
+    - module_utils/teem.py - add additional telemetry data fields with relevant tests

@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - bigip_sslo_service_http - fixed delete operation for sslo http service
