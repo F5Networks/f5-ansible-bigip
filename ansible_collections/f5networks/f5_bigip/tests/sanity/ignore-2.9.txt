@@ -11,3 +11,4 @@ plugins/modules/bigip_ssl_pkcs12.py validate-modules:undocumented-parameter
 plugins/modules/bigip_ssl_pkcs12.py validate-modules:doc-default-does-not-match-spec
 plugins/modules/bigiq_regkey_license.py validate-modules:no-log-needed
 plugins/modules/bigip_ssl_key_cert.py validate-modules:no-log-needed
+plugins/modules/bigip_sslo_config_policy.py validate-modules:invalid-ansiblemodule-schema

@@ -82,7 +82,7 @@ options:
              type: int
       pool_name:
         description:
-          - Defines an existing pool for the proxy connection.
+          - Defines an existing pool name for the proxy connection, it should be specified with partition .
           - Mutually exclusive with C(pool_members).
         type: str
       username:
@@ -134,6 +134,7 @@ options:
               - client_ip_subnet_match
               - server_ip_subnet_match
               - tcp_l7_protocol_lookup
+              - udp_l7_protocol_lookup
               - client_ip_geolocation
               - server_ip_geolocation
           condition_option_category:
@@ -154,15 +155,25 @@ options:
               - Should be used when c(condition_type) matches c(client_port_match) or c(server_port_match).
             type: list
             elements: str
+          condition_option_portrange:
+            description:
+              - Defines a port-range with using keys c(port_from) and c(port_to).
+              - Should be used when c(condition_type) matches c(client_port_match) or c(server_port_match).
+            type: dict
           condition_option_subnet:
             description:
               - Defines a list of IP subnets.
               - Should be used with when c(condition_type) matches c(client_ip_subnet_match) or c(server_ip_subnet_match)
             type: list
             elements: str
-          condition_option_protocol:
+          option_tcp_protocol:
             description:
-              - Defines the protocols.
+              - Defines list of tcp protocols to be used with C(tcp_l7_protocol_lookup)
+            type: list
+            elements: str
+          option_udp_protocol:
+            description:
+              - Defines list of udp protocols to be used with C(udp_l7_protocol_lookup)
             type: list
             elements: str
       policy_action:
@@ -300,6 +311,8 @@ from ..module_utils.client import (
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, process_json
 )
+from ansible.module_utils.six import iteritems
+
 from ..module_utils.constants import (
     min_sslo_version, max_sslo_version
 )
@@ -317,16 +330,18 @@ condition_type = {'category_lookup_all': 'Category Lookup',
                   'client_ip_subnet_match': "Client IP Subnet Match",
                   'server_ip_subnet_match': "Server IP Subnet Match",
                   'tcp_l7_protocol_lookup': "TCP L7 Protocol Lookup",
+                  'udp_l7_protocol_lookup': "UDP L7 Protocol Lookup",
                   'client_ip_geolocation': "Client IP Geolocation",
                   'server_ip_geolocation': "Server IP Geolocation"
                   }
 
 condition_type_list = ['category_lookup_all', 'category_lookup_sni', 'category_lookup_httpconnect', 'ssl_check',
                        'client_port_match', 'server_port_match', 'client_ip_subnet_match', 'server_ip_subnet_match',
-                       'tcp_l7_protocol_lookup', 'client_ip_geolocation', 'server_ip_geolocation']
+                       'tcp_l7_protocol_lookup', 'udp_l7_protocol_lookup', 'client_ip_geolocation', 'server_ip_geolocation']
 
 category_list = ['category_lookup_all', 'category_lookup_sni', 'category_lookup_httpconnect']
 port_list = ['client_port_match', 'server_port_match']
+port_map = ['Client Port Match', 'Server Port Match']
 subnet_list = ['client_ip_subnet_match', 'server_ip_subnet_match']
 protocol_list = ['tcp_l7_protocol_lookup', 'udp_l7_protocol_lookup']
 geolocation_list = ['client_ip_geolocation', 'server_ip_geolocation']
@@ -334,6 +349,9 @@ geolocation_list = ['client_ip_geolocation', 'server_ip_geolocation']
 condition_category = {'general_mail': "General Email",
                       'financial_data_and_services': "Financial Data and Services"
                       }
+
+tcp_proto_list = ["dns", "ftp", "ftps", "http", "httpConnect", "https", "imap", "imaps", "pop3", "pop3s", "smtp",
+                  "smtps", "telnet", "http2"]
 
 condition_category_list = [
     "Files Containing Passwords",
@@ -511,7 +529,7 @@ class Parameters(AnsibleF5Parameters):
     updatables = [
         'proxy_connect',
         'pools',
-        'policy_consumer'
+        'policy_consumer',
         'policy_rules',
         'server_cert_check'
     ]
@@ -531,7 +549,22 @@ class ApiParameters(Parameters):
 
     @property
     def policy_rules(self):
-        return self._values['rules']
+        # return self._values['rules']
+        rules = list()
+        for rule in self._values['rules']:
+            if 'All Traffic' != rule['name']:
+                new_dict = dict()
+                for key, value in rule.items():
+                    if str(key) == 'phase':
+                        continue
+                    elif str(key) == 'injectServerCertMacro':
+                        continue
+                    elif str(key) == 'injectCategorizationMacro':
+                        continue
+                    else:
+                        new_dict[key] = value
+                rules.append(new_dict)
+        return rules
 
     @property
     def server_cert_check(self):
@@ -613,11 +646,13 @@ class ModuleParameters(Parameters):
     @property
     def proxy_connect(self):
         if self._values['proxy_connect'] is None:
-            return {}
+            return None
         proxy_config = dict()
         proxy_config['isProxyChainEnabled'] = True
         proxy_config['username'] = self._values['proxy_connect']['username']
-        proxy_config['password'] = self._values['proxy_connect']['password']
+        proxy_config['password'] = ""
+        if self._values['proxy_connect']['password'] is not None:
+            proxy_config['password'] = self._values['proxy_connect']['password']
         proxy_config_pool = dict()
         if 'pool_members' in self._values['proxy_connect'] and \
                 self._values['proxy_connect']['pool_members'] is not None:
@@ -671,8 +706,8 @@ class ModuleParameters(Parameters):
                 tmpdict['appService'] = f"ssloP_{self._values['name']}.app/ssloP_{self._values['name']}"
                 pool_members.append(tmpdict)
             pool_detail['members'] = pool_members
-
-        pools[f"ssloP_{self._values['name']}_proxyChainPool"] = pool_detail
+            pools[f"ssloP_{self._values['name']}_proxyChainPool"] = pool_detail
+            return pools
         return pools
 
     @property
@@ -706,6 +741,7 @@ class ModuleParameters(Parameters):
 
             policy_rule['conditions'] = condtns
             condition_result = list()
+            condtype_list = list()
             for cond in condtns:
                 if cond['condition_type'] is None:
                     raise F5ModuleError(
@@ -731,10 +767,32 @@ class ModuleParameters(Parameters):
                     cla = dict()
                     cla['type'] = condition_type[cond['condition_type']]
                     r1 = list()
-                    for opt in cond['condition_option_ports']:
-                        r1.append(opt)
+                    if cond['condition_option_ports'] is not None:
+                        for opt in cond['condition_option_ports']:
+                            r1.append(opt)
+                        cla['options'] = {
+                            "port": r1
+                        }
+                        condition_result.append(cla)
+                    elif cond['condition_option_portrange'] is not None:
+                        cla['valueType'] = 'range'
+                        r3 = list()
+                        r2 = dict()
+                        r2['valueType'] = 'range'
+                        r2['portFrom'] = cond['condition_option_portrange']['port_from']
+                        r2['portTo'] = cond['condition_option_portrange']['port_to']
+                        r3.append(r2)
+                        cla['options'] = {
+                            "port": r3
+                        }
+                        condition_result.append(cla)
+
+                if cond['condition_type'] == "ssl_check":
+                    cla = dict()
+                    cla['type'] = condition_type[cond['condition_type']]
+                    # r1 = list()
                     cla['options'] = {
-                        "port": r1
+                        "ssl": True
                     }
                     condition_result.append(cla)
 
@@ -742,22 +800,59 @@ class ModuleParameters(Parameters):
                     cla = dict()
                     cla['type'] = condition_type[cond['condition_type']]
                     r1 = list()
-                    for opt in cond['condition_option_subnet']:
-                        r1.append(opt)
-                    cla['options'] = {
-                        "subnet": r1
-                    }
+                    if float(self._values['sslo_version']) < 8:
+                        for opt in cond['condition_option_subnet']:
+                            r1.append(opt)
+                        cla['options'] = {
+                            "subnet": r1
+                        }
+                    else:
+                        for opt in cond['condition_option_subnet']:
+                            sub = dict()
+                            if re.match(r'^\/\w+\/[a-zA-Z0-9\-\.\_]+$', opt):
+                                sub["valueType"] = 'datagroup'
+                                sub["subnet"] = opt
+                            else:
+                                sub["valueType"] = 'staticValue'
+                                sub["subnet"] = opt
+                            r1.append(sub)
+                        cla['options'] = {
+                            "subnet": r1
+                        }
                     condition_result.append(cla)
 
                 if cond['condition_type'] in protocol_list:
                     cla = dict()
+                    condtype_list.append(cond['condition_type'])
+                    if 'tcp_l7_protocol_lookup' in condtype_list and 'udp_l7_protocol_lookup' in condtype_list:
+                        raise F5ModuleError("condition_types :{0} cant be specified together in single rule".format(condtype_list))
                     cla['type'] = condition_type[cond['condition_type']]
                     r1 = list()
-                    for opt in cond['condition_option_protocol']:
-                        r1.append(opt)
-                    cla['options'] = {
-                        "subnet": r1
-                    }
+                    if cond['option_tcp_protocol'] is not None:
+                        for opt in cond['option_tcp_protocol']:
+                            if cond['condition_type'] == "tcp_l7_protocol_lookup":
+                                if opt not in tcp_proto_list:
+                                    raise F5ModuleError(
+                                        "TCP L7 protocol must be one of: {0} , but {1} was entered.".format(tcp_proto_list, opt))
+                                # 9.0 Update: only allow http2 if 9.0+
+                                if float(self._values['sslo_version']) < 9.0 and opt == 'http2':
+                                    pass
+                                else:
+                                    r1.append(opt)
+                                cla['options'] = {
+                                    "protocol": r1
+                                }
+                    if cond['option_udp_protocol'] is not None:
+                        for opt in cond['option_udp_protocol']:
+                            if cond['condition_type'] == "udp_l7_protocol_lookup":
+                                udp_proto_list = ["dns", "quic"]
+                                if opt not in udp_proto_list:
+                                    raise F5ModuleError(
+                                        "UDP L7 protocol must be one of: {0} , but {1} was entered.".format(udp_proto_list, opt))
+                                r1.append(opt)
+                                cla['options'] = {
+                                    "protocol": r1
+                                }
                     condition_result.append(cla)
 
                 if cond['condition_type'] in geolocation_list:
@@ -765,9 +860,26 @@ class ModuleParameters(Parameters):
                     cla['type'] = condition_type[cond['condition_type']]
                     r1 = list()
                     for opt in cond['geolocations']:
+                        if "type" not in opt:
+                            raise F5ModuleError(
+                                "IP Geolocation requires at least one sub-item under the (geolocations) key that "
+                                "contains a 'type' and 'value' sub-key.")
+                        if "value" not in opt:
+                            raise F5ModuleError(
+                                "IP Geolocation requires at least one sub-item under the (geolocations) key that "
+                                "contains a 'type' and 'value' sub-key.")
+
+                        if opt["type"] not in {"countryCode", "countryName", "continent", "state"}:
+                            raise F5ModuleError(
+                                "IP Geolocation (type) must be one of 'countryCode', 'countryName', 'continent', "
+                                "'state', but '" + opt["type"] + "' was entered.")
                         tmp = dict()
                         tmp['matchType'] = opt['type']
                         tmp['value'] = opt['value']
+                        if re.match(r'^\/\w+\/[a-zA-Z0-9\-\.\_]+$', opt['value']):
+                            tmp['valueType'] = "datagroup"
+                        else:
+                            tmp['valueType'] = "staticValue"
                         r1.append(tmp)
                     cla['options'] = {
                         "geolocations": r1
@@ -840,11 +952,36 @@ class Difference(object):
 
     @property
     def policy_rules(self):
-        return compare_complex_list(self.want.policy_rules, self.have.policy_rules)
+        diff = compare_complex_list(self.want.policy_rules, self.have.policy_rules)
+        l1 = sorted(self.have.policy_rules, key=lambda i: i['name'])
+        l2 = sorted(diff, key=lambda i: i['name'])
+        port1 = list()
+        port2 = list()
+        if l1 == l2:
+            return None
+        if l1 != l2:
+            for rule in l1:
+                for cond in rule['conditions']:
+                    if cond['type'] in port_map:
+                        for port in cond['options']['port']:
+                            if port['valueType'] != 'range' and port['valueType'] != 'dataGroup':
+                                port1.append(port['port'])
+            for rule in l2:
+                for cond in rule['conditions']:
+                    if cond['type'] in port_map:
+                        for port in cond['options']['port']:
+                            port2.append(port)
+            if len(port1) > 0 and len(port2) > 0 and port1 == port2:
+                return None
+            return diff
 
     @property
     def proxy_connect(self):
         return compare_complex_list(self.want.proxy_connect, self.have.proxy_connect)
+
+    @property
+    def policy_consumer(self):
+        return compare_complex_list(self.want.policy_consumer, self.have.policy_consumer)
 
     @property
     def pools(self):
@@ -856,6 +993,7 @@ class ModuleManager(object):
         self.module = kwargs.get('module', None)
         self.connection = kwargs.get('connection', None)
         self.client = F5Client(module=self.module, client=self.connection)
+        self.module.params.update(dict(sslo_version=sslo_version(self.client)))
         self.want = ModuleParameters(params=self.module.params)
         self.changes = UsableChanges()
         self.have = ApiParameters()
@@ -989,6 +1127,8 @@ class ModuleManager(object):
             params['policy_consumer'] = 'Outbound'
         if self.want.server_cert_check is None:
             params['server_cert_check'] = False
+        if self.want.proxy_connect is None:
+            params['proxy_connect'] = self.disable_proxy_connect()
         params = self.add_default_rule_values_for_create(params)
         return params
 
@@ -1009,6 +1149,61 @@ class ModuleManager(object):
             return params
         return params
 
+    def add_sslo_9x_support(self, params):
+        for rule in params['policy_rules']:
+            if 'conditions' in rule:
+                tmpcondi = list()
+                for conditn in rule['conditions']:
+                    if conditn['type'] in port_map and 'valueType' not in conditn:
+                        cla = dict()
+                        params['policy_rules'].remove(rule)
+                        cla["port"] = []
+                        for port in conditn['options']['port']:
+                            this_port = dict()
+                            if re.match(r'^\/\w+\/[a-zA-Z0-9\-\.\_]+$', port):
+                                this_port["port"] = port
+                                this_port["valueType"] = "datagroup"
+                            else:
+                                this_port["port"] = port
+                                this_port["valueType"] = "staticValue"
+                                if port == "80":
+                                    this_port["type"] = "HTTP"
+                                elif port == "443":
+                                    this_port["type"] = "HTTPS"
+                                elif port == "21":
+                                    this_port["type"] = "FTP"
+                                elif port == "25":
+                                    this_port["type"] = "SMTP"
+                                else:
+                                    this_port["type"] = "Others"
+                            cla["port"].append(this_port)
+                        conditn['options'] = cla
+                        conditn["valueType"] = "valueAndDatagroup"
+                        tmpcondi.append(conditn)
+                        rule['conditions'] = tmpcondi
+                        params['policy_rules'].append(rule)
+                        return params
+        return params
+
+    def disable_proxy_connect(self):
+        proxy_connect = dict()
+        if self.want.proxy_connect is None:
+            proxy_connect['isProxyChainEnabled'] = False
+            proxy_connect['username'] = ''
+            proxy_connect['password'] = ''
+            proxy_connect['pool'] = {
+                "create": False,
+                "members": [
+                    {
+                        "ip": '',
+                        "port": '3128'
+                    }
+                ],
+                "name": ''
+            }
+            return proxy_connect
+        return proxy_connect
+
     def add_missing_options(self, params):
         if self.changes.policy_consumer is None:
             params['policy_consumer'] = self.have.policy_consumer
@@ -1020,6 +1215,7 @@ class ModuleManager(object):
             params['pools'] = self.have.pools
         if self.changes.server_cert_check is None:
             params['server_cert_check'] = self.have.server_cert_check
+        params = self.add_default_rule_values_for_create(params)
         return params
 
     def add_json_metadata(self, payload=None):
@@ -1059,6 +1255,8 @@ class ModuleManager(object):
     def create_on_device(self):
         payload = self.changes.to_return()
         data = self.add_create_values(self.add_json_metadata(payload))
+        if float(self.version) >= 9:
+            data = self.add_sslo_9x_support(data)
         output = process_json(data, create_modify)
 
         if self.want.dump_json:
@@ -1076,7 +1274,8 @@ class ModuleManager(object):
     def update_on_device(self):
         payload = self.changes.to_return()
         data = self.add_missing_options(self.add_json_metadata(payload))
-
+        if float(self.version) >= 9:
+            data = self.add_sslo_9x_support(data)
         output = process_json(data, create_modify)
 
         if self.want.dump_json:
@@ -1196,7 +1395,7 @@ class ArgumentSpec(object):
                                 choices=['category_lookup_all', 'category_lookup_sni', 'category_lookup_httpconnect',
                                          'ssl_check', 'client_port_match', 'server_port_match',
                                          'client_ip_subnet_match', 'server_ip_subnet_match', 'tcp_l7_protocol_lookup',
-                                         'client_ip_geolocation', 'server_ip_geolocation']
+                                         'udp_l7_protocol_lookup', 'client_ip_geolocation', 'server_ip_geolocation']
                             ),
                             condition_option_category=dict(
                                 type='list',
@@ -1204,22 +1403,32 @@ class ArgumentSpec(object):
                             ),
                             geolocations=dict(type='list', elements='dict'),
                             condition_option_ports=dict(type='list', elements='str'),
+                            condition_option_portrange=dict(
+                                port_from=dict(),
+                                port_to=dict(),
+                                type='dict'),
+                            # required_together=[('port_from', 'port_to')],
                             condition_option_subnet=dict(type='list', elements='str'),
-                            condition_option_protocol=dict(type='list', elements='str'),
+                            option_tcp_protocol=dict(type='list', elements='str'),
+                            option_udp_protocol=dict(type='list', elements='str'),
                         ),
                         required_if=[
-                            ('condition_type', 'client_port_match', ['condition_option_ports'], True),
-                            ('condition_type', 'server_port_match', ['condition_option_ports'], True),
+                            ('condition_type', 'client_port_match', ['condition_option_ports',
+                                                                     'condition_option_portrange'], True),
+                            ('condition_type', 'server_port_match', ['condition_option_ports',
+                                                                     'condition_option_portrange'], True),
                             ('condition_type', 'category_lookup_all', ['condition_option_category'], True),
                             ('condition_type', 'category_lookup_sni', ['condition_option_category'], True),
                             ('condition_type', 'category_lookup_httpconnect', ['condition_option_category'], True),
                             ('condition_type', 'client_ip_subnet_match', ['condition_option_subnet'], True),
                             ('condition_type', 'server_ip_subnet_match', ['condition_option_subnet'], True),
-                            ('condition_type', 'tcp_l7_protocol_lookup', ['condition_option_protocol'], True),
-                            ('condition_type', 'udp_l7_protocol_lookup', ['condition_option_protocol'], True),
+                            ('condition_type', 'tcp_l7_protocol_lookup', ['option_tcp_protocol'], True),
+                            ('condition_type', 'udp_l7_protocol_lookup', ['option_udp_protocol'], True),
                             ('condition_type', 'client_ip_geolocation', ['geolocations'], True),
                             ('condition_type', 'server_ip_geolocation', ['geolocations'], True)
-                        ]
+                        ],
+                        mutually_exclusive=[['condition_option_ports', 'condition_option_portrange'],
+                                            ['option_tcp_protocol', 'option_udp_protocol']]
 
                     ),
                     policy_action=dict(

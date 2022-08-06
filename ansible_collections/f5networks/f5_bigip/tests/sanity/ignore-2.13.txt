@@ -15,3 +15,4 @@ plugins/modules/bigip_ssl_key_cert.py validate-modules:no-log-needed
 plugins/httpapi/bigip.py validate-modules:invalid-documentation
 plugins/httpapi/bigiq.py validate-modules:invalid-documentation
 plugins/httpapi/velos.py validate-modules:invalid-documentation
+plugins/modules/bigip_sslo_config_policy.py validate-modules:invalid-ansiblemodule-schema
