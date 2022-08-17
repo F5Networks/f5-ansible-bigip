@@ -107,101 +107,98 @@ class TestManager(unittest.TestCase):
         self.m2.return_value = MagicMock()
         self.p3 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_service_layer3.sslo_version')
         self.m3 = self.p3.start()
-        self.m3.return_value = '8.0'
+        self.m3.return_value = '7.5'
 
     def tearDown(self):
         self.p1.stop()
         self.p2.stop()
         self.p3.stop()
 
-    # def test_create_layer3_service_object_dump_json(self, *args):
-    #     # Configure the arguments that would be sent to the Ansible module
-    #     expected = load_fixture('sslo_layer3_create_generated.json')
-    #     set_module_args(dict(
-    #         name="layer3a",
-    #         devices_to=dict(
-    #             interface='1.1',
-    #             tag=40,
-    #             self_ip='198.19.64.7',
-    #             netmask='255.255.255.128'
-    #         ),
-    #         devices_from=dict(
-    #             interface='1.1',
-    #             tag=50,
-    #             self_ip='198.19.64.245',
-    #             netmask='255.255.255.128'
-    #         ),
-    #         devices=[dict(ip='198.19.64.30'), dict(ip='198.19.64.31')],
-    #         service_down_action='ignore',
-    #         port_remap=8081,
-    #         dump_json=True
-    #     ))
-    #
-    #     module = AnsibleModule(
-    #         argument_spec=self.spec.argument_spec,
-    #         supports_check_mode=self.spec.supports_check_mode,
-    #     )
-    #     mm = ModuleManager(module=module)
-    #
-    #     # Override methods to force specific logic in the module to happen
-    #     mm.exists = Mock(return_value=False)
-    #
-    #     results = mm.exec_module()
-    #
-    #     assert results['changed'] is False
-    #     assert results['json'] == expected
+    def test_create_layer3_service_object_dump_json(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        expected = load_fixture('sslo_layer3_create_generated.json')
+        set_module_args(dict(
+            name="layer3a",
+            devices_to=dict(
+                interface='1.1',
+                tag=40,
+                self_ip='198.19.64.7',
+                netmask='255.255.255.128'
+            ),
+            devices_from=dict(
+                interface='1.1',
+                tag=50,
+                self_ip='198.19.64.245',
+                netmask='255.255.255.128'
+            ),
+            devices=[dict(ip='198.19.64.30'), dict(ip='198.19.64.31')],
+            service_down_action='ignore',
+            port_remap=8081,
+            dump_json=True
+        ))
 
-    # def test_modify_layer3_service_object_dump_json(self, *args):
-    #     # Configure the arguments that would be sent to the Ansible module
-    #     expected = load_fixture('sslo_layer3_modify_generated.json')
-    #     set_module_args(dict(
-    #         name="layer3a",
-    #         snat='snatlist',
-    #         snat_list=['198.19.64.10', '198.19.64.11', '198.19.64.12'],
-    #         dump_json=True
-    #     ))
-    #
-    #     module = AnsibleModule(
-    #         argument_spec=self.spec.argument_spec,
-    #         supports_check_mode=self.spec.supports_check_mode,
-    #     )
-    #     mm = ModuleManager(module=module)
-    #
-    #     exists = dict(code=200, contents=load_fixture('load_sslo_service_layer3.json'))
-    #     # Override methods to force specific logic in the module to happen
-    #     mm.client.get = Mock(side_effect=[exists, exists])
-    #
-    #     results = mm.exec_module()
-    #
-    #     assert results['changed'] is True
-    #     assert results['json'] == expected
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
 
-    # def test_modify_layer3_service_object(self, *args):
-    #     # Configure the arguments that would be sent to the Ansible module
-    #     set_module_args(dict(
-    #         name="layer3a",
-    #         snat='snatlist',
-    #         snat_list=['198.19.64.10', '198.19.64.11', '198.19.64.12'],
-    #     ))
-    #
-    #     module = AnsibleModule(
-    #         argument_spec=self.spec.argument_spec,
-    #         supports_check_mode=self.spec.supports_check_mode,
-    #     )
-    #     mm = ModuleManager(module=module)
-    #
-    #     exists = dict(code=200, contents=load_fixture('load_sslo_service_layer3.json'))
-    #     done = dict(code=200, contents=load_fixture('reply_sslo_layer3_modify_done.json'))
-    #     # Override methods to force specific logic in the module to happen
-    #     mm.client.post = Mock(return_value=dict(
-    #         code=202, contents=load_fixture('reply_sslo_layer3_modify_start.json')
-    #     ))
-    #     mm.client.get = Mock(side_effect=[exists, exists, done])
-    #
-    #     results = mm.exec_module()
-    #     assert results['changed'] is True
-    #     assert results['snat'] == 'snatlist'
-    #     assert results['snat_list'] == ['198.19.64.10', '198.19.64.11', '198.19.64.12']
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        assert results['json'] == expected
+
+    def test_modify_layer3_service_object_dump_json(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        expected = load_fixture('sslo_layer3_modify_generated.json')
+        set_module_args(dict(
+            name="layer3a",
+            snat='snatlist',
+            snat_list=['198.19.64.10', '198.19.64.11', '198.19.64.12'],
+            dump_json=True
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+
+        exists = dict(code=200, contents=load_fixture('load_sslo_service_layer3.json'))
+        # Override methods to force specific logic in the module to happen
+        mm.client.get = Mock(side_effect=[exists, exists])
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        assert results['json'] == expected
+
+    def test_delete_layer3_service_object_dump_json(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        expected = load_fixture('sslo_l3_delete_generated.json')
+        set_module_args(dict(
+            name='layer3a',
+            state='absent',
+            dump_json=True
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+
+        exists = dict(code=200, contents=load_fixture('load_sslo_service_layer3_modified.json'))
+        # Override methods to force specific logic in the module to happen
+        mm.client.get = Mock(return_value=exists)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        assert results['json'] == expected
 
     def test_create_layer3_service_object(self, *args):
         # Configure the arguments that would be sent to the Ansible module
@@ -251,3 +248,55 @@ class TestManager(unittest.TestCase):
         # assert results['ip_family'] == 'ipv4'
         assert results['service_down_action'] == 'ignore'
         assert results['port_remap'] == 8081
+
+    def test_modify_layer3_service_object(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name="layer3a",
+            snat='snatlist',
+            snat_list=['198.19.64.10', '198.19.64.11', '198.19.64.12'],
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+
+        exists = dict(code=200, contents=load_fixture('load_sslo_service_layer3.json'))
+        done = dict(code=200, contents=load_fixture('reply_sslo_layer3_modify_done.json'))
+        # Override methods to force specific logic in the module to happen
+        mm.client.post = Mock(return_value=dict(
+            code=202, contents=load_fixture('reply_sslo_layer3_modify_start.json')
+        ))
+        mm.client.get = Mock(side_effect=[exists, exists, done])
+
+        results = mm.exec_module()
+        assert results['changed'] is True
+        assert results['snat'] == 'snatlist'
+        assert results['snat_list'] == ['198.19.64.10', '198.19.64.11', '198.19.64.12']
+
+    def test_delete_layer3_service_object(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        expected = load_fixture('sslo_l3_delete_generated.json')
+        set_module_args(dict(
+            name='layer3a',
+            state='absent'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+
+        exists = dict(code=200, contents=load_fixture('load_sslo_service_layer3_modified.json'))
+        done = dict(code=200, contents=load_fixture('reply_sslo_layer3_delete_done.json'))
+        # Override methods to force specific logic in the module to happen
+        mm.client.post = Mock(return_value=dict(
+            code=202, contents=load_fixture('reply_sslo_layer3_delete_start.json')
+        ))
+        mm.client.get = Mock(side_effect=[exists, done])
+
+        results = mm.exec_module()
+        assert results['changed'] is True

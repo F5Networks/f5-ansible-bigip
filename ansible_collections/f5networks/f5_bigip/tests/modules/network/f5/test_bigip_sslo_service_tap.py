@@ -62,6 +62,7 @@ class TestParameters(unittest.TestCase):
         }
         assert p.mac_address == 'fa:15:4e:a2:43:a8'
         assert p.port_remap == 80
+        assert p.service_down_action is None
 
     def test_api_parameters(self):
         args = load_fixture('return_sslo_tap_params.json')
@@ -74,7 +75,7 @@ class TestParameters(unittest.TestCase):
             'ipv6_haselfip': '2001:200:0:ca9a::9', 'ipv6_selfip': '2001:200:0:ca9a::8',
             'ipv6_subnet': '2001:200:0:ca9a::'
         }
-
+        assert p.mac_address == 'fa:16:3e:a1:42:a8'
         assert p.port_remap == 80
         assert p.service_down_action == 'ignore'
 
@@ -89,63 +90,87 @@ class TestManager(unittest.TestCase):
         self.m2.return_value = MagicMock()
         self.p3 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_service_tap.sslo_version')
         self.m3 = self.p3.start()
-        self.m3.return_value = '8.0'
+        self.m3.return_value = '7.5'
 
     def tearDown(self):
         self.p1.stop()
         self.p2.stop()
         self.p3.stop()
 
-    # def test_create_tap_service_object_dump_json(self, *args):
-    #     # Configure the arguments that would be sent to the Ansible module
-    #     expected = load_fixture('sslo_tap_create_generated.json')
-    #
-    #     set_module_args(dict(
-    #         name='tap_test',
-    #         devices=dict(
-    #             interface='1.1',
-    #             tag=400
-    #         ),
-    #         mac_address='fa:16:3e:a1:42:a8',
-    #         dump_json=True
-    #     ))
-    #     module = AnsibleModule(
-    #         argument_spec=self.spec.argument_spec,
-    #         supports_check_mode=self.spec.supports_check_mode,
-    #     )
-    #     mm = ModuleManager(module=module)
-    #
-    #     # Override methods to force specific logic in the module to happen
-    #     mm.exists = Mock(return_value=False)
-    #
-    #     results = mm.exec_module()
-    #
-    #     assert results['changed'] is False
-    #     assert results['json'] == expected
-    #
-    # def test_modify_tap_service_object_dump_json(self, *args):
-    #     # Configure the arguments that would be sent to the Ansible module
-    #     expected = load_fixture('sslo_tap_modify_generated.json')
-    #     set_module_args(dict(
-    #         name='tap_test',
-    #         port_remap=8081,
-    #         dump_json=True
-    #     ))
-    #
-    #     module = AnsibleModule(
-    #         argument_spec=self.spec.argument_spec,
-    #         supports_check_mode=self.spec.supports_check_mode,
-    #     )
-    #     mm = ModuleManager(module=module)
-    #
-    #     exists = dict(code=200, contents=load_fixture('load_sslo_service_tap.json'))
-    #     # Override methods to force specific logic in the module to happen
-    #     mm.client.get = Mock(side_effect=[exists, exists])
-    #
-    #     results = mm.exec_module()
-    #
-    #     assert results['changed'] is False
-    #     assert results['json'] == expected
+    def test_create_tap_service_object_dump_json(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        expected = load_fixture('sslo_tap_create_generated.json')
+
+        set_module_args(dict(
+            name='tap_test',
+            devices=dict(
+                interface='1.1',
+                tag=400
+            ),
+            mac_address='fa:16:3e:a1:42:a8',
+            dump_json=True
+        ))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        assert results['json'] == expected
+
+    def test_modify_tap_service_object_dump_json(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        expected = load_fixture('sslo_tap_modify_generated.json')
+        set_module_args(dict(
+            name='tap_test',
+            port_remap=8081,
+            dump_json=True
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+
+        exists = dict(code=200, contents=load_fixture('load_sslo_service_tap.json'))
+        # Override methods to force specific logic in the module to happen
+        mm.client.get = Mock(side_effect=[exists, exists])
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        assert results['json'] == expected
+
+    def test_delete_tap_service_object_dump_json(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        expected = load_fixture('sslo_tap_delete_generated.json')
+        set_module_args(dict(
+            name='tap_test',
+            state='absent',
+            dump_json=True
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+
+        exists = dict(code=200, contents=load_fixture('load_sslo_service_tap_modified.json'))
+        # Override methods to force specific logic in the module to happen
+        mm.client.get = Mock(return_value=exists)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        assert results['json'] == expected
 
     def test_create_tap_service_object(self, *args):
         # Configure the arguments that would be sent to the Ansible module
@@ -177,6 +202,7 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['port_remap'] == 8080
+        assert results['mac_address'] == 'fa:16:3e:a1:42:a8'
         assert results['devices'] == {
             'name': 'ssloN_tap_test', 'interface': '1.1', 'path': '/Common/ssloN_tap_test.app/ssloN_tap_test',
             'tag': 400, 'ipv4_deviceip': '198.19.182.10', 'ipv4_haselfip': '198.19.182.9',
@@ -185,29 +211,54 @@ class TestManager(unittest.TestCase):
             'ipv6_subnet': '2001:200:0:ca9a::'
         }
 
-    # def test_modify_tap_service_object(self, *args):
-    #     # Configure the arguments that would be sent to the Ansible module
-    #     set_module_args(dict(
-    #         name='proxy1a',
-    #         snat='snatlist',
-    #         snat_list=['198.19.64.10', '198.19.64.11'],
-    #     ))
-    #
-    #     module = AnsibleModule(
-    #         argument_spec=self.spec.argument_spec,
-    #         supports_check_mode=self.spec.supports_check_mode,
-    #     )
-    #     mm = ModuleManager(module=module)
-    #
-    #     exists = dict(code=200, contents=load_fixture('load_sslo_service_tap.json'))
-    #     done = dict(code=200, contents=load_fixture('reply_sslo_tap_modify_done.json'))
-    #     # Override methods to force specific logic in the module to happen
-    #     mm.client.post = Mock(return_value=dict(
-    #         code=202, contents=load_fixture('reply_sslo_tap_modify_start.json')
-    #     ))
-    #     mm.client.get = Mock(side_effect=[exists, exists, done])
-    #
-    #     results = mm.exec_module()
-    #     assert results['changed'] is True
-    #     assert results['snat'] == 'snatlist'
-    #     assert results['snat_list'] == ['198.19.64.10', '198.19.64.11']
+    def test_modify_tap_service_object(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='tap_test',
+            mac_address='fa:16:3e:a1:42:a9',
+            port_remap=8081
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+
+        exists = dict(code=200, contents=load_fixture('load_sslo_service_tap.json'))
+        done = dict(code=200, contents=load_fixture('reply_sslo_tap_modify_done.json'))
+        # Override methods to force specific logic in the module to happen
+        mm.client.post = Mock(return_value=dict(
+            code=202, contents=load_fixture('reply_sslo_tap_modify_start.json')
+        ))
+        mm.client.get = Mock(side_effect=[exists, exists, done])
+
+        results = mm.exec_module()
+        assert results['changed'] is True
+        assert results['port_remap'] == 8081
+        assert results['mac_address'] == 'fa:16:3e:a1:42:a9'
+
+    def test_delete_tap_service_object(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        expected = load_fixture('sslo_tap_delete_generated.json')
+        set_module_args(dict(
+            name='tap_test',
+            state='absent'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+
+        exists = dict(code=200, contents=load_fixture('load_sslo_service_tap_modified.json'))
+        done = dict(code=200, contents=load_fixture('reply_sslo_tap_delete_done.json'))
+        # Override methods to force specific logic in the module to happen
+        mm.client.post = Mock(return_value=dict(
+            code=202, contents=load_fixture('reply_sslo_tap_delete_start.json')
+        ))
+        mm.client.get = Mock(side_effect=[exists, done])
+
+        results = mm.exec_module()
+        assert results['changed'] is True

@@ -410,8 +410,9 @@ from ..module_utils.client import (
     F5Client, sslo_version
 )
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, process_json, flatten_boolean
+    F5ModuleError, AnsibleF5Parameters, process_json, flatten_boolean, fq_name
 )
+from ..module_utils.compare import compare_dictionary, compare_complex_list
 from ..module_utils.constants import (
     min_sslo_version, max_sslo_version, json_template_gs
 )
@@ -441,26 +442,233 @@ class Parameters(AnsibleF5Parameters):
         'tcp_settings_server',
         'vlans',
         'protocol',
+        'l7_profile',
+        'l7_profile_type',
         'additional_protocols',
         'profile_scope',
         'profile_scope_value',
         'primary_auth_uri',
         'ocsp_auth',
-        'snat_list',
         'snat',
+        'snat_list',
+        'snat_pool',
         'gateway',
         'gateway_list',
+        'gateway_pool',
         'logging',
         'ssl_settings',
         'security_policy',
         'verify_accept'
     ]
 
-    updatables = []
+    updatables = [
+        'topology',
+        'ip_family',
+        'rule',
+        'proxy_type',
+        'dep_net',
+        'dest',
+        'proxy_ip',
+        'pool',
+        'source',
+        'port',
+        'proxy_port',
+        'tcp_settings_client',
+        'tcp_settings_server',
+        'vlans',
+        'protocol',
+        'l7_profile',
+        'l7_profile_type',
+        'additional_protocols',
+        'profile_scope',
+        'profile_scope_value',
+        'primary_auth_uri',
+        'ocsp_auth',
+        'snat',
+        'snat_list',
+        'snat_pool',
+        'gateway',
+        'gateway_list',
+        'gateway_pool',
+        'logging',
+        'ssl_settings',
+        'security_policy',
+        'verify_accept'
+    ]
 
 
 class ApiParameters(Parameters):
-    pass
+    @property
+    def topology(self):
+        return self._values['type']
+
+    @property
+    def ip_family(self):
+        return self._values['ipFamily']
+
+    @property
+    def rule(self):
+        return self._values['ruleType']
+
+    @property
+    def proxy_type(self):
+        return self._values['proxySettings']['proxyType']
+
+    @property
+    def dep_net(self):
+        value = self._values['deployedNetwork']
+        if value is None or value == "":
+            return None
+        return value
+
+    @property
+    def dest(self):
+        return self._values['serviceDef']['destination']['address']
+
+    @property
+    def source(self):
+        return self._values['serviceDef']['source']
+
+    @property
+    def port(self):
+        return int(self._values['serviceDef']['destination']['port'])
+
+    @property
+    def proxy_ip(self):
+        ipfamily = self.ip_family
+        if ipfamily == 'ipv6':
+            return self._values['proxySettings']['forwardProxy']['explicitProxy']['ipv6Address']
+        if ipfamily == 'ipv4':
+            return self._values['proxySettings']['forwardProxy']['explicitProxy']['ipv4Address']
+
+    @property
+    def pool(self):
+        return self._values['pool']
+
+    @property
+    def proxy_port(self):
+        ipfamily = self.ip_family
+        if ipfamily == 'ipv6':
+            return int(self._values['proxySettings']['forwardProxy']['explicitProxy']['ipv6Port'])
+        if ipfamily == 'ipv4':
+            return int(self._values['proxySettings']['forwardProxy']['explicitProxy']['ipv4Port'])
+
+    @property
+    def tcp_settings_client(self):
+        return self._values['tcpSettings']['clientTcpProfile']
+
+    @property
+    def tcp_settings_server(self):
+        return self._values['tcpSettings']['serverTcpProfile']
+
+    @property
+    def vlans(self):
+        return self._values['ingressNetwork']['vlans']
+
+    @property
+    def protocol(self):
+        return self._values['serviceDef']['protocol']
+
+    @property
+    def additional_protocols(self):
+        return self._values['l7Protocols']
+
+    @property
+    def l7_profile(self):
+        return self._values['l7Profile']
+
+    @property
+    def l7_profile_type(self):
+        return self._values['l7ProfileType']
+
+    @property
+    def profile_scope(self):
+        return self._values['accessProfileScope']
+
+    @property
+    def profile_scope_value(self):
+        return self._values['accessProfileNameScopeValue']
+
+    @property
+    def primary_auth_uri(self):
+        return self._values['primaryAuthenticationURI']
+
+    @property
+    def ocsp_auth(self):
+        return self._values['ocspAuth']
+
+    @property
+    def snat_list(self):
+        ipfamily = self.ip_family
+        if ipfamily == 'ipv6':
+            return self._values['egressNetwork']['snat']['ipv6SnatAddresses']
+        if ipfamily == 'ipv4':
+            return self._values['egressNetwork']['snat']['ipv4SnatAddresses']
+
+    @property
+    def snat(self):
+        value = self._values['egressNetwork']['clientSnat']
+        if value is None or value == "":
+            return None
+        return value
+
+    @property
+    def snat_pool(self):
+        if self.snat == 'existingSNAT':
+            return self._values['egressNetwork']['snat']['referredObj']
+
+    @property
+    def gateway_pool(self):
+        if self.gateway == 'existingGatewayPool':
+            return self._values['egressNetwork']['outboundGateways']['referredObj']
+
+    @property
+    def gateway(self):
+        value = self._values['egressNetwork']['gatewayOptions']
+        if value is None or value == "":
+            return None
+        return value
+
+    @property
+    def gateway_list(self):
+        gws = None
+        ipfamily = self.ip_family
+        if ipfamily == 'ipv6':
+            gws = self._values['egressNetwork']['outboundGateways']['ipv6OutboundGateways']
+        elif ipfamily == 'ipv4':
+            gws = self._values['egressNetwork']['outboundGateways']['ipv4OutboundGateways']
+        if gws is None:
+            return None
+        result = list()
+        for gw in gws:
+            element = dict()
+            element['ip'] = gw['ip']
+            element['ratio'] = int(gw['ratio'])
+            result.append(element)
+        return result
+
+    @property
+    def logging(self):
+        values = self._values['loggingConfig']
+        remove = ['logPublisher', 'statsToRecord']
+        for k in remove:
+            if k in values.keys():
+                values.pop(k)
+        return values
+
+    @property
+    def ssl_settings(self):
+        return self._values['sslSettingReference']
+
+    @property
+    def security_policy(self):
+        return self._values['securityPolicyReference']
+
+    @property
+    def verify_accept(self):
+        value = self._values['proxySettings'].get('tcpProfile', None)
+        if value:
+            return value['verifyAccept']
 
 
 class ModuleParameters(Parameters):
@@ -615,18 +823,6 @@ class ModuleParameters(Parameters):
             return result
 
     @property
-    def snat_list(self):
-        snats = self._values['snat_list']
-        if snats is None:
-            return None
-        result = list()
-        for snat in snats:
-            element = dict(ip=None)
-            element['ip'] = snat
-            result.append(element)
-        return result
-
-    @property
     def snat(self):
         snat = self._values['snat']
         if snat is None:
@@ -639,6 +835,24 @@ class ModuleParameters(Parameters):
             return 'SNAT'
         elif snat == 'snatpool':
             return 'existingSNAT'
+
+    @property
+    def snat_list(self):
+        snats = self._values['snat_list']
+        if snats is None:
+            return None
+        result = list()
+        for snat in snats:
+            element = dict(ip=None)
+            element['ip'] = snat
+            result.append(element)
+        return result
+
+    @property
+    def snat_pool(self):
+        if self._values['snat_pool'] is None:
+            return None
+        return fq_name('Common', self._values['snat_pool'])
 
     @property
     def gateway(self):
@@ -665,6 +879,12 @@ class ModuleParameters(Parameters):
                 gw['ratio'] = 1
             result.append(gw)
         return result
+
+    @property
+    def gateway_pool(self):
+        if self._values['gateway_pool'] is None:
+            return None
+        return fq_name('Common', self._values['gateway_pool'])
 
     @property
     def logging(self):
@@ -742,7 +962,99 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def snat_list(self):
+        snats = self._values['snat_list']
+        if snats is None:
+            return None
+        result = list()
+        for snat in snats:
+            result.append(snat['ip'])
+        return result
+
+    @property
+    def snat(self):
+        snat = self._values['snat']
+        if snat is None:
+            return None
+        if snat == 'None':
+            return 'none'
+        elif snat == 'AutoMap':
+            return 'autoMap'
+        elif snat == 'SNAT':
+            return 'snatlist'
+        elif snat == 'existingSNAT':
+            return 'snatpool'
+
+    @property
+    def gateway(self):
+        gw = self._values['gateway']
+        if gw is None:
+            return None
+        if gw == 'useDefault':
+            return 'system'
+        elif gw == 'existingGatewayPool':
+            return 'pool'
+        elif gw == 'newGatewayPool':
+            return 'iplist'
+
+    @property
+    def logging(self):
+        log_map = {
+            'emerg': 'emergency',
+            'alert': 'alert',
+            'crit': 'critical',
+            'warn': 'warning',
+            'err': 'error',
+            'notice': 'notice',
+            'info': 'information',
+            'debug': 'debug'
+        }
+        logging = self._values['logging']
+        if logging is None:
+            return None
+        result = dict()
+        for key in logging.keys():
+            if logging.get(key):
+                result[key] = log_map[logging.get(key)]
+        if result:
+            return result
+
+    @property
+    def verify_accept(self):
+        return flatten_boolean(self._values['verify_accept'])
+
+    @property
+    def additional_protocols(self):
+        add_prot = self._values['additional_protocols']
+        if add_prot is None:
+            return None
+        result = list()
+        for proto in add_prot:
+            result.append(proto['value'])
+        return result
+
+    @property
+    def vlans(self):
+        if self._values['vlans'] is None:
+            return None
+        result = list()
+        for vlan in self._values['vlans']:
+            result.append(vlan['name'])
+        return result
+
+    @property
+    def topology(self):
+        if self._values['topology'] is None:
+            return None
+        user_values = {
+            'topology_l3_outbound': 'outbound_l3',
+            'topology_l3_inbound': 'inbound_l3',
+            'topology_l3_explicit_proxy': 'outbound_explicit',
+            'topology_l2_outbound': 'outbound_l2',
+            'topology_l2_inbound': 'inbound_l2'
+        }
+        return user_values[self._values['topology']]
 
 
 class Difference(object):
@@ -765,6 +1077,40 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
+
+    @property
+    def topology(self):
+        if self.want.topology != self.have.topology:
+            raise F5ModuleError("Cannot modify topology type after its creation. "
+                                "Delete and recreate topology with the desired type instead."
+                                )
+
+    @property
+    def vlans(self):
+        return compare_complex_list(self.want.vlans, self.have.vlans)
+
+    @property
+    def additional_protocols(self):
+        return compare_complex_list(self.want.additional_protocols, self.have.additional_protocols)
+
+    @property
+    def gateway_list(self):
+        return compare_complex_list(self.want.gateway_list, self.have.gateway_list)
+
+    @property
+    def snat_list(self):
+        return compare_complex_list(self.want.snat_list, self.have.snat_list)
+
+    @property
+    def logging(self):
+        want = self.want.logging
+        have = self.have.logging
+        scrubbed = dict()
+        for k in have.keys():
+            if k not in want.keys():
+                continue
+            scrubbed[k] = have[k]
+        return compare_dictionary(want, scrubbed)
 
 
 class ModuleManager(object):
@@ -866,7 +1212,7 @@ class ModuleManager(object):
 
     def present(self):
         if self.exists():
-            return False
+            return self.update()
         else:
             return self.create()
 
@@ -887,6 +1233,21 @@ class ModuleManager(object):
             return True
         self.operation = 'CREATE'
         task_id, output = self.create_on_device()
+        if task_id:
+            self.wait_for_task(task_id)
+        if output:
+            self.json_dump = output
+            return False
+        return True
+
+    def update(self):
+        self.have = self.read_current_from_device()
+        if not self.should_update():
+            return False
+        if self.module.check_mode:
+            return True
+        self.operation = 'MODIFY'
+        task_id, output = self.update_on_device()
         if task_id:
             self.wait_for_task(task_id)
         if output:
@@ -1048,6 +1409,84 @@ class ModuleManager(object):
             params['l7_profile'] = '/Common/http'
         return params
 
+    def add_missing_options(self, params):
+        params['topology'] = self.have.topology
+        if self.changes.ip_family is None:
+            params['ip_family'] = self.have.ip_family
+        if self.changes.rule is None:
+            params['rule'] = self.have.rule
+        if self.changes.proxy_type is None:
+            params['proxy_type'] = self.have.proxy_type
+        if self.changes.dep_net is None:
+            params['dep_net'] = self.have.dep_net
+        if self.changes.dest is None:
+            params['dest'] = self.have.dest
+        if self.changes.proxy_ip is None:
+            params['proxy_ip'] = self.have.proxy_ip
+        if self.changes.pool is None:
+            params['pool'] = self.have.pool
+        if self.changes.source is None:
+            params['source'] = self.have.source
+        if self.changes.port is None:
+            params['port'] = self.have.port
+        if self.changes.proxy_port is None:
+            params['proxy_port'] = self.have.proxy_port
+        if self.changes.tcp_settings_client is None:
+            params['tcp_settings_client'] = self.have.tcp_settings_client
+        if self.changes.tcp_settings_server is None:
+            params['tcp_settings_server'] = self.have.tcp_settings_server
+        if self.changes.vlans is None:
+            params['vlans'] = self.have.vlans
+        if self.changes.protocol is None:
+            params['protocol'] = self.have.protocol
+        if self.changes.l7_profile is None:
+            params['l7_profile'] = self.have.l7_profile
+        if self.changes.l7_profile_type is None:
+            params['l7_profile_type'] = self.have.l7_profile_type
+        if self.changes.additional_protocols is None:
+            params['additional_protocols'] = self.have.additional_protocols
+        if self.changes.profile_scope is None:
+            params['profile_scope'] = self.have.profile_scope
+        if self.changes.profile_scope_value is None:
+            params['profile_scope_value'] = self.have.profile_scope_value
+        if self.changes.primary_auth_uri is None:
+            params['primary_auth_uri'] = self.have.primary_auth_uri
+        if self.changes.ocsp_auth is None:
+            params['ocsp_auth'] = self.have.ocsp_auth
+        if self.changes.snat is None:
+            params['snat'] = self.have.snat
+            if self.have.snat == 'SNAT':
+                if self.changes.snat_list is None:
+                    params['snat_list'] = self.have.snat_list
+            if self.have.snat == 'existingSNAT':
+                if self.changes.snat_pool is None:
+                    params['snat_ref_id'] = self.have.snat_pool
+                else:
+                    params['snat_ref_id'] = self.changes.snat_pool
+        if self.changes.snat == 'existingSNAT':
+            params['snat_ref_id'] = self.changes.snat_pool
+        if self.changes.gateway is None:
+            params['gateway'] = self.have.gateway
+            if self.have.gateway == 'newGatewayPool':
+                if self.changes.gateway_list is None:
+                    params['gateway_list'] = self.have.gateway_list
+            if self.have.gateway == 'existingGatewayPool':
+                if self.changes.gateway_pool is None:
+                    params['gw_ref_id'] = self.have.gateway_pool
+                else:
+                    params['gw_ref_id'] = self.changes.gateway_pool
+        if self.changes.gateway == 'existingGatewayPool':
+            params['gw_ref_id'] = self.changes.gateway_pool
+        if self.changes.logging is None:
+            params['logging'] = self.have.logging
+        if self.changes.ssl_settings is None:
+            params['ssl_settings'] = self.have.ssl_settings
+        if self.changes.security_policy is None:
+            params['security_policy'] = self.have.security_policy
+        if self.changes.verify_accept is None:
+            params['verify_accept'] = self.have.verify_accept
+        return params
+
     def add_json_metadata(self, payload=None):
         if not payload:
             payload = dict()
@@ -1057,7 +1496,7 @@ class ModuleManager(object):
         payload['sslo_version'] = float(self.version)
         if self.operation != 'DELETE':
             payload['resolver'] = self.return_sslo_global()
-        if self.operation == 'DELETE':
+        if self.operation == 'MODIFY' or self.operation == 'DELETE':
             payload['dep_ref'] = f"https://localhost/mgmt/shared/iapp/blocks/{self.block_id}"
             payload['block_id'] = self.block_id
         return payload
@@ -1084,6 +1523,23 @@ class ModuleManager(object):
         data = self.add_create_values(self.add_json_metadata(payload))
         self.validate_parameters(data)
 
+        output = process_json(data, create_modify)
+
+        if self.want.dump_json:
+            return None, output
+
+        uri = "/mgmt/shared/iapp/blocks/"
+        response = self.client.post(uri, data=output)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        task_id = str(response['contents']['id'])
+        return task_id, None
+
+    def update_on_device(self):
+        payload = self.changes.to_return()
+        data = self.add_missing_options(self.add_json_metadata(payload))
         output = process_json(data, create_modify)
 
         if self.want.dump_json:

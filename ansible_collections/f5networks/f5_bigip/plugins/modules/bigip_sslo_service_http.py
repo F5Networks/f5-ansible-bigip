@@ -409,7 +409,7 @@ from ..module_utils.constants import (
 )
 from ..module_utils.compare import compare_complex_list, compare_dictionary
 from ..module_utils.sslo_templates.sslo_service_http import (
-    create_modify
+    create_modify, delete
 )
 
 
@@ -1173,7 +1173,7 @@ class ModuleManager(object):
         payload = self.removals.to_return()
         data = self.add_json_metadata(payload)
 
-        output = process_json(data, create_modify)
+        output = process_json(data, delete)
 
         if self.want.dump_json:
             return None, output

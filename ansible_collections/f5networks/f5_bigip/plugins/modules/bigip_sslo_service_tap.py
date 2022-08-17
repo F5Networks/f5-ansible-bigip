@@ -43,10 +43,13 @@ options:
           - Defines the VLAN tag on the to-service side.
           - Mutually exclusive with C(vlan).
         type: int
-    required: True
   mac_address:
     description:
       - Specifies the MAC address to use for the TAP service clone pool (static ARP).
+    type: str
+  vendor_info:
+    description:
+      - Specifies the vendor-specific TAP service used. The default is C(Generic TAP Service).
     type: str
   port_remap:
     description:
@@ -188,11 +191,13 @@ class Parameters(AnsibleF5Parameters):
         'devices',
         'mac_address',
         'port_remap',
+        'vendor_info',
         'service_down_action',
     ]
     returnables = [
         'devices',
         'mac_address',
+        'vendor_info',
         'port_remap',
         'service_down_action',
     ]
@@ -226,6 +231,10 @@ class ApiParameters(Parameters):
     @property
     def mac_address(self):
         return self._values['customService']['serviceSpecific']['macAddress']
+
+    @property
+    def vendor_info(self):
+        return self._values['vendorInfo']['name']
 
     @property
     def port_remap(self):
@@ -300,6 +309,12 @@ class ModuleParameters(Parameters):
         if mac_address is None:
             mac_address = 'F5:F5:F5:F5:XX:YY'
         return mac_address
+
+    @property
+    def vendor_info(self):
+        if self._values['vendor_info'] is None:
+            return "Generic TAP Service"
+        return self._values['vendor_info']
 
     @property
     def port_remap(self):
@@ -512,8 +527,12 @@ class ModuleManager(object):
 
         if self.changes.devices is None:
             payload['devices'] = self.have.devices
+            if self.want.devices != self.have.devices and self.want.devices is not None:
+                payload['devices'] = self.want.devices
         if self.changes.mac_address is None:
             payload['mac_address'] = self.have.mac_address
+        if self.changes.vendor_info is None:
+            payload['vendor_info'] = self.have.vendor_info
         if self.changes.port_remap is None:
             payload['port_remap'] = self.have.port_remap
         if self.changes.service_down_action is None:
@@ -660,7 +679,6 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(required=True),
             devices=dict(
-                required=True,
                 type='dict',
                 options=dict(
                     vlan=dict(),
@@ -680,6 +698,7 @@ class ArgumentSpec(object):
                 choices=['absent', 'present']
             ),
             mac_address=dict(),
+            vendor_info=dict(),
             port_remap=dict(
                 type='int'
             ),

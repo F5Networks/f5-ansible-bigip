@@ -64,22 +64,22 @@
                         "managedNetwork": {
                             "ipFamily": "both",
                             "ipv4": {
-                                "deviceIp": "198.19.227.10",
+                                "deviceIp": "198.19.182.10",
                                 "ipFamily": "ipv4",
-                                "serviceHASelfIp": "198.19.227.9",
+                                "serviceHASelfIp": "198.19.182.9",
                                 "serviceIndex": 2,
-                                "serviceSelfIp": "198.19.227.8",
-                                "serviceSubnet": "198.19.227.0",
+                                "serviceSelfIp": "198.19.182.8",
+                                "serviceSubnet": "198.19.182.0",
                                 "serviceType": "tap",
                                 "subnetMask": "255.255.255.252"
                             },
                             "ipv6": {
-                                "deviceIp": "2001:200:0:e7bf::a",
+                                "deviceIp": "2001:200:0:ca9a::a",
                                 "ipFamily": "ipv6",
-                                "serviceHASelfIp": "2001:200:0:e7bf::9",
+                                "serviceHASelfIp": "2001:200:0:ca9a::9",
                                 "serviceIndex": 2,
-                                "serviceSelfIp": "2001:200:0:e7bf::8",
-                                "serviceSubnet": "2001:200:0:e7bf::",
+                                "serviceSelfIp": "2001:200:0:ca9a::8",
+                                "serviceSubnet": "2001:200:0:ca9a::",
                                 "serviceType": "tap",
                                 "subnetMask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:fff0"
                             },

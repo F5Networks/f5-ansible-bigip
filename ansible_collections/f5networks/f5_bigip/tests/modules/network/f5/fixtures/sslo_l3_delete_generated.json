@@ -1,0 +1,38 @@
+{
+    "name": "sslo_obj_SERVICE_DELETE_ssloS_layer3a",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "deploymentName": "ssloS_layer3a",
+                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/66009abd-da39-477f-b48c-6b97eca4c34b",
+                "deploymentType": "SERVICE",
+                "operationType": "DELETE",
+                "version": 7.5,
+                "partition": "Common"
+            }
+        },
+        {
+                "id": "f5-ssl-orchestrator-network",
+                "type": "JSON",
+                "value": []
+        },
+        {
+            "id": "f5-ssl-orchestrator-service",
+            "type": "JSON",
+            "value": {
+                    "partition": "Common",
+                    "name": "ssloS_layer3a",
+                    "previousVersion": 7.5,
+                    "version": 7.5,
+                    "existingBlockId": "66009abd-da39-477f-b48c-6b97eca4c34b"
+            }
+        }
+    ],
+    "dataProperties":[],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "state": "BINDING"
+}

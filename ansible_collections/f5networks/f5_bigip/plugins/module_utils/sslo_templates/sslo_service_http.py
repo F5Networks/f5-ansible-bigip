@@ -1,4 +1,42 @@
 delete = """
+{
+    "name": "{{ params.name }}",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "deploymentName": "{{ params.deployment_name }}",
+                "deploymentReference": "{{ params.dep_ref }}",
+                "deploymentType": "SERVICE",
+                "operationType": "{{ params.operation }}",
+                "version": {{ params.sslo_version }},
+                "partition": "Common"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-network",
+            "type": "JSON",
+            "value": []
+        },
+        {
+            "id": "f5-ssl-orchestrator-service",
+            "type": "JSON",
+            "value": {
+                "existingBlockId": "{{ params.block_id }}",
+                "name": "{{ params.deployment_name }}",
+                "partition": "Common",
+                "previousVersion": {{ params.sslo_version }},
+                "version": {{ params.sslo_version }}
+            }
+        }
+    ],
+    "dataProperties":[],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "state": "BINDING"
+}
 """
 create_modify = """
 {
@@ -20,7 +58,7 @@ create_modify = """
        {
           "id":"f5-ssl-orchestrator-network",
           "type":"JSON",
-          "value": [{%  if params.devices_to is defined  and 'interface' in params.devices_to -%}
+          "value": [{%  if params.devices_to is defined -%}
             {
                 "name": "{{ params.devices_to.name }}",
                 "partition": "Common",
@@ -32,13 +70,14 @@ create_modify = """
                     "create": true,
                     "modify": false,
                     "networkError": false,
-                    "interface":[
-                        "{{ params.devices_to.interface }}"
-                    ],
-                    "networkInterface": "{{ params.devices_to.interface }}",
-                    {% if params.devices_to.tag is defined -%}
-                    "tag": {{ params.devices_to.tag }},
-                    "networkTag": {{ params.devices_to.tag }}{% endif %}
+                    "interface":{% if 'interface' in params.devices_to %}"{{ params.devices_to.interface }}"
+                    {% else %}[]{% endif %},
+                    "networkInterface": {% if 'interface' in params.devices_to -%}
+                    "{{ params.devices_to.interface }}"{% else %}""{% endif %},
+                    "tag": {% if 'interface' in params.devices_to and 'tag' in params.devices_to -%}
+                    {{ params.devices_to.tag }}{% else %}0{% endif %},
+                    "networkTag": {% if 'interface' in params.devices_to and 'tag' in params.devices_to -%}
+                    {{ params.devices_to.tag }}{% else %}0{% endif %}
                 },
                 "selfIpConfig":{
                     "create": true,

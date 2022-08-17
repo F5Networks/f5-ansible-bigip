@@ -383,7 +383,7 @@ from ..module_utils.client import (
     F5Client, sslo_version
 )
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, process_json, flatten_boolean
+    F5ModuleError, AnsibleF5Parameters, process_json
 )
 from ..module_utils.constants import (
     min_sslo_version, max_sslo_version

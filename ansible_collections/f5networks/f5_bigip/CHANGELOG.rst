@@ -5,6 +5,20 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v1.9.0
+======
+
+Minor Changes
+-------------
+
+- bigip_sslo_config_topology - existing topologies can now be modified
+- module_utils/teem.py - add additional telemetry data fields with relevant tests
+
+Bugfixes
+--------
+
+- bigip_sslo_service_http - fixed delete operation for sslo http service
+
 v1.8.1
 ======
 

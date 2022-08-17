@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - bigip_sslo_config_policy - add support 9.x support for sslo-policy module

@@ -98,7 +98,7 @@ create_modify = """
                 {
                     "name": "{{ params.deployment_name }}",
                     "vendorInfo": {
-                        "name": "Generic TAP Service"
+                        "name": "{{ params.vendor_info }}"
                     },
                     "createNewNetworkObj": {
                         "name": "{{ params.devices.name }}",

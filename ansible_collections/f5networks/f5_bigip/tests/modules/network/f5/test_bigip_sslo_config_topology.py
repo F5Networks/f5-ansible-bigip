@@ -12,7 +12,7 @@ import os
 from ansible.module_utils.basic import AnsibleModule
 
 from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_config_topology import (
-    ModuleParameters, ArgumentSpec, ModuleManager
+    ModuleParameters, ApiParameters, ModuleManager, ArgumentSpec
 )
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_bigip.tests.compat import unittest
@@ -224,6 +224,31 @@ class TestParameters(unittest.TestCase):
 
         assert str(res.exception) == "Acceptable values for the 'additional_protocols' parameter are " \
                                      "'ftp', 'imap', 'pop3', and 'smtps'. Received: 'fail'."
+
+    def test_api_parameters(self):
+        args = load_fixture('return_sslo_topo_params.json')
+        p = ApiParameters(params=args)
+
+        assert p.dest == '192.168.1.4%0/32'
+        assert p.gateway == 'newGatewayPool'
+        assert p.gateway_list == [{'ip': '192.16.1.1', 'ratio': 1}, {'ip': '192.16.1.2', 'ratio': 2}]
+        assert p.ip_family == 'ipv4'
+        assert p.l7_profile == '/Common/http'
+        assert p.l7_profile_type == 'http'
+        assert p.logging == {'perRequestPolicy': 'err', 'ftp': 'err', 'imap': 'err', 'pop3': 'err', 'smtps': 'err', 'sslOrchestrator': 'err'}
+        assert p.port == 8080
+        assert p.protocol == 'tcp'
+        assert p.proxy_port == 3128
+        assert p.proxy_type == 'transparent'
+        assert p.rule == 'Outbound'
+        assert p.snat == 'SNAT'
+        assert p.snat_list == [{'ip': '172.16.1.1'}, {'ip': '172.16.1.2'}]
+        assert p.source == '0.0.0.0%0/0'
+        assert p.ssl_settings == 'ssloT_for_testing'
+        assert p.tcp_settings_client == '/Common/f5-tcp-lan'
+        assert p.tcp_settings_server == '/Common/f5-tcp-wan'
+        assert p.topology == 'topology_l3_outbound'
+        assert p.vlans == [{'name': '/Common/test_topo', 'value': '/Common/test_topo'}]
 
 
 class TestManager(unittest.TestCase):
@@ -475,12 +500,12 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['topology'] == 'topology_l2_inbound'
+        assert results['topology'] == 'inbound_l2'
         assert results['rule'] == 'Inbound'
         assert results['dep_net'] == 'l2_network'
         assert results['dest'] == '192.168.1.3%0/32'
         assert results['port'] == 0
-        assert results['vlans'] == [{'name': '/Common/fake1', 'value': '/Common/fake1'}]
+        assert results['vlans'] == ['/Common/fake1']
         assert results['ssl_settings'] == 'ssloT_foobar'
 
     def test_create_l3_out_topology_object(self, *args):
@@ -517,11 +542,11 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['topology'] == 'topology_l3_outbound'
+        assert results['topology'] == 'outbound_l3'
         assert results['rule'] == 'Outbound'
         assert results['dest'] == '192.168.1.4%0/32'
         assert results['port'] == 0
-        assert results['vlans'] == [{'name': '/Common/fake1', 'value': '/Common/fake1'}]
+        assert results['vlans'] == ['/Common/fake1']
         assert results['ssl_settings'] == 'ssloT_foobar'
 
     def test_create_l3_in_topology_object(self, *args):
@@ -558,11 +583,11 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['topology'] == 'topology_l3_inbound'
+        assert results['topology'] == 'inbound_l3'
         assert results['rule'] == 'Inbound'
         assert results['dest'] == '192.168.1.5%0/32'
         assert results['port'] == 0
-        assert results['vlans'] == [{'name': '/Common/fake1', 'value': '/Common/fake1'}]
+        assert results['vlans'] == ['/Common/fake1']
         assert results['ssl_settings'] == 'ssloT_foobar'
 
     def test_create_expl_out_topology_object(self, *args):
@@ -600,12 +625,12 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['topology'] == 'topology_l3_explicit_proxy'
+        assert results['topology'] == 'outbound_explicit'
         assert results['rule'] == 'Outbound'
         assert results['proxy_type'] == 'explicit'
         assert results['proxy_ip'] == '192.168.1.1'
         assert results['proxy_port'] == 3211
-        assert results['vlans'] == [{'name': '/Common/fake1', 'value': '/Common/fake1'}]
+        assert results['vlans'] == ['/Common/fake1']
         assert results['ssl_settings'] == 'ssloT_foobar'
         assert results['security_policy'] == 'ssloP_from_gui'
 
@@ -1230,3 +1255,96 @@ class TestManager(unittest.TestCase):
             mm.exec_module()
 
         assert str(res.exception) == err
+
+
+class TestModifyOperations(unittest.TestCase):
+    def setUp(self):
+        self.spec = ArgumentSpec()
+        self.p1 = patch('time.sleep')
+        self.p1.start()
+        self.p2 = patch(
+            'ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_config_topology.F5Client'
+        )
+        self.m2 = self.p2.start()
+        self.m2.return_value = MagicMock()
+        self.p3 = patch(
+            'ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_config_topology.sslo_version'
+        )
+        self.m3 = self.p3.start()
+        self.m3.return_value = '7.5'
+
+    def tearDown(self):
+        self.p1.stop()
+        self.p2.stop()
+        self.p3.stop()
+
+    def test_modify_topology_object_dump_json(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        expected = load_fixture('sslo_l3_out_topo_modify_generated.json')
+        set_module_args(dict(
+            name='sslo_l3_topo_out',
+            topology_type='outbound_l3',
+            snat='snatpool',
+            snat_pool='test_topo-snatpool',
+            gateway='pool',
+            gateway_pool='fake_gw',
+            vlans=['/Common/fake2'],
+            dump_json=True
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_together=self.spec.required_together,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        gs = dict(code=200, contents=load_fixture('sslo_gs_present_modify.json'))
+        topo = dict(code=200, contents=load_fixture('load_sslo_topo_l3_out_modify.json'))
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[topo, gs])
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        assert results['json'] == expected
+
+    def test_modify_topology_object(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='sslo_l3_topo_out',
+            topology_type='outbound_l3',
+            snat='snatpool',
+            snat_pool='test_topo-snatpool',
+            gateway='pool',
+            gateway_pool='fake_gw',
+            vlans=['/Common/fake2']
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_together=self.spec.required_together,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        gs = dict(code=200, contents=load_fixture('sslo_gs_present_modify.json'))
+        topo = dict(code=200, contents=load_fixture('load_sslo_topo_l3_out_modify.json'))
+        done = dict(code=200, contents=load_fixture('reply_sslo_topo_l3_out_modify_done.json'))
+        # Override methods to force specific logic in the module to happen
+        mm.client.post = Mock(return_value=dict(
+            code=202, contents=load_fixture('reply_sslo_topo_l3_out_modify_start.json')
+        ))
+        mm.client.get = Mock(side_effect=[topo, topo, gs, done])
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['vlans'] == ['/Common/fake2']
+        assert results['snat'] == 'snatpool'
+        assert results['snat_pool'] == '/Common/test_topo-snatpool'
+        assert results['gateway'] == 'pool'
+        assert results['gateway_pool'] == '/Common/fake_gw'

@@ -1,0 +1,774 @@
+{
+    "selfLink": "https://localhost/mgmt/shared/iapp/blocks",
+    "totalItems": 1,
+    "items": [
+        {
+            "id": "2ac27803-3d03-4f68-a09e-43710cf7e99d",
+            "name": "ssloP_testpolicy",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-policy",
+                    "type": "JSON",
+                    "value": {
+                        "defaultAction": "",
+                        "defaultActionOptions": {},
+                        "description": "",
+                        "existingBlockId": "2ac27803-3d03-4f68-a09e-43710cf7e99d",
+                        "existingReference": "",
+                        "isDefaultPinnersSet": true,
+                        "isTemplate": "",
+                        "language": "en",
+                        "name": "ssloP_testpolicy",
+                        "partition": "Common",
+                        "policyConsumer": {
+                            "subType": "Outbound",
+                            "type": "Outbound"
+                        },
+                        "policyName": "",
+                        "pools": {
+                            "ssloP_testpolicy_proxyChainPool": {
+                                "name": "ssloP_testpolicy_proxyChainPool",
+                                "loadBalancingMode": "predictive-node",
+                                "monitors": {
+                                    "names": [
+                                        "/Common/gateway_icmp"
+                                    ]
+                                },
+                                "members": [
+                                    {
+                                        "ip": "198.19.64.30",
+                                        "port": "100",
+                                        "appService": "ssloP_testpolicy.app/ssloP_testpolicy",
+                                        "subPath": "ssloP_testpolicy.app"
+                                    }
+                                ],
+                                "unhandledPool": true,
+                                "minActiveMembers": "0",
+                                "callerContext": "policyConfigProcessor"
+                            }
+                        },
+                        "previousVersion": 9.1,
+                        "proxyConfigurations": {
+                            "isProxyChainEnabled": true,
+                            "password": "",
+                            "pool": {
+                                "create": true,
+                                "members": [
+                                    {
+                                        "ip": "198.19.64.30",
+                                        "port": "100"
+                                    }
+                                ],
+                                "name": "/Common/ssloP_testpolicy.app/ssloP_testpolicy_proxyChainPool"
+                            },
+                            "username": "testuser"
+                        },
+                        "rules": [
+                            {
+                                "action": "abort",
+                                "actionOptions": {
+                                    "serviceChain": "",
+                                    "ssl": ""
+                                },
+                                "conditions": [
+                                    {
+                                        "options": {
+                                            "ssl": true
+                                        },
+                                        "type": "SSL Check"
+                                    },
+                                    {
+                                        "options": {
+                                            "category": [
+                                                "Financial Data and Services",
+                                                "General Email"
+                                            ]
+                                        },
+                                        "type": "Category Lookup"
+                                    }
+                                ],
+                                "mode": "edit",
+                                "name": "testrule",
+                                "operation": "OR",
+                                "phase": 2.0,
+                                "injectServerCertMacro": true,
+                                "injectCategorizationMacro": true
+                            },
+                            {
+                                "action": "reject",
+                                "actionOptions": {
+                                    "serviceChain": "",
+                                    "ssl": ""
+                                },
+                                "conditions": [
+                                    {
+                                        "options": {
+                                            "category": [
+                                                "Financial Data and Services",
+                                                "General Email"
+                                            ]
+                                        },
+                                        "type": "Category Lookup"
+                                    }
+                                ],
+                                "mode": "edit",
+                                "name": "testrule2",
+                                "operation": "AND",
+                                "phase": 2.0
+                            },
+                            {
+                                "action": "allow",
+                                "actionOptions": {
+                                    "serviceChain": "",
+                                    "ssl": "bypass"
+                                },
+                                "isDefault": true,
+                                "mode": "edit",
+                                "name": "All Traffic",
+                                "phase": 2.0
+                            }
+                        ],
+                        "serverCertStatusCheck": true,
+                        "serviceChains": {},
+                        "strictness": true,
+                        "templateOptions": {},
+                        "type": "custom",
+                        "version": 9.1
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-service-chain",
+                    "type": "JSON",
+                    "value": []
+                },
+                {
+                    "id": "processorContext",
+                    "type": "JSON",
+                    "value": {}
+                }
+            ],
+            "dataProperties": [
+                {
+                    "id": "dependencyInfo",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "type": "f5-ssl-orchestrator-policy",
+                            "name": "/Common/ssloP_testpolicy.app/ssloP_testpolicy",
+                            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/2ac27803-3d03-4f68-a09e-43710cf7e99d",
+                            "dependsOn": {
+                                "references": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "configToDeploy",
+                    "type": "BOOLEAN",
+                    "value": true
+                },
+                {
+                    "id": "deviceSpecific",
+                    "type": "JSON"
+                },
+                {
+                    "id": "error",
+                    "type": "STRING",
+                    "value": ""
+                },
+                {
+                    "id": "strictness",
+                    "type": "JSON",
+                    "value": [
+                        {
+                            "device": "10.218.130.130",
+                            "strictness": true,
+                            "potentialDrift": true
+                        }
+                    ]
+                },
+                {
+                    "id": "icrLinks",
+                    "type": "PROPERTIES",
+                    "value": [
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_ent",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_ent"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_out",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_out"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_out_failed",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_out_failed"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_mac_server_cert_status",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_mac_server_cert_status"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_mac_categorization",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_mac_categorization"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicytestrule_act_ip_protocol_lookup",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicytestrule_act_ip_protocol_lookup"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_out_reject",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_out_reject"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_act_ssl_check",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_act_ssl_check"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/ssl-check/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_act_ssl_check_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/ssl-check/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_act_ssl_check_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_act_category_branching",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_act_category_branching"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_macro_policy",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule_macro_policy"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule2_ent",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule2_ent"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule2_out",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule2_out"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule2_out_failed",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule2_out_failed"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicytestrule2_act_ip_protocol_lookup",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicytestrule2_act_ip_protocol_lookup"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule2_act_category_branching",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule2_act_category_branching"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule2_macro_policy",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~ssloP_testpolicy.app~ssloP_testpolicy_testrule2_macro_policy"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_connect_ent",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_connect_ent"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_connect_act_lasthop_check",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_connect_act_lasthop_check"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_connect_act_proxy_connect",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_connect_act_proxy_connect"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/proxy-select/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_connect_act_proxy_connect_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/proxy-select/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_connect_act_proxy_connect_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_connect_out",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_connect_out"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_connect_macro_policy",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_connect_macro_policy"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_ent",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_ent"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_act_lasthop_check",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_act_lasthop_check"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_act_l7_protocol_lookup",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_act_l7_protocol_lookup"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/l7-protocol-lookup/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_act_l7_protocol_lookup_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/l7-protocol-lookup/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_act_l7_protocol_lookup_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_act_proxy_uri_rewrite",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_act_proxy_uri_rewrite"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/proxy-select/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_act_proxy_uri_rewrite_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/proxy-select/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_act_proxy_uri_rewrite_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_out",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_out"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_macro_policy",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxy_chaining_uri_rewrite_macro_policy"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_ent",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_ent"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_act_ssl_check",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_act_ssl_check"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/ssl-check/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_act_ssl_check_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/ssl-check/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_act_ssl_check_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_act_server_cert_status",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_act_server_cert_status"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/server-cert-status/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_act_server_cert_status_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/server-cert-status/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_act_server_cert_status_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_act_server_cert_response_control",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_act_server_cert_response_control"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/server-cert-response-control/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_act_server_cert_response_control_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/server-cert-response-control/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_act_server_cert_response_control_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_out",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_out"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_out_reject",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_out_reject"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_macro_policy",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~ssloP_testpolicy.app~ssloP_testpolicy_server_cert_status_macro_policy"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_ent",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_ent"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_ssl_check",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_ssl_check"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/ssl-check/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_ssl_check_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/ssl-check/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_ssl_check_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_category_lookup",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_category_lookup"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/category-lookup/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_category_lookup_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/category-lookup/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_category_lookup_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_l7_protocol_lookup",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_l7_protocol_lookup"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/l7-protocol-lookup/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_l7_protocol_lookup_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/l7-protocol-lookup/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_l7_protocol_lookup_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_irule_event",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_irule_event"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/irule-event/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_irule_event_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/irule-event/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_irule_event_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_variable_assign",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_variable_assign"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/variable-assign/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_variable_assign_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/variable-assign/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_variable_assign_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_category_lookup_2",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_category_lookup_2"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/category-lookup/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_category_lookup_2_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/category-lookup/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_act_category_lookup_2_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_out",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_out"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_macro_policy",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~ssloP_testpolicy.app~ssloP_testpolicy_categorization_macro_policy"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_ent",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_ent"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_allow",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_allow"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/ending-allow/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_allow_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/ending-allow/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_allow_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_reject",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_reject"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/ending-reject/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_reject_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/ending-reject/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_reject_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_redirect",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_redirect"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/ending-redirect/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_redirect_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/ending-redirect/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_redirect_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_act_session_check",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_act_session_check"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/session-check/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_act_session_check_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/session-check/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_act_session_check_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_act_ip_protocol_lookup",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_act_ip_protocol_lookup"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_act_protocol_lookup",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_act_protocol_lookup"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/l7-protocol-lookup/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_act_protocol_lookup_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/l7-protocol-lookup/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_act_protocol_lookup_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_abort",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_abort"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/ending-abort/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_abort_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/ending-abort/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_end_abort_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_mac_proxy_chain_connect",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_mac_proxy_chain_connect"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_mac_testrule",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_mac_testrule"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_act_ssl_bypass_set_1",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_act_ssl_bypass_set_1"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/agent/ssl-bypass-set/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_act_ssl_bypass_set_1_ag",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/agent/ssl-bypass-set/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_act_ssl_bypass_set_1_ag"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_mac_proxy_chaining_uri_rewrite_1",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_mac_proxy_chaining_uri_rewrite_1"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_mac_testrule2",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy_mac_testrule2"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~ssloP_testpolicy.app~ssloP_testpolicy_per_req_policy"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/pool/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxyChainPool",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/pool/~Common~ssloP_testpolicy.app~ssloP_testpolicy_proxyChainPool"
+                            }
+                        },
+                        {
+                            "id": "https://localhost/mgmt/tm/ltm/node/~Common~ssloP_testpolicy.app~198.19.64.30",
+                            "type": "REFERENCE",
+                            "value": {
+                                "link": "https://localhost/mgmt/tm/ltm/node/~Common~ssloP_testpolicy.app~198.19.64.30"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "configurationProcessorReference": {
+                "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-policy"
+            },
+            "configProcessorTimeoutSeconds": 90,
+            "statsProcessorTimeoutSeconds": 15,
+            "configProcessorAffinity": {
+                "processorPolicy": "LOCAL",
+                "affinityProcessorReference": {
+                    "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+                }
+            },
+            "state": "UNBOUND",
+            "presentationHtmlReference": {
+                "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+            },
+            "generation": 13,
+            "lastUpdateMicros": 1658252210611674,
+            "kind": "shared:iapp:blocks:blockstate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/blocks/2ac27803-3d03-4f68-a09e-43710cf7e99d"
+        }
+    ],
+    "generation": 2270,
+    "kind": "shared:iapp:blocks:blockcollectionstate",
+    "lastUpdateMicros": 1645184855326934
+}

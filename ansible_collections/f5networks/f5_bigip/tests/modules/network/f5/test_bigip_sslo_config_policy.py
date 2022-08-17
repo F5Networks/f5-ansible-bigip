@@ -94,24 +94,25 @@ class TestParameters(unittest.TestCase):
         assert p.policy_rules == [{'name': 'testrule', 'operation': 'OR', 'mode': 'edit', 'action': 'reject',
                                    'actionOptions': {'ssl': '', 'serviceChain': ''},
                                    'conditions': [{'type': 'Category Lookup',
-                                                   'options': {
-                                                       'category': ['Financial Data and Services', 'General Email']}},
+                                                   'options': {'category': ['Financial Data and Services', 'General '
+                                                                                                           'Email']}},
                                                   {'type': 'Client Port Match', 'options': {'port': ['80', '90']}},
                                                   {'type': 'Client IP Geolocation',
                                                    'options': {'geolocations': [
                                                        {'matchType': 'countryCode',
-                                                        'value': 'US'},
+                                                        'value': 'US',
+                                                        'valueType': 'staticValue'},
                                                        {'matchType': 'countryCode',
-                                                        'value': 'UK'}]}}]},
+                                                        'value': 'UK',
+                                                        'valueType': 'staticValue'}]}}]},
                                   {'name': 'testrule2', 'operation': 'AND', 'mode': 'edit', 'action': 'reject',
                                    'actionOptions': {'ssl': '', 'serviceChain': ''},
                                    'conditions': [{'type': 'Category Lookup',
-                                                   'options': {'category': ['Financial Data and Services', 'General '
-                                                                                                           'Email']}}]},
+                                                   'options': {
+                                                       'category': ['Financial Data and Services', 'General Email']}}]},
                                   {'name': 'All Traffic', 'action': 'block', 'mode': 'edit',
                                    'actionOptions': {'ssl': 'intercept', 'serviceChain': 'ssloSC_foo_service'},
-                                   'isDefault': True}
-                                  ]
+                                   'isDefault': True}]
         assert p.default_rule_allow_block == 'block'
         assert p.default_rule_service_chain == 'ssloSC_foo_service'
         assert p.default_rule_tls_intercept == 'intercept'
@@ -140,98 +141,26 @@ class TestParameters(unittest.TestCase):
         p = ApiParameters(params=args)
 
         assert p.policy_consumer == 'Outbound'
-        assert p.policy_rules == [
-            {
-                "action": "reject",
-                "actionOptions": {
-                    "serviceChain": "",
-                    "ssl": ""
-                },
-                "conditions": [
-                    {
-                        "options": {
-                            "category": [
-                                "Financial Data and Services",
-                                "General Email"
-                            ]
-                        },
-                        "type": "Category Lookup"
-                    },
-                    {
-                        "options": {
-                            "port": [
-                                "80",
-                                "90"
-                            ]
-                        },
-                        "type": "Client Port Match"
-                    },
-                    {
-                        "options": {
-                            "geolocations": [
-                                {
-                                    "matchType": "countryCode",
-                                    "value": "US"
-                                },
-                                {
-                                    "matchType": "countryCode",
-                                    "value": "UK"
-                                }
-                            ]
-                        },
-                        "type": "Client IP Geolocation"
-                    }
-                ],
-                "mode": "edit",
-                "name": "testrule",
-                "operation": "OR",
-                "phase": 2.0,
-                "injectServerCertMacro": True,
-                "injectCategorizationMacro": True
-            },
-            {
-                "action": "reject",
-                "actionOptions": {
-                    "serviceChain": "",
-                    "ssl": ""
-                },
-                "conditions": [
-                    {
-                        "options": {
-                            "category": [
-                                "Financial Data and Services",
-                                "General Email"
-                            ]
-                        },
-                        "type": "Category Lookup"
-                    },
-                    {
-                        "options": {
-                            "port": [
-                                "80",
-                                "90"
-                            ]
-                        },
-                        "type": "Client Port Match"
-                    }
-                ],
-                "mode": "edit",
-                "name": "testrule2",
-                "operation": "AND",
-                "phase": 2.0
-            },
-            {
-                "action": "allow",
-                "actionOptions": {
-                    "serviceChain": "",
-                    "ssl": ""
-                },
-                "isDefault": True,
-                "mode": "edit",
-                "name": "All Traffic",
-                "phase": 2.0
-            }
-        ]
+        assert p.policy_rules == [{'action': 'reject', 'actionOptions': {'serviceChain': '', 'ssl': ''},
+                                   'conditions': [
+                                       {'options': {'category': ['Financial Data and Services', 'General Email']},
+                                        'type': 'Category Lookup'},
+                                       {'options': {'port': ['80', '90']},
+                                        'type': 'Client Port Match'},
+                                       {'options':
+                                           {
+                                               'geolocations': [
+                                                   {'matchType': 'countryCode', 'value': 'US'},
+                                                   {'matchType': 'countryCode', 'value': 'UK'}]},
+                                           'type': 'Client IP Geolocation'}],
+                                   'mode': 'edit', 'name': 'testrule', 'operation': 'OR'},
+                                  {'action': 'reject', 'actionOptions': {'serviceChain': '', 'ssl': ''},
+                                   'conditions': [{'options': {'category': ['Financial Data and Services',
+                                                                            'General Email']},
+                                                   'type': 'Category Lookup'}, {'options': {'port': ['80', '90']},
+                                                                                'type': 'Client Port Match'}],
+                                   'mode': 'edit', 'name': 'testrule2', 'operation': 'AND'}]
+
         assert p.proxy_connect == {
             "isProxyChainEnabled": True,
             "password": "",
@@ -342,6 +271,8 @@ class TestManager(unittest.TestCase):
         mm.client.post = Mock(return_value=dict(
             code=202, contents=load_fixture('reply_sslo_policy_create_start.json'))
         )
+        # mm.getsslo_version = Mock(
+        #     return_value=dict(code=200, contents=float("9.1")))
         mm.client.get = Mock(return_value=dict(
             code=200, contents=load_fixture('reply_sslo_policy_create_done.json'))
         )
@@ -367,19 +298,102 @@ class TestManager(unittest.TestCase):
                                             'pool': {'create': True, 'members': [{'ip': '198.19.64.30', 'port': '100'}],
                                                      'name': '/Common/ssloP_testpolicy.app'
                                                              '/ssloP_testpolicy_proxyChainPool'}}
+
         assert results['policy_rules'] == [{'name': 'testrule', 'operation': 'OR', 'mode': 'edit', 'action': 'reject',
                                             'actionOptions': {'ssl': '', 'serviceChain': ''},
+                                            'conditions':
+                                                [{'type': 'Category Lookup', 'options':
+                                                    {'category': ['Financial Data and Services', 'General Email']}},
+                                                 {'type': 'Client Port Match', 'options': {'port': ['80', '90']}},
+                                                 {'type': 'Client IP Geolocation',
+                                                  'options':
+                                                      {'geolocations': [{'matchType': 'countryCode', 'value': 'US',
+                                                                         'valueType': 'staticValue'},
+                                                                        {'matchType': 'countryCode', 'value': 'UK',
+                                                                         'valueType': 'staticValue'}]}}]},
+                                           {'name': 'testrule2', 'operation': 'AND', 'mode': 'edit', 'action': 'reject',
+                                            'actionOptions': {'ssl': '', 'serviceChain': ''},
                                             'conditions': [{'type': 'Category Lookup',
-                                                            'options': {'category': ['Financial Data and Services',
-                                                                                     'General Email']}},
-                                                           {'type': 'Client Port Match',
-                                                            'options': {'port': ['80', '90']}},
-                                                           {'type': 'Client IP Geolocation',
-                                                            'options': {'geolocations': [
-                                                                {'matchType': 'countryCode',
-                                                                 'value': 'US'},
-                                                                {'matchType': 'countryCode',
-                                                                 'value': 'UK'}]}}]},
+                                                            'options': {
+                                                                'category': ['Financial Data and Services',
+                                                                             'General Email']}}]},
+                                           {'name': 'All Traffic', 'action': 'allow', 'mode': 'edit',
+                                            'actionOptions': {'ssl': 'bypass', 'serviceChain': ''}, 'isDefault': True}]
+
+    def test_modify_policy_service_object(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name="testpolicy",
+            server_cert_check=True,
+            proxy_connect=dict(
+                username='testuser',
+                password='',
+                pool_members=[dict(ip='198.19.64.30', port=100)],
+            ),
+            policy_rules=[
+                dict(
+                    name='testrule',
+                    match_type='match_any',
+                    policy_action='reject',
+                    conditions=[
+                        dict(
+                            condition_type='category_lookup_all',
+                            condition_option_category=['Financial Data and Services', 'General Email']
+                        ),
+                        dict(
+                            condition_type='client_port_match',
+                            condition_option_ports=['80', '90']
+                        ),
+                        dict(
+                            condition_type='client_ip_geolocation',
+                            geolocations=[dict(type='countryCode', value='US'), dict(type='countryCode', value='UK')]
+                        )
+                    ]
+                ),
+                dict(
+                    name='testrule2',
+                    match_type='match_all',
+                    policy_action='reject',
+                    conditions=[
+                        dict(
+                            condition_type='category_lookup_all',
+                            condition_option_category=['Financial Data and Services', 'General Email']
+                        )
+                    ]
+                ),
+            ]
+        ))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+
+        exists = dict(code=200, contents=load_fixture('load_sslo_policy.json'))
+        done = dict(code=200, contents=load_fixture('reply_sslo_policy_modify_done.json'))
+        # Override methods to force specific logic in the module to happen
+        mm.client.post = Mock(return_value=dict(
+            code=202, contents=load_fixture('reply_sslo_policy_modify_start.json')
+        ))
+        mm.client.get = Mock(side_effect=[exists, exists, done])
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['policy_rules'] == [{'name': 'testrule', 'operation': 'OR', 'mode': 'edit',
+                                            'action': 'reject',
+                                            'actionOptions': {'ssl': '', 'serviceChain': ''},
+                                            'conditions':
+                                                [{'type': 'Category Lookup', 'options':
+                                                    {'category': ['Financial Data and Services', 'General Email']}},
+                                                 {'type': 'Client Port Match',
+                                                  'options': {'port': ['80', '90']}},
+                                                 {'type': 'Client IP Geolocation',
+                                                  'options': {'geolocations': [
+                                                      {'matchType': 'countryCode', 'value': 'US',
+                                                       'valueType': 'staticValue'},
+                                                      {'matchType': 'countryCode', 'value': 'UK',
+                                                       'valueType': 'staticValue'}]}}]},
                                            {'name': 'testrule2', 'operation': 'AND', 'mode': 'edit', 'action': 'reject',
                                             'actionOptions': {'ssl': '', 'serviceChain': ''},
                                             'conditions': [{'type': 'Category Lookup',

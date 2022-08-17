@@ -344,3 +344,16 @@ releases:
     fragments:
     - fix-pagination-bug-bigip-device-info.yaml
     release_date: '2022-07-07'
+  1.9.0:
+    changes:
+      bugfixes:
+      - bigip_sslo_service_http - fixed delete operation for sslo http service
+      minor_changes:
+      - bigip_sslo_config_topology - existing topologies can now be modified
+      - module_utils/teem.py - add additional telemetry data fields with relevant
+        tests
+    fragments:
+    - add-additional-telemetry-data.yaml
+    - add-modify-sslo-topology.yaml
+    - fix-delete-sslo-service-http.yaml
+    release_date: '2022-08-17'
