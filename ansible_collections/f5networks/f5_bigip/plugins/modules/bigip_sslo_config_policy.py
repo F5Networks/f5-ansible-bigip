@@ -82,7 +82,7 @@ options:
              type: int
       pool_name:
         description:
-          - Defines an existing pool name for the proxy connection, it should be specified with partition .
+          - Defines an existing pool name for the proxy connection. It should be specified with a partition.
           - Mutually exclusive with C(pool_members).
         type: str
       username:
@@ -163,17 +163,17 @@ options:
           condition_option_subnet:
             description:
               - Defines a list of IP subnets.
-              - Should be used with when c(condition_type) matches c(client_ip_subnet_match) or c(server_ip_subnet_match)
+              - Should be used when c(condition_type) matches c(client_ip_subnet_match) or c(server_ip_subnet_match).
             type: list
             elements: str
           option_tcp_protocol:
             description:
-              - Defines list of tcp protocols to be used with C(tcp_l7_protocol_lookup)
+              - Defines a list of TCP protocols to be used with C(tcp_l7_protocol_lookup).
             type: list
             elements: str
           option_udp_protocol:
             description:
-              - Defines list of udp protocols to be used with C(udp_l7_protocol_lookup)
+              - Defines a list of UDP protocols to be used with C(udp_l7_protocol_lookup).
             type: list
             elements: str
       policy_action:
@@ -186,7 +186,7 @@ options:
           - abort
       ssl_action:
         description:
-          - Defines the TLS intercept/bypass behavior for this rule
+          - Defines the TLS intercept/bypass behavior for this rule.
         type: str
         choices:
           - bypass

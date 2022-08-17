@@ -1,3 +1,0 @@
----
-minor_changes:
-  - bigip_sslo_config_topology - existing topologies can now be modified

@@ -49,7 +49,7 @@ options:
     type: str
   vendor_info:
     description:
-      - Specifies Vendor specific TAP service used, default is C(Generic TAP Service)
+      - Specifies the vendor-specific TAP service used. The default is C(Generic TAP Service).
     type: str
   port_remap:
     description:
