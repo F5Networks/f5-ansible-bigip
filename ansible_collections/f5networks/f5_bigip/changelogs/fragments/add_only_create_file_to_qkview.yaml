@@ -1,0 +1,3 @@
+---
+minor_changes:
+    - bigip_qkview - added a new parameter, only_create_file
