@@ -73,8 +73,8 @@ options:
     default: 300
   only_create_file:
     description:
-      - If C(yes), the file is created on device and not downloaded. The file will not be deleted by the
-        module form the device.
+      - If C(yes), the file is created on the device and not downloaded. The file will not be deleted by the
+        module from the device.
     type: bool
     default: no
     version_added: "1.10.0"
