@@ -5,6 +5,14 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v1.10.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_qkview - added a new parameter, only_create_file
+
 v1.9.0
 ======
 

@@ -156,6 +156,13 @@ releases:
         name: velos
         namespace: null
     release_date: '2021-08-02'
+  1.10.0:
+    changes:
+      minor_changes:
+      - bigip_qkview - added a new parameter, only_create_file
+    fragments:
+    - add_only_create_file_to_qkview.yaml
+    release_date: '2022-09-29'
   1.2.0:
     changes:
       bugfixes:
