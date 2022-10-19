@@ -47,6 +47,7 @@ class TestParameters(unittest.TestCase):
         args = dict(
             name='barfoo',
             swg_policy='/Common/swg_baz',
+            swg_policy_type='standard',
             profile_scope='profile',
             named_scope='INVALID',
             access_profile='/Common/bazbar',
@@ -112,6 +113,7 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='swg_default',
             swg_policy='/Common/test-swg',
+            swg_policy_type='modern',
             dump_json=True
         ))
 
@@ -135,6 +137,7 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='swg_custom',
             swg_policy='/Common/test-swg',
+            swg_policy_type='modern',
             access_profile='/Common/test_access2',
             named_scope='SSLO',
             profile_scope='named',
@@ -161,6 +164,7 @@ class TestManager(unittest.TestCase):
         expected = load_fixture('sslo_swg_modify_defaults_generated.json')
         set_module_args(dict(
             name='swg_default',
+            swg_policy_type='modern',
             rules=['/Common/test_rule_1', '/Common/test_rule_2'],
             access_profile='/Common/test_access1',
             dump_json=True
@@ -186,6 +190,7 @@ class TestManager(unittest.TestCase):
         expected = load_fixture('sslo_swg_modify_generated.json')
         set_module_args(dict(
             name='swg_custom',
+            swg_policy_type='modern',
             rules=['/Common/test_rule_1'],
             access_profile='/Common/test_access1',
             named_scope='',
@@ -213,6 +218,7 @@ class TestManager(unittest.TestCase):
         expected = load_fixture('sslo_swg_delete_generated.json')
         set_module_args(dict(
             name='swg_custom',
+            swg_policy_type="standard",
             state='absent',
             dump_json=True
         ))
@@ -236,7 +242,8 @@ class TestManager(unittest.TestCase):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
             name='swg_default',
-            swg_policy='/Common/test-swg'
+            swg_policy='/Common/test-swg',
+            swg_policy_type='standard'
         ))
 
         module = AnsibleModule(
@@ -264,6 +271,7 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='swg_custom',
             swg_policy='/Common/test-swg',
+            swg_policy_type='standard',
             access_profile='/Common/test_access2',
             named_scope='SSLO',
             profile_scope='named',
@@ -303,6 +311,7 @@ class TestManager(unittest.TestCase):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
             name='swg_default',
+            swg_policy_type="standard",
             rules=['/Common/test_rule_1', '/Common/test_rule_2'],
             access_profile='/Common/test_access1'
         ))
@@ -336,6 +345,7 @@ class TestManager(unittest.TestCase):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
             name='swg_custom',
+            swg_policy_type="standard",
             rules=['/Common/test_rule_1'],
             access_profile='/Common/test_access1',
             named_scope='',
@@ -372,6 +382,7 @@ class TestManager(unittest.TestCase):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
             name='swg_custom',
+            swg_policy_type="standard",
             state='absent'
         ))
 
@@ -394,8 +405,10 @@ class TestManager(unittest.TestCase):
         # Configure the arguments that would be sent to the Ansible module
         err = 'The swg_policy parameter is not defined. ' \
               'Existing SWG per-request policy must be defined for CREATE operation.'
+        err1 = 'missing required arguments: swg_policy_type'
         set_module_args(dict(
-            name='foobar'
+            name='foobar',
+            swg_policy_type="standard"
         ))
 
         module = AnsibleModule(
@@ -409,5 +422,4 @@ class TestManager(unittest.TestCase):
 
         with self.assertRaises(F5ModuleError) as res:
             mm.exec_module()
-
         assert str(res.exception) == err

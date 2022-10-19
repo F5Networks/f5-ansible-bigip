@@ -450,6 +450,7 @@ class ModuleManager(object):
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
+        self._set_mode_and_ownership()
 
     def remove_from_device(self):
         params = dict(command="run",
@@ -599,6 +600,18 @@ class ModuleManager(object):
             "Module timeout reached, unable to contact device, most likely due to restarting services, "
             "if this message persists check device logs."
         )
+
+    def _set_mode_and_ownership(self):
+        url = '/mgmt/tm/util/bash'
+        ownership = 'root:root'
+        ucs_path = f'/var/local/ucs/{self.want.basename}'
+        file_mode = oct(os.stat(self.want.ucs).st_mode)[-3:]
+        params = dict(
+            command='run',
+            utilCmdArgs='-c "chown {0} {1};chmod {2} {1}"'.format(ownership, ucs_path, file_mode)
+        )
+
+        self.client.post(url, data=params)
 
     def upload_file_to_device(self, content, name):
         try:

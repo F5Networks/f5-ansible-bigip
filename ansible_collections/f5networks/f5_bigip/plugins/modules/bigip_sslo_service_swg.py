@@ -5,8 +5,8 @@
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
-__metaclass__ = type
 
+__metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
@@ -28,6 +28,14 @@ options:
       - Specifies the name of the SWG per-request policy to attach to the service configuration.
       - This parameter is required when creating a new service.
     type: str
+  swg_policy_type:
+    description:
+        - The custom type of per-request policy attached to the SWG service configuration.
+    type: str
+    required: True
+    choices:
+      - standard
+      - modern
   profile_scope:
     description:
       - Specifies the level of information sharing. When using named scope, an authentication access profile
@@ -140,6 +148,12 @@ swg_policy:
   returned: changed
   type: str
   sample: /Common/my-swg-policy
+swg_policy_type:
+  description:
+    - The name of the SWG per-request policy attached to the service configuration.
+  returned: changed
+  type: str
+  sample: /Common/my-swg-policy
 profile_scope:
   description:
     - The the level of information sharing.
@@ -205,6 +219,7 @@ class Parameters(AnsibleF5Parameters):
     api_attributes = []
     returnables = [
         'swg_policy',
+        'swg_policy_type',
         'profile_scope',
         'named_scope',
         'access_profile',
@@ -215,6 +230,7 @@ class Parameters(AnsibleF5Parameters):
 
     updatables = [
         'swg_policy',
+        'swg_policy_type',
         'profile_scope',
         'named_scope',
         'access_profile',
@@ -228,6 +244,10 @@ class ApiParameters(Parameters):
     @property
     def swg_policy(self):
         return self._values['customService']['serviceSpecific']['perReqPolicy']
+
+    @property
+    def swg_policy_type(self):
+        return self._values['customService']['serviceSpecific']['accessProfileScopeCustSource']
 
     @property
     def profile_scope(self):
@@ -260,6 +280,11 @@ class ModuleParameters(Parameters):
         name = self._values['name']
         if not name.startswith('ssloS_'):
             name = "ssloS_" + name
+        return name
+
+    @property
+    def swg_policy_type(self):
+        name = "/Common/" + self._values['swg_policy_type']
         return name
 
     @property
@@ -542,7 +567,12 @@ class ModuleManager(object):
     def add_create_defaults(self, payload):
         # add create defaults for undefined values
         if self.want.access_profile is None:
-            payload['access_profile'] = f"/Common/{self.want.name}.app/{self.want.name}_M_accessProfile"
+            if self.want.swg_policy_type == "/Common/standard":
+                payload['access_profile'] = f"/Common/{self.want.name}.app/{self.want.name}_S_accessProfile"
+                payload['swg_policy_type'] = "/Common/standard"
+            if self.want.swg_policy_type == "/Common/modern":
+                payload['access_profile'] = f"/Common/{self.want.name}.app/{self.want.name}_M_accessProfile"
+                payload['swg_policy_type'] = "/Common/modern"
         if self.want.rules is None:
             default_rule = f"/Common/{self.want.name}.app/{self.want.name}-swg"
             payload['rules'] = [dict(name=default_rule, value=default_rule)]
@@ -558,7 +588,13 @@ class ModuleManager(object):
         # used during modify operation, to avoid repetition if missing some mandatory values we use in device config
         # to complete the input
         if self.changes.access_profile is None:
-            payload['access_profile'] = self.have.access_profile
+            # payload['access_profile'] = self.have.access_profile
+            if self.want.swg_policy_type == "/Common/standard":
+                payload['access_profile'] = f"/Common/{self.want.name}.app/{self.want.name}_S_accessProfile"
+                payload['swg_policy_type'] = "/Common/standard"
+            if self.want.swg_policy_type == "/Common/modern":
+                payload['access_profile'] = f"/Common/{self.want.name}.app/{self.want.name}_M_accessProfile"
+                payload['swg_policy_type'] = "/Common/modern"
         if self.changes.swg_policy is None:
             payload['swg_policy'] = self.have.swg_policy
         if self.changes.profile_scope is None:
@@ -685,6 +721,9 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(required=True),
             swg_policy=dict(),
+            swg_policy_type=dict(required=True,
+                                 choices=["standard", "modern"]
+                                 ),
             profile_scope=dict(
                 choices=["profile", "named"]
             ),
