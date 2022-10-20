@@ -23,6 +23,19 @@ options:
       - Names should be less than 14 characters and not contain dashes C(-).
     type: str
     required: True
+  sni:
+    description:
+      - Specifies the SNI settings.
+    type: dict
+    suboptions:
+      sni_server_name:
+        description:
+          - The SNI server name in FQDN format.
+        type: str
+      sni_default:
+        description:
+          - Specify whether it is the default SNI server.
+        type: bool
   client_settings:
     description:
       - Specifies the client-side SSL settings.
@@ -411,7 +424,9 @@ class Parameters(AnsibleF5Parameters):
         'server_enable_tls13',
         'bypass_handshake_failure',
         'bypass_client_cert_failure',
-        'proxy_type'
+        'proxy_type',
+        'sni_server_name',
+        'sni_default',
     ]
 
     updatables = [
@@ -439,7 +454,9 @@ class Parameters(AnsibleF5Parameters):
         'server_enable_tls13',
         'bypass_handshake_failure',
         'bypass_client_cert_failure',
-        'proxy_type'
+        'proxy_type',
+        'sni_server_name',
+        'sni_default',
     ]
 
 
@@ -449,6 +466,18 @@ class ApiParameters(Parameters):
         if self.client_ca_cert is None:
             return 'reverse'
         return 'forward'
+
+    @property
+    def sni_server_name(self):
+        if self._values['generalSettings']:
+            return self._values['generalSettings'].get('serverName')
+        return None
+
+    @property
+    def sni_default(self):
+        if self._values['generalSettings']:
+            return self._values['generalSettings'].get('sniDefault')
+        return None
 
     @property
     def client_cipher_type(self):
@@ -627,6 +656,22 @@ class ModuleParameters(Parameters):
         if proxy is None:
             raise F5ModuleError("The 'proxy_type' parameter is required when creating/modifying an SSL object.")
         return proxy
+
+    @property
+    def sni_server_name(self):
+        if self._values['sni']:
+            return self._values['sni'].get('sni_server_name')
+        return None
+
+    @property
+    def sni_default(self):
+        if self._values['sni']:
+            enable = flatten_boolean(self._values['sni'].get('sni_default', None))
+            if enable == 'yes':
+                return True
+            if enable == "no":
+                return False
+        return None
 
     @property
     def client_cipher_type(self):
@@ -1056,6 +1101,10 @@ class ModuleManager(object):
                 raise F5ModuleError(
                     "The 'alpn' parameter is only available on SSLO version 9.0 and above."
                 )
+            if self.changes.sni is not None:
+                raise F5ModuleError(
+                    "The 'sni' parameter is only available on SSLO version 9.0 and above."
+                )
             if self.changes.client_log_publisher:
                 raise F5ModuleError(
                     "The 'client_log_publisher' parameter is only available on SSLO version 9.0 and above."
@@ -1150,6 +1199,10 @@ class ModuleManager(object):
             payload['bypass_handshake_failure'] = self.have.bypass_handshake_failure
         if self.changes.bypass_client_cert_failure is None:
             payload['bypass_client_cert_failure'] = self.have.bypass_client_cert_failure
+        if self.changes.sni_server_name is None and self.have.sni_server_name:
+            payload['sni_server_name'] = self.have.sni_server_name
+        if self.changes.sni_default is None and self.have.sni_default:
+            payload['sni_default'] = self.have.sni_default
         if self.changes.alpn is None and self.have.alpn:
             payload['alpn'] = self.have.alpn
         payload['proxy_type'] = self.want.proxy_type
@@ -1340,6 +1393,13 @@ class ArgumentSpec(object):
                     ['cipher_type', 'string', ['cipher_string']],
                     ['cipher_type', 'group', ['cipher_group']]
                 ]
+            ),
+            sni=dict(
+                type='dict',
+                options=dict(
+                    sni_server_name=dict(),
+                    sni_default=dict(type='bool')
+                )
             ),
             bypass_handshake_failure=dict(type='bool'),
             bypass_client_cert_failure=dict(type='bool'),
