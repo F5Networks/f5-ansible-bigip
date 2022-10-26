@@ -1,2 +1,60 @@
 ---
 requires_ansible: '>=2.9'
+plugin_routing:
+  modules:
+    velos_partition:
+      deprecation:
+        removal_version: 2.0.0
+        warning_test: Use f5networks.f5os.velos_partition instead.
+        redirect: f5networks.f5os.velos_partition
+    velos_partition_change_password:
+      deprecation:
+        removal_version: 2.0.0
+        warning_test: Use f5networks.f5os.velos_partition_change_password instead.
+        redirect: f5networks.f5os.velos_partition_change_password
+    velos_partition_image:
+      deprecation:
+        removal_version: 2.0.0
+        warning_test: Use f5networks.f5os.velos_partition_image instead.
+        redirect: f5networks.f5os.velos_partition_image
+    velos_partition_wait:
+      deprecation:
+        removal_version: 2.0.0
+        warning_test: Use f5networks.f5os.velos_partition_wait instead.
+        redirect: f5networks.f5os.velos_partition_wait
+    velos_partition_interface:
+      deprecation:
+        removal_version: 2.0.0
+        warning_test: Use f5networks.f5os.f5os_interface instead.
+        redirect: f5networks.f5os.f5os_interface
+    velos_partition_lag:
+      deprecation:
+        removal_version: 2.0.0
+        warning_test: Use f5networks.f5os.f5os_lag instead.
+        redirect: f5networks.f5os.f5os_lag
+    velos_partition_vlan:
+      deprecation:
+        removal_version: 2.0.0
+        warning_test: Use f5networks.f5os.f5os_vlan instead.
+        redirect: f5networks.f5os.f5os_vlan
+    velos_tenant:
+      deprecation:
+        removal_version: 2.0.0
+        warning_test: Use f5networks.f5os.f5os_tenant instead.
+        redirect: f5networks.f5os.f5os_tenant
+    velos_tenant_image:
+      deprecation:
+        removal_version: 2.0.0
+        warning_test: Use f5networks.f5os.f5os_tenant_image instead.
+        redirect: f5networks.f5os.f5os_tenant_image
+    velos_tenant_wait:
+      deprecation:
+        removal_version: 2.0.0
+        warning_test: Use f5networks.f5os.f5os_tenant_wait instead.
+        redirect: f5networks.f5os.f5os_tenant_wait
+  httpapi:
+    velos:
+      deprecation:
+        removal_version: 2.0.0
+        warning_test: Use f5networks.f5os.f5os httpapi plugin instead.
+        redirect: f5networks.f5os.f5os

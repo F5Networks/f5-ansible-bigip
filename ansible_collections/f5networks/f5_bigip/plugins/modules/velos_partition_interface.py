@@ -48,6 +48,10 @@ options:
     default: present
 author:
   - Ravinder Reddy (@chinthalapalli)
+deprecated:
+  removed_in: "2.0.0"
+  why: All VELOS related modules have been moved to a dedicated collection for managing F5OS based devices.
+  alternative: Use M(f5networks.f5os.f5os_interface) instead.
 '''
 EXAMPLES = r'''
 - hosts: all

@@ -84,6 +84,10 @@ notes:
     image corruption.
 author:
   - Wojciech Wypior (@wojtek0806)
+deprecated:
+  removed_in: "2.0.0"
+  why: All VELOS related modules have been moved to a dedicated collection for managing F5OS based devices.
+  alternative: Use M(f5networks.f5os.velos_partition_image) instead.
 '''
 
 EXAMPLES = r'''

@@ -108,6 +108,10 @@ notes:
   - The module will create configurations of the tenants, it does not assume actual state of the running tenant.
   - As deployment of tenants is a lengthy process, the module C(velos_tenant_wait) should be used in concert with
     this module to achieve desired results.
+deprecated:
+  removed_in: "2.0.0"
+  why: All VELOS related modules have been moved to a dedicated collection for managing F5OS based devices.
+  alternative: Use M(f5networks.f5os.f5os_tenant) instead.
 '''
 
 EXAMPLES = r'''

@@ -8,8 +8,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-author: Wojciech Wypior <w.wypior@f5.com>
-httpapi: bigip
+httpapi: bigiq
 short_description: HttpApi Plugin for BIG-IQ devices
 description:
   - This HttpApi plugin provides methods to connect to BIG-IQ
@@ -40,7 +39,9 @@ options:
       - name: F5_TELEMETRY_OFF
     vars:
       - name: f5_telemetry
-version_added: "1.0"
+version_added: "1.0.0"
+author:
+  - Wojciech Wypior <w.wypior@f5.com>
 """
 import os
 from ansible.module_utils.basic import to_text

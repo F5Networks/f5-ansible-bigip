@@ -75,6 +75,10 @@ notes:
     if the image has not finished downloading.
 author:
   - Wojciech Wypior (@wojtek0806)
+deprecated:
+  removed_in: "2.0.0"
+  why: All VELOS related modules have been moved to a dedicated collection for managing F5OS based devices.
+  alternative: Use M(f5networks.f5os.f5os_tenant_image) instead.
 '''
 
 EXAMPLES = r'''
