@@ -80,9 +80,12 @@ class TestManager(unittest.TestCase):
         self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_software_image.send_teem')
         self.m1 = self.p1.start()
         self.m1.return_value = True
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_software_image.ModuleManager._set_mode_and_ownership')
+        self.p2.start()
 
     def tearDown(self):
         self.p1.stop()
+        self.p2.stop()
 
     def test_create(self, *args):
         set_module_args(dict(

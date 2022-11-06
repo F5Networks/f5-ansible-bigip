@@ -7,11 +7,14 @@ uploading security policies, uploading crts/keys, gathering info, etc.
 
 **Note:** This Collection is not currently intended to replace the existing [imperative_collection].
 
+## Requirements
+
+ - ansible >= 2.9
+
 ## Python Version
-This collection is supported on Python 3.6 and above.
+Deprecated support for Python 3.6 and 3.7, F5 recommends to move to Python 3.8 and above.
 
 ## Collections Daily Build
-
 
 We offer a daily build of our most recent collection [dailybuild]. Use this Collection to test the most
 recent Ansible module updates between releases. You can also install development build directly from GitHub see [repoinstall].
@@ -33,7 +36,24 @@ ansible-galaxy collection install git+https://github.com/F5Networks/f5-ansible-b
 > **_NOTE:_**  `-p` is the location in which the collection will be installed. This location should be defined in the path for
     Ansible to search for collections. An example of this would be adding ``collections_paths = ./collections``
     to your **ansible.cfg**
-    
+
+### Running latest devel in EE
+We also offer a new method of running the collection inside Ansible's Execution Environment container. 
+The advantage of such approach is that any required package dependencies and minimum supported pyton versions are 
+installed in an isolated container which minimizes any environment related issues during runtime. More information on EE
+can be found here [execenv]. Use the below requirements.yml file when building EE container:
+
+```yaml
+---
+collections:
+  - name: ansible.netcommon
+    version: ">=2.0.0"
+  - name: f5networks.f5_bigip
+    source: https://github.com/F5Networks/f5-ansible-bigip#ansible_collections/f5networks/f5_bigip
+    type: git
+    version: devel
+```
+
 ## Tips
 
 * You can leverage both this declarative collection and the previous imperative collection at the same time.
@@ -91,6 +111,6 @@ being included in this project.
 [imperative_collection]: https://galaxy.ansible.com/f5networks/f5_modules
 [dailybuild]: https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_bigip-devel.tar.gz
 [License]: https://github.com/f5devcentral/f5-ansible-bigip/blob/master/COPYING
-[ansible_issues]: https://github.com/F5Networks/f5-ansible-bigip/issues
-[ansiblehelp]: http://clouddocs.f5.com/products/orchestration/ansible/devel/
+[execenv]: https://docs.ansible.com/automation-controller/latest/html/userguide/execution_environments.html
+[f5execenv]: http://clouddocs.f5.com/products/orchestration/ansible/devel/usage/exec-env.html
 [F5 Contributor License Agreement]: http://clouddocs.f5.com/products/orchestration/ansible/devel/usage/contributor.html
