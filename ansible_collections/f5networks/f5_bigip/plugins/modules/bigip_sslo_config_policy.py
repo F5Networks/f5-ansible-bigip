@@ -952,6 +952,8 @@ class Difference(object):
 
     @property
     def policy_rules(self):
+        if (len(self.want.policy_rules) == 0) and (len(self.have.policy_rules) == 0):
+            return None
         diff = compare_complex_list(self.want.policy_rules, self.have.policy_rules)
         l1 = sorted(self.have.policy_rules, key=lambda i: i['name'])
         l2 = sorted(diff, key=lambda i: i['name'])

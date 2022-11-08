@@ -1,0 +1,4 @@
+---
+minor_changes:
+    - bigip_sslo_config_policy - yaml will fail if security policy already exists.
+    - bigip_fast_application - fix for module failure when state present.
