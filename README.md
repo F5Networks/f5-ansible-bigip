@@ -1,4 +1,4 @@
-# F5 Declarative Collection for Ansible
+# F5 BIG-IP Declarative Collection for Ansible
 
 A collection focusing on managing F5 BIG-IP/BIG-IQ through declarative APIs such as AS3, DO, TS, and CFE. 
 The collection does include key imperative modules as well for managing some resources and operational tasks 
@@ -39,9 +39,9 @@ ansible-galaxy collection install git+https://github.com/F5Networks/f5-ansible-b
 
 ### Running latest devel in EE
 We also offer a new method of running the collection inside Ansible's Execution Environment container. 
-The advantage of such approach is that any required package dependencies and minimum supported pyton versions are 
-installed in an isolated container which minimizes any environment related issues during runtime. More information on EE
-can be found here [execenv]. Use the below requirements.yml file when building EE container:
+The advantage of this approach is that any required package dependencies and minimum supported Python versions are 
+installed in an isolated container, which minimizes any environment-related issues during runtime. More information on EE
+can be found here [execenv]. Use the following requirements.yml file when building EE container:
 
 ```yaml
 ---
@@ -75,7 +75,6 @@ collections:
 Please file any bugs, questions, or enhancement requests by using [ansible_issues]. For details, see [ansiblehelp].
 
 ## Your ideas
-
 
 What types of modules do you want created? If you have a use case and can sufficiently describe the behavior 
 you want to see, open an issue and we will hammer out the details.

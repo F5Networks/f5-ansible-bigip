@@ -10,7 +10,7 @@ DOCUMENTATION = """
 httpapi: velos
 short_description: HttpApi Plugin for VELOS devices
 description:
-- This HttpApi plugin provides methods to connect to VELOS devices over a HTTP(S)-based api.
+- This HttpApi plugin provides methods to connect to VELOS devices over a HTTP(S)-based API.
 options:
   send_telemetry:
     description:
