@@ -1,3 +1,0 @@
----
-minor_changes:
-    - bigip_sslo_config_ssl - added parameters for default sni and sni server name

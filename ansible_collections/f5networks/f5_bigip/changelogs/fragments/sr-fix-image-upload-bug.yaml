@@ -1,3 +1,0 @@
----
-bugfixes:
-    - bigip_software_image - fixed permission and ownership of the uploaded image file

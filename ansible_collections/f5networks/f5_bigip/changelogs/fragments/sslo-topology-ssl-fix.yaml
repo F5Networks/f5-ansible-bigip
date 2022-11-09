@@ -1,3 +1,0 @@
----
-minor_changes:
-    - bigip_sslo_config_topology - the ssl settings value is passed as an array in versions 9.1 and above

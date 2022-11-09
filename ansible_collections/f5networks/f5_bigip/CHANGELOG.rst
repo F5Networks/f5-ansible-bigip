@@ -5,6 +5,40 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v1.11.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_fast_application - fix for module failure when state present.
+- bigip_sslo_config_policy - yaml will fail if security policy already exists.
+- bigip_sslo_config_ssl - added parameters for default sni and sni server name
+- bigip_sslo_config_topology - the ssl settings value is passed as an array in versions 9.1 and above
+- bigip_sslo_service_swg - added 9.x fixes for sslo service swg
+
+Deprecated Features
+-------------------
+
+- See porting guides section at https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html
+- velos httpapi plugin - deprecated, use f5networks.f5os collection for connecting with VELOS devices.
+- velos_partition - deprecated, use f5networks.f5os collection for managing VELOS devices.
+- velos_partition_change_password - deprecated, use f5networks.f5os collection for managing VELOS devices.
+- velos_partition_image - deprecated, use f5networks.f5os collection for managing VELOS devices.
+- velos_partition_interface - deprecated, use f5networks.f5os collection for managing VELOS devices.
+- velos_partition_lag - deprecated, use f5networks.f5os collection for managing VELOS devices.
+- velos_partition_tenant - deprecated, use f5networks.f5os collection for managing VELOS devices.
+- velos_partition_tenant_image - deprecated, use f5networks.f5os collection for managing VELOS devices.
+- velos_partition_tenant_wait - deprecated, use f5networks.f5os collection for managing VELOS devices.
+- velos_partition_vlan - deprecated, use f5networks.f5os collection for managing VELOS devices.
+- velos_partition_wait - deprecated, use f5networks.f5os collection for managing VELOS devices.
+
+Bugfixes
+--------
+
+- bigip_software_image - fixed permission and ownership of the uploaded image file
+- bigip_ucs - fixed permission and ownership of the ucs file
+
 v1.10.0
 =======
 
