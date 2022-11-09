@@ -33,7 +33,7 @@
                   "accessProfileScope": "profile",
                   "logSettings": [{"name": "/Common/default-log-setting", "value": "/Common/default-log-setting"}],
                   "accessProfileNameScopeValue": "",
-                  "accessProfileScopeCustSource": "/Common/modern",
+                  "accessProfileScopeCustSource": "",
                   "perReqPolicy": "/Common/test-swg",
                   "iRuleList": [{"name": "/Common/ssloS_swg_default.app/ssloS_swg_default-swg", "value": "/Common/ssloS_swg_default.app/ssloS_swg_default-swg"}, {"name": "/Common/test_rule_1", "value": "/Common/test_rule_1"}, {"name": "/Common/test_rule_2", "value": "/Common/test_rule_2"}]
                 }

@@ -428,6 +428,7 @@ class Parameters(AnsibleF5Parameters):
 
     returnables = [
         'topology',
+        'access_profile',
         'ip_family',
         'rule',
         'proxy_type',

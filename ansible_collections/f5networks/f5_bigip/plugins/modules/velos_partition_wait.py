@@ -53,6 +53,10 @@ options:
     type: str
 author:
   - Ravinder Reddy (@chinthalapalli)
+deprecated:
+  removed_in: "2.0.0"
+  why: All VELOS related modules have been moved to a dedicated collection for managing F5OS based devices.
+  alternative: Use M(f5networks.f5os.velos_partition_wait) instead.
 '''
 
 EXAMPLES = r'''

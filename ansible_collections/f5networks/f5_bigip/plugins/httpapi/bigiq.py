@@ -8,19 +8,18 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-author: Wojciech Wypior <w.wypior@f5.com>
-httpapi: bigip
+httpapi: bigiq
 short_description: HttpApi Plugin for BIG-IQ devices
 description:
   - This HttpApi plugin provides methods to connect to BIG-IQ
-    devices over a HTTP(S)-based api.
+    devices over a HTTP(S)-based API.
 options:
   bigiq_provider:
     description:
     - The login provider used in communicating with BIG-IQ devices when the API connection
       is first established.
     - The provider can be either a name as configured on BIG-IQ or its corresponding UUID.
-    - If the provider is not specified, the default C(local) value is assumed.
+    - If the provider is not specified, the default C(local) value is used.
     default: local
     ini:
     - section: defaults
@@ -40,7 +39,9 @@ options:
       - name: F5_TELEMETRY_OFF
     vars:
       - name: f5_telemetry
-version_added: "1.0"
+version_added: "1.0.0"
+author:
+  - Wojciech Wypior <w.wypior@f5.com>
 """
 import os
 from ansible.module_utils.basic import to_text

@@ -7,11 +7,10 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 DOCUMENTATION = """
-author: Wojciech Wypior <w.wypior@f5.com>
 httpapi: velos
 short_description: HttpApi Plugin for VELOS devices
 description:
-- This HttpApi plugin provides methods to connect to VELOS devices over a HTTP(S)-based api.
+- This HttpApi plugin provides methods to connect to VELOS devices over a HTTP(S)-based API.
 options:
   send_telemetry:
     description:
@@ -24,7 +23,13 @@ options:
       - name: F5_TELEMETRY_OFF
     vars:
       - name: f5_telemetry
-version_added: 1.1.0
+version_added: "1.1.0"
+author:
+  - Wojciech Wypior <w.wypior@f5.com>
+deprecated:
+  removed_in: "2.0.0"
+  why: All VELOS related features have been moved to a dedicated collection for managing F5OS based devices.
+  alternative: Use M(f5networks.f5os.f5os) httpapi plugin instead.
 """
 
 import json

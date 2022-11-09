@@ -388,7 +388,7 @@ class ModuleManager(object):
             raise F5ModuleError(response['contents'])
 
         task = self.wait_for_task("/mgmt/shared/fast/tasks/{0}".format(
-            response['contents']['message']['message'][0]['id']), interval, period
+            response['contents']['message'][0]['id']), interval, period
         )
         if task:
             if task['message'] == 'no change':

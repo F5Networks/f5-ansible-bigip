@@ -69,7 +69,7 @@ create_modify = """
                   "accessProfileScope": "{{ params.profile_scope }}",
                   "logSettings": {{ params.log_settings | tojson }},
                   "accessProfileNameScopeValue": {% if params.named_scope is defined %}"{{ params.named_scope }}"{% else %}""{% endif %},
-                  "accessProfileScopeCustSource": "/Common/modern",
+                  "accessProfileScopeCustSource": "{{ params.swg_policy_type }}",
                   "perReqPolicy": "{{ params.swg_policy }}",
                   "iRuleList": {{ params.rules | tojson }}
                 }

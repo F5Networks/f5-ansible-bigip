@@ -143,7 +143,8 @@ create_modify = """
                "authProfile": {% if params.auth_profile is defined -%}
                 "{{ params.auth_profile }}"{% else %}""{% endif %},
                "sslSettingReference": {% if params.ssl_settings is defined -%}
-                "{{ params.ssl_settings }}"{% else %}""{% endif %},
+                {% if params.sslo_version >= 9.1 %}["{{ params.ssl_settings }}"] {% else %}
+                "{{ params.ssl_settings }}" {% endif %}{% else %}""{% endif %},
                "securityPolicyReference": {% if params.security_policy is defined -%}
                 "{{ params.security_policy }}"{% else %}""{% endif %},
                "accessProfile": "{{ params.access_profile }}"{% if params.profile_scope is defined -%},

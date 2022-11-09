@@ -60,7 +60,10 @@ create_modify = """
              "generalSettings":{
                 "isForwardProxy": {% if params.proxy_type == "forward" %}true{% else %}false{% endif %},
                 "bypassHandshakeAlert": {{ params.bypass_handshake_failure | tojson }},
-                "bypassClientCertFailure": {{ params.bypass_client_cert_failure | tojson }}
+                "bypassClientCertFailure": {{ params.bypass_client_cert_failure | tojson }}{% if params.sni_default is defined %},
+                "sniDefault": {{ params.sni_default | tojson }}{% endif %}{% if params.sni_server_name is defined %},
+                "serverName": "{{ params.sni_server_name }}"
+                {% endif %}
              },
              "clientSettings":{
                 "ciphers":{

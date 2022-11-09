@@ -8,18 +8,17 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-author: Wojciech Wypior <w.wypior@f5.com>
 httpapi: bigip
 short_description: HttpApi Plugin for BIG-IP devices
 description:
   - This HttpApi plugin provides methods to connect to BIG-IP
-    devices over a HTTP(S)-based api.
+    devices over a HTTP(S)-based API.
 options:
   bigip_provider:
     description:
     - The login provider used in communicating with BIG-IP devices when the API connection
       is first established.
-    - If the provider is not specified, the default C(tmos) value is assumed.
+    - If the provider is not specified, the default C(tmos) value is used.
     ini:
     - section: defaults
       key: f5_provider
@@ -38,7 +37,9 @@ options:
       - name: F5_TELEMETRY_OFF
     vars:
       - name: f5_telemetry
-version_added: "1.0"
+version_added: "1.0.0"
+author:
+  - Wojciech Wypior <w.wypior@f5.com>
 """
 import os
 
