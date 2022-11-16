@@ -739,6 +739,7 @@ class ModuleManager(object):
         return True
 
     def create(self):
+        self.check_for_required_creation_parameters()
         self._set_changed_options()
         if self.module.check_mode:
             return True

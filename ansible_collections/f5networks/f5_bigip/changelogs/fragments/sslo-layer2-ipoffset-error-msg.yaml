@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - bigip_sslo_service_layer2 - raise exception when ip_offset is not provided when creating a new layer2 service
