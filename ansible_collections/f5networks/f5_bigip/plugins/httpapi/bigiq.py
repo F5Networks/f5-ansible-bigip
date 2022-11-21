@@ -173,31 +173,22 @@ class HttpApi(HttpApiBase):
             return json.loads(response_text) if response_text else {}
         # JSONDecodeError only available on Python 3.5+
         except ValueError:
-            raise ConnectionError('Invalid JSON response: %s' % response_text)
+            raise F5ModuleError('Invalid JSON response: %s' % response_text)
 
     def _get_login_ref(self, provider):
         info = self._read_providers_on_device()
         uuids = [os.path.basename(os.path.dirname(x['link'])) for x in info['providers'] if '-' in x['link']]
         if provider in uuids:
             link = self._get_login_ref_by_id(info, provider)
-            if not link:
-                raise F5ModuleError(
-                    "Provider with the UUID {0} was not found.".format(provider)
-                )
             return dict(
                 loginReference=dict(
                     link=link
                 )
             )
-        names = [os.path.basename(os.path.dirname(x['link'])) for x in info['providers'] if '-' in x['link']]
-        if names.count(provider) > 1:
-            raise F5ModuleError(
-                "Ambiguous bigiq_provider name provided. Please specify a specific provider name or UUID."
-            )
         link = self._get_login_ref_by_name(info, provider)
         if not link:
             raise F5ModuleError(
-                "Provider with the name '{0}' was not found.".format(provider)
+                "The following provider: '{0}' was not found.".format(provider)
             )
         return dict(
             loginReference=dict(
@@ -227,4 +218,3 @@ class HttpApi(HttpApiBase):
         for x in info['providers']:
             if x['name'] == provider:
                 return x['link']
-        return None

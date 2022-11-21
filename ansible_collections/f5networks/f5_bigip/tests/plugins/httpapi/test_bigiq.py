@@ -17,6 +17,7 @@ from ansible.module_utils.six import StringIO
 from ansible.playbook.play_context import PlayContext
 from ansible.plugins.loader import connection_loader
 
+from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_bigip.tests.utils.common import connection_response
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
@@ -105,6 +106,16 @@ class TestBigIPHttpapi(TestCase):
 
         result = self.connection.httpapi._get_login_ref('15633ac8-362c-4b05-b1f9-f77f3cd8921e')
         assert result == expected
+
+    def test_get_login_ref_provider_not_found_raises(self):
+        self.connection.send.return_value = connection_response(
+            load_fixture('load_provider_list.json')
+        )
+
+        with self.assertRaises(F5ModuleError) as err:
+            self.connection.httpapi._get_login_ref('Foobar')
+
+        assert "The following provider: 'Foobar' was not found." in str(err.exception)
 
     def test_login_success_local_provider(self):
         self.connection.send.return_value = connection_response(load_fixture('local_auth_response.json'))
@@ -269,6 +280,38 @@ class TestBigIPHttpapi(TestCase):
         assert self.connection.httpapi.refresh_token == refresh
         assert self.connection._auth == {'X-F5-Auth-Token': token_2}
 
+    def test_token_refresh_invalid_token_raises(self):
+        self.connection.send.side_effect = [
+            connection_response(load_fixture('local_auth_response_2.json')),
+            connection_response({'token': {'BAZ': 'BAR'}, 'refreshToken': {'BAZ': 'BAR'}})
+        ]
+        mock_response = MagicMock()
+        self.connection.httpapi.get_option = mock_response
+        self.connection.httpapi.get_option.return_value = 'local'
+        self.connection.httpapi.login('baz', 'bar')
+
+        with self.assertRaises(AnsibleConnectionFailure) as exc:
+            self.connection.httpapi.token_refresh()
+
+        assert 'Server returned invalid response during token refresh.' in str(exc.exception)
+
+    def test_token_refresh_invalid_response_raises(self):
+        self.connection.send.side_effect = [
+            connection_response(load_fixture('local_auth_response_2.json')),
+            HTTPError(
+                'http://bigip.local', 400, '', {}, StringIO('{"errorMessage": "ERROR"}')
+            )
+        ]
+        mock_response = MagicMock()
+        self.connection.httpapi.get_option = mock_response
+        self.connection.httpapi.get_option.return_value = 'local'
+        self.connection.httpapi.login('baz', 'bar')
+
+        with self.assertRaises(AnsibleConnectionFailure) as exc:
+            self.connection.httpapi.token_refresh()
+
+        assert "Token refresh process failed, server returned: {'errorMessage': 'ERROR'}" in str(exc.exception)
+
     def test_get_telemetry_network_os(self):
         mock_response = MagicMock()
         self.connection.httpapi.get_option = mock_response
@@ -276,3 +319,94 @@ class TestBigIPHttpapi(TestCase):
 
         assert self.connection.httpapi.telemetry() is False
         assert self.connection.httpapi.network_os() == self.pc.network_os
+
+    def test_logout_returns_none(self):
+        self.connection._auth = None
+        nothing = self.connection.httpapi.logout()
+        assert nothing is None
+
+    def test_logout_succeeds(self):
+        self.connection.send.side_effect = [
+            connection_response(load_fixture('local_auth_response.json')),
+            connection_response({})
+        ]
+        token = "eyJraWQiOiJhZmExZDliOC1jN2NiLTQ2NWMtOTE0Yy00MWNkODgwZjM1YjEiLCJhbGciOiJSUzM4NCJ9.eyJpc3MiOiJCSU" \
+                "ctSVEiLCJqdGkiOiJuaGpmanVqRU9FWnZqaWQtR2xUSW1RIiwic3ViIjoiYWRtaW4iLCJhdWQiOiIxNzIuMTguNy41NSIsI" \
+                "mlhdCI6MTU5MzE4Nzg3MSwiZXhwIjoxNTkzMTg4MTcxLCJ1c2VyTmFtZSI6ImFkbWluIiwiYXV0aFByb3ZpZGVyTmFtZSI6" \
+                "ImxvY2FsIiwidXNlciI6Imh0dHBzOi8vbG9jYWxob3N0L21nbXQvc2hhcmVkL2F1dGh6L3VzZXJzL2FkbWluIiwidHlwZSI" \
+                "6IkFDQ0VTUyIsInRpbWVvdXQiOjMwMCwiZ3JvdXBSZWZlcmVuY2VzIjpbXX0.Ob1gwS93X0yE1Q5rKiHEpFl-5dcmFN8dR-" \
+                "CLe_ghJaNT4zEWp4r6EdgQ57yrBCHqfoe2JMVJ9UYW7Dn8lJh1buDJLAOJ9l1ifUQo0rSKkSI1UwNyVI5KeHafclngz1MNH" \
+                "G8HUB0vRySfDO5FhRjDrNyXL7CeOblog9qgVAsBOW60A9Tgx4vlFgDebzf46Pp_EO9Oes75oIQSkGdARuYbNtM72QwWNUO6" \
+                "fiFo_L93-LOrQiWz87PECRkwq5C91sl4uiqdBGN2LRjwHcs3v2vNQbVTlABPnOsGLe14dZE4AZ_peNwIBIGL4JT_55rdohl" \
+                "AKqQKCIgEDTB9xvQyOZgX9yO76FfTIpzg2tPLVomiaFHK1joFdzJ-jWWfBUdlKLgYbenwUD9VRyZncv6fTmJug_QSCc1FL8" \
+                "4cw8Ab745kBiwOwpr5RwvRqMjDKJfQuyTX_CYQIt9j-RfrGAORqiSvlu7FUykIXdcnpO9WktEr6Y3MZl7Wj__kyngZ3nwM-NOM"
+
+        self.connection.httpapi.login('foo', 'bar')
+        assert self.connection._auth == {'X-F5-Auth-Token': token}
+
+        self.connection.httpapi.logout()
+        self.connection.send.assert_called_with(
+            '/mgmt/shared/authz/tokens/eyJraWQiOiJhZmExZDliOC1jN2NiLTQ2NWMtOTE0Yy00MWNkODgwZjM1YjEiLCJhbGciOiJSUzM4'
+            'NCJ9.eyJpc3MiOiJCSUctSVEiLCJqdGkiOiJuaGpmanVqRU9FWnZqaWQtR2xUSW1RIiwic3ViIjoiYWRtaW4iLCJhdWQiOiIxNzIuM'
+            'TguNy41NSIsImlhdCI6MTU5MzE4Nzg3MSwiZXhwIjoxNTkzMTg4MTcxLCJ1c2VyTmFtZSI6ImFkbWluIiwiYXV0aFByb3ZpZGVyTmF'
+            'tZSI6ImxvY2FsIiwidXNlciI6Imh0dHBzOi8vbG9jYWxob3N0L21nbXQvc2hhcmVkL2F1dGh6L3VzZXJzL2FkbWluIiwidHlwZSI6I'
+            'kFDQ0VTUyIsInRpbWVvdXQiOjMwMCwiZ3JvdXBSZWZlcmVuY2VzIjpbXX0.Ob1gwS93X0yE1Q5rKiHEpFl-5dcmFN8dR-CLe_ghJaN'
+            'T4zEWp4r6EdgQ57yrBCHqfoe2JMVJ9UYW7Dn8lJh1buDJLAOJ9l1ifUQo0rSKkSI1UwNyVI5KeHafclngz1MNHG8HUB0vRySfDO5Fh'
+            'RjDrNyXL7CeOblog9qgVAsBOW60A9Tgx4vlFgDebzf46Pp_EO9Oes75oIQSkGdARuYbNtM72QwWNUO6fiFo_L93-LOrQiWz87PECRk'
+            'wq5C91sl4uiqdBGN2LRjwHcs3v2vNQbVTlABPnOsGLe14dZE4AZ_peNwIBIGL4JT_55rdohlAKqQKCIgEDTB9xvQyOZgX9yO76FfTI'
+            'pzg2tPLVomiaFHK1joFdzJ-jWWfBUdlKLgYbenwUD9VRyZncv6fTmJug_QSCc1FL84cw8Ab745kBiwOwpr5RwvRqMjDKJfQuyTX_CY'
+            'QIt9j-RfrGAORqiSvlu7FUykIXdcnpO9WktEr6Y3MZl7Wj__kyngZ3nwM-NOM', None, method='DELETE'
+        )
+
+    def test_handle_http_error(self):
+        exc1 = HTTPError('http://bigip.local', 404, '', {}, StringIO('{"errorMessage": "not found"}'))
+        res1 = self.connection.httpapi.handle_httperror(exc1)
+        assert res1 == exc1
+
+        exc2 = HTTPError('http://bigip.local', 401, '', {}, StringIO('{"errorMessage": "not allowed"}'))
+        res2 = self.connection.httpapi.handle_httperror(exc2)
+        assert res2 is False
+
+        self.connection.send.side_effect = [
+            connection_response(load_fixture('local_auth_response_2.json')),
+            connection_response(load_fixture('refresh_response.json'))
+        ]
+        mock_response = MagicMock()
+        self.connection.httpapi.get_option = mock_response
+        self.connection.httpapi.get_option.return_value = 'local'
+
+        token_1 = "eyJraWQiOiJkMzExNjIxNC1hOWRkLTQ4NTYtODI0MC05MDY1OTZjZWFkOTgiLCJhbGciOiJSUzM4NCJ9.eyJpc3Mi" \
+                  "OiJCSUctSVEiLCJqdGkiOiJnTkNUd2VxLVFkS1ZMNzFraVN4OUZ3Iiwic3ViIjoiYWRtaW4iLCJhdWQiOiIxNzIuM" \
+                  "TguMTYxLjQ3IiwiaWF0IjoxNjE0ODU5NjM4LCJleHAiOjE2MTQ4NTk5MzgsInVzZXJOYW1lIjoiYWRtaW4iLCJhdX" \
+                  "RoUHJvdmlkZXJOYW1lIjoibG9jYWwiLCJ1c2VyIjoiaHR0cHM6Ly9sb2NhbGhvc3QvbWdtdC9zaGFyZWQvYXV0aHo" \
+                  "vdXNlcnMvYWRtaW4iLCJ0eXBlIjoiQUNDRVNTIiwidGltZW91dCI6MzAwLCJncm91cFJlZmVyZW5jZXMiOltdfQ.F" \
+                  "WZZ7w0vCH39mleCnMFvMuvCrX2l4eaH0sqINdeR7g1cv5_sFKvaJJcjA0UEYc0JjCbqC-k06mbu0dn3NxwDqpsimz" \
+                  "_7MVwoKAYjuIz3KXIjokUPpCka_hrF5uZLpj53VHKp8vN2GQvSxVbftdqBw0jBrpLFJNWqitnEf8Ie_MDgMmX6SMu" \
+                  "ZRwM0jU7Xlf3eTJq529gmeZoN6u2haAcA0jyuvK0lvWXspRqtmY1c-BHch4nix92L7jXWSe-s60jBuJn3A5dgRCUE" \
+                  "YARMnjWXB5Xinj21cc8HQWv6i924NFuqMFZAkSMjJImFmroK5ng8uaTBC0dtV3szmozAS96LWGkSqPhevW9TuU0FS" \
+                  "3EVbMftlneoSj_d0FUscrR_1QR5zACUKQ-CEEL_thWt4-BoQiksMsP-FoQU2eCkapYurKUp8Ya8YnTz-fAVDQXghl" \
+                  "VBr2ideEm08i7mncGsyn-rMLu1uq4eBaAayDWq6gUOm45WdzTwAgdhoAyVKur2MtSs"
+        token_2 = "eyJraWQiOiJkMzExNjIxNC1hOWRkLTQ4NTYtODI0MC05MDY1OTZjZWFkOTgiLCJhbGciOiJSUzM4NCJ9.eyJpc3Mi" \
+                  "OiJCSUctSVEiLCJqdGkiOiJRMUdERkE4cHF4b3ZfamtlRk4yU2xnIiwic3ViIjoiYWRtaW4iLCJhdWQiOiIxNzIuM" \
+                  "TguMTYxLjQ3IiwiaWF0IjoxNjE0ODU5NzcyLCJleHAiOjE2MTQ4NjAwNzIsInVzZXJOYW1lIjoiYWRtaW4iLCJhdX" \
+                  "RoUHJvdmlkZXJOYW1lIjoibG9jYWwiLCJ1c2VyIjoiaHR0cHM6Ly9sb2NhbGhvc3QvbWdtdC9zaGFyZWQvYXV0aHo" \
+                  "vdXNlcnMvYWRtaW4iLCJ0eXBlIjoiQUNDRVNTIiwidGltZW91dCI6MzAwLCJncm91cFJlZmVyZW5jZXMiOltdfQ.Q" \
+                  "3A5MQfCnvVluFgvQbEUSzNsL-jtOwODopYcxA0HOOrCHYO2ec15t6fznVsiT71B-rAGEFdgi0ZMDB7SKWha6Wzv-1" \
+                  "ELRX8PVi-SWTGylhQpXpu_ZWja0oqHHv7uxbAyiF0uZt62IW-taXqZ2Pw4vPShDX4APPefujVwULAovrjLet2dE0Y" \
+                  "6rxTqoADtgnauZx5R-_cmHZH-hwdRunVh-TWRATVpbXUL5E8MjKwuCpguI3CHO_sKd3eaI7Tc60rCh-yO3YHJuvae" \
+                  "FFw2ipcMpqR-eo62QmwrxA5ZAKgXxzYrdnkZ7x73hKvJh8aYZsa2YZSuzEz3QTkpO8mbGFcX1IWNdqt1ZMs-HiXr2" \
+                  "SMHW7nOmWsBlB9ymStvvnqM_HO8BYg6CScj_XTv9cfZDiGWTtcZSSsEWb6l_If1yzTLEWUNpbYCwOG4OEcHKV8TXz" \
+                  "1ie4m4TzxdeMUSROXPxkoUQKG0bVCY4vPThqpHUYIe-boxgAYqqNXjJr7pp65-XeAw"
+
+        self.connection.httpapi.login('baz', 'bar')
+        assert self.connection._auth == {'X-F5-Auth-Token': token_1}
+
+        exc3 = HTTPError('http://bigip.local', 401, '', {}, StringIO('{"errorMessage": "not allowed"}'))
+        res3 = self.connection.httpapi.handle_httperror(exc3)
+        assert res3 is True
+        assert self.connection._auth == {'X-F5-Auth-Token': token_2}
+
+    def test_resonse_to_json_raises(self):
+        with self.assertRaises(F5ModuleError) as err:
+            self.connection.httpapi._response_to_json('invalid json}')
+        assert 'Invalid JSON response: invalid json}' in str(err.exception)
