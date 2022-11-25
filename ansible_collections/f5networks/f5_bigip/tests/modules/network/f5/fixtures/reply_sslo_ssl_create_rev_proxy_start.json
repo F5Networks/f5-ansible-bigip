@@ -58,8 +58,8 @@
                         "cipherGroup": "/Common/f5-default"
                     },
                     "caBundle": "/Common/ca-bundle.crt",
-                    "expiredCertificates": false,
-                    "untrustedCertificates": false,
+                    "expiredCertificates": "ignore",
+                    "untrustedCertificates": "ignore",
                     "ocsp": "",
                     "crl": "",
                     "enabledSSLProcessingOptions": [

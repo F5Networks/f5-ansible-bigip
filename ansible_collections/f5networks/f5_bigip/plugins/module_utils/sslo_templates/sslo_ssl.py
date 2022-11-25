@@ -97,8 +97,8 @@ create_modify = """
                     }
                 ]{% else %}[]{% endif %},
                 "forwardByPass": {% if params.proxy_type == "forward" %}true{% else %}false{% endif %},
-                "enabledSSLProcessingOptions": {% if params.client_enable_tls13 is defined %}
-                {{ params.client_enable_tls13 | tojson }}
+                "enabledSSLProcessingOptions": {% if params.client_ssl_options is defined %}
+                {{ params.client_ssl_options | tojson }}
                 {% else %}[]{% endif %}{% if params.client_log_publisher is defined %},
                 "logPublisher": "{{ params.client_log_publisher }}"{% endif %}{% if params.alpn is defined %},
                 "alpn": {{ params.alpn | tojson }}{% endif %}
@@ -114,8 +114,8 @@ create_modify = """
                 "untrustedCertificates": {{ params.block_untrusted | tojson }},
                 "ocsp": "{{ params.ocsp }}",
                 "crl": "{{ params.crl }}",
-                "enabledSSLProcessingOptions": {% if params.server_enable_tls13 is defined %}
-                {{ params.server_enable_tls13 | tojson }}{% else %}[]
+                "enabledSSLProcessingOptions": {% if params.server_ssl_options is defined %}
+                {{ params.server_ssl_options | tojson }}{% else %}[]
                 {% endif %}{% if params.server_log_publisher is defined %},
                 "logPublisher": "{{ params.server_log_publisher }}"{% endif %}
              },
