@@ -1,0 +1,96 @@
+{
+    "kind": "tm:net:vlan:vlanstats",
+    "generation": 1,
+    "selfLink": "https://localhost/mgmt/tm/net/vlan/~Common~foo1/stats?ver=16.0.0",
+    "entries": {
+        "https://localhost/mgmt/tm/net/vlan/~Common~foo1/stats": {
+            "nestedStats": {
+                "kind": "tm:net:vlan:vlanstats",
+                "selfLink": "https://localhost/mgmt/tm/net/vlan/~Common~foo1/stats?ver=16.0.0",
+                "entries": {
+                    "cVid": {
+                        "description": " "
+                    },
+                    "id": {
+                        "value": 123
+                    },
+                    "ifname": {
+                        "description": "foo1"
+                    },
+                    "macTrue": {
+                        "description": "00:98:76:54:32:10"
+                    },
+                    "mtu": {
+                        "value": 1500
+                    },
+                    "tmName": {
+                        "description": "/Common/foo1"
+                    },
+                    "https://localhost/mgmt/tm/net/vlan/~Common~foo1/ifc_stat/stats": {
+                        "nestedStats": {
+                            "entries": {
+                                "https://localhost/mgmt/tm/net/vlan/~Common~foo1/ifc_stat/0/stats": {
+                                    "nestedStats": {
+                                        "entries": {
+                                            "hcInBroadcastPkts": {
+                                                "value": 0
+                                            },
+                                            "hcInMulticastPkts": {
+                                                "value": 0
+                                            },
+                                            "hcInOctets": {
+                                                "value": 0
+                                            },
+                                            "hcInUcastPkts": {
+                                                "value": 0
+                                            },
+                                            "hcOutBroadcastPkts": {
+                                                "value": 0
+                                            },
+                                            "hcOutMulticastPkts": {
+                                                "value": 0
+                                            },
+                                            "hcOutOctets": {
+                                                "value": 0
+                                            },
+                                            "hcOutUcastPkts": {
+                                                "value": 0
+                                            },
+                                            "inDiscards": {
+                                                "value": 0
+                                            },
+                                            "inErrors": {
+                                                "value": 0
+                                            },
+                                            "inUnknownProtos": {
+                                                "value": 0
+                                            },
+                                            "outDiscards": {
+                                                "value": 10
+                                            },
+                                            "outErrors": {
+                                                "value": 0
+                                            },
+                                            "pvaInOctets": {
+                                                "value": 0
+                                            },
+                                            "pvaInPkts": {
+                                                "value": 0
+                                            },
+                                            "pvaOutOctets": {
+                                                "value": 0
+                                            },
+                                            "pvaOutPkts": {
+                                                "value": 0
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

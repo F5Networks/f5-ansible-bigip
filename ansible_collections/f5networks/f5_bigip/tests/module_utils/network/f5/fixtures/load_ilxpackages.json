@@ -1,0 +1,360 @@
+{
+    "items": [
+        {
+            "id": "0e73ec8a-d091-3bb8-8a2f-f76f6475d78d",
+            "appName": "f5-iappslx-access-saml-sp",
+            "packageName": "f5-iappslx-access-saml-sp-2.3.0-0.0.1481.noarch",
+            "version": "2.3.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140684827210,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/0e73ec8a-d091-3bb8-8a2f-f76f6475d78d"
+        },
+        {
+            "id": "1241344f-04f9-3594-b6cb-f7989ebff7df",
+            "appName": "f5-service-discovery",
+            "packageName": "f5-service-discovery-1.10.11-1.noarch",
+            "version": "1.10.11",
+            "release": "1",
+            "arch": "noarch",
+            "tags": [
+                "PLUGIN"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1654849995408228,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/1241344f-04f9-3594-b6cb-f7989ebff7df"
+        },
+        {
+            "id": "18735596-8a25-3ed2-9347-6d3c2bcb1ea7",
+            "appName": "f5-iappslx-access-aad-apps",
+            "packageName": "f5-iappslx-access-aad-apps-1.0.0-0.0.1481.noarch",
+            "version": "1.0.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140679063941,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/18735596-8a25-3ed2-9347-6d3c2bcb1ea7"
+        },
+        {
+            "id": "2b31cd18-061b-385d-b298-ab9895194e0e",
+            "appName": "f5-iappslx-waf-app-protection",
+            "packageName": "f5-iappslx-waf-app-protection-1.3.0-0.0.1481.noarch",
+            "version": "1.3.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140687016734,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/2b31cd18-061b-385d-b298-ab9895194e0e"
+        },
+        {
+            "id": "37aa1f76-96a3-33ab-b0d2-434db4dd4cf3",
+            "appName": "f5-iappslx-access-adfs",
+            "packageName": "f5-iappslx-access-adfs-2.3.0-0.0.1481.noarch",
+            "version": "2.3.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140679742141,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/37aa1f76-96a3-33ab-b0d2-434db4dd4cf3"
+        },
+        {
+            "id": "58dffc33-ca3e-3377-b7c7-f0cabb691ce2",
+            "appName": "f5-iappslx-access-datasafe",
+            "packageName": "f5-iappslx-access-datasafe-1.2.0-0.0.1481.noarch",
+            "version": "1.2.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140681302564,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/58dffc33-ca3e-3377-b7c7-f0cabb691ce2"
+        },
+        {
+            "id": "5b78671e-01ea-3d87-b255-4f6da6047846",
+            "appName": "f5-appsvcs",
+            "packageName": "f5-appsvcs-3.36.1-1.noarch",
+            "version": "3.36.1",
+            "release": "1",
+            "arch": "noarch",
+            "tags": [
+                "PLUGIN"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1654849977883723,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/5b78671e-01ea-3d87-b255-4f6da6047846"
+        },
+        {
+            "id": "64bcbabd-3e2c-30eb-b7ba-1611d4b37121",
+            "appName": "f5-iappslx-waf-api-protection",
+            "packageName": "f5-iappslx-waf-api-protection-2.3.0-0.0.1481.noarch",
+            "version": "2.3.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140685993024,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/64bcbabd-3e2c-30eb-b7ba-1611d4b37121"
+        },
+        {
+            "id": "75da4fe7-5cb3-3e6b-8577-3d7a2a7d090d",
+            "appName": "f5-iappslx-access-oauth-client-rs",
+            "packageName": "f5-iappslx-access-oauth-client-rs-4.3.0-0.0.1481.noarch",
+            "version": "4.3.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140683351856,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/75da4fe7-5cb3-3e6b-8577-3d7a2a7d090d"
+        },
+        {
+            "id": "8d0805bd-b3cb-3b2f-8ac1-6b93ea2f7097",
+            "appName": "f5-iappslx-waf-app-comp-protection",
+            "packageName": "f5-iappslx-waf-app-comp-protection-2.1.0-0.0.1481.noarch",
+            "version": "2.1.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140686557364,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/8d0805bd-b3cb-3b2f-8ac1-6b93ea2f7097"
+        },
+        {
+            "id": "9beb912b-4f1c-3f95-94c3-eb1cbac4ab99",
+            "appName": "f5-iappslx-ssl-orchestrator",
+            "packageName": "f5-iappslx-ssl-orchestrator-16.0.0-8.0.353.noarch",
+            "version": "16.0.0",
+            "release": "8.0.353",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1643130630298979,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/9beb912b-4f1c-3f95-94c3-eb1cbac4ab99"
+        },
+        {
+            "id": "a12f6ea9-7ed9-3e48-ace6-5b74d0d653dc",
+            "appName": "f5-iappslx-waf-openapispec-api-protection",
+            "packageName": "f5-iappslx-waf-openapispec-api-protection-1.2.0-0.0.1481.noarch",
+            "version": "1.2.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140689374345,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/a12f6ea9-7ed9-3e48-ace6-5b74d0d653dc"
+        },
+        {
+            "id": "c41a46fd-777b-3dd1-bae2-23a3fe0c719f",
+            "appName": "f5-iappslx-access-api-protection",
+            "packageName": "f5-iappslx-access-api-protection-1.4.0-0.0.1481.noarch",
+            "version": "1.4.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140680408207,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/c41a46fd-777b-3dd1-bae2-23a3fe0c719f"
+        },
+        {
+            "id": "c9792285-e71c-37fb-bb97-49df32476826",
+            "appName": "f5-iappslx-access-saml-idp",
+            "packageName": "f5-iappslx-access-saml-idp-3.3.0-0.0.1481.noarch",
+            "version": "3.3.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140684001387,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/c9792285-e71c-37fb-bb97-49df32476826"
+        },
+        {
+            "id": "d24bb884-0909-3880-843a-f86294150565",
+            "appName": "f5-iappslx-waf-bados-protection",
+            "packageName": "f5-iappslx-waf-bados-protection-1.3.0-0.0.1481.noarch",
+            "version": "1.3.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140687599764,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/d24bb884-0909-3880-843a-f86294150565"
+        },
+        {
+            "id": "d8ced1ec-ea7c-37ff-a4b7-32af08f4412e",
+            "appName": "f5-iappslx-access-exchange",
+            "packageName": "f5-iappslx-access-exchange-2.2.0-0.0.1481.noarch",
+            "version": "2.2.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140681884993,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/d8ced1ec-ea7c-37ff-a4b7-32af08f4412e"
+        },
+        {
+            "id": "da24c7a7-7c8f-38d5-95e9-6c3b1ffdd89c",
+            "appName": "f5-iappslx-waf-centralized-policy-management",
+            "packageName": "f5-iappslx-waf-centralized-policy-management-1.0.0-0.0.1481.noarch",
+            "version": "1.0.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140688854735,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/da24c7a7-7c8f-38d5-95e9-6c3b1ffdd89c"
+        },
+        {
+            "id": "e3ceb416-80cf-3ccd-a492-0fc05119b4f1",
+            "appName": "f5-iappslx-access-oauth-auth-server",
+            "packageName": "f5-iappslx-access-oauth-auth-server-4.2.0-0.0.1481.noarch",
+            "version": "4.2.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140682592416,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/e3ceb416-80cf-3ccd-a492-0fc05119b4f1"
+        },
+        {
+            "id": "e47e3ca5-bd03-3900-b6b0-9e0239ce2002",
+            "appName": "f5-iappslx-access-framework",
+            "packageName": "f5-iappslx-access-framework-1.5.0-0.0.1481.noarch",
+            "version": "1.5.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "PLUGIN"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140677879990,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/e47e3ca5-bd03-3900-b6b0-9e0239ce2002"
+        },
+        {
+            "id": "e677ec11-498d-3c02-80cb-708502199e3a",
+            "appName": "f5-iappslx-access-zta",
+            "packageName": "f5-iappslx-access-zta-1.2.0-0.0.1481.noarch",
+            "version": "1.2.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140685445777,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/e677ec11-498d-3c02-80cb-708502199e3a"
+        },
+        {
+            "id": "fa5ab66e-449d-39ba-8609-d6ac7f637e91",
+            "appName": "f5-iappslx-waf-bot-protection",
+            "packageName": "f5-iappslx-waf-bot-protection-2.1.0-0.0.1481.noarch",
+            "version": "2.1.0",
+            "release": "0.0.1481",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 2,
+            "lastUpdateMicros": 1651140688233971,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/fa5ab66e-449d-39ba-8609-d6ac7f637e91"
+        },
+        {
+            "id": "fd54cb55-cc2c-3385-962c-7e23eceab16a",
+            "appName": "f5-appsvcs-templates",
+            "packageName": "f5-appsvcs-templates-1.21.0-1.noarch",
+            "version": "1.21.0",
+            "release": "1",
+            "arch": "noarch",
+            "tags": [
+                "IAPP"
+            ],
+            "status": "READY",
+            "generation": 4,
+            "lastUpdateMicros": 1665390005478593,
+            "kind": "shared:iapp:installed-packages:installedpackagestate",
+            "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages/fd54cb55-cc2c-3385-962c-7e23eceab16a"
+        }
+    ],
+    "generation": 46,
+    "kind": "shared:iapp:installed-packages:installedpackagecollectionstate",
+    "lastUpdateMicros": 1665390005479455,
+    "selfLink": "https://localhost/mgmt/shared/iapp/installed-packages"
+}
