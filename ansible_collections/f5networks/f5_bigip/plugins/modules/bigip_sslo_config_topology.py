@@ -401,9 +401,20 @@ RETURN = r'''
 import re
 import ipaddress
 import time
-from distutils.version import LooseVersion
+import traceback
 
-from ansible.module_utils.basic import AnsibleModule
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
+
+from ansible.module_utils.basic import (
+    AnsibleModule, missing_required_lib
+)
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
@@ -1186,8 +1197,8 @@ class ModuleManager(object):
 
     def check_sslo_version(self):
         self.version = sslo_version(self.client)
-        if LooseVersion(self.version) > LooseVersion(max_sslo_version) or \
-                LooseVersion(self.version) < LooseVersion(min_sslo_version):
+        if Version(self.version) > Version(max_sslo_version) or \
+                Version(self.version) < Version(min_sslo_version):
             raise F5ModuleError(
                 f"Unsupported SSL Orchestrator version, "
                 f"requires a version between {min_sslo_version} and {max_sslo_version}"
@@ -1286,13 +1297,13 @@ class ModuleManager(object):
             if params.get('proxy_ip'):
                 if not self._same_ip_family(params['source'], params['proxy_ip']):
                     raise F5ModuleError('Source and proxy addresses must be in the same IP family.')
-        if LooseVersion(self.version) < LooseVersion('8.2'):
+        if Version(self.version) < Version('8.2'):
             if params.get('primary_auth_uri') or params.get('profile_scope_value') or params.get('profile_scope'):
                 raise F5ModuleError(
                     f"The 'primary_auth_uri', 'profile_scope_value' or 'profile_scope' are supported on "
                     f"SSLO version 8.2 and above, your SSLO version is {self.version}."
                 )
-        if LooseVersion(self.version) < LooseVersion('9.0'):
+        if Version(self.version) < Version('9.0'):
             if params.get('ocsp_auth'):
                 raise F5ModuleError(
                     f"The 'ocsp_auth' key is supported on "
@@ -1319,7 +1330,7 @@ class ModuleManager(object):
                     raise F5ModuleError(
                         'The Outbound L3 topology for non-TCP/non-UDP traffic cannot contain a security_policy key.'
                     )
-            if LooseVersion(self.version) >= LooseVersion('8.2'):
+            if Version(self.version) >= Version('8.2'):
                 if params.get('protocol'):
                     if params['protocol'] != 'tcp':
                         if params.get('primary_auth_uri'):
@@ -1346,7 +1357,7 @@ class ModuleManager(object):
                     raise F5ModuleError(
                         'The Outbound L2 topology for non-TCP/non-UDP traffic cannot contain a security_policy key.'
                     )
-            if LooseVersion(self.version) >= LooseVersion('8.2'):
+            if Version(self.version) >= Version('8.2'):
                 if params.get('protocol'):
                     if params['protocol'] != 'tcp':
                         if params.get('primary_auth_uri'):
@@ -1752,6 +1763,12 @@ def main():
         required_together=spec.required_together,
         required_if=spec.required_if
     )
+
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
+        )
 
     try:
         mm = ModuleManager(module=module, connection=Connection(module._socket_path))

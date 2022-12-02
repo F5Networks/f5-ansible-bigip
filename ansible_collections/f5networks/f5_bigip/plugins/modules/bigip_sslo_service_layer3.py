@@ -362,7 +362,15 @@ import re
 import time
 import ipaddress
 import traceback
-from distutils.version import LooseVersion
+
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
 
 
 try:
@@ -872,8 +880,8 @@ class ModuleManager(object):
 
     def check_sslo_version(self):
         self.version = sslo_version(self.client)
-        if LooseVersion(self.version) > LooseVersion(max_sslo_version) or \
-                LooseVersion(self.version) < LooseVersion(min_sslo_version):
+        if Version(self.version) > Version(max_sslo_version) or \
+                Version(self.version) < Version(min_sslo_version):
             raise F5ModuleError(
                 f"Unsupported SSL Orchestrator version, "
                 f"requires a version between {min_sslo_version} and {max_sslo_version}"
@@ -1241,6 +1249,11 @@ def main():
         module.fail_json(
             msg=missing_required_lib('netaddr'),
             exception=NETADDR_IMPORT_ERROR
+        )
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
         )
 
     try:

@@ -85,9 +85,20 @@ RETURN = r'''
 
 import os
 import time
-from distutils.version import LooseVersion
+import traceback
 
-from ansible.module_utils.basic import AnsibleModule
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
+
+from ansible.module_utils.basic import (
+    AnsibleModule, missing_required_lib
+)
 from ansible.module_utils.urls import urlparse
 from ansible.module_utils.connection import Connection
 
@@ -258,8 +269,8 @@ class ModuleManager(object):
 
     def check_sslo_version(self):
         version = sslo_version(self.client)
-        if LooseVersion(version) > LooseVersion(max_sslo_version) or \
-                LooseVersion(version) < LooseVersion(min_sslo_version):
+        if Version(version) > Version(max_sslo_version) or \
+                Version(version) < Version(min_sslo_version):
             raise F5ModuleError(
                 f"Unsupported SSL Orchestrator version, requires a version between "
                 f"{min_sslo_version} and {max_sslo_version}"
@@ -297,7 +308,7 @@ class ModuleManager(object):
         # If we cannot determine version from provided RPM  or from device we do not install
         if not want_version or not have_version:
             return False
-        if LooseVersion(want_version) == LooseVersion(have_version):
+        if Version(want_version) == Version(have_version):
             return False
         return True
 
@@ -422,6 +433,12 @@ def main():
         supports_check_mode=spec.supports_check_mode,
         required_if=spec.required_if
     )
+
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
+        )
 
     try:
         mm = ModuleManager(module=module, connection=Connection(module._socket_path))

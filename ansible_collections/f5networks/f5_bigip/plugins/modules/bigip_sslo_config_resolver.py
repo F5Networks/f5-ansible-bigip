@@ -121,9 +121,20 @@ fwd_zones:
 
 import ipaddress
 import time
-from distutils.version import LooseVersion
+import traceback
 
-from ansible.module_utils.basic import AnsibleModule
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
+
+from ansible.module_utils.basic import (
+    AnsibleModule, missing_required_lib
+)
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
@@ -376,8 +387,8 @@ class ModuleManager(object):
 
     def check_sslo_version(self):
         self.version = sslo_version(self.client)
-        if LooseVersion(self.version) > LooseVersion(max_sslo_version) or \
-                LooseVersion(self.version) < LooseVersion(min_sslo_version):
+        if Version(self.version) > Version(max_sslo_version) or \
+                Version(self.version) < Version(min_sslo_version):
             raise F5ModuleError(
                 f"Unsupported SSL Orchestrator version, "
                 f"requires a version between {min_sslo_version} and {max_sslo_version}"
@@ -436,7 +447,7 @@ class ModuleManager(object):
         payload['name'] = f"sslo_obj_GENERAL_SETTINGS_{self.operation}_ssloGS_global"
         payload['operation'] = self.operation
         payload['sslo_version'] = float(self.version)
-        if LooseVersion(self.version) < LooseVersion('6.0'):
+        if Version(self.version) < Version('6.0'):
             payload['log_conf'] = resolver_logging_config
         if self.operation == 'MODIFY':
             payload['dep_ref'] = f"https://localhost/mgmt/shared/iapp/blocks/{self.block_id}"
@@ -602,6 +613,12 @@ def main():
         mutually_exclusive=spec.mutually_exclusive,
         required_one_of=spec.required_one_of
     )
+
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
+        )
 
     try:
         mm = ModuleManager(module=module, connection=Connection(module._socket_path))

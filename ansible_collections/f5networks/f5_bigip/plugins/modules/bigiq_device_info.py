@@ -818,9 +818,20 @@ import copy
 import datetime
 import math
 import re
+import traceback
 
-from distutils.version import LooseVersion
-from ansible.module_utils.basic import AnsibleModule
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
+
+from ansible.module_utils.basic import (
+    AnsibleModule, missing_required_lib
+)
 from ansible.module_utils.connection import Connection
 from ansible.module_utils.six import (
     iteritems, string_types
@@ -1647,7 +1658,7 @@ class SystemInfoFactManager(BaseManager):
         if tmp:
             result.update(tmp)
 
-        if LooseVersion(bigiq_version(self.client)) < LooseVersion('7.0.0'):
+        if Version(bigiq_version(self.client)) < Version('7.0.0'):
             tmp = self.read_uptime_info_from_device()
             if tmp:
                 result.update(tmp)
@@ -2138,6 +2149,12 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode
     )
+
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
+        )
 
     try:
         mm = ModuleManager(module=module, connection=Connection(module._socket_path))
