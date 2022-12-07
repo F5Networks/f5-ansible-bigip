@@ -77,6 +77,7 @@ options:
       - interfaces
       - internal-data-groups
       - irules
+      - license
       - ltm-pools
       - ltm-policies
       - management-routes
@@ -155,6 +156,7 @@ options:
       - "!interfaces"
       - "!internal-data-groups"
       - "!irules"
+      - "!license"
       - "!ltm-pools"
       - "!ltm-policies"
       - "!management-routes"
@@ -3325,6 +3327,72 @@ irules:
       returned: queried
       type: str
       sample: WsYy2M6xMqvosIKIEH/FSsvhtWMe6xKOA6i7f...
+  sample: hash/dictionary of values
+license:
+  description: License related info.
+  returned: When C(license) is specified in C(gather_subset).
+  type: complex
+  contains:
+    license_start_date:
+      description:
+        - Specifies the date on whichthe license was issued.
+      returned: queried
+      type: str
+      sample: 2022/11/21
+    license_end_date:
+      description:
+        - Specifies the date on which the license is no longer valid.
+      returned: queried
+      type: str
+      sample: 2022/12/30
+    licensed_on_date:
+      description:
+        - Specifies the date on which the license was activated.
+      returned: queried
+      type: str
+      sample: 2022/11/22
+    licensed_version:
+      description:
+        - Specifies the version of the device that is using this license.
+      returned: queried
+      type: str
+      sample: 15.1.2
+    max_permitted_version:
+      description:
+        - Specifies the maximum version to which this license can be applied.
+      returned: queried
+      type: str
+      sample: 18.*.*
+    min_permitted_version:
+      description:
+        - Specifies the minimum version to which this license can be applied.
+      returned: queried
+      type: str
+      sample: 5.*.*
+    platform_id:
+      description:
+        - Specifies the platform id for which the license was activated.
+      returned: queried
+      type: str
+      sample: Z100k
+    registration_key:
+      description:
+        - Specifies the registration key associated with the license.
+      returned: queried
+      type: str
+      sample: XXXX-YYYYY-ZZZZZ-PPPPP-QQQQQQ
+    service_check_date:
+      description:
+        - Specifies the last date the license was last activated.
+      returned: queried
+      type: str
+      sample: 2022/11/30
+    active_modules:
+      description:
+        - Specifies the modules that are activated by the license.
+      returned: queried
+      type: list
+      sample: [{"key":"A123456-9876543", "featureModules":"{}"}, ...]
   sample: hash/dictionary of values
 ltm_pools:
   description: List of LTM (Local Traffic Manager) pools.
@@ -12349,6 +12417,133 @@ class IrulesFactManager(BaseManager):
         return result
 
 
+class LicenseParameters(BaseParameters):
+    api_map = {
+
+    }
+
+    returnables = [
+        'license_start_date',
+        'license_end_date',
+        'licensed_on_date',
+        'licensed_version',
+        'max_permitted_version',
+        'min_permitted_version',
+        'platform_id',
+        'registration_key',
+        'service_check_date',
+        'active_modules'
+    ]
+
+    @property
+    def license_start_date(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['licenseStartDate']['description']
+
+    @property
+    def license_end_date(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['licenseEndDate']['description']
+
+    @property
+    def licensed_on_date(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['licensedOnDate']['description']
+
+    @property
+    def licensed_version(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['licensedVersion']['description']
+
+    @property
+    def max_permitted_version(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['maxPermittedVersion']['description']
+
+    @property
+    def min_permitted_version(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['minPermittedVersion']['description']
+
+    @property
+    def platform_id(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['platformId']['description']
+
+    @property
+    def registration_key(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['registrationKey']['description']
+
+    @property
+    def service_check_date(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['serviceCheckDate']['description']
+
+    @property
+    def active_modules(self):
+        if self._values['license'] is None:
+            return None
+        result = list()
+        license = self._values['license']
+        for key in license:
+            if key.startswith("http"):
+                v = license[key]['nestedStats']['entries']
+                for k in v.keys():
+                    addons = {
+                        k2: v2['description']
+                        for k2, v2 in
+                        v[k]['nestedStats']['entries'].items()
+                    }
+                    result.append(addons)
+        return result
+
+
+class LicenseFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(LicenseFactManager, self).__init__(**kwargs)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(license=facts)
+        return result
+
+    def _exec_module(self):
+        facts = self.read_facts()
+        result = facts.to_return()
+        return result
+
+    def read_facts(self):
+        resource = self.read_collection_from_device()
+        params = LicenseParameters(params=resource)
+        return params
+
+    def read_collection_from_device(self):
+        uri = "/mgmt/tm/sys/license/"
+        response = self.client.get(uri)
+
+        if response['code'] not in [200, 201]:
+            raise F5ModuleError(response['contents'])
+
+        result = dict()
+        try:
+            result['license'] = response['contents']['entries']['https://localhost/mgmt/tm/sys/license/0']['nestedStats']['entries']
+            return result
+        except KeyError:
+            return None
+
+
 class LtmPoolsParameters(BaseParameters):
     api_map = {
         'fullPath': 'full_path',
@@ -17330,6 +17525,7 @@ class ModuleManager(object):
             'interfaces': InterfacesFactManager,
             'internal-data-groups': InternalDataGroupsFactManager,
             'irules': IrulesFactManager,
+            'license': LicenseFactManager,
             'ltm-pools': LtmPoolsFactManager,
             'ltm-policies': LtmPolicyFactManager,
             'management-routes': ManagementRouteFactManager,
@@ -17578,6 +17774,7 @@ class ArgumentSpec(object):
                     'interfaces',
                     'internal-data-groups',
                     'irules',
+                    'license',
                     'ltm-pools',
                     'ltm-policies',
                     'management-routes',
@@ -17660,6 +17857,7 @@ class ArgumentSpec(object):
                     '!interfaces',
                     '!internal-data-groups',
                     '!irules',
+                    '!license',
                     '!ltm-pools',
                     '!ltm-policies',
                     '!management-routes',

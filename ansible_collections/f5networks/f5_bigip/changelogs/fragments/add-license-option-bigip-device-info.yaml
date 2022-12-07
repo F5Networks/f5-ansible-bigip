@@ -1,0 +1,3 @@
+---
+minor_changes:
+    - bigip_device_info - added option for gathering info about device license.
