@@ -23,6 +23,18 @@ options:
     type: str
     default: Common
     version_added: "1.5.0"
+  data_increment:
+    description:
+      - Specifies the paging increment at which device data is gathered from the API.
+      - Allows for greater control of the pace at which data is queried from the device.
+      - This setting is useful for setups with large configurations which may take a long time with the default values.
+      - While there is no limit to the value that can be specified, note that putting very large values with
+        C(gather_subset) set to meta choices like C(all) might lead to module or device API crash.
+      - F5 recommends using C(data_increment) custom values in tandem with C(partition) and a specific C(gather_subset)
+        value for best experience.
+    type: int
+    default: 10
+    version_added: "1.12.0"
   gather_subset:
     description:
       - When supplied, this argument restricts the information returned to a given subset.
@@ -77,6 +89,7 @@ options:
       - interfaces
       - internal-data-groups
       - irules
+      - license
       - ltm-pools
       - ltm-policies
       - management-routes
@@ -155,6 +168,7 @@ options:
       - "!interfaces"
       - "!internal-data-groups"
       - "!irules"
+      - "!license"
       - "!ltm-pools"
       - "!ltm-policies"
       - "!management-routes"
@@ -3325,6 +3339,72 @@ irules:
       returned: queried
       type: str
       sample: WsYy2M6xMqvosIKIEH/FSsvhtWMe6xKOA6i7f...
+  sample: hash/dictionary of values
+license:
+  description: License related info.
+  returned: When C(license) is specified in C(gather_subset).
+  type: complex
+  contains:
+    license_start_date:
+      description:
+        - Specifies the date on whichthe license was issued.
+      returned: queried
+      type: str
+      sample: 2022/11/21
+    license_end_date:
+      description:
+        - Specifies the date on which the license is no longer valid.
+      returned: queried
+      type: str
+      sample: 2022/12/30
+    licensed_on_date:
+      description:
+        - Specifies the date on which the license was activated.
+      returned: queried
+      type: str
+      sample: 2022/11/22
+    licensed_version:
+      description:
+        - Specifies the version of the device that is using this license.
+      returned: queried
+      type: str
+      sample: 15.1.2
+    max_permitted_version:
+      description:
+        - Specifies the maximum version to which this license can be applied.
+      returned: queried
+      type: str
+      sample: 18.*.*
+    min_permitted_version:
+      description:
+        - Specifies the minimum version to which this license can be applied.
+      returned: queried
+      type: str
+      sample: 5.*.*
+    platform_id:
+      description:
+        - Specifies the platform id for which the license was activated.
+      returned: queried
+      type: str
+      sample: Z100k
+    registration_key:
+      description:
+        - Specifies the registration key associated with the license.
+      returned: queried
+      type: str
+      sample: XXXX-YYYYY-ZZZZZ-PPPPP-QQQQQQ
+    service_check_date:
+      description:
+        - Specifies the last date the license was last activated.
+      returned: queried
+      type: str
+      sample: 2022/11/30
+    active_modules:
+      description:
+        - Specifies the modules that are activated by the license.
+      returned: queried
+      type: list
+      sample: [{"key":"A123456-9876543", "featureModules":"{}"}, ...]
   sample: hash/dictionary of values
 ltm_pools:
   description: List of LTM (Local Traffic Manager) pools.
@@ -7499,10 +7579,21 @@ import datetime
 import math
 import re
 import time
+import traceback
 from collections import namedtuple
-from distutils.version import LooseVersion
 
-from ansible.module_utils.basic import AnsibleModule
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
+
+from ansible.module_utils.basic import (
+    AnsibleModule, missing_required_lib, env_fallback
+)
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.six import (
     iteritems, string_types
@@ -7719,12 +7810,13 @@ class ApmAccessPolicyFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/apm/policy/access-policy"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -7889,7 +7981,7 @@ class AsmPolicyStatsFactManager(BaseManager):
 
     def version_is_less_than_13(self):
         version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('13.0.0'):
+        if Version(version) < Version('13.0.0'):
             return True
         else:
             return False
@@ -8295,7 +8387,7 @@ class AsmPolicyFactManager(BaseManager):
 
     def version_is_less_than_13(self):
         version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('13.0.0'):
+        if Version(version) < Version('13.0.0'):
             return True
         else:
             return False
@@ -8409,7 +8501,7 @@ class AsmServerTechnologyFactManager(BaseManager):
 
     def version_is_less_than_13(self):
         version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('13.0.0'):
+        if Version(version) < Version('13.0.0'):
             return True
         else:
             return False
@@ -8518,12 +8610,12 @@ class AsmSignatureSetsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/asm/signature-sets"
-        query = '?$top=5&$skip={0}'.format(skip)
+        query = f"?$top={self.module.params['data_increment']}&$skip={skip}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -8841,13 +8933,13 @@ class ClientSslProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/client-ssl"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
-
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -9003,13 +9095,13 @@ class DeviceGroupsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/cm/device-group"
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
-
+        query = f"?expandSubcollections=true&$top={self.module.params['data_increment']}" \
+                f"&$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -9166,13 +9258,13 @@ class DevicesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/cm/device"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
-
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -9318,13 +9410,13 @@ class ExternalMonitorsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/monitor/external"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
-
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -9471,13 +9563,13 @@ class FastHttpProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/fasthttp"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
-
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -9803,13 +9895,13 @@ class FastL4ProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/fastl4"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
-
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -9908,13 +10000,13 @@ class GatewayIcmpMonitorsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/monitor/gateway-icmp"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
-
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10153,15 +10245,13 @@ class GtmAPoolsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/pool/a"
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
-        )
+        query = f"?expandSubcollections=true&$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10211,15 +10301,13 @@ class GtmAaaaPoolsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/pool/aaaa"
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
-        )
+        query = f"?expandSubcollections=true&$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10269,15 +10357,13 @@ class GtmCnamePoolsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/pool/cname"
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
-        )
+        query = f"?expandSubcollections=true&$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10327,15 +10413,13 @@ class GtmMxPoolsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/pool/mx"
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
-        )
+        query = f"?expandSubcollections=true&$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10385,15 +10469,13 @@ class GtmNaptrPoolsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/pool/naptr"
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
-        )
+        query = f"?expandSubcollections=true&$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10443,15 +10525,13 @@ class GtmSrvPoolsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/pool/srv"
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
-        )
+        query = f"?expandSubcollections=true&$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10747,15 +10827,13 @@ class GtmServersFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/server"
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
-        )
+        query = f"?expandSubcollections=true&$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10879,12 +10957,13 @@ class GtmAWideIpsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/wideip/a"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10934,12 +11013,13 @@ class GtmAaaaWideIpsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/wideip/aaaa"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -10989,12 +11069,13 @@ class GtmCnameWideIpsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/wideip/cname"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -11044,12 +11125,13 @@ class GtmMxWideIpsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/wideip/mx"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -11099,12 +11181,13 @@ class GtmNaptrWideIpsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/wideip/naptr"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -11154,12 +11237,13 @@ class GtmSrvWideIpsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/wideip/srv"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -11248,12 +11332,13 @@ class GtmTopologyRegionFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/gtm/region"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -11366,12 +11451,13 @@ class HttpMonitorsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/monitor/http"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -11484,12 +11570,13 @@ class HttpsMonitorsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/monitor/https"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -11739,12 +11826,13 @@ class HttpProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/http"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -11842,12 +11930,13 @@ class IappServicesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/sys/application/service"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -12029,12 +12118,13 @@ class IcmpMonitorsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/monitor/icmp"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -12153,12 +12243,12 @@ class InterfacesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/net/interface"
-        query = "?$top=5&$skip={0}".format(skip)
+        query = f"?$top={self.module.params['data_increment']}&$skip={skip}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -12219,12 +12309,13 @@ class InternalDataGroupsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/data-group/internal"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -12321,12 +12412,13 @@ class IrulesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/rule"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -12336,6 +12428,133 @@ class IrulesFactManager(BaseManager):
             return []
         result = response['contents']['items']
         return result
+
+
+class LicenseParameters(BaseParameters):
+    api_map = {
+
+    }
+
+    returnables = [
+        'license_start_date',
+        'license_end_date',
+        'licensed_on_date',
+        'licensed_version',
+        'max_permitted_version',
+        'min_permitted_version',
+        'platform_id',
+        'registration_key',
+        'service_check_date',
+        'active_modules'
+    ]
+
+    @property
+    def license_start_date(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['licenseStartDate']['description']
+
+    @property
+    def license_end_date(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['licenseEndDate']['description']
+
+    @property
+    def licensed_on_date(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['licensedOnDate']['description']
+
+    @property
+    def licensed_version(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['licensedVersion']['description']
+
+    @property
+    def max_permitted_version(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['maxPermittedVersion']['description']
+
+    @property
+    def min_permitted_version(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['minPermittedVersion']['description']
+
+    @property
+    def platform_id(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['platformId']['description']
+
+    @property
+    def registration_key(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['registrationKey']['description']
+
+    @property
+    def service_check_date(self):
+        if self._values['license'] is None:
+            return None
+        return self._values['license']['serviceCheckDate']['description']
+
+    @property
+    def active_modules(self):
+        if self._values['license'] is None:
+            return None
+        result = list()
+        license = self._values['license']
+        for key in license:
+            if key.startswith("http"):
+                v = license[key]['nestedStats']['entries']
+                for k in v.keys():
+                    addons = {
+                        k2: v2['description']
+                        for k2, v2 in
+                        v[k]['nestedStats']['entries'].items()
+                    }
+                    result.append(addons)
+        return result
+
+
+class LicenseFactManager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
+        super(LicenseFactManager, self).__init__(**kwargs)
+
+    def exec_module(self):
+        facts = self._exec_module()
+        result = dict(license=facts)
+        return result
+
+    def _exec_module(self):
+        facts = self.read_facts()
+        result = facts.to_return()
+        return result
+
+    def read_facts(self):
+        resource = self.read_collection_from_device()
+        params = LicenseParameters(params=resource)
+        return params
+
+    def read_collection_from_device(self):
+        uri = "/mgmt/tm/sys/license/"
+        response = self.client.get(uri)
+
+        if response['code'] not in [200, 201]:
+            raise F5ModuleError(response['contents'])
+
+        result = dict()
+        try:
+            result['license'] = response['contents']['entries']['https://localhost/mgmt/tm/sys/license/0']['nestedStats']['entries']
+            return result
+        except KeyError:
+            return None
 
 
 class LtmPoolsParameters(BaseParameters):
@@ -12685,7 +12904,7 @@ class LtmPoolsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
@@ -12700,7 +12919,8 @@ class LtmPoolsFactManager(BaseManager):
              list: List of ``Pool`` objects
         """
         uri = "/mgmt/tm/ltm/pool"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -12850,15 +13070,13 @@ class LtmPolicyFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/policy/"
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
-        )
+        query = f"?expandSubcollections=true&$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -13030,12 +13248,13 @@ class NodesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/node"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -13147,12 +13366,13 @@ class OneConnectProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/one-connect"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -13356,12 +13576,13 @@ class RouteDomainFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/net/route-domain"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -13473,12 +13694,13 @@ class SelfIpsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/net/self"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -13785,12 +14007,13 @@ class ServerSslProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/server-ssl"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -14145,12 +14368,13 @@ class SslCertificatesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/sys/file/ssl-cert"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -14226,12 +14450,13 @@ class SslKeysFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/sys/file/ssl-key"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -14945,12 +15170,13 @@ class TcpMonitorsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/monitor/tcp"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -15036,12 +15262,13 @@ class TcpHalfOpenMonitorsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/monitor/tcp-half-open"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -15464,12 +15691,13 @@ class TcpProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/tcp"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -15573,12 +15801,13 @@ class TrafficGroupsFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/cm/traffic-group"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -15695,12 +15924,12 @@ class TrunksFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/net/trunk"
-        query = "?$top=5&$skip={0}".format(skip)
+        query = f"?$top={self.module.params['data_increment']}&$skip={skip}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -15800,12 +16029,12 @@ class UCSFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/sys/ucs"
-        query = "?$top=5&$skip={0}".format(skip)
+        query = f"?$top={self.module.params['data_increment']}&$skip={skip}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -15988,12 +16217,13 @@ class UdpProfilesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/profile/udp"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -16188,12 +16418,13 @@ class VirtualAddressesFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/virtual-address"
-        query = "?$top=5&$skip={0}&$filter=partition+eq+{1}".format(skip, self.module.params['partition'])
+        query = f"?$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -16941,15 +17172,13 @@ class VirtualServersFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/ltm/virtual"
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params["partition"]
-        )
+        query = f"?expandSubcollections=true&$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -17104,15 +17333,13 @@ class VlansFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/net/vlan"
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
-        )
+        query = f"?expandSubcollections=true&$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -17191,15 +17418,13 @@ class ManagementRouteFactManager(BaseManager):
             if not items:
                 break
             result.extend(items)
-            n = n + 5
+            n = n + self.module.params['data_increment']
         return result
 
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/sys/management-route"
-        query = "?expandSubcollections=true&$top=5&$skip={0}&$filter=partition+eq+{1}".format(
-            skip,
-            self.module.params['partition']
-        )
+        query = f"?expandSubcollections=true&$top={self.module.params['data_increment']}&" \
+                f"$skip={skip}&$filter=partition+eq+{self.module.params['partition']}"
         response = self.client.get(uri + query)
 
         if response['code'] not in [200, 201, 202]:
@@ -17319,6 +17544,7 @@ class ModuleManager(object):
             'interfaces': InterfacesFactManager,
             'internal-data-groups': InternalDataGroupsFactManager,
             'irules': IrulesFactManager,
+            'license': LicenseFactManager,
             'ltm-pools': LtmPoolsFactManager,
             'ltm-policies': LtmPolicyFactManager,
             'management-routes': ManagementRouteFactManager,
@@ -17510,8 +17736,13 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             partition=dict(
-                type="str",
-                default="Common",
+                default='Common',
+                type='str',
+                fallback=(env_fallback, ['F5_PARTITION'])
+            ),
+            data_increment=dict(
+                type='int',
+                default=10
             ),
             gather_subset=dict(
                 type='list',
@@ -17567,6 +17798,7 @@ class ArgumentSpec(object):
                     'interfaces',
                     'internal-data-groups',
                     'irules',
+                    'license',
                     'ltm-pools',
                     'ltm-policies',
                     'management-routes',
@@ -17649,6 +17881,7 @@ class ArgumentSpec(object):
                     '!interfaces',
                     '!internal-data-groups',
                     '!irules',
+                    '!license',
                     '!ltm-pools',
                     '!ltm-policies',
                     '!management-routes',
@@ -17694,6 +17927,12 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode
     )
+
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
+        )
 
     try:
         mm = ModuleManager(module=module, connection=Connection(module._socket_path))

@@ -193,9 +193,20 @@ rules:
 '''
 
 import time
-from distutils.version import LooseVersion
+import traceback
 
-from ansible.module_utils.basic import AnsibleModule
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
+
+from ansible.module_utils.basic import (
+    AnsibleModule, missing_required_lib
+)
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
@@ -463,8 +474,8 @@ class ModuleManager(object):
 
     def check_sslo_version(self):
         self.version = sslo_version(self.client)
-        if LooseVersion(self.version) > LooseVersion("9.9") or \
-                LooseVersion(self.version) < LooseVersion("9.0"):
+        if Version(self.version) > Version("9.9") or \
+                Version(self.version) < Version("9.0"):
             raise F5ModuleError(
                 "Unsupported SSL Orchestrator version, requires a version between 9.0 and 9.9"
             )
@@ -767,6 +778,11 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
     )
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
+        )
 
     try:
         mm = ModuleManager(module=module, connection=Connection(module._socket_path))

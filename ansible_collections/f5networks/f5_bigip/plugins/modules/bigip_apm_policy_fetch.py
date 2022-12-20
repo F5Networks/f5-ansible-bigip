@@ -114,11 +114,20 @@ type:
 
 import os
 import tempfile
+import traceback
 from datetime import datetime
-from distutils.version import LooseVersion
+
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
 
 from ansible.module_utils.basic import (
-    AnsibleModule, env_fallback
+    AnsibleModule, env_fallback, missing_required_lib
 )
 from ansible.module_utils.connection import Connection
 
@@ -257,7 +266,7 @@ class ModuleManager(object):
 
     def version_less_than_14(self):
         version = tmos_version(self.client)
-        if LooseVersion(version) < LooseVersion('14.0.0'):
+        if Version(version) < Version('14.0.0'):
             return True
         return False
 
@@ -422,6 +431,12 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
     )
+
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
+        )
 
     try:
         mm = ModuleManager(module=module, connection=Connection(module._socket_path))

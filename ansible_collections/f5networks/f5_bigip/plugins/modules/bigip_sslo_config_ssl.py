@@ -90,6 +90,12 @@ options:
             is ignored.
           - This parameter is required together with C(ca_key).
         type: str
+      client_ssl_options:
+        description:
+          - The processing options using various TLS and SSL versions.
+        type: list
+        elements: str
+        version_added: "1.12.0"
       ca_key:
         description:
           - Defines the CA private key applied in the client side settings.
@@ -143,19 +149,33 @@ options:
           - Defines the certificate authority bundle used to validate remote server certificates.
           - This setting is most applicable in the forward proxy use case to validate remote server certificates.
         type: str
+      server_ssl_options:
+        description:
+          - The processing options using various TLS and SSL versions.
+        type: list
+        elements: str
+        version_added: "1.12.0"
       block_expired:
         description:
           - Defines the action to take if an expired remote server certificate is encountered.
-          - For reverse proxy, the default is to ignore expired certificates C(no).
-          - For forward proxy, the default is to drop expired certificates C(yes).
-        type: bool
+          - For reverse proxy, the default is to ignore expired certificates.
+          - For forward proxy, the default is to drop expired certificates.
+        type: str
+        choices:
+          - drop
+          - ignore
+          - mask
       block_untrusted:
         description:
           - Defines the action to take if an untrusted remote server certificate is encountered,
             based on the defined C(ca_bundle).
-          - For reverse proxy, the default is to ignore untrusted certificates C(no).
-          - For forward proxy, the default is to drop untrusted certificates C(yes).
-        type: bool
+          - For reverse proxy, the default is to ignore untrusted certificates.
+          - For forward proxy, the default is to drop untrusted certificates.
+        type: str
+        choices:
+          - drop
+          - ignore
+          - mask
       ocsp:
         description:
           - Defines an OCSP configuration to use to perform certificate revocation checking
@@ -341,12 +361,12 @@ server_settings:
        sample: /Common/ca-bundle.crt
     block_expired:
        description: The action to take if an expired remote server certificate is encountered.
-       type: bool
-       sample: True
+       type: str
+       sample: ignore
     block_untrusted:
        description: The action to take if an untrusted remote server certificate is encountered.
-       type: bool
-       sample: True
+       type: str
+       sample: ignore
     ocsp:
        description: Then existing OCSP configuration to validate revocation of remote server certificates.
        type: str
@@ -374,9 +394,20 @@ bypass_client_cert_failure:
 '''
 
 import time
-from distutils.version import LooseVersion
+import traceback
 
-from ansible.module_utils.basic import AnsibleModule
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
+
+from ansible.module_utils.basic import (
+    AnsibleModule, missing_required_lib
+)
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
@@ -411,7 +442,7 @@ class Parameters(AnsibleF5Parameters):
         'client_ca_chain',
         'alpn',
         'client_log_publisher',
-        'client_enable_tls13',
+        'client_ssl_options',
         'server_cipher_type',
         'server_cipher_string',
         'server_cipher_group',
@@ -421,7 +452,7 @@ class Parameters(AnsibleF5Parameters):
         'server_ocsp',
         'server_crl',
         'server_log_publisher',
-        'server_enable_tls13',
+        'server_ssl_options',
         'bypass_handshake_failure',
         'bypass_client_cert_failure',
         'proxy_type',
@@ -441,7 +472,7 @@ class Parameters(AnsibleF5Parameters):
         'client_ca_chain',
         'alpn',
         'client_log_publisher',
-        'client_enable_tls13',
+        'client_ssl_options',
         'server_cipher_type',
         'server_cipher_string',
         'server_cipher_group',
@@ -451,7 +482,7 @@ class Parameters(AnsibleF5Parameters):
         'server_ocsp',
         'server_crl',
         'server_log_publisher',
-        'server_enable_tls13',
+        'server_ssl_options',
         'bypass_handshake_failure',
         'bypass_client_cert_failure',
         'proxy_type',
@@ -562,7 +593,7 @@ class ApiParameters(Parameters):
         return self._values['clientSettings'].get('logPublisher', None)
 
     @property
-    def client_enable_tls13(self):
+    def client_ssl_options(self):
         if self._values['clientSettings'] is None:
             return None
         return self._values['clientSettings'].get('enabledSSLProcessingOptions', None)
@@ -626,7 +657,7 @@ class ApiParameters(Parameters):
         return self._values['serverSettings'].get('logPublisher', None)
 
     @property
-    def server_enable_tls13(self):
+    def server_ssl_options(self):
         if self._values['serverSettings'] is None:
             return None
         return self._values['serverSettings'].get('enabledSSLProcessingOptions', None)
@@ -728,6 +759,16 @@ class ModuleParameters(Parameters):
         return self._values['client_settings'].get('ca_chain', None)
 
     @property
+    def client_ssl_options(self):
+        if self._values['client_settings'] is None:
+            return [json_enable_tls13]
+        ssl_options = self._values['client_settings'].get('client_ssl_options')
+        if bool(ssl_options):
+            return [{'name': name, 'value': name} for name in ssl_options]
+        else:
+            return [json_enable_tls13]
+
+    @property
     def alpn(self):
         if self._values['client_settings'] is None:
             return None
@@ -773,23 +814,19 @@ class ModuleParameters(Parameters):
 
     @property
     def block_expired(self):
+        default = 'ignore' if self.proxy_type == 'reverse' else 'drop'
         if self._values['server_settings'] is None:
-            return None
-        enable = flatten_boolean(self._values['server_settings'].get('block_expired', None))
-        if enable == 'yes':
-            return True
-        if enable == 'no':
-            return False
+            return default
+        val = self._values['server_settings'].get('block_expired', default)
+        return val if bool(val) else default
 
     @property
     def block_untrusted(self):
+        default = 'ignore' if self.proxy_type == 'reverse' else 'drop'
         if self._values['server_settings'] is None:
-            return None
-        enable = flatten_boolean(self._values['server_settings'].get('block_untrusted', None))
-        if enable == 'yes':
-            return True
-        if enable == 'no':
-            return False
+            return default
+        val = self._values['server_settings'].get('block_untrusted', default)
+        return val if bool(val) else default
 
     @property
     def server_ocsp(self):
@@ -808,6 +845,16 @@ class ModuleParameters(Parameters):
         if self._values['server_settings'] is None:
             return None
         return self._values['server_settings'].get('log_publisher', None)
+
+    @property
+    def server_ssl_options(self):
+        if self._values['server_settings'] is None:
+            return [json_enable_tls13]
+        ssl_options = self._values['server_settings'].get('server_ssl_options')
+        if bool(ssl_options):
+            return [{'name': name, 'value': name} for name in ssl_options]
+        else:
+            return [json_enable_tls13]
 
     @property
     def bypass_handshake_failure(self):
@@ -1018,8 +1065,8 @@ class ModuleManager(object):
 
     def check_sslo_version(self):
         self.version = sslo_version(self.client)
-        if LooseVersion(self.version) > LooseVersion(max_sslo_version) or \
-                LooseVersion(self.version) < LooseVersion(min_sslo_version):
+        if Version(self.version) > Version(max_sslo_version) or \
+                Version(self.version) < Version(min_sslo_version):
             raise F5ModuleError(
                 f"Unsupported SSL Orchestrator version, "
                 f"requires a version between {min_sslo_version} and {max_sslo_version}"
@@ -1096,7 +1143,7 @@ class ModuleManager(object):
         return payload
 
     def check_version_specific_parameters(self):
-        if LooseVersion(self.version) < LooseVersion('9.0'):
+        if Version(self.version) < Version('9.0'):
             if self.changes.alpn is not None:
                 raise F5ModuleError(
                     "The 'alpn' parameter is only available on SSLO version 9.0 and above."
@@ -1133,23 +1180,19 @@ class ModuleManager(object):
             payload['server_cipher_group'] = '/Common/f5-default'
         if self.want.server_ca_bundle is None:
             payload['server_ca_bundle'] = '/Common/ca-bundle.crt'
-        if self.want.proxy_type == 'reverse':
-            payload['block_untrusted'] = False
-            payload['block_expired'] = False
-        if self.want.proxy_type == 'forward':
-            payload['block_untrusted'] = True
-            payload['block_expired'] = True
         if self.want.bypass_handshake_failure is None:
             payload['bypass_handshake_failure'] = False
         if self.want.bypass_client_cert_failure is None:
             payload['bypass_client_cert_failure'] = False
-        if LooseVersion(self.version) >= LooseVersion('9.0'):
+        if Version(self.version) >= Version('9.0'):
             if self.want.client_log_publisher is None:
                 payload['client_log_publisher'] = '/Common/sys-ssl-publisher'
             if self.want.server_log_publisher is None:
                 payload['server_log_publisher'] = '/Common/sys-ssl-publisher'
-        payload['client_enable_tls13'] = [json_enable_tls13]
-        payload['server_enable_tls13'] = [json_enable_tls13]
+        payload['block_expired'] = self.want.block_expired
+        payload['block_untrusted'] = self.want.block_untrusted
+        payload['client_ssl_options'] = self.want.client_ssl_options
+        payload['server_ssl_options'] = self.want.server_ssl_options
         return payload
 
     def add_missing_options(self, payload):
@@ -1173,8 +1216,8 @@ class ModuleManager(object):
             payload['client_cipher_group'] = self.have.client_cipher_group
         if self.changes.client_log_publisher is None and self.have.client_log_publisher:
             payload['client_log_publisher'] = self.have.client_log_publisher
-        if self.have.client_enable_tls13:
-            payload['client_enable_tls13'] = self.have.client_enable_tls13
+        if self.changes.client_ssl_options is None and self.have.client_ssl_options:
+            payload['client_ssl_options'] = self.have.client_ssl_options
         if self.changes.server_cipher_type is None:
             payload['server_cipher_type'] = self.have.server_cipher_type
         if self.changes.server_cipher_string is None:
@@ -1193,8 +1236,8 @@ class ModuleManager(object):
             payload['server_crl'] = self.have.server_crl
         if self.changes.server_log_publisher is None and self.have.server_log_publisher:
             payload['server_log_publisher'] = self.have.server_log_publisher
-        if self.have.server_enable_tls13:
-            payload['server_enable_tls13'] = self.have.server_enable_tls13
+        if self.changes.server_ssl_options is None and self.have.server_ssl_options:
+            payload['server_ssl_options'] = self.have.server_ssl_options
         if self.changes.bypass_handshake_failure is None:
             payload['bypass_handshake_failure'] = self.have.bypass_handshake_failure
         if self.changes.bypass_client_cert_failure is None:
@@ -1357,6 +1400,10 @@ class ArgumentSpec(object):
                     ca_chain=dict(),
                     alpn=dict(type='bool'),
                     log_publisher=dict(),
+                    client_ssl_options=dict(
+                        type='list',
+                        elements='str'
+                    )
                 ),
                 mutually_exclusive=[
                     ['cipher_string', 'cipher_group'],
@@ -1380,11 +1427,19 @@ class ArgumentSpec(object):
                     cipher_string=dict(),
                     cipher_group=dict(),
                     ca_bundle=dict(),
-                    block_expired=dict(type='bool'),
-                    block_untrusted=dict(type='bool'),
+                    block_expired=dict(
+                        choices=['drop', 'ignore', 'mask']
+                    ),
+                    block_untrusted=dict(
+                        choices=['drop', 'ignore', 'mask']
+                    ),
                     ocsp=dict(),
                     crl=dict(),
                     log_publisher=dict(),
+                    server_ssl_options=dict(
+                        type='list',
+                        elements='str'
+                    )
                 ),
                 mutually_exclusive=[
                     ['cipher_string', 'cipher_group']
@@ -1427,6 +1482,12 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
     )
+
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
+        )
 
     try:
         mm = ModuleManager(module=module, connection=Connection(module._socket_path))

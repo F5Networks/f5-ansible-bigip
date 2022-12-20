@@ -67,8 +67,8 @@
                    "cipherGroup": "/Common/f5-default"
                 },
                 "caBundle": "/Common/ca-bundle.crt",
-                "expiredCertificates": true,
-                "untrustedCertificates": true,
+                "expiredCertificates": "drop",
+                "untrustedCertificates": "drop",
                 "ocsp": "",
                 "crl": "",
                 "enabledSSLProcessingOptions": [{"name": "TLSv1.3", "value": "TLSv1.3"}],

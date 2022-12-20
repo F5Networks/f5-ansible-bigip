@@ -35,8 +35,8 @@ options:
   dest:
     description:
       - A directory to save the UCS file into.
+      - This option is mandatory when C(only_create_file) is set to C(no).
     type: path
-    required: True
   encryption_password:
     description:
       - Password to use to encrypt the UCS file if desired.
@@ -57,20 +57,33 @@ options:
       - The name of the UCS file to create on the remote server for downloading.
       - If not given the name will be randomly generated when creating UCS file on device.
       - The parameter is required when C(task_id) is defined otherwise file download will fail.
+      - The file is retrieved or created in /var/local/ucs/.
+      - This option is mandatory when C(only_create_file) is set to C(yes).
     type: str
   task_id:
     description:
       - The ID of the async task as returned by the system in a previous module run.
       - Used to query the status of the task on the device, useful with longer running operations that require
         restarting services.
+      - Parameter mutually exclusive with C(only_create_file).
     type: str
   timeout:
     description:
       - Parameter used when creating a new UCS file on the device.
-      - The amount of time in seconds to wait for the API async interface to complete its task.
+      - The number of seconds to wait for the API async interface to complete its task.
       - The accepted value range is between C(150) and C(1800) seconds.
     type: int
     default: 150
+  only_create_file:
+    description:
+      - If C(yes), the file is created on the device and not downloaded. If the UCS archive exists on the device,
+        no change is made and the file is not downloaded.
+      - To recreate UCS files left on the device, remove them with the  C(bigip_ucs) module before running this
+        module with C(only_create_file) set to C(yes).
+      - Parameter mutually exclusive with C(task_id).
+    type: bool
+    default: no
+    version_added: "1.12.0"
 notes:
   - BIG-IP provides no way to get a checksum of the UCS files on the system
     via any interface except, perhaps, logging in directly to the box (which
@@ -116,6 +129,21 @@ EXAMPLES = r'''
       bigip_ucs_fetch:
         src: cs_backup.ucs
         dest: /tmp/cs_backup.ucs
+
+    - name: Only create new UCS, no download
+      bigip_ucs_fetch:
+        src: cs_backup.ucs
+        only_create_file: yes
+
+    - name: Recreate UCS file left on device - remove file first
+      bigip_ucs:
+        ucs: cs_backup.ucs
+        state: absent
+
+    - name: Recreate UCS file left on device - create new file
+      bigip_ucs_fetch:
+        src: cs_backup.ucs
+        only_create_file: yes
 '''
 
 RETURN = r'''
@@ -327,7 +355,8 @@ class ModuleManager(object):
         if self.want.task_id:
             self.check_task()
         elif self.exists():
-            self.update()
+            if not self.want.only_create_file:
+                self.update()
         else:
             self.create()
 
@@ -390,7 +419,7 @@ class ModuleManager(object):
             return True
         if self.want.create_on_missing:
             self.create_on_device()
-            return True
+        return True
 
     def check_task(self):
         self.async_wait(self.want.task_id)
@@ -514,7 +543,6 @@ class ArgumentSpec(object):
             ),
             encryption_password=dict(no_log=True),
             dest=dict(
-                required=True,
                 type='path'
             ),
             force=dict(
@@ -526,11 +554,22 @@ class ArgumentSpec(object):
                 type='bool'
             ),
             src=dict(),
+            only_create_file=dict(
+                default='no',
+                type='bool'
+            ),
             timeout=dict(
                 type='int',
                 default=150
             )
         )
+        self.required_if = [
+            ['only_create_file', 'no', ['dest']],
+            ['only_create_file', 'yes', ['src']]
+        ]
+        self.mutually_exclusive = [
+            ['only_create_file', 'task_id']
+        ]
         self.argument_spec = {}
         self.argument_spec.update(argument_spec)
         self.add_file_common_args = True
@@ -542,6 +581,8 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
+        required_if=spec.required_if,
+        mutually_exclusive=spec.mutually_exclusive,
         add_file_common_args=spec.add_file_common_args
     )
 

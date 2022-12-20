@@ -63,8 +63,8 @@ class TestParameters(unittest.TestCase):
                 cipher_string='FOOBAR',
                 cipher_group='/Common/fake_servers',
                 ca_bundle='/Common/fake_ca',
-                block_expired='yes',
-                block_untrusted='no',
+                block_expired='drop',
+                block_untrusted='drop',
                 ocsp='bar_ocsp',
                 crl='fake_crl',
                 log_publisher='/Common/baz-logger'
@@ -90,8 +90,8 @@ class TestParameters(unittest.TestCase):
         assert p.server_cipher_string == 'FOOBAR'
         assert p.server_cipher_group == '/Common/fake_servers'
         assert p.server_ca_bundle == '/Common/fake_ca'
-        assert p.block_expired is True
-        assert p.block_untrusted is False
+        assert p.block_expired == 'drop'
+        assert p.block_untrusted == 'drop'
         assert p.server_ocsp == 'bar_ocsp'
         assert p.server_crl == 'fake_crl'
         assert p.server_log_publisher == '/Common/baz-logger'
@@ -113,15 +113,15 @@ class TestParameters(unittest.TestCase):
         assert p.client_ca_cert == '/Common/default.crt'
         assert p.client_ca_key == '/Common/default.key'
         assert p.client_ca_chain == ''
-        assert p.client_enable_tls13 == [{'name': 'TLSv1.3', 'value': 'TLSv1.3'}]
+        assert p.client_ssl_options == [{'name': 'TLSv1.3', 'value': 'TLSv1.3'}]
         assert p.client_log_publisher == '/Common/sys-ssl-publisher'
         assert p.server_cipher_type == 'group'
         assert p.server_cipher_string == 'DEFAULT'
         assert p.server_cipher_group == '/Common/f5-default'
         assert p.server_ca_bundle == '/Common/ca-bundle.crt'
-        assert p.server_enable_tls13 == [{'name': 'TLSv1.3', 'value': 'TLSv1.3'}]
-        assert p.block_expired is True
-        assert p.block_untrusted is True
+        assert p.server_ssl_options == [{'name': 'TLSv1.3', 'value': 'TLSv1.3'}]
+        assert p.block_expired == 'drop'
+        assert p.block_untrusted == 'drop'
         assert p.server_ocsp == ''
         assert p.server_crl == ''
         assert p.server_log_publisher == '/Common/sys-ssl-publisher'
@@ -342,7 +342,10 @@ class TestManager(unittest.TestCase):
             'proxy_type': 'forward', 'cipher_type': 'group', 'cipher_group': '/Common/f5-default',
             'alpn': True, 'ca_cert': '/Common/default.crt', 'ca_key': '/Common/default.key'
         }
-        server = {'cipher_type': 'group', 'cipher_group': '/Common/f5-default'}
+        server = {
+            'cipher_type': 'group', 'cipher_group': '/Common/f5-default', 'block_expired': 'drop',
+            'block_untrusted': 'drop'
+        }
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
