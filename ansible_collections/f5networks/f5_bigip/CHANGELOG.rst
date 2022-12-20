@@ -5,6 +5,27 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v1.12.0
+=======
+
+Major Changes
+-------------
+
+- bigip_sslo_config_ssl - changed type of parameters, block_expired and block_untrusted from bool tor string.
+
+Minor Changes
+-------------
+
+- bigip_device_info - add data_increment parameter for better control of data gathering from API, addresses cases where large configurations were causing token timeouts during module operation
+- bigip_device_info - added option for gathering info about device license.
+- bigip_sslo_config_ssl - added parameters, server_ssl_options and client_ssl_options for SSL and TLS processing.
+- bigip_ucs_fetch - add ability to only create UCS files without downloading
+
+Bugfixes
+--------
+
+- bigip_sslo_service_layer2 - raise exception when ip_offset is not provided when creating a new layer2 service
+
 v1.11.0
 =======
 

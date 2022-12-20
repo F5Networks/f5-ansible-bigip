@@ -1,3 +1,0 @@
----
-minor_changes:
-    - bigip_ucs_fetch - add ability to only create UCS files without downloading

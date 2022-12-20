@@ -26,9 +26,9 @@ options:
   data_increment:
     description:
       - Specifies the paging increment at which device data is gathered from the API.
-      - Allows for greater control of pace at which data is queried from the device.
-      - Setting is useful for setups with large configurations which may take long time with the default values.
-      - While there is no limit to what value can be specified, users should note that putting very large values with
+      - Allows for greater control of the pace at which data is queried from the device.
+      - This setting is useful for setups with large configurations which may take a long time with the default values.
+      - While there is no limit to the value that can be specified, note that putting very large values with
         C(gather_subset) set to meta choices like C(all) might lead to module or device API crash.
       - F5 recommends using C(data_increment) custom values in tandem with C(partition) and a specific C(gather_subset)
         value for best experience.

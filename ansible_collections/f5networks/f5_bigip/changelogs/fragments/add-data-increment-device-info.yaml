@@ -1,3 +1,0 @@
----
-minor_changes:
-    - bigip_device_info - add data_increment parameter for better control of data gathering from API, addresses cases where large configurations were causing token timeouts during module operation

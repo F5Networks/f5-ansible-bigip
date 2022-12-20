@@ -1,6 +1,0 @@
----
-major_changes:
-    - bigip_sslo_config_ssl - changed type of parameters, block_expired and block_untrusted from bool tor string.
-
-minor_changes:
-    - bigip_sslo_config_ssl - added parameters, server_ssl_options and client_ssl_options for SSL and TLS processing.
