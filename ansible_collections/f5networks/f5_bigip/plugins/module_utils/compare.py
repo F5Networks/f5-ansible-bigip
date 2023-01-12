@@ -84,6 +84,19 @@ def compare_dictionary(want, have):
         return want
 
 
+def compare_key_values(want, have):
+    if want is None:
+        return None
+    if have is None:
+        return None
+    for k, v in have.items():
+        if k not in want.keys():
+            continue
+        if want[k] != have[k]:
+            return want
+    return None
+
+
 def nested_diff(want, have, invalid):
     """ Performs any() type operation on nested dictionaries
 
