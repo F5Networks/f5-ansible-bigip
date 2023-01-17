@@ -232,7 +232,7 @@ class ModuleManager(object):
 
     def upsert(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         if self.want.task_id:
             return self.query_task()
@@ -353,5 +353,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

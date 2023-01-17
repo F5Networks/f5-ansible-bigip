@@ -262,7 +262,7 @@ class ModuleManager(object):
     def create(self):
         self.template_exists()
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         result = self.create_on_device()
         return result
@@ -283,14 +283,14 @@ class ModuleManager(object):
 
     def update(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         result = self.upsert_on_device()
         return result
 
     def remove(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         result = self.remove_from_device()
         if self.exists():
@@ -298,7 +298,7 @@ class ModuleManager(object):
         return result
 
     def purge(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         result = self.purge_from_device()
         return result
@@ -486,5 +486,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

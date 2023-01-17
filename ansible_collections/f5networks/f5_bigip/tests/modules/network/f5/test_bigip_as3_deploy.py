@@ -11,14 +11,19 @@ import os
 
 from ansible.module_utils.basic import AnsibleModule
 
+from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_as3_deploy
 from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_as3_deploy import (
-    Parameters, ArgumentSpec, ModuleManager
+    Parameters, ArgumentSpec, ModuleManager, ModuleParameters
 )
+
+from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_bigip.tests.compat import unittest
 from ansible_collections.f5networks.f5_bigip.tests.compat.mock import Mock, patch, MagicMock
-from ansible_collections.f5networks.f5_bigip.tests.modules.utils import set_module_args
+from ansible_collections.f5networks.f5_bigip.tests.modules.utils import (
+    set_module_args, AnsibleFailJson, AnsibleExitJson, fail_json, exit_json
+)
 
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
@@ -51,8 +56,37 @@ class TestParameters(unittest.TestCase):
             timeout=600,
         )
         p = Parameters(params=args)
-        assert p.content == dict(param1='foo', param2='bar')
-        assert p.timeout == 600
+        self.assertEqual(p.content, dict(param1='foo', param2='bar'))
+        self.assertEqual(p.timeout, 600)
+
+    def test_module_parameters_content(self):
+        args1 = dict(
+            content='{"param1":"foo", "param2":"bar"}'
+        )
+        p1 = ModuleParameters(params=args1)
+        args2 = dict()
+        p2 = ModuleParameters(params=args2)
+        self.assertEqual(p1.content, dict(param1='foo', param2='bar'))
+        self.assertEqual(p2.content, None)
+
+    def test_module_parameters_timeout(self):
+        args1 = dict(
+            timeout=9
+        )
+        args2 = dict(
+            timeout=1801
+        )
+        p1 = ModuleParameters(params=args1)
+        p2 = ModuleParameters(params=args2)
+
+        with self.assertRaises(F5ModuleError) as err1:
+            p1.timeout()
+
+        with self.assertRaises(F5ModuleError) as err2:
+            p2.timeout()
+
+        self.assertIn("Timeout value must be between 10 and 1800 seconds.", err1.exception.args[0])
+        self.assertIn("Timeout value must be between 10 and 1800 seconds.", err2.exception.args[0])
 
 
 class TestManager(unittest.TestCase):
@@ -64,15 +98,19 @@ class TestManager(unittest.TestCase):
         self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_as3_deploy.send_teem')
         self.m2 = self.p2.start()
         self.m2.return_value = True
-        self.p3 = patch(
-            'ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_as3_deploy.F5Client'
-        )
+        self.p3 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_as3_deploy.F5Client')
         self.m3 = self.p3.start()
         self.m3.return_value = MagicMock()
+        self.mock_module_helper = patch.multiple(AnsibleModule,
+                                                 exit_json=exit_json,
+                                                 fail_json=fail_json)
+        self.mock_module_helper.start()
 
     def tearDown(self):
         self.p1.stop()
         self.p2.stop()
+        self.p3.stop()
+        self.mock_module_helper.stop()
 
     def test_upsert_tenant_declaration(self, *args):
         declaration = load_fixture('as3_declare.json')
@@ -91,13 +129,13 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(module=module)
 
         # Override methods to force specific logic in the module to happen
-        mm.exists = Mock(return_value=False)
         mm.upsert_on_device = Mock(return_value=True)
+        mm.client.post.return_value = {'code': 200, 'contents': {'results': [{'message': 'change'}]}}
 
         results = mm.exec_module()
 
-        assert results['changed'] is True
-        assert mm.want.timeout == (6, 100)
+        self.assertTrue(results['changed'])
+        self.assertEqual(mm.want.timeout, (6, 100))
 
     def test_remove_tenant_declaration(self, *args):
         set_module_args(dict(
@@ -113,13 +151,19 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(module=module)
 
         # Override methods to force specific logic in the module to happen
-        mm.resource_exists = Mock(side_effect=[True, False])
-        mm.remove_from_device = Mock(return_value=True)
+        mm.client.get.side_effect = [
+            {'code': 200},
+            {'code': 202, 'contents': {'results': [{'message': 'in progress'}]}},
+            {'code': 200, 'contents': {'results': [{'message': 'success'}]}},
+            {'code': 404},
+        ]
+        mm.client.delete.return_value = {'code': 202, 'contents': {'id': 1}}
 
         results = mm.exec_module()
 
-        assert results['changed'] is True
-        assert mm.want.timeout == (3, 100)
+        self.assertTrue(results['changed'])
+        self.assertEqual(mm.want.timeout, (3, 100))
+        self.assertEqual(mm.client.get.call_count, 4)
 
     def test_upsert_tenant_declaration_generates_errors(self, *args):
         declaration = load_fixture('as3_declaration_invalid.json')
@@ -148,8 +192,10 @@ class TestManager(unittest.TestCase):
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
 
-        assert "declaration is invalid. /Sample_02/A1/web_pool2/members/0: " \
-               "should have required property 'bigip'" in str(err.exception)
+        self.assertIn((
+                      "declaration is invalid. /Sample_02/A1/web_pool2/members/0: "
+                      "should have required property 'bigip'"
+                      ), str(err.exception))
 
     def test_upsert_multi_tenant_declaration_generates_errors(self, *args):
         declaration = load_fixture('as3_multiple_tenants_invalid.json')
@@ -178,5 +224,36 @@ class TestManager(unittest.TestCase):
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
 
-        assert "declaration failed. 0107176c:3: Invalid Node, the IP " \
-               "address 192.0.1.12 already exists." in str(err.exception)
+        self.assertIn((
+                      "declaration failed. 0107176c:3: Invalid Node, the IP "
+                      "address 192.0.1.12 already exists."
+                      ), str(err.exception))
+
+    @patch.object(bigip_as3_deploy, 'Connection')
+    @patch.object(bigip_as3_deploy.ModuleManager, 'exec_module',
+                  Mock(return_value={'changed': False})
+                  )
+    def test_main_function_success(self, *args):
+        set_module_args(dict(
+            content='declaration'
+        ))
+
+        with self.assertRaises(AnsibleExitJson) as result:
+            bigip_as3_deploy.main()
+
+        self.assertFalse(result.exception.args[0]['changed'])
+
+    @patch.object(bigip_as3_deploy, 'Connection')
+    @patch.object(bigip_as3_deploy.ModuleManager, 'exec_module',
+                  Mock(side_effect=F5ModuleError('This module has failed.'))
+                  )
+    def test_main_function_failed(self, *args):
+        set_module_args(dict(
+            content='declaration'
+        ))
+
+        with self.assertRaises(AnsibleFailJson) as result:
+            bigip_as3_deploy.main()
+
+        self.assertTrue(result.exception.args[0]['failed'])
+        self.assertIn('This module has failed', result.exception.args[0]['msg'])

@@ -323,7 +323,7 @@ class ReportableChanges(Changes):
         return result
 
 
-class Difference(object):
+class Difference(object):  # pragma: no cover
     def __init__(self, want, have=None):
         self.want = want
         self.have = have
@@ -405,7 +405,7 @@ class ModuleManager(object):
 
     def policy_import(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         if self.exists():
             if self.want.force is False:
@@ -599,5 +599,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

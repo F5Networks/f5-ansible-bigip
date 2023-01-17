@@ -10,12 +10,16 @@ import os
 import json
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_apm_policy_fetch
 from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_apm_policy_fetch import (
     ModuleParameters, ModuleManager, ArgumentSpec
 )
+from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_bigip.tests.compat import unittest
 from ansible_collections.f5networks.f5_bigip.tests.compat.mock import Mock, patch
-from ansible_collections.f5networks.f5_bigip.tests.modules.utils import set_module_args
+from ansible_collections.f5networks.f5_bigip.tests.modules.utils import (
+    set_module_args, AnsibleExitJson, AnsibleFailJson, exit_json, fail_json
+)
 
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
@@ -48,7 +52,7 @@ class TestParameters(unittest.TestCase):
             file='foo_export'
         )
         p = ModuleParameters(params=args)
-        assert p.file == 'foo_export'
+        self.assertEqual(p.file, 'foo_export')
 
 
 class TestManager(unittest.TestCase):
@@ -60,11 +64,22 @@ class TestManager(unittest.TestCase):
         self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_apm_policy_fetch.send_teem')
         self.m2 = self.p2.start()
         self.m2.return_value = True
+        self.p3 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_apm_policy_fetch.F5Client')
+        self.m3 = self.p3.start()
+        self.m3.return_value = Mock()
+        self.mock_module_helper = patch.multiple(AnsibleModule,
+                                                 exit_json=exit_json,
+                                                 fail_json=fail_json)
+        self.mock_module_helper.start()
 
     def tearDown(self):
         self.p1.stop()
         self.p2.stop()
+        self.p3.stop()
+        self.mock_module_helper.stop()
 
+    @patch.object(bigip_apm_policy_fetch, 'tmos_version', Mock(return_value='15.0.0'))
+    @patch.object(bigip_apm_policy_fetch, 'os', Mock(return_value=True))
     def test_create(self, *args):
         set_module_args(dict(
             name='fake_policy',
@@ -78,11 +93,42 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(module=module)
-        mm.version_less_than_14 = Mock(return_value=False)
-        mm.exists = Mock(return_value=False)
-        mm.create_on_device = Mock(return_value=True)
-        mm.execute = Mock(return_value=True)
-
+        mm.client.post.side_effect = [
+            {'code': 200, 'contents': {}},
+            {'code': 200, 'contents': {'commandResult': {}}},
+            {'code': 200, 'contents': {}},
+        ]
+        mm.client.get.return_value = {'code': 200, 'contents': {}}
         results = mm.exec_module()
 
-        assert results['changed'] is True
+        self.assertTrue(results['changed'])
+        self.assertEqual(mm.client.post.call_count, 3)
+
+    @patch.object(bigip_apm_policy_fetch, 'Connection')
+    @patch.object(bigip_apm_policy_fetch.ModuleManager, 'exec_module',
+                  Mock(return_value={'changed': False})
+                  )
+    def test_main_function_success(self, *args):
+        set_module_args(dict(
+            name='foobar'
+        ))
+
+        with self.assertRaises(AnsibleExitJson) as result:
+            bigip_apm_policy_fetch.main()
+
+        self.assertFalse(result.exception.args[0]['changed'])
+
+    @patch.object(bigip_apm_policy_fetch, 'Connection')
+    @patch.object(bigip_apm_policy_fetch.ModuleManager, 'exec_module',
+                  Mock(side_effect=F5ModuleError('This module has failed.'))
+                  )
+    def test_main_function_failed(self, *args):
+        set_module_args(dict(
+            name='foobar'
+        ))
+
+        with self.assertRaises(AnsibleFailJson) as result:
+            bigip_apm_policy_fetch.main()
+
+        self.assertTrue(result.exception.args[0]['failed'])
+        self.assertIn('This module has failed', result.exception.args[0]['msg'])

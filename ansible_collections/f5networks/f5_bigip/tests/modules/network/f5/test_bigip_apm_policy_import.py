@@ -11,12 +11,16 @@ import json
 
 from ansible.module_utils.basic import AnsibleModule
 
+from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_apm_policy_import
 from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_apm_policy_import import (
     ModuleParameters, ModuleManager, ArgumentSpec
 )
+from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_bigip.tests.compat import unittest
 from ansible_collections.f5networks.f5_bigip.tests.compat.mock import Mock, patch
-from ansible_collections.f5networks.f5_bigip.tests.modules.utils import set_module_args
+from ansible_collections.f5networks.f5_bigip.tests.modules.utils import (
+    set_module_args, AnsibleExitJson, AnsibleFailJson, exit_json, fail_json
+)
 
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
@@ -50,9 +54,9 @@ class TestParameters(unittest.TestCase):
         )
 
         p = ModuleParameters(params=args)
-        assert p.name == 'fake_policy'
-        assert p.source == '/var/fake/fake.tar.gz'
-        assert p.type == 'access_policy'
+        self.assertEqual(p.name, 'fake_policy')
+        self.assertEqual(p.source, '/var/fake/fake.tar.gz')
+        self.assertEqual(p.type, 'access_policy')
 
 
 class TestManager(unittest.TestCase):
@@ -70,12 +74,21 @@ class TestManager(unittest.TestCase):
         self.m2.return_value = '14.1.0'
         self.m3 = self.p3.start()
         self.m3.return_value = True
+        self.p4 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_apm_policy_import.F5Client')
+        self.m4 = self.p4.start()
+        self.m4.return_value = Mock()
+        self.mock_module_helper = patch.multiple(AnsibleModule,
+                                                 exit_json=exit_json,
+                                                 fail_json=fail_json)
+        self.mock_module_helper.start()
 
     def tearDown(self):
         self.patcher1.stop()
         self.p1.stop()
         self.p2.stop()
         self.p3.stop()
+        self.m4.stop()
+        self.mock_module_helper.stop()
 
     def test_import_from_file(self, *args):
         set_module_args(dict(
@@ -91,13 +104,43 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
-        mm.version_less_than_14 = Mock(return_value=False)
-        mm.exists = Mock(return_value=False)
-        mm.import_file_to_device = Mock(return_value=True)
-        mm.remove_temp_file_from_device = Mock(return_value=True)
+        mm.client.post.side_effect = [
+            {'code': 200, 'contents': {}},
+            {'code': 200}
+        ]
+        mm.client.get.return_value = {'code': 404}
 
         results = mm.exec_module()
 
-        assert results['changed'] is True
-        assert results['name'] == 'fake_policy'
-        assert results['source'] == self.policy
+        self.assertTrue(results['changed'])
+        self.assertEqual(results['name'], 'fake_policy')
+        self.assertEqual(results['source'], self.policy)
+
+    @patch.object(bigip_apm_policy_import, 'Connection')
+    @patch.object(bigip_apm_policy_import.ModuleManager, 'exec_module',
+                  Mock(return_value={'changed': False})
+                  )
+    def test_main_function_success(self, *args):
+        set_module_args(dict(
+            name='foobar'
+        ))
+
+        with self.assertRaises(AnsibleExitJson) as result:
+            bigip_apm_policy_import.main()
+
+        self.assertFalse(result.exception.args[0]['changed'])
+
+    @patch.object(bigip_apm_policy_import, 'Connection')
+    @patch.object(bigip_apm_policy_import.ModuleManager, 'exec_module',
+                  Mock(side_effect=F5ModuleError('This module has failed.'))
+                  )
+    def test_main_function_failed(self, *args):
+        set_module_args(dict(
+            name='foobar'
+        ))
+
+        with self.assertRaises(AnsibleFailJson) as result:
+            bigip_apm_policy_import.main()
+
+        self.assertTrue(result.exception.args[0]['failed'])
+        self.assertIn('This module has failed', result.exception.args[0]['msg'])
