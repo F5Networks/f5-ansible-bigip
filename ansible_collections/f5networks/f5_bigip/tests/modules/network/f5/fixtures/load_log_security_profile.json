@@ -1,0 +1,181 @@
+{
+    "kind": "tm:security:log:profile:profilestate",
+    "name": "test_log_profile",
+    "partition": "Common",
+    "fullPath": "/Common/test_log_profile",
+    "generation": 584,
+    "selfLink": "https://localhost/mgmt/tm/security/log/profile/~Common~test_log_profile?ver=16.0.0",
+    "autoDiscovery": {
+        "logPublisher": "/Common/local-db-publisher",
+        "logPublisherReference": {
+            "link": "https://localhost/mgmt/tm/sys/log-config/publisher/~Common~local-db-publisher?ver=16.0.0"
+        }
+    },
+    "builtIn": "disabled",
+    "classification": {
+        "logAllClassificationMatches": "enabled",
+        "logPublisher": "/Common/local-db-publisher",
+        "logPublisherReference": {
+            "link": "https://localhost/mgmt/tm/sys/log-config/publisher/~Common~local-db-publisher?ver=16.0.0"
+        }
+    },
+    "description": "this is a log profile test",
+    "dosNetworkPublisher": "/Common/local-db-publisher",
+    "dosNetworkPublisherReference": {
+        "link": "https://localhost/mgmt/tm/sys/log-config/publisher/~Common~local-db-publisher?ver=16.0.0"
+    },
+    "flowspec": {},
+    "hidden": "false",
+    "ipIntelligence": {
+        "aggregateRate": 4294967295,
+        "logGeo": "disabled",
+        "logRtbh": "disabled",
+        "logScrubber": "disabled",
+        "logShun": "disabled",
+        "logTranslationFields": "disabled"
+    },
+    "nat": {
+        "endInboundSession": "disabled",
+        "endOutboundSession": {
+            "action": "disabled"
+        },
+        "errors": "disabled",
+        "format": {
+            "endInboundSession": {
+                "fieldListDelimiter": ",",
+                "type": "none"
+            },
+            "endOutboundSession": {
+                "fieldListDelimiter": ",",
+                "type": "none"
+            },
+            "errors": {
+                "fieldListDelimiter": ",",
+                "type": "none"
+            },
+            "quotaExceeded": {
+                "fieldListDelimiter": ",",
+                "type": "none"
+            },
+            "startInboundSession": {
+                "fieldListDelimiter": ",",
+                "type": "none"
+            },
+            "startOutboundSession": {
+                "fieldListDelimiter": ",",
+                "type": "none"
+            }
+        },
+        "logSubscriberId": "disabled",
+        "lsnLegacyMode": "disabled",
+        "quotaExceeded": "disabled",
+        "rateLimit": {
+            "aggregateRate": 4294967295,
+            "endInboundSession": 4294967295,
+            "endOutboundSession": 4294967295,
+            "errors": 4294967295,
+            "quotaExceeded": 4294967295,
+            "startInboundSession": 4294967295,
+            "startOutboundSession": 4294967295
+        },
+        "startInboundSession": "disabled",
+        "startOutboundSession": {
+            "action": "disabled"
+        }
+    },
+    "netflow": {},
+    "packetFilter": {
+        "aggregateRate": 300,
+        "logPublisher": "/Common/local-db-publisher",
+        "logPublisherReference": {
+            "link": "https://localhost/mgmt/tm/sys/log-config/publisher/~Common~local-db-publisher?ver=16.0.0"
+        }
+    },
+    "portMisuse": {
+        "aggregateRate": 4294967295
+    },
+    "protocolDnsDosPublisher": "/Common/local-db-publisher",
+    "protocolDnsDosPublisherReference": {
+        "link": "https://localhost/mgmt/tm/sys/log-config/publisher/~Common~local-db-publisher?ver=16.0.0"
+    },
+    "protocolInspection": {
+        "logPacket": "enabled",
+        "logPublisher": "/Common/local-db-publisher",
+        "logPublisherReference": {
+            "link": "https://localhost/mgmt/tm/sys/log-config/publisher/~Common~local-db-publisher?ver=16.0.0"
+        }
+    },
+    "protocolSipDosPublisher": "/Common/local-db-publisher",
+    "protocolSipDosPublisherReference": {
+        "link": "https://localhost/mgmt/tm/sys/log-config/publisher/~Common~local-db-publisher?ver=16.0.0"
+    },
+    "trafficStatistics": {
+        "activeFlows": "disabled",
+        "missedFlows": "disabled",
+        "reapedFlows": "disabled",
+        "syncookies": "disabled",
+        "syncookiesWhitelist": "disabled"
+    },
+    "applicationReference": {
+        "link": "https://localhost/mgmt/tm/security/log/profile/~Common~test_log_profile/application?ver=16.0.0",
+        "isSubcollection": true
+    },
+    "botDefense": [
+        {
+            "name": "test_log_profile",
+            "partition": "Common",
+            "filter": {
+                "logAlarm": "enabled",
+                "logBlock": "disabled",
+                "logBotSignatureMatchedRequests": "disabled",
+                "logBrowser": "enabled",
+                "logBrowserVerificationAction": "enabled",
+                "logCaptcha": "disabled",
+                "logCaptchaChallengedRequests": "disabled",
+                "logChallengeFailureRequest": "enabled",
+                "logChallengedRequests": "disabled",
+                "logDeviceIdCollectionRequest": "disabled",
+                "logHoneyPotPage": "disabled",
+                "logIllegalRequests": "enabled",
+                "logLegalRequests": "disabled",
+                "logMaliciousBot": "disabled",
+                "logMobileApplication": "disabled",
+                "logNone": "disabled",
+                "logRateLimit": "enabled",
+                "logRedirectToPool": "disabled",
+                "logSuspiciousBrowser": "enabled",
+                "logTcpReset": "disabled",
+                "logTrustedBot": "enabled",
+                "logUnknown": "enabled",
+                "logUntrustedBot": "enabled"
+            },
+            "localPublisher": "/Common/local-db-publisher",
+            "localPublisherReference": {
+                "link": "https://localhost/mgmt/tm/sys/log-config/publisher/~Common~local-db-publisher?ver=16.0.0"
+            },
+            "sendRemoteChallengeFailureMessages": "disabled"
+        }
+    ],
+    "dosApplication": [
+        {
+            "name": "test_log_profile",
+            "partition": "Common",
+            "localPublisher": "/Common/local-db-publisher",
+            "localPublisherReference": {
+                "link": "https://localhost/mgmt/tm/sys/log-config/publisher/~Common~local-db-publisher?ver=16.0.0"
+            }
+        }
+    ],
+    "networkReference": {
+        "link": "https://localhost/mgmt/tm/security/log/profile/~Common~test_log_profile/network?ver=16.0.0",
+        "isSubcollection": true
+    },
+    "protocolDnsReference": {
+        "link": "https://localhost/mgmt/tm/security/log/profile/~Common~test_log_profile/protocol-dns?ver=16.0.0",
+        "isSubcollection": true
+    },
+    "protocolSipReference": {
+        "link": "https://localhost/mgmt/tm/security/log/profile/~Common~test_log_profile/protocol-sip?ver=16.0.0",
+        "isSubcollection": true
+    }
+}

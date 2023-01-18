@@ -11,15 +11,16 @@ import os
 
 from ansible.module_utils.basic import AnsibleModule
 
-from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_security_profile_ssh
-from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_security_profile_ssh import (
+from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_security_ssh_profile
+from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_security_ssh_profile import (
     ModuleParameters, ApiParameters, ArgumentSpec, ModuleManager
 )
+from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
+
 from ansible_collections.f5networks.f5_bigip.tests.compat import unittest
 from ansible_collections.f5networks.f5_bigip.tests.compat.mock import (
     Mock, patch, MagicMock
 )
-from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_bigip.tests.modules.utils import (
     set_module_args, fail_json, exit_json, AnsibleExitJson, AnsibleFailJson
 )
@@ -147,10 +148,10 @@ class TestParameters(unittest.TestCase):
 class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
-        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_security_profile_ssh.send_teem')
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_security_ssh_profile.send_teem')
         self.m1 = self.p1.start()
         self.m1.return_value = True
-        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.velos_partition.F5Client')
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_security_ssh_profile.F5Client')
         self.m2 = self.p2.start()
         self.m2.return_value = MagicMock()
         self.mock_module_helper = patch.multiple(AnsibleModule,
@@ -395,8 +396,8 @@ class TestManager(unittest.TestCase):
         self.assertIn('access denied', err.exception.args[0])
         self.assertTrue(mm.client.delete.called)
 
-    @patch.object(bigip_security_profile_ssh, 'Connection')
-    @patch.object(bigip_security_profile_ssh.ModuleManager, 'exec_module', Mock(return_value={'changed': False}))
+    @patch.object(bigip_security_ssh_profile, 'Connection')
+    @patch.object(bigip_security_ssh_profile.ModuleManager, 'exec_module', Mock(return_value={'changed': False}))
     def test_main_function_success(self, *args):
         set_module_args(dict(
             name='foobar',
@@ -404,12 +405,12 @@ class TestManager(unittest.TestCase):
         ))
 
         with self.assertRaises(AnsibleExitJson) as result:
-            bigip_security_profile_ssh.main()
+            bigip_security_ssh_profile.main()
 
         self.assertFalse(result.exception.args[0]['changed'])
 
-    @patch.object(bigip_security_profile_ssh, 'Connection')
-    @patch.object(bigip_security_profile_ssh.ModuleManager, 'exec_module',
+    @patch.object(bigip_security_ssh_profile, 'Connection')
+    @patch.object(bigip_security_ssh_profile.ModuleManager, 'exec_module',
                   Mock(side_effect=F5ModuleError('This module has failed.'))
                   )
     def test_main_function_failed(self, *args):
@@ -419,7 +420,7 @@ class TestManager(unittest.TestCase):
         ))
 
         with self.assertRaises(AnsibleFailJson) as result:
-            bigip_security_profile_ssh.main()
+            bigip_security_ssh_profile.main()
 
         self.assertTrue(result.exception.args[0]['failed'])
         self.assertIn('This module has failed', result.exception.args[0]['msg'])

@@ -10,7 +10,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: bigip_security_profile_ssh
+module: bigip_security_ssh_profile
 short_description: Manage SSH proxy security profiles on a BIG-IP
 description:
   - Manage SSH proxy security profiles on a BIG-IP.
@@ -380,7 +380,7 @@ EXAMPLES = r'''
 
   tasks:
     - name: Create an ssh proxy profile
-      bigip_security_profile_ssh:
+      bigip_security_ssh_profile:
         name: test_profile
         default_action:
           name: default_rule
@@ -402,7 +402,7 @@ EXAMPLES = r'''
         state: present
 
     - name: Modify an ssh proxy profile
-      bigip_security_profile_ssh:
+      bigip_security_ssh_profile:
         name: test_profile
         default_action:
           name: default_rule
@@ -413,7 +413,7 @@ EXAMPLES = r'''
         state: present
 
     - name: Remove ssh proxy profile
-      bigip_security_profile_ssh:
+      bigip_security_ssh_profile:
         name: test_profile
         state: absent
 '''
@@ -912,7 +912,7 @@ class ModuleManager(object):
         return True
 
     def exists(self):
-        uri = "/mgmt/tm/security/ssh/profile/{0}".format(transform_name(self.want.partition, self.want.name))
+        uri = f"/mgmt/tm/security/ssh/profile/{transform_name(self.want.partition, self.want.name)}"
         response = self.client.get(uri)
 
         if response['code'] == 404:
@@ -936,7 +936,7 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        uri = "/mgmt/tm/security/ssh/profile/{0}".format(transform_name(self.want.partition, self.want.name))
+        uri = f"/mgmt/tm/security/ssh/profile/{transform_name(self.want.partition, self.want.name)}"
 
         # name parameter is required when updating actions, in case there was no change in name
         # it won't be passed to UsableChanges class therefore we must add existing action name parameter
@@ -953,14 +953,14 @@ class ModuleManager(object):
         return True
 
     def remove_from_device(self):
-        uri = "/mgmt/tm/security/ssh/profile/{0}".format(transform_name(self.want.partition, self.want.name))
+        uri = f"/mgmt/tm/security/ssh/profile/{transform_name(self.want.partition, self.want.name)}"
         response = self.client.delete(uri)
         if response['code'] in [200, 201, 202]:
             return True
         raise F5ModuleError(response['contents'])
 
     def read_current_from_device(self):
-        uri = "/mgmt/tm/security/ssh/profile/{0}".format(transform_name(self.want.partition, self.want.name))
+        uri = f"/mgmt/tm/security/ssh/profile/{transform_name(self.want.partition, self.want.name)}"
         response = self.client.get(uri)
 
         if response['code'] not in [200, 201, 202]:
