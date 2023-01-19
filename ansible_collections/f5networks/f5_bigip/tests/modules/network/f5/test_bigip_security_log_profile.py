@@ -632,7 +632,7 @@ class TestManager(unittest.TestCase):
         self.assertIn('Failed to delete the resource.', err.exception.args[0])
         self.assertTrue(mm.client.delete.called)
 
-    def test_delete_ssh_security_profile_error_response(self, *args):
+    def test_delete_log_security_profile_error_response(self, *args):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
             name='test_log_profile',

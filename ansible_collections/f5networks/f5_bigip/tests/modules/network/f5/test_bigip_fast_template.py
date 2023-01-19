@@ -71,6 +71,16 @@ class TestParameters(unittest.TestCase):
         self.assertEqual(p.name, 'fake')
         self.assertEqual(p.source, '/var/fake/fake.zip')
 
+    def test_module_parameters_purge(self):
+        args = dict(
+            state='purge'
+        )
+
+        p = ModuleParameters(params=args)
+
+        self.assertEqual(p.name, None)
+        self.assertEqual(p.state, 'purge')
+
 
 class TestManager(unittest.TestCase):
 
@@ -106,6 +116,76 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(module=module)
 
         # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        self.assertFalse(results['changed'])
+
+    def test_create_response_status_failure(self, *args):
+        set_module_args(dict(
+            source='/var/fake/fake.zip',
+            state='present',
+            force='yes',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=True)
+        mm.client.post.return_value = {
+            'code': 503,
+            'contents': 'service not available'
+        }
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('service not available', err.exception.args[0])
+
+    def test_create_upload_file_failure(self, *args):
+        set_module_args(dict(
+            source='/var/fake/fake.zip',
+            state='present',
+            force='yes',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=True)
+        mm.client.plugin.upload_file = Mock(side_effect=F5ModuleError)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('Failed to upload the file.', err.exception.args[0])
+
+    def test_create_fast_template_set_force_false(self, *args):
+        set_module_args(dict(
+            source='/var/fake/fake.zip',
+            state='present',
+            force='no'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
         mm.client.get.return_value = {'code': 404}
         mm.client.post.return_value = {'code': 200}
 
@@ -115,6 +195,33 @@ class TestManager(unittest.TestCase):
         self.assertEqual(results['source'], '/var/fake/fake.zip')
         self.assertEqual(results['name'], 'fake')
         self.assertEqual(mm.client.get.call_count, 1)
+
+    def test_remove_temp_file_from_device_failure(self, *args):
+        set_module_args(dict(
+            source='/var/fake/fake.zip',
+            state='present',
+            force='yes',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=True)
+        mm.create_on_device = Mock(return_value=True)
+        mm.client.post.return_value = {
+            'code': 503,
+            'contents': 'service not available'
+        }
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('service not available', err.exception.args[0])
 
     def test_remove_fast_template(self, *args):
         set_module_args(dict(
@@ -143,6 +250,70 @@ class TestManager(unittest.TestCase):
         self.assertEqual(mm.client.get.call_count, 2)
         self.assertEqual(mm.client.delete.call_count, 1)
 
+    def test_remove_already_absent_template_set(self, *args):
+        set_module_args(dict(
+            name='fake',
+            state='absent',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+
+        self.assertFalse(results['changed'])
+
+    def test_remove_response_status_failure(self, *args):
+        set_module_args(dict(
+            name='fake',
+            state='absent',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.delete.return_value = {
+            'code': 503,
+            'contents': 'service not available'
+        }
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('service not available', err.exception.args[0])
+
+    def test_fail_remove_template(self, *args):
+        set_module_args(dict(
+            name='fake',
+            state='absent',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.remove_from_device = Mock(return_value=True)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('Failed to delete the resource.', err.exception.args[0])
+
     def test_purge_all_fast_template_sets(self, *args):
         set_module_args(dict(
             state='purge'
@@ -164,6 +335,91 @@ class TestManager(unittest.TestCase):
         self.assertTrue(results['changed'])
         self.assertEqual(mm.client.delete.call_count, 1)
         self.assertEqual(mm.client.get.call_count, 1)
+
+    def test_purge_return_false(self, *args):
+        set_module_args(dict(
+            state='purge'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+
+        self.assertFalse(results['changed'])
+
+    def test_purge_response_status_failure(self, *args):
+        set_module_args(dict(
+            state='purge'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=True)
+        mm.client.delete.return_value = {
+            'code': 503,
+            'contents': 'service not available'
+        }
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('service not available', err.exception.args[0])
+
+    def test_exists_response_status_failure(self, * args):
+        set_module_args(dict(
+            state='purge',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.client.get.return_value = {
+            'code': 503,
+            'contents': 'service not available'
+        }
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('service not available', err.exception.args[0])
+
+    def test_exists_return_False(self, * args):
+        set_module_args(dict(
+            state='purge',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.client.get.return_value = {'code': 200, 'contents': False}
+
+        results = mm.exec_module()
+
+        self.assertFalse(results['changed'])
 
     @patch.object(bigip_fast_template, 'Connection')
     @patch.object(bigip_fast_template.ModuleManager, 'exec_module',

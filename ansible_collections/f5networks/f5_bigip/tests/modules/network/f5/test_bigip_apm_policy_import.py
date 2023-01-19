@@ -116,6 +116,95 @@ class TestManager(unittest.TestCase):
         self.assertEqual(results['name'], 'fake_policy')
         self.assertEqual(results['source'], self.policy)
 
+    def test_upload_file_to_device_failure(self, *args):
+        set_module_args(dict(
+            name='fake_policy',
+            source=self.policy,
+            type='access_policy',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.client.plugin.upload_file = Mock(side_effect=F5ModuleError)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('Failed to upload the file.', err.exception.args[0])
+
+    def test_policy_import_return_false(self, *args):
+        set_module_args(dict(
+            name='fake_policy',
+            source=self.policy,
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(module=module)
+        mm.client.get.return_value = {'code': 200}
+
+        results = mm.exec_module()
+
+        self.assertFalse(results['changed'])
+
+    @patch.object(bigip_apm_policy_import, 'module_provisioned',
+                  Mock(return_value=False))
+    def test_module_not_provisioned_error(self, *args):
+        set_module_args(dict(
+            name='fake_policy',
+            type='access_policy',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(module=module)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn(
+            'APM must be provisioned to use this module.',
+            err.exception.args[0]
+        )
+
+    @patch.object(bigip_apm_policy_import, 'tmos_version',
+                  Mock(return_value='13.0.0'))
+    def test_version_less_than_14_error(self, *args):
+        set_module_args(dict(
+            name='fake_policy',
+            type='access_policy',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(module=module)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn(
+            'Due to bug ID685681 it is not possible to use '
+            'this module on TMOS version below 14.x',
+            err.exception.args[0]
+        )
+
     @patch.object(bigip_apm_policy_import, 'Connection')
     @patch.object(bigip_apm_policy_import.ModuleManager, 'exec_module',
                   Mock(return_value={'changed': False})
@@ -144,3 +233,65 @@ class TestManager(unittest.TestCase):
 
         self.assertTrue(result.exception.args[0]['failed'])
         self.assertIn('This module has failed', result.exception.args[0]['msg'])
+
+    @patch.object(bigip_apm_policy_import, 'HAS_PACKAGING', False)
+    @patch.object(bigip_apm_policy_import, 'Connection')
+    @patch.object(bigip_apm_policy_import.ModuleManager, 'exec_module',
+                  Mock(side_effect=F5ModuleError('This module has failed.'))
+                  )
+    def test_main_function_import_error(self, *args):
+        set_module_args(dict(
+            name='foobar'
+        ))
+
+        with self.assertRaises(AnsibleFailJson) as result:
+            bigip_apm_policy_import.PACKAGING_IMPORT_ERROR = "failed to import the 'packaging' package"
+            bigip_apm_policy_import.main()
+
+        self.assertTrue(result.exception.args[0]['failed'])
+        self.assertIn(
+            'Failed to import the required Python library (packaging)',
+            result.exception.args[0]['msg']
+        )
+
+    def test_call_device_functions(self, *args):
+        set_module_args(dict(
+            name='fake_policy',
+            source=self.policy,
+            reuse_objects='no'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(module=module)
+        mm.client.get.return_value = {'code': 503, 'contents': 'service not available'}
+        with self.assertRaises(F5ModuleError) as err1:
+            mm.exists()
+
+        self.assertIn('service not available', err1.exception.args[0])
+
+        mm.upload_file_to_device = Mock()
+        mm.client.post.side_effect = [
+            {'code': 503, 'contents': 'service not available'},
+            {'code': 200, 'contents': {'commandResult': 'command failed'}},
+            {'code': 503, 'contents': 'service not available'},
+        ]
+
+        with self.assertRaises(F5ModuleError) as err2:
+            mm.import_file_to_device()
+
+        self.assertIn('service not available', err2.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err3:
+            mm.import_file_to_device()
+
+        self.assertIn('command failed', err3.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err4:
+            mm.remove_temp_file_from_device()
+
+        self.assertIn('service not available', err4.exception.args[0])

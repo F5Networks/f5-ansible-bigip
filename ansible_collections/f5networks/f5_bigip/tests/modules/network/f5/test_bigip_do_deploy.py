@@ -10,6 +10,7 @@ import json
 import os
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.connection import ConnectionError
 
 from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_do_deploy
 from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_do_deploy import (
@@ -56,6 +57,35 @@ class TestParameters(unittest.TestCase):
         p = ModuleParameters(params=args)
         self.assertEqual(p.content, dict(param1='foo', param2='bar'))
         self.assertEqual(p.timeout, (6.0, 100))
+
+    @patch.object(bigip_do_deploy.json, 'loads', Mock(return_value='null'))
+    def test_module_parameters(self):
+        args = dict(
+            content=''
+        )
+        p = ModuleParameters(params=args)
+        self.assertEqual(p.content, 'null')
+
+    def test_module_parameters_timeout(self):
+        args1 = dict(timeout=149)
+        args2 = dict(timeout=3601)
+        p1 = ModuleParameters(params=args1)
+        p2 = ModuleParameters(params=args2)
+
+        with self.assertRaises(F5ModuleError) as err1:
+            p1.timeout
+
+        with self.assertRaises(F5ModuleError) as err2:
+            p2.timeout
+
+        self.assertIn(
+            "Timeout value must be between 150 and 3600 seconds.",
+            err1.exception.args[0]
+        )
+        self.assertIn(
+            "Timeout value must be between 150 and 3600 seconds.",
+            err2.exception.args[0]
+        )
 
 
 class TestManager(unittest.TestCase):
@@ -152,6 +182,156 @@ class TestManager(unittest.TestCase):
         self.assertEqual(results['task_id'], uuid)
         self.assertEqual(results['message'], "Device is restarting services, unable to check task status.")
         self.assertEqual(mm.want.timeout, (5, 100))
+
+    def test_upsert_response_status_failure(self, *args):
+        declaration = load_fixture('do_declaration.json')
+        set_module_args(dict(
+            content=declaration,
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+        mm.client.post.return_value = {
+            'code': 503,
+            'contents': 'service not available'
+        }
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('service not available', err.exception.args[0])
+
+    def test_wait_for_task_timeout(self, *args):
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
+        set_module_args(dict(
+            task_id=uuid,
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+        mm._check_task_on_device = Mock(return_value=(202, {'result': {'status': 'RUNNING'}}))
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn(
+            "Module timeout reached, state change is unknown, "
+            "please increase the timeout parameter for long lived actions.",
+            err.exception.args[0]
+        )
+
+    def test_device_is_ready_connection_error(self, *args):
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
+        set_module_args(dict(
+            task_id=uuid,
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+        mm._check_task_on_device = Mock(return_value=(503, {}))
+        mm.client.get.side_effect = ConnectionError('connection error')
+        results = mm.exec_module()
+
+        self.assertFalse(results['changed'])
+        self.assertEqual(results['task_id'], uuid)
+        self.assertEqual(
+            results['message'],
+            'Device is restarting services, unable to check task status.'
+        )
+
+    def test_device_is_ready_return_false(self, *args):
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
+        set_module_args(dict(
+            task_id=uuid,
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+        mm.client.get.side_effect = [
+            ConnectionError('connection error'),
+            {'code': 503}
+        ]
+        results = mm.exec_module()
+
+        self.assertFalse(results['changed'])
+        self.assertEqual(results['task_id'], uuid)
+        self.assertEqual(
+            results['message'],
+            'Device is restarting services, unable to check task status.'
+        )
+
+    def test_task_exist_on_device_failure(self, *args):
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
+        set_module_args(dict(
+            task_id=uuid,
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+        mm._check_task_on_device = Mock(return_value=(503, {}))
+        mm.device_is_ready = Mock(return_value=True)
+        mm.client.get.return_value = {'code': 503}
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn(
+            f"The task with the given task_id: {uuid} does not exist.",
+            err.exception.args[0]
+        )
+
+    def test_get_errors_from_response(self, *args):
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
+        set_module_args(dict(
+            task_id=uuid,
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+        expected = ['invalid config - rolled back', '404: not found']
+        message = {'message': 'invalid config - rolled back', 'errors': ['404: not found']}
+        result = mm._get_errors_from_response(message=message)
+
+        self.assertEqual(expected, result)
+
+    def test_check_task_on_device(self, *args):
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
+        set_module_args(dict(
+            task_id=uuid,
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+        contents = {'message': 'invalid config - rolled back', 'errors': ['404: Unprocessed entity']}
+        mm.client.get.return_value = {'code': 422, 'contents': contents}
+        with self.assertRaises(F5ModuleError) as err:
+            mm._check_task_on_device(uuid)
+
+        self.assertIn(
+            'invalid config - rolled back. 404: Unprocessed entity',
+            err.exception.args[0]
+        )
 
     @patch.object(bigip_do_deploy, 'Connection')
     @patch.object(bigip_do_deploy.ModuleManager, 'exec_module',

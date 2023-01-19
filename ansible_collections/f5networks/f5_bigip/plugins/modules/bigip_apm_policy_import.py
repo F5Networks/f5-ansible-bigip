@@ -130,7 +130,7 @@ from datetime import datetime
 
 try:
     from packaging.version import Version
-except ImportError:
+except ImportError:  # pragma: no cover
     HAS_PACKAGING = False
     Version = None
     PACKAGING_IMPORT_ERROR = traceback.format_exc()
@@ -186,7 +186,7 @@ class Changes(Parameters):
             for returnable in self.returnables:
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
-        except Exception:
+        except Exception:  # pragma: no cover
             raise
         return result
 
@@ -239,7 +239,7 @@ class ModuleManager(object):
 
     def _announce_deprecations(self, result):
         warnings = result.pop('__warnings', [])
-        for warning in warnings:
+        for warning in warnings:  # pragma: no cover
             self.client.module.deprecate(
                 msg=warning['msg'],
                 version=warning['version']

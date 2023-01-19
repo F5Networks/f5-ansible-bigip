@@ -13,7 +13,7 @@ from ansible.module_utils.basic import AnsibleModule
 
 from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_ts_deploy
 from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_ts_deploy import (
-    Parameters, ArgumentSpec, ModuleManager
+    Parameters, ArgumentSpec, ModuleManager, ModuleParameters
 )
 
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
@@ -55,6 +55,18 @@ class TestParameters(unittest.TestCase):
         p = Parameters(params=args)
 
         self.assertEqual(p.content, dict(param1='foo', param2='bar'))
+
+    @patch.object(bigip_ts_deploy.json, 'loads', Mock(return_value='dummy'))
+    def test_module_parameters_content(self, *args):
+        args1 = dict()
+        args2 = dict(
+            content='dummy'
+        )
+        p1 = ModuleParameters(params=args1)
+        p2 = ModuleParameters(params=args2)
+
+        self.assertEqual(p1.content, None)
+        self.assertEqual(p2.content, 'dummy')
 
 
 class TestManager(unittest.TestCase):
@@ -99,6 +111,53 @@ class TestManager(unittest.TestCase):
 
         self.assertTrue(results['changed'])
 
+    def test_upsert_ts_declaration_force(self, *args):
+        declaration = load_fixture('ts_declaration.json')
+        set_module_args(dict(
+            content=declaration,
+            state='present',
+            force='yes',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=True)
+        mm.upsert_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+
+    @patch.object(bigip_ts_deploy, 'nested_diff', Mock(return_value=True))
+    def test_upsert_ts_declaration_need_change(self, *args):
+        declaration = load_fixture('ts_declaration.json')
+        set_module_args(dict(
+            content=declaration,
+            state='present',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=True)
+        mm.upsert_on_device = Mock(return_value=True)
+        mm.read_from_device = Mock()
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+
     def test_upsert_ts_declaration_no_change(self, *args):
         declaration = load_fixture('ts_declaration.json')
         set_module_args(dict(
@@ -118,6 +177,58 @@ class TestManager(unittest.TestCase):
 
         results = mm.exec_module()
 
+        self.assertFalse(results['changed'])
+
+    def test_upsert_ts_declaration_response_status_failure(self, *args):
+        declaration = load_fixture('ts_declaration.json')
+        set_module_args(dict(
+            content=declaration,
+            state='present'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=False)
+        mm.client.post.return_value = {
+            'code': 503,
+            'contents': 'service not available'
+        }
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('service not available', err.exception.args[0])
+
+    def test_upsert_ts_declaration_return_false(self, *args):
+        declaration = load_fixture('ts_declaration.json')
+        set_module_args(dict(
+            content=declaration,
+            state='present'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=False)
+        mm.client.post.return_value = {
+            'code': 200,
+            'contents': {
+                'message': 'failed'
+            },
+        }
+
+        results = mm.exec_module()
         self.assertFalse(results['changed'])
 
     def test_remove_ts_declaration(self, *args):
@@ -158,6 +269,71 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         self.assertFalse(results['changed'])
+
+    def test_remove_from_device_response_failure(self, *args):
+        set_module_args(dict(
+            state='absent',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.post.return_value = {
+            'code': 503,
+            'contents': 'service not available',
+        }
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('service not available', err.exception.args[0])
+
+    def test_unable_remove_from_device_failure(self, *args):
+        set_module_args(dict(
+            state='absent',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.post.return_value = {
+            'code': 200,
+            'contents': {
+                'message': 'failed'
+            },
+        }
+
+        results = mm.exec_module()
+        self.assertFalse(results['changed'])
+
+    def test_read_from_device_failure(self, *args):
+        set_module_args(dict(
+            state='absent',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.client.get.return_value = {
+            'code': 503,
+            'contents': 'service not available',
+        }
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('service not available', err.exception.args[0])
 
     @patch.object(bigip_ts_deploy, 'Connection')
     @patch.object(bigip_ts_deploy.ModuleManager, 'exec_module',

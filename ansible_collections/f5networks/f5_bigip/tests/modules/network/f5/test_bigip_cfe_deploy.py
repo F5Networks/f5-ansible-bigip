@@ -105,6 +105,48 @@ class TestManager(unittest.TestCase):
 
         self.assertTrue(results['changed'])
 
+    def test_upsert_cfe_response_status_failure(self, *args):
+        declaration = load_fixture('failover_declaration.json')
+        set_module_args(dict(
+            content=declaration,
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+        mm.client.post.return_value = {
+            'code': 503,
+            'contents': 'service not available'
+        }
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('service not available', err.exception.args[0])
+
+    def test_upsert_cfe_return_false(self, *args):
+        declaration = load_fixture('failover_declaration.json')
+        set_module_args(dict(
+            content=declaration,
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        mm = ModuleManager(module=module)
+        mm.client.post.return_value = {
+            'code': 200,
+            'contents': {
+                'message': 'failed'
+            }
+        }
+
+        results = mm.exec_module()
+        self.assertFalse(results['changed'])
+
     @patch.object(bigip_cfe_deploy, 'Connection')
     @patch.object(bigip_cfe_deploy.ModuleManager, 'exec_module',
                   Mock(return_value={'changed': False})

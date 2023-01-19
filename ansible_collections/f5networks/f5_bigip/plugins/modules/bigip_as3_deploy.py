@@ -108,7 +108,7 @@ from ..module_utils.common import (
 
 try:
     import json
-except ImportError:
+except ImportError:  # pragma: no cover
     import simplejson as json
 
 

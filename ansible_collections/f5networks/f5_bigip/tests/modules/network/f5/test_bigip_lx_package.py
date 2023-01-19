@@ -56,6 +56,44 @@ class TestParameters(unittest.TestCase):
         p = Parameters(params=args)
         self.assertEqual(p.package, 'MyApp-0.1.0-0001.noarch.rpm')
 
+    def test_module_parameters_package(self):
+        args1 = dict(package=None)
+        args2 = dict(package='fake_package_name')
+        p1 = Parameters(params=args1)
+        p2 = Parameters(params=args2)
+
+        self.assertIsNone(p1.package)
+        self.assertIsNone(p1.package_file)
+        self.assertIsNone(p1.package_root)
+
+        p2._module = Mock()
+        p2._module.run_command = Mock(return_value=(0, 'fake_package_name', None))
+
+        self.assertEqual(p2.package_name, 'fake_package_name')
+
+    def test_module_parameters_timeout(self, *args):
+        args1 = dict(timeout=9)
+        args2 = dict(timeout=1801)
+
+        p1 = Parameters(params=args1)
+        p2 = Parameters(params=args2)
+
+        with self.assertRaises(F5ModuleError) as err1:
+            p1.timeout
+
+        self.assertIn(
+            "Timeout value must be between 10 and 1800 seconds.",
+            err1.exception.args[0]
+        )
+
+        with self.assertRaises(F5ModuleError) as err2:
+            p2.timeout
+
+        self.assertIn(
+            "Timeout value must be between 10 and 1800 seconds.",
+            err2.exception.args[0]
+        )
+
 
 class TestManager(unittest.TestCase):
 
@@ -111,6 +149,35 @@ class TestManager(unittest.TestCase):
         self.assertEqual(mm.client.post.call_count, 4)
         self.assertTrue(results['changed'])
 
+    @patch.object(bigip_lx_package.os.path, 'exists', Mock(return_value=True))
+    def test_failed_to_install_error(self, *args):
+        package_name = os.path.join(fixture_path, 'MyApp-0.1.0-0001.noarch.rpm')
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            package=package_name,
+            state='present',
+            retain_package_file='yes',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.check_file_exists_on_device = Mock(return_value=True)
+        mm.create_on_device = Mock()
+        mm.enable_iapplx_on_device = Mock()
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn(
+            "Failed to install LX package.",
+            err.exception.args[0]
+        )
+
     def test_remove_rpm_package(self, *args):
         package_file = 'MyApp-0.1.0-0001.noarch.rpm'
         package_name = os.path.join(fixture_path, package_file)
@@ -139,6 +206,311 @@ class TestManager(unittest.TestCase):
 
         self.assertTrue(results['changed'])
         self.assertEqual(mm.client.get.call_count, 3)
+
+    def test_get_installed_packages_failures(self, *args):
+        package_file = 'MyApp-0.1.0-0001.noarch.rpm'
+        package_name = os.path.join(fixture_path, package_file)
+
+        set_module_args(dict(
+            package=package_name
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.client.post.side_effect = [
+            {'code': 503, 'contents': 'service not available'},
+            {'code': 200, 'contents': {'selfLink': '/'}}
+        ]
+        mm.wait_for_task = Mock(return_value={'status': 'FAILED'})
+
+        with self.assertRaises(F5ModuleError) as err1:
+            mm.get_installed_packages_on_device()
+
+        self.assertIn('service not available', err1.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err2:
+            mm.get_installed_packages_on_device()
+
+        self.assertIn(
+            'Failed to find the installed packages on the device.',
+            err2.exception.args[0]
+        )
+
+    def test_remove_rpm_response_status_error(self, *args):
+        package_file = 'MyApp-0.1.0-0001.noarch.rpm'
+        package_name = os.path.join(fixture_path, package_file)
+
+        set_module_args(dict(
+            package=package_name,
+            state='absent',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.post.return_value = {
+            'code': 503,
+            'contents': 'service not available'
+        }
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('service not available', err.exception.args[0])
+
+    @patch.object(bigip_lx_package.os.path, 'exists', Mock(return_value=False))
+    def test_absolute_package_not_found_error(self, *args):
+        package_name = os.path.join(fixture_path, 'MyApp-0.1.0-0001.noarch.rpm')
+        set_module_args(dict(
+            package=package_name,
+            state='present',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn(
+            f'The specified LX package was not found at {mm.want.package}.',
+            err.exception.args[0]
+        )
+
+    @patch.object(bigip_lx_package.os.path, 'exists', Mock(return_value=False))
+    def test_relative_package_not_found_error(self, *args):
+        package_name = os.path.join(fixture_path, 'MyApp-0.1.0-0001.noarch.rpm').strip('/')
+        set_module_args(dict(
+            package=package_name,
+            state='present',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+
+        with patch.object(bigip_lx_package.os, 'getcwd',
+                          Mock(return_value=package_name)):
+            with self.assertRaises(F5ModuleError) as err:
+                mm.exec_module()
+
+            self.assertIn(
+                f'The specified LX package was not found in {mm.want.package}.',
+                err.exception.args[0]
+            )
+
+    @patch.object(bigip_lx_package.os.path, 'exists', Mock(return_value=False))
+    def test_exists(self, *args):
+        package_name = os.path.join(fixture_path, 'MyApp-0.1.0-0001.noarch.rpm')
+        set_module_args(dict(
+            package=package_name,
+            state='present',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.get_installed_packages_on_device = Mock(return_value=[{'packageName': mm.want.package_root}])
+        results = mm.exec_module()
+
+        self.assertFalse(results['changed'])
+
+    def test_failure_to_delete_packaged(self, *args):
+        package_name = os.path.join(fixture_path, 'MyApp-0.1.0-0001.noarch.rpm')
+        set_module_args(dict(
+            package=package_name,
+            state='absent',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.post.return_value = {'code': 200, 'contents': {'selfLink': '/'}}
+        mm.wait_for_task = Mock(return_value={'status': 'FAILED'})
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('Failed to delete the LX package.', err.exception.args[0])
+
+    def test_wait_for_task_timeout(self, *args):
+        package_name = os.path.join(fixture_path, 'MyApp-0.1.0-0001.noarch.rpm')
+        set_module_args(dict(
+            package=package_name,
+            state='absent',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        expected = {'status': 'IN PROGRESS'}
+        mm = ModuleManager(module=module)
+        mm._check_task_on_device = Mock(return_value=expected)
+        result = mm.wait_for_task(path='/')
+
+        self.assertEqual(expected, result)
+
+    def test_upload_to_device_failure(self, *args):
+        package_name = os.path.join(fixture_path, 'MyApp-0.1.0-0001.noarch.rpm')
+        set_module_args(dict(
+            package=package_name,
+            state='absent',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.client.plugin.upload_file = Mock(side_effect=F5ModuleError)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.upload_to_device()
+
+        self.assertIn("Failed to upload the file.", err.exception.args[0])
+
+    def test_remove_package_from_device_failure(self, *args):
+        package_name = os.path.join(fixture_path, 'MyApp-0.1.0-0001.noarch.rpm')
+        set_module_args(dict(
+            package=package_name,
+            state='absent',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.client.post.return_value = {'code': 503, 'contents': 'service not available'}
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.remove_package_file_from_device()
+
+        self.assertIn('service not available', err.exception.args[0])
+
+    def test_create_on_device_failures(self, *args):
+        package_name = os.path.join(fixture_path, 'MyApp-0.1.0-0001.noarch.rpm')
+        set_module_args(dict(
+            package=package_name,
+            state='present',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.client.post.side_effect = [
+            {'code': 503, 'contents': 'service not available'},
+            {'code': 200, 'contents': {'selfLink': '/'}}
+        ]
+        mm.wait_for_task = Mock(return_value={'status': 'FAILED', 'errorMessage': 'unable to install package on device'})
+
+        with self.assertRaises(F5ModuleError) as err1:
+            mm.create_on_device()
+
+        self.assertIn('service not available', err1.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err2:
+            mm.create_on_device()
+
+        self.assertIn('unable to install package on device', err2.exception.args[0])
+
+    def test_enable_iapplx_on_device_failure(self, *args):
+        package_name = os.path.join(fixture_path, 'MyApp-0.1.0-0001.noarch.rpm')
+        set_module_args(dict(
+            package=package_name,
+            state='present',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.client.post.return_value = {'code': 503, 'contents': 'service not available'}
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.enable_iapplx_on_device()
+
+        self.assertIn('service not available', err.exception.args[0])
+
+    def test_check_task_on_device(self, *args):
+        package_name = os.path.join(fixture_path, 'MyApp-0.1.0-0001.noarch.rpm')
+        set_module_args(dict(
+            package=package_name,
+            state='present',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+
+        mm.client.get.return_value = {'code': 503, 'contents': 'service not available'}
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm._check_task_on_device('/')
+
+        self.assertIn('service not available', err.exception.args[0])
+
+    def test_check_file_exists_on_device(self, *args):
+        package_name = os.path.join(fixture_path, 'MyApp-0.1.0-0001.noarch.rpm')
+        set_module_args(dict(
+            package=package_name,
+            state='present',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.client.post.side_effect = [
+            {'code': 503, 'contents': 'service not available'},
+            {'code': 200, 'contents': {'commandResult': mm.want.package_file}}
+        ]
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.check_file_exists_on_device()
+
+        self.assertIn('service not available', err.exception.args[0])
+
+        result = mm.check_file_exists_on_device()
+        self.assertTrue(result)
 
     @patch.object(bigip_lx_package, 'Connection')
     @patch.object(bigip_lx_package.ModuleManager, 'exec_module',
