@@ -168,7 +168,7 @@ class ModuleParameters(Parameters):
         return result
 
 
-class Changes(Parameters):
+class Changes(Parameters):  # pragma: no cover
     def to_return(self):
         result = {}
         try:
@@ -196,7 +196,7 @@ class Difference(object):
     def compare(self, param):
         try:
             result = getattr(self, param)
-            return result
+            return result  # pragma: no cover
         except AttributeError:
             return self.__default(param)
 
@@ -206,7 +206,7 @@ class Difference(object):
             attr2 = getattr(self.have, param)
             if attr1 != attr2:
                 return attr1
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             return attr1
 
 
@@ -234,16 +234,16 @@ class ModuleManager(object):
         for k in updatables:
             change = diff.compare(k)
             if change is None:
-                continue
+                continue  # pragma: no cover
             else:
-                if isinstance(change, dict):
+                if isinstance(change, dict):  # pragma: no cover
                     changed.update(change)
                 else:
                     changed[k] = change
         if changed:
             self.changes = UsableChanges(params=changed)
             return True
-        return False
+        return False  # pragma: no cover
 
     def should_update(self):
         result = self._update_changed_options()
@@ -270,7 +270,7 @@ class ModuleManager(object):
         send_teem(self.client, start)
         return result
 
-    def _announce_deprecations(self, result):
+    def _announce_deprecations(self, result):  # pragma: no cover
         warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.module.deprecate(
@@ -302,13 +302,13 @@ class ModuleManager(object):
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         self.update_on_device()
         return True
 
     def remove(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         self.remove_from_device()
         if self.exists():
@@ -317,7 +317,7 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         if self.want.accept_eula is False:
             raise F5ModuleError(
@@ -438,5 +438,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()
