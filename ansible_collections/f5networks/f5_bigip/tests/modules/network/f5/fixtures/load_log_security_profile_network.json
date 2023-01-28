@@ -1,0 +1,62 @@
+{
+    "kind": "tm:security:log:profile:network:networkstate",
+    "name": "test_log_profile",
+    "partition": "Common",
+    "fullPath": "/Common/test_log_profile",
+    "generation": 49555,
+    "selfLink": "https://localhost/mgmt/tm/security/log/profile/~Common~test_log_profile/network/~Common~test_log_profile?ver=16.0.0",
+    "filter": {
+        "logAclMatchAccept": "enabled",
+        "logAclMatchDrop": "enabled",
+        "logAclMatchReject": "enabled",
+        "logAclToBoxDeny": "disabled",
+        "logGeoAlways": "disabled",
+        "logIpErrors": "disabled",
+        "logTcpErrors": "disabled",
+        "logTcpEvents": "disabled",
+        "logTranslationFields": "disabled",
+        "logUserAlways": "disabled",
+        "logUuidField": "disabled"
+    },
+    "format": {
+        "fieldList": [
+            "acl_policy_name",
+            "acl_rule_name",
+            "date_time",
+            "action",
+            "src_ip"
+        ],
+        "fieldListReference": [
+            {
+                "link": "https://localhost/mgmt/tm/security/log/network-storage-field/acl_policy_name?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/log/network-storage-field/acl_rule_name?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/log/network-storage-field/date_time?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/log/network-storage-field/action?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/log/network-storage-field/src_ip?ver=16.0.0"
+            }
+        ],
+        "fieldListDelimiter": "-",
+        "type": "field-list"
+    },
+    "publisher": "/Common/local-db-publisher",
+    "publisherReference": {
+        "link": "https://localhost/mgmt/tm/sys/log-config/publisher/~Common~local-db-publisher?ver=16.0.0"
+    },
+    "rateLimit": {
+        "aclMatchAccept": 1000,
+        "aclMatchDrop": 4294967295,
+        "aclMatchReject": 0,
+        "aggregateRate": 4294967295,
+        "ipErrors": 4294967295,
+        "tcpErrors": 4294967295,
+        "tcpEvents": 4294967295
+    }
+}

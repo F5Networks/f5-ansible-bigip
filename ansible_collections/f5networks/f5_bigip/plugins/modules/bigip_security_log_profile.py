@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2022, F5 Networks Inc.
+# Copyright: (c) 2023, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -39,7 +39,7 @@ options:
     suboptions:
       application:
         description:
-          - Defines the log publisher used to log Application DoS attacks.
+          - Defines the log publisher used for log Application DoS attacks.
           - "If desired log publisher is configured on a different partition to where log profile is created
             a publisher name must be specified in full_path format e.g. /Foo/my-publisher."
         type: str
@@ -64,7 +64,11 @@ options:
   bot_defense:
     description:
       - Configures system logging of events from the Bot Defense mechanism.
-      - When configuring a new profile with C(bot_defense) both C(publisher) and C(filter) must be specified.
+      - When configuring a new profile with C(bot_defense) both C(publisher) and one of C(log_*)
+        options must be specified.
+      - When modifying a profile's C(bot_defense) settings at least one C(log_*) options must remain set to C(yes)
+        on the device. In case when during modify operation the device returns an API errors user
+        must consult device configuration to determine if the selected option can be set to C(no).
     type: dict
     suboptions:
       publisher:
@@ -77,83 +81,369 @@ options:
         description:
           - "to be determined"
         type: bool
-      filter:
+      log_alarm:
         description:
-          - Configures a set of logging options for the HTTP client.
-          - When configuring at least one of the options must be set to C(yes).
-          - Parameter is mandatory when creating a new profile with C(bot_defense) logging.
+          - Enable/Disable logging of requests triggering ALARM mitigation
+            action of the Bot Defense logging profile.
+        type: bool
+      log_block:
+        description:
+          - Enable/Disable logging of requests triggering Block mitigation
+            action of the Bot Defense logging profile.
+        type: bool
+      log_browser:
+        description:
+          - "TBD"
+        type: bool
+      log_browser_verification_action:
+        description:
+          - "TBD"
+        type: bool
+      log_captcha:
+        description:
+          - "TBD"
+        type: bool
+      log_challenge_failure_request:
+        description:
+          - "TBD"
+        type: bool
+      log_device_id_collection_request:
+        description:
+          - "TBD"
+        type: bool
+      log_honeypot_page:
+        description:
+          - "TBD"
+        type: bool
+      log_mobile_application:
+        description:
+          - "TBD"
+        type: bool
+      log_none:
+        description:
+          - "TBD"
+        type: bool
+      log_rate_limit:
+        description:
+          - "TBD"
+        type: bool
+      log_redirect_to_pool:
+        description:
+          - "TBD"
+        type: bool
+      log_suspicious_browser:
+        description:
+          - "TBD"
+        type: bool
+      log_tcp_reset:
+        description:
+          - "TBD"
+        type: bool
+      log_trusted_bot:
+        description:
+          - "TBD"
+        type: bool
+      log_unknown:
+        description:
+          - "TBD"
+        type: bool
+      log_untrusted_bot:
+        description:
+          - "TBD"
+        type: bool
+  dns_security:
+    description:
+      - Configures the system to log dropped, malformed, or rejected requests for DNS Security.
+    type: dict
+    suboptions:
+      publisher:
+        description:
+          - Specifies the name of the log publisher used for logging DNS security events.
+          - "If desired log publisher is configured on a different partition to where log profile is created
+            a publisher name must be specified in full_path format e.g. /Foo/my-publisher."
+        type: str
+      log_dns_drop:
+        description:
+          - Enable/Disable logging of dropped DNS requests.
+        type: bool
+      log_dns_filtered_drop:
+        description:
+          - Enable/Disable logging of DNS requests dropped due to DNS query/header-opcode filtering.
+          - The system does not log DNS requests that are dropped due to errors in the way the system
+            processes DNS packets.
+        type: bool
+      log_dns_malformed:
+        description:
+          - Enable/Disable logging of malformed DNS requests.
+        type: bool
+      log_dns_malicious:
+        description:
+          - Enable/Disable logging of malicious DNS requests.
+        type: bool
+      log_dns_reject:
+        description:
+          - Enable/Disable logging of rejected DNS requests.
+        type: bool
+      storage_format:
+        description:
+          - Configures custom formatting of DNS security log messages.
         type: dict
         suboptions:
-          log_alarm:
+          type:
             description:
-              - Enable/Disable logging of requests triggering ALARM mitigation
-                action of the Bot Defense logging profile.
-            type: bool
-          log_block:
+              - Specifies the format type for log messages.
+              - When set to C(none) the system uses default format type to log the messages to a Remote Syslog server.
+              - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
+              - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
+              - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
+            type: str
+            choices:
+              - field-list
+              - user-defined
+              - none
+          delimiter:
             description:
-              - Enable/Disable logging of requests triggering Block mitigation
-                action of the Bot Defense logging profile.
-            type: bool
-          log_browser:
+              - Specifies the delimiter string, when C(type) is set to C(field-list).
+            type: str
+          fields:
             description:
-              - "TBD"
-            type: bool
-          log_browser_verification_action:
+              - Lists the items the server logs, and the order in which the server logs them due to that the order of
+                in which items are specified on the list matters. The server displays the items in the log sequentially
+                from top down.
+              - "The valid elements that can be specified in the list are: action, attack_type, context_name, date_time,
+                dest_ip, dest_port, dns_query_name, dns_query_type, route_domain, src_ip, src_port, vlan."
+            type: list
+            elements: str
+          user_string:
             description:
-              - "TBD"
-            type: bool
-          log_captcha:
+              - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+            type: str
+  sip_security:
+    description:
+      - Configure the system to log dropped and malformed malicious SIP requests, global and request failures,
+        redirected responses, and server errors for SIP Security.
+    type: dict
+    suboptions:
+      publisher:
+        description:
+          - Specifies the name of the log publisher used for logging SIP protocol security events.
+          - "If desired log publisher is configured on a different partition to where log profile is created
+            a publisher name must be specified in full_path format e.g. /Foo/my-publisher."
+        type: str
+      log_sip_drop:
+        description:
+          - Enable/Disable logging of dropped SIP requests.
+        type: bool
+      log_sip_global_failures:
+        description:
+          - Enable/Disable logging of SIP global failures.
+          - The system does not log DNS requests that are dropped due to errors in the way the system
+            processes DNS packets.
+        type: bool
+      log_sip_malformed:
+        description:
+          - Enable/Disable logging of malformed SIP requests.
+        type: bool
+      log_sip_redirect_responses:
+        description:
+          - Enable/Disable logging of SIP redirection responses.
+        type: bool
+      log_sip_request_failures:
+        description:
+          - Enable/Disable logging of SIP request failures.
+        type: bool
+      log_sip_server_errors:
+        description:
+          - Enable/Disable logging of SIP server errors.
+        type: bool
+      storage_format:
+        description:
+          - Configures custom formatting of SIP security log messages.
+        type: dict
+        suboptions:
+          type:
             description:
-              - "TBD"
-            type: bool
-          log_challenge_failure_request:
+              - Specifies the format type for log messages.
+              - When set to C(none) the system uses default format type to log the messages to a Remote Syslog server.
+              - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
+              - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
+              - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
+            type: str
+            choices:
+              - field-list
+              - user-defined
+              - none
+          delimiter:
             description:
-              - "TBD"
-            type: bool
-          log_device_id_collection_request:
+              - Specifies the delimiter string, when C(type) is set to C(field-list).
+            type: str
+          fields:
             description:
-              - "TBD"
-            type: bool
-          log_honeypot_page:
+              - Lists the items the server logs, and the order in which the server logs them due to that the order of
+                in which items are specified on the list matters. The server displays the items in the log sequentially
+                from top down.
+              - "The valid elements that can be specified in the list are: action, context_name, date_time, dest_ip,
+                 dest_port, route_domain, sip_callee, sip_caller, sip_method_type, src_ip, src_port, vlan."
+            type: list
+            elements: str
+          user_string:
             description:
-              - "TBD"
-            type: bool
-          log_mobile_application:
+              - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+            type: str
+  network_security:
+    description:
+      - Configures the system to log network firewall events.
+    type: dict
+    suboptions:
+      publisher:
+        description:
+          - Specifies the name of the log publisher used for logging network events.
+          - "If desired log publisher is configured on a different partition to where log profile is created
+            a publisher name must be specified in full_path format e.g. /Foo/my-publisher."
+        type: str
+      log_acl_match_accept:
+        description:
+          - "Enable/Disable logging of packets that match ACL rules configured with action = Accept."
+        type: bool
+      log_acl_match_drop:
+        description:
+          - Enable/Disable logging of packets that match ACL rules configured with action = Drop."
+        type: bool
+      log_acl_match_reject:
+        description:
+          - Enable/Disable logging of packets that match ACL rules configured with action = Reject."
+        type: bool
+      log_geo_always:
+        description:
+          - Enable/Disable logging of Geo IP Location information.
+        type: bool
+      log_ip_errors:
+        description:
+          - Enable/Disable logging of IP errors.
+        type: bool
+      log_tcp_events:
+        description:
+          - "Enable/Disable logging of TCP events (open and close of TCP sessions)."
+        type: bool
+      log_tcp_errors:
+        description:
+          - Enable/Disable logging of TCP errors.
+        type: bool
+      log_translation_fields:
+        description:
+          - Enable/Disable logging of translation fields in ACL and TCP events.
+        type: bool
+      log_acl_to_box_deny:
+        description:
+          - Enable/Disable logging of any packet that is dropped or denied by management port firewall rules.
+          - This option takes effect only when management port firewall rules are configured on the device.
+        type: bool
+      log_user_always:
+        description:
+          - "Enable/Disable logging of certain subscriber information
+            (e.g. subscriber ID and/or subscriber group) if it is available."
+          - This option is in effect only when device has a provisioned and configured PEM module in addition to AFM.
+        type: bool
+      log_uuid_field:
+        description:
+          - Enable/Disable logging of UUID of the specific rule that triggered the log message.
+        type: bool
+      rate_limit_acl_match_accept:
+        description:
+          - Sets a rate limit for all network firewall log messages with this acl match accept action.
+          - If this rate limit is exceeded, log messages of this action type are not logged until the threshold drops
+            below the specified rate.
+          - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
+            C(indefinite) being synonymous.
+        type: str
+      rate_limit_acl_match_drop:
+        description:
+          - Sets a rate limit for all network firewall log messages with this acl match drop action.
+          - If this rate limit is exceeded, log messages of this action type are not logged until the threshold drops
+            below the specified rate.
+          - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
+            C(indefinite) being synonymous.
+        type: str
+      rate_limit_match_reject:
+        description:
+          - Sets a rate limit for all network firewall log messages with this acl match reject action.
+          - If this rate limit is exceeded, log messages of this action type are not logged until the threshold drops
+            below the specified rate.
+          - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
+            C(indefinite) being synonymous.
+        type: str
+      rate_limit_aggregate_rate:
+        description:
+          - Defines a rate limit for all combined network firewall log messages per second.
+            Beyond this rate limit, log messages are not logged.
+          - Rate Limits are calculated per-second, per TMM, with each TMM throttling as needed,
+            independently of other TMMs.
+          - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
+            C(indefinite) being synonymous.
+        type: str
+      rate_limit_ip_errors:
+        description:
+          - Sets a rate limit for logging of IP error packets.
+          - If this rate limit is exceeded, log messages of this type are not logged until the threshold drops
+            below the specified rate.
+          - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
+            C(indefinite) being synonymous.
+        type: str
+      rate_limit_tcp_errors:
+        description:
+          - Sets a rate limit for logging of TCP error packets.
+          - If this rate limit is exceeded, log messages of this type are not logged until the threshold drops
+            below the specified rate.
+          - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
+            C(indefinite) being synonymous.
+        type: str
+      rate_limit_tcp_events:
+        description:
+          - Sets a rate limit for logging of TCP events.
+          - If this rate limit is exceeded, log messages of this type are not logged until the threshold drops
+            below the specified rate.
+          - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
+            C(indefinite) being synonymous.
+        type: str
+      storage_format:
+        description:
+          - Configures custom formatting of network events log messages.
+        type: dict
+        suboptions:
+          type:
             description:
-              - "TBD"
-            type: bool
-          log_none:
+              - Specifies the format type for log messages.
+              - When set to C(none) the system uses default format type to log the messages to a Remote Syslog server.
+              - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
+              - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
+              - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
+            type: str
+            choices:
+              - field-list
+              - user-defined
+              - none
+          delimiter:
             description:
-              - "TBD"
-            type: bool
-          log_rate_limit:
+              - Specifies the delimiter string, when C(type) is set to C(field-list).
+            type: str
+          fields:
             description:
-              - "TBD"
-            type: bool
-          log_redirect_to_pool:
+              - Lists the items the server logs, and the order in which the server logs them due to that the order of
+                in which items are specified on the list matters. The server displays the items in the log sequentially
+                from top down.
+              - "The valid elements that can be specified in the list are: acl_policy_name, acl_policy_type,
+                acl_rule_name, acl_rule_uuid, action, bigip_hostname, context_name, context_type, date_time, dest_fqdn,
+                dest_geo, dest_ip, dest_ipint_categories, dest_port, drop_reason, management_ip_address, protocol,
+                route_domain, sa_translation_pool, sa_translation_type, source_fqdn, source_ipint_categories,
+                source_user, src_geo, src_ip, src_port, translated_dest_ip, translated_dest_port,
+                translated_ip_protocol, translated_route_domain, translated_src_ip, translated_src_port,
+                translated_vlan, vlan."
+            type: list
+            elements: str
+          user_string:
             description:
-              - "TBD"
-            type: bool
-          log_suspicious_browser:
-            description:
-              - "TBD"
-            type: bool
-          log_tcp_reset:
-            description:
-              - "TBD"
-            type: bool
-          log_trusted_bot:
-            description:
-              - "TBD"
-            type: bool
-          log_unknown:
-            description:
-              - "TBD"
-            type: bool
-          log_untrusted_bot:
-            description:
-              - "TBD"
-            type: bool
+              - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+            type: str
   protocol_inspection:
     description:
       - Configures system logging of events from the Protocol Inspection engine.
@@ -161,7 +451,7 @@ options:
     suboptions:
       log_packet:
         description:
-          - Enables/Disables logging of packet payload for Protocol Inspection events.
+          - Enables/Disable logging of packet payload for Protocol Inspection events.
         type: bool
       publisher:
         description:
@@ -171,13 +461,14 @@ options:
         type: str
   packet_filter:
     description:
-      - Configures logging of IPv6 Extension Header Packet Filter rule match events.
+      - Configures logging of IPv6 Extension Header packet filter rule match events.
     type: dict
     suboptions:
       rate:
         description:
-          - "TBD"
-          - "Valid value range is from 1 to 1000 messages/sec"
+          - Configures a rate limit for all combined IPv6 Extension Header packet filter log messages per second.
+          - Beyond this rate limit, log messages are not logged until the threshold drops below the specified rate.
+          - Valid value range is C(1 - 1000) messages/sec
         type: int
       publisher:
         description:
@@ -193,7 +484,7 @@ options:
     suboptions:
       log_matches:
         description:
-          - "TBD"
+          - Enables/Disable logging of all events from the Classification engine.
         type: bool
       publisher:
         description:
@@ -249,9 +540,8 @@ EXAMPLES = r'''
           publisher: "local-db-publisher"
         bot_defense:
           publisher: "local-db-publisher"
-          filter:
-            log_alarm: "yes"
-            log_browser: "yes"
+          log_alarm: "yes"
+          log_browser: "yes"
 
     - name: Modify a security log profile
       bigip_security_log_profile:
@@ -259,17 +549,584 @@ EXAMPLES = r'''
         packet_filter:
           rate: 100
         bot_defense:
-          filter:
-            log_alarm: "no"
+          log_alarm: "no"
 
     - name: Delete a security log profile
       bigip_security_log_profile:
         name: "test_log_profile"
         state: absent
+
+    - name: Create a security log profile with network security
+      bigip_security_log_profile:
+        name: "test_log_profile"
+        description: "this is a log profile test"
+        auto_discovery: "local-db-publisher"
+        dos_protection:
+          application: "local-db-publisher"
+          network: "local-db-publisher"
+        protocol_inspection:
+          log_packet: "yes"
+          publisher: "local-db-publisher"
+        packet_filter:
+          rate: 300
+          publisher: "local-db-publisher"
+        bot_defense:
+          publisher: "local-db-publisher"
+          log_alarm: "yes"
+          log_browser: "yes"
+        network_security:
+          publisher: "local-db-publisher"
+          log_acl_match_accept: "yes"
+          log_acl_match_drop: "yes"
+          rate_limit_acl_match_accept: "1000"
+          rate_limit_acl_match_drop: "indefinite"
+          storage_format:
+            type: "field-list"
+            delimiter: "-"
+            fields:
+              - "acl_policy_name"
+              - "acl_rule_name"
+              - "date_time"
+              - "action"
+              - "src_ip"
+
+    - name: Modify a security log profile sip security
+      bigip_security_log_profile:
+        name: "test_log_profile"
+        packet_filter:
+          rate: 100
+        sip_security:
+          log_sip_drop: "yes"
+          log_sip_server_errors: "yes"
+          storage_format:
+            type: "field-list"
+            delimiter: ";"
+            fields:
+              - "date_time"
+              - "dest_ip"
+              - "sip_callee"
+              - "sip_caller"
+
 '''
 
 RETURN = r'''
-# only common fields returned
+auto_discovery:
+  description:
+    - The log publisher the system uses to log Auto Discovered Service/Server events.
+  returned: changed
+  type: str
+  sample: /Common/foo-publisher
+bot_defense:
+  description:
+    - The system logging of events from the Bot Defense mechanism.
+  returned: changed
+  type: complex
+  contains:
+    publisher:
+      description:
+        - The name of the local log publisher used for Bot Defense log messages.
+      returned: changed
+      type: str
+      sample: /Common/foo-publisher
+    send_remote_challenge_failure_messages:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_alarm:
+      description:
+        - Enable/Disable logging of requests triggering ALARM mitigation action of the Bot Defense logging profile.
+      returned: changed
+      type: bool
+      sample: yes
+    log_block:
+      description:
+        - Enable/Disable logging of requests triggering Block mitigation action of the Bot Defense logging profile.
+      returned: changed
+      type: bool
+      sample: yes
+    log_browser:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_browser_verification_action:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_captcha:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_challenge_failure_request:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_device_id_collection_request:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_honeypot_page:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_mobile_application:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_none:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_rate_limit:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_redirect_to_pool:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_suspicious_browser:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_tcp_reset:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_trusted_bot:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_unknown:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+    log_untrusted_bot:
+      description:
+        - "TBD"
+      returned: changed
+      type: bool
+      sample: yes
+classification:
+  description:
+    - The system logging of events from the Classification engine.
+  returned: changed
+  type: complex
+  contains:
+    log_matches:
+        description:
+          - Enables/Disable logging of all events from the Classification engine.
+        returned: changed
+        type: bool
+        sample: yes
+    publisher:
+      description:
+        - The name of the log publisher used for logging of Classification engine events.
+      returned: changed
+      type: str
+      sample: /Common/foo-publisher
+description:
+  description:
+    - Specifies descriptive text that identifies security log profile.
+  returned: changed
+  type: str
+  sample: 'this is a text'
+dos_protection:
+  description:
+    - The log publishers used by the system to log detected DoS attacks.
+  returned: changed
+  type: complex
+  contains:
+    application:
+      description:
+        - The log publisher used for log Application DoS attacks.
+      returned: changed
+      type: str
+      sample: /Common/foo-publisher
+    network:
+      description:
+        - The log publisher used for logging Network DoS events.
+      returned: changed
+      type: str
+      sample: /Common/foo-publisher
+    dns:
+      description:
+        - The log publisher used for logging DNS DoS events.
+      returned: changed
+      type: str
+      sample: /Common/foo-publisher
+    sip:
+      description:
+        - The log publisher the system uses to log SIP DoS events.
+      returned: changed
+      type: str
+      sample: /Common/foo-publisher
+packet_filter:
+  description:
+    - Configures logging of IPv6 Extension Header packet filter rule match events.
+  returned: changed
+  type: complex
+  contains:
+    rate:
+      description:
+        - The rate limit for all combined IPv6 Extension Header packet filter log messages per second.
+      returned: changed
+      type: int
+      sample: 400
+    publisher:
+      description:
+        - The name of the log publisher used for logging of IPv6 Extension Header Packet Filter rule match events.
+      returned: changed
+      type: str
+      sample: /Common/foo-publisher
+protocol_inspection:
+  description:
+    - Configures logging of events from the Protocol Inspection engine.
+  returned: changed
+  type: complex
+  contains:
+    rate:
+      description:
+        - Enables/Disable logging of packet payload for Protocol Inspection events.
+      returned: changed
+      type: bool
+      sample: yes
+    publisher:
+      description:
+        - The name of the log publisher used for logging of Protocol Inspection events.
+      returned: changed
+      type: str
+      sample: /Common/foo-publisher
+dns_security:
+  description:
+    - Configures the system to log dropped, malformed, or rejected requests for DNS Security.
+  returned: changed
+  type: complex
+  contains:
+    publisher:
+      description:
+        - The name of the log publisher used for logging DNS security events.
+      returned: changed
+      type: str
+      sample: /Common/foo-publisher
+    log_dns_drop:
+      description:
+        - Enable/Disable logging of dropped DNS requests.
+      returned: changed
+      type: bool
+      sample: yes
+    log_dns_filtered_drop:
+      description:
+        - Enable/Disable logging of DNS requests dropped due to DNS query/header-opcode filtering.
+      returned: changed
+      type: bool
+      sample: yes
+    log_dns_malformed:
+      description:
+        - Enable/Disable logging of malformed DNS requests.
+      returned: changed
+      type: bool
+      sample: yes
+    log_dns_malicious:
+      description:
+        - Enable/Disable logging of malicious DNS requests.
+      returned: changed
+      type: bool
+      sample: yes
+    log_dns_reject:
+      description:
+        - Enable/Disable logging of rejected DNS requests.
+      returned: changed
+      type: bool
+      sample: yes
+    storage_format:
+      description:
+        - The formatting of DNS security log messages.
+      returned: changed
+      type: complex
+      contains:
+        type:
+          description:
+            - The format type for log messages.
+          returned: changed
+          type: str
+          sample: user-defined
+        delimiter:
+          description:
+            - The delimiter string.
+          returned: changed
+          type: str
+          sample: "-"
+        fields:
+          description:
+            - The items the server logs.
+          returned: changed
+          type: list
+          sample: ['action', 'vlan']
+        user_string:
+          description:
+            - User-defined string.
+          returned: changed
+          type: str
+          sample: "$action"
+sip_security:
+  description:
+    - Configures the system to log dropped and malformed malicious SIP requests, global and request failures,
+      redirected responses, and server errors for SIP Security.
+  returned: changed
+  type: complex
+  contains:
+    publisher:
+      description:
+        - The name of the log publisher used for logging SIP protocol security events.
+      returned: changed
+      type: str
+      sample: /Common/foo-publisher
+    log_sip_drop:
+      description:
+        - Enable/Disable logging of dropped SIP requests.
+      returned: changed
+      type: bool
+      sample: yes
+    log_sip_global_failures:
+      description:
+        - Enable/Disable logging of SIP global failures.
+      returned: changed
+      type: bool
+      sample: yes
+    log_sip_malformed:
+      description:
+        - Enable/Disable logging of malformed SIP requests.
+      returned: changed
+      type: bool
+      sample: yes
+    log_sip_redirect_responses:
+      description:
+        - Enable/Disable logging of SIP redirection responses.
+      returned: changed
+      type: bool
+      sample: yes
+    log_sip_request_failures:
+      description:
+        - Enable/Disable logging of SIP request failures.
+      returned: changed
+      type: bool
+      sample: yes
+    log_sip_server_errors:
+      description:
+        - Enable/Disable logging of SIP server errors.
+      returned: changed
+      type: bool
+      sample: yes
+    storage_format:
+      description:
+        - The formatting of SIP security log messages.
+      returned: changed
+      type: complex
+      contains:
+        type:
+          description:
+            - The format type for log messages.
+          returned: changed
+          type: str
+          sample: user-defined
+        delimiter:
+          description:
+            - The delimiter string.
+          returned: changed
+          type: str
+          sample: "-"
+        fields:
+          description:
+            - The items the server logs.
+          returned: changed
+          type: list
+          sample: ['action', 'vlan']
+        user_string:
+          description:
+            - User-defined string.
+          returned: changed
+          type: str
+          sample: "$action"
+network_security:
+  description:
+    - Configures the system to log network firewall events.
+  returned: changed
+  type: complex
+  contains:
+    publisher:
+      description:
+        - The name of the log publisher used for logging network events.
+      returned: changed
+      type: str
+      sample: /Common/foo-publisher
+    log_acl_match_accept:
+      description:
+        - Enable/Disable logging of packets that match ACL rules action accept.
+      returned: changed
+      type: bool
+      sample: yes
+    log_acl_match_drop:
+      description:
+        - Enable/Disable logging of packets that match ACL rules action drop.
+      returned: changed
+      type: bool
+      sample: yes
+    log_acl_match_reject:
+      description:
+        - Enable/Disable logging of packets that match ACL rules action reject.
+      returned: changed
+      type: bool
+      sample: yes
+    log_geo_always:
+      description:
+        - Enable/Disable logging of Geo IP Location information.
+      returned: changed
+      type: bool
+      sample: yes
+    log_ip_errors:
+      description:
+        - Enable/Disable logging of IP errors.
+      returned: changed
+      type: bool
+      sample: yes
+    log_tcp_events:
+      description:
+        - Enable/Disable logging of TCP events.
+      returned: changed
+      type: bool
+      sample: yes
+    log_tcp_errors:
+      description:
+        - Enable/Disable logging of TCP errors.
+      returned: changed
+      type: bool
+      sample: yes
+    log_translation_fields:
+      description:
+        - Enable/Disable logging of translation fields in ACL and TCP events.
+      returned: changed
+      type: bool
+      sample: yes
+    log_acl_to_box_deny:
+      description:
+        - nable/Disable logging of any packet that is dropped or denied by management port firewall rules.
+      returned: changed
+      type: bool
+      sample: yes
+    log_user_always:
+      description:
+        - Enable/Disable logging of certain subscriber information.
+      returned: changed
+      type: bool
+      sample: yes
+    log_uuid_field:
+      description:
+        - Enable/Disable logging of UUID of the specific rule that triggered the log message.
+      returned: changed
+      type: bool
+      sample: yes
+    rate_limit_acl_match_accept:
+      description:
+        - The rate limit for all network firewall log messages with this acl match accept action.
+      returned: changed
+      type: str
+      sample: indefinite
+    rate_limit_acl_match_drop:
+      description:
+        - The rate limit for all network firewall log messages with this acl match drop action.
+      returned: changed
+      type: str
+      sample: indefinite
+    rate_limit_match_reject:
+      description:
+        - The rate limit for all network firewall log messages with this acl match reject action.
+      returned: changed
+      type: str
+      sample: indefinite
+    rate_limit_aggregate_rate:
+      description:
+        - The rate limit for all combined network firewall log messages per second.
+      returned: changed
+      type: str
+      sample: indefinite
+    rate_limit_ip_errors:
+      description:
+        - The rate limit for logging of IP error packet.
+      returned: changed
+      type: str
+      sample: indefinite
+    rate_limit_tcp_errors:
+      description:
+        - The rate limit for logging of TCP error packets.
+      returned: changed
+      type: str
+      sample: indefinite
+    rate_limit_tcp_events:
+      description:
+        - The rate limit for logging of TCP events.
+      returned: changed
+      type: str
+      sample: indefinite
+    storage_format:
+      description:
+        - The formatting of network events log messages.
+      returned: changed
+      type: complex
+      contains:
+        type:
+          description:
+            - The format type for log messages.
+          returned: changed
+          type: str
+          sample: user-defined
+        delimiter:
+          description:
+            - The delimiter string.
+          returned: changed
+          type: str
+          sample: "-"
+        fields:
+          description:
+            - The items the server logs.
+          returned: changed
+          type: list
+          sample: ['action', 'vlan']
+        user_string:
+          description:
+            - User-defined string.
+          returned: changed
+          type: str
+          sample: "$action"
 '''
 from datetime import datetime
 
@@ -284,7 +1141,9 @@ from ..module_utils.client import (
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, fq_name, flatten_boolean, transform_name
 )
-from ..module_utils.compare import cmp_str_with_none
+from ..module_utils.compare import (
+    cmp_str_with_none, cmp_simple_list
+)
 
 
 class Parameters(AnsibleF5Parameters):
@@ -309,7 +1168,10 @@ class Parameters(AnsibleF5Parameters):
         'autoDiscovery',
         'classification',
         'packetFilter',
-        'botDefense'
+        'botDefense',
+        'dns_security',
+        'sip_security',
+        'network_security'
     ]
 
     returnables = [
@@ -343,7 +1205,51 @@ class Parameters(AnsibleF5Parameters):
         'bot_log_tcp_reset',
         'bot_log_trusted_bot',
         'bot_log_unknown',
-        'bot_log_untrusted_bot'
+        'bot_log_untrusted_bot',
+        'dns_sec_publisher',
+        'dns_sec_log_dns_drop',
+        'dns_sec_log_filter_drop',
+        'dns_sec_log_malformed',
+        'dns_sec_log_malicious',
+        'dns_sec_log_dns_reject',
+        'dns_storage_format_type',
+        'dns_storage_format_delimiter',
+        'dns_storage_format_fields',
+        'dns_storage_format_user_string',
+        'sip_sec_publisher',
+        'sip_sec_log_sip_drop',
+        'sip_sec_log_global_fail',
+        'sip_sec_log_malformed',
+        'sip_sec_log_redirect_response',
+        'sip_sec_log_sip_failure',
+        'sip_sec_log_sip_server_err',
+        'sip_storage_format_type',
+        'sip_storage_format_delimiter',
+        'sip_storage_format_fields',
+        'sip_storage_format_user_string',
+        'net_sec_publisher',
+        'net_sec_log_acl_match_accept',
+        'net_sec_log_acl_match_drop',
+        'net_sec_log_acl_match_reject',
+        'net_sec_log_geo_always',
+        'net_sec_log_ip_errors',
+        'net_sec_log_tcp_errors',
+        'net_sec_log_tcp_events',
+        'net_sec_log_translation_fields',
+        'net_sec_log_user_always',
+        'net_sec_log_uuid_field',
+        'net_sec_rate_limit_acl_match_accept',
+        'net_sec_rate_limit_acl_match_drop',
+        'net_sec_rate_limit_match_reject',
+        'net_sec_rate_limit_aggregate_rate',
+        'net_sec_rate_limit_log_acl_to_box_deny',
+        'net_sec_rate_limit_ip_errors',
+        'net_sec_rate_limit_tcp_errors',
+        'net_sec_rate_limit_tcp_events',
+        'net_storage_format_type',
+        'net_storage_format_delimiter',
+        'net_storage_format_fields',
+        'net_storage_format_user_string'
     ]
 
     updatables = [
@@ -377,7 +1283,51 @@ class Parameters(AnsibleF5Parameters):
         'bot_log_tcp_reset',
         'bot_log_trusted_bot',
         'bot_log_unknown',
-        'bot_log_untrusted_bot'
+        'bot_log_untrusted_bot',
+        'dns_sec_publisher',
+        'dns_sec_log_dns_drop',
+        'dns_sec_log_filter_drop',
+        'dns_sec_log_malformed',
+        'dns_sec_log_malicious',
+        'dns_sec_log_dns_reject',
+        'dns_storage_format_type',
+        'dns_storage_format_delimiter',
+        'dns_storage_format_fields',
+        'dns_storage_format_user_string',
+        'sip_sec_publisher',
+        'sip_sec_log_sip_drop',
+        'sip_sec_log_global_fail',
+        'sip_sec_log_malformed',
+        'sip_sec_log_redirect_response',
+        'sip_sec_log_sip_failure',
+        'sip_sec_log_sip_server_err',
+        'sip_storage_format_type',
+        'sip_storage_format_delimiter',
+        'sip_storage_format_fields',
+        'sip_storage_format_user_string',
+        'net_sec_publisher',
+        'net_sec_log_acl_match_accept',
+        'net_sec_log_acl_match_drop',
+        'net_sec_log_acl_match_reject',
+        'net_sec_log_geo_always',
+        'net_sec_log_ip_errors',
+        'net_sec_log_tcp_errors',
+        'net_sec_log_tcp_events',
+        'net_sec_log_translation_fields',
+        'net_sec_log_user_always',
+        'net_sec_log_uuid_field',
+        'net_sec_rate_limit_acl_match_accept',
+        'net_sec_rate_limit_acl_match_drop',
+        'net_sec_rate_limit_match_reject',
+        'net_sec_rate_limit_aggregate_rate',
+        'net_sec_rate_limit_log_acl_to_box_deny',
+        'net_sec_rate_limit_ip_errors',
+        'net_sec_rate_limit_tcp_errors',
+        'net_sec_rate_limit_tcp_events',
+        'net_storage_format_type',
+        'net_storage_format_delimiter',
+        'net_storage_format_fields',
+        'net_storage_format_user_string'
     ]
 
 
@@ -545,8 +1495,290 @@ class ApiParameters(Parameters):
         return self._values['bot_defense'][0]['filter'].get('logUntrustedBot')
 
     @property
+    def dns_sec_publisher(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._values['dns_security'].get('publisher')
+
+    @property
+    def dns_sec_log_dns_drop(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._values['dns_security']['filter'].get('logDnsDrop')
+
+    @property
+    def dns_sec_log_filter_drop(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._values['dns_security']['filter'].get('logDnsFilteredDrop')
+
+    @property
+    def dns_sec_log_malformed(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._values['dns_security']['filter'].get('logDnsMalformed')
+
+    @property
+    def dns_sec_log_malicious(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._values['dns_security']['filter'].get('logDnsMalicious')
+
+    @property
+    def dns_sec_log_dns_reject(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._values['dns_security']['filter'].get('logDnsReject')
+
+    @property
+    def dns_storage_format_type(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._values['dns_security']['format'].get('type')
+
+    @property
+    def dns_storage_format_delimiter(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._values['dns_security']['format'].get('fieldListDelimiter')
+
+    @property
+    def dns_storage_format_fields(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._values['dns_security']['format'].get('fieldList')
+
+    @property
+    def dns_storage_format_user_string(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._values['dns_security']['format'].get('userDefined')
+
+    @property
+    def sip_sec_publisher(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._values['sip_security'].get('publisher')
+
+    @property
+    def sip_sec_log_sip_drop(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._values['sip_security']['filter'].get('logSipDrop')
+
+    @property
+    def sip_sec_log_global_fail(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._values['sip_security']['filter'].get('logSipGlobalFailures')
+
+    @property
+    def sip_sec_log_malformed(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._values['sip_security']['filter'].get('logSipMalformed')
+
+    @property
+    def sip_sec_log_redirect_response(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._values['sip_security']['filter'].get('logSipRedirectionResponses')
+
+    @property
+    def sip_sec_log_sip_failure(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._values['sip_security']['filter'].get('logSipRequestFailures')
+
+    @property
+    def sip_sec_log_sip_server_err(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._values['sip_security']['filter'].get('logSipServerErrors')
+
+    @property
+    def sip_storage_format_type(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._values['sip_security']['format'].get('type')
+
+    @property
+    def sip_storage_format_delimiter(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._values['sip_security']['format'].get('fieldListDelimiter')
+
+    @property
+    def sip_storage_format_fields(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._values['sip_security']['format'].get('fieldList')
+
+    @property
+    def sip_storage_format_user_string(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._values['sip_security']['format'].get('userDefined')
+
+    @property
+    def net_sec_publisher(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security'].get('publisher')
+
+    @property
+    def net_sec_log_acl_match_accept(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['filter'].get('logAclMatchAccept')
+
+    @property
+    def net_sec_log_acl_match_drop(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['filter'].get('logAclMatchDrop')
+
+    @property
+    def net_sec_log_acl_match_reject(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['filter'].get('logAclMatchReject')
+
+    @property
+    def net_sec_log_geo_always(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['filter'].get('logGeoAlways')
+
+    @property
+    def net_sec_log_ip_errors(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['filter'].get('logIpErrors')
+
+    @property
+    def net_sec_log_tcp_errors(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['filter'].get('logTcpErrors')
+
+    @property
+    def net_sec_log_tcp_events(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['filter'].get('logTcpEvents')
+
+    @property
+    def net_sec_log_translation_fields(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['filter'].get('logTranslationFields')
+
+    @property
+    def net_sec_log_user_always(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['filter'].get('logUserAlways')
+
+    @property
+    def net_sec_log_uuid_field(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['filter'].get('logUuidField')
+
+    @property
+    def net_sec_rate_limit_acl_match_accept(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['rateLimit'].get('aclMatchAccept')
+
+    @property
+    def net_sec_rate_limit_acl_match_drop(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['rateLimit'].get('aclMatchDrop')
+
+    @property
+    def net_sec_rate_limit_match_reject(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['rateLimit'].get('aclMatchReject')
+
+    @property
+    def net_sec_rate_limit_aggregate_rate(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['rateLimit'].get('aggregateRate')
+
+    @property
+    def net_sec_rate_limit_ip_errors(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['rateLimit'].get('ipErrors')
+
+    @property
+    def net_sec_rate_limit_log_acl_to_box_deny(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['rateLimit'].get('logAclToBoxDeny')
+
+    @property
+    def net_sec_rate_limit_tcp_errors(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['rateLimit'].get('tcpErrors')
+
+    @property
+    def net_sec_rate_limit_tcp_events(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['rateLimit'].get('tcpEvents')
+
+    @property
+    def net_storage_format_type(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['format'].get('type')
+
+    @property
+    def net_storage_format_delimiter(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['format'].get('fieldListDelimiter')
+
+    @property
+    def net_storage_format_fields(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['format'].get('fieldList')
+
+    @property
+    def net_storage_format_user_string(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._values['network_security']['format'].get('userDefined')
+
+    @property
     def bot_defense_exists(self):
         if self._values['bot_defense'] is None:
+            return False
+        return True
+
+    @property
+    def dns_sec_exists(self):
+        if self._values['dns_security'] is None:
+            return False
+        return True
+
+    @property
+    def sip_sec_exists(self):
+        if self._values['sip_security'] is None:
+            return False
+        return True
+
+    @property
+    def net_sec_exists(self):
+        if self._values['network_security'] is None:
             return False
         return True
 
@@ -564,6 +1796,23 @@ class ModuleParameters(Parameters):
         if item == '':
             return ''
         return fq_name(self.partition, item)
+
+    @staticmethod
+    def _handle_rate_limit(item, name):
+        if item is None:
+            return None
+        if item == 'indefinite':
+            return 4294967295
+        try:
+            if 0 <= int(item) <= 4294967295:
+                return int(item)
+        except ValueError:
+            raise F5ModuleError(
+                f"Invalid value for {name} must be in range 0 - 4294967295 or 'indefinite', got {item}."
+            )
+        raise F5ModuleError(
+            f"Value out of range: {item}, valid {name} must be in range 0 - 4294967295 or 'indefinite'."
+        )
 
     @property
     def auto_discovery(self):
@@ -656,120 +1905,433 @@ class ModuleParameters(Parameters):
     def bot_log_alarm(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_alarm'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_alarm'))
 
     @property
     def bot_log_block(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_block'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_block'))
 
     @property
     def bot_log_browser(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_browser'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_browser'))
 
     @property
     def bot_log_browser_verify(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_browser_verification_action'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_browser_verification_action'))
 
     @property
     def bot_log_captcha(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_captcha'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_captcha'))
 
     @property
     def bot_log_challenge_failure(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_challenge_failure_request'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_challenge_failure_request'))
 
     @property
     def bot_log_deviceid_coll_req(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_device_id_collection_request'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_device_id_collection_request'))
 
     @property
     def bot_log_honey_pot(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_honeypot_page'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_honeypot_page'))
 
     @property
     def bot_log_mobile_app(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_mobile_application'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_mobile_application'))
 
     @property
     def bot_log_none(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_none'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_none'))
 
     @property
     def bot_log_rate_limit(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_rate_limit'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_rate_limit'))
 
     @property
     def bot_log_redirect_to_pool(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_redirect_to_pool'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_redirect_to_pool'))
 
     @property
     def bot_log_suspect_browser(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_suspicious_browser'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_suspicious_browser'))
 
     @property
     def bot_log_tcp_reset(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_tcp_reset'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_tcp_reset'))
 
     @property
     def bot_log_trusted_bot(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_trusted_bot'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_trusted_bot'))
 
     @property
     def bot_log_unknown(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_unknown'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_unknown'))
 
     @property
     def bot_log_untrusted_bot(self):
         if self._values['bot_defense'] is None:
             return None
-        if self._values['bot_defense'].get('filter'):
-            return self._handle_booleans(self._values['bot_defense']['filter'].get('log_untrusted_bot'))
+        return self._handle_booleans(self._values['bot_defense'].get('log_untrusted_bot'))
+
+    @property
+    def dns_sec_publisher(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._handle_publishers(self._values['dns_security'].get('publisher'))
+
+    @property
+    def dns_sec_log_dns_drop(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._handle_booleans(self._values['dns_security'].get('log_dns_drop'))
+
+    @property
+    def dns_sec_log_filter_drop(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._handle_booleans(self._values['dns_security'].get('log_dns_filtered_drop'))
+
+    @property
+    def dns_sec_log_malformed(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._handle_booleans(self._values['dns_security'].get('log_dns_malformed'))
+
+    @property
+    def dns_sec_log_malicious(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._handle_booleans(self._values['dns_security'].get('log_dns_malicious'))
+
+    @property
+    def dns_sec_log_dns_reject(self):
+        if self._values['dns_security'] is None:
+            return None
+        return self._handle_booleans(self._values['dns_security'].get('log_dns_reject'))
+
+    @property
+    def dns_storage_format_type(self):
+        if self._values['dns_security'] is None:
+            return None
+        if self._values['dns_security'].get('storage_format'):
+            return self._values['dns_security']['storage_format'].get('type')
+
+    @property
+    def dns_storage_format_delimiter(self):
+        if self._values['dns_security'] is None:
+            return None
+        if self._values['dns_security'].get('storage_format'):
+            return self._values['dns_security']['storage_format'].get('delimiter')
+
+    @property
+    def dns_storage_format_fields(self):
+        if self._values['dns_security'] is None:
+            return None
+        if self.dns_storage_format_type == 'none':
+            return None
+        if self._values['dns_security'].get('storage_format'):
+            fields = self._values['dns_security']['storage_format'].get('fields')
+            if fields:
+                valid = {
+                    'action', 'attack_type', 'context_name', 'date_time', 'dest_ip', 'dest_port', 'dns_query_name',
+                    'dns_query_type', 'route_domain', 'src_ip', 'src_port', 'vlan'
+                }
+                if not set(fields).issubset(valid):
+                    raise F5ModuleError(f"Invalid fields value, list item must be one of: {valid}")
+                return fields
+
+    @property
+    def dns_storage_format_user_string(self):
+        if self._values['dns_security'] is None:
+            return None
+        if self.dns_storage_format_type == 'none':
+            return None
+        if self._values['dns_security'].get('storage_format'):
+            return self._values['dns_security']['storage_format'].get('user_string')
+
+    @property
+    def sip_sec_publisher(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._handle_publishers(self._values['sip_security'].get('publisher'))
+
+    @property
+    def sip_sec_log_sip_drop(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._handle_booleans(self._values['sip_security'].get('log_sip_drop'))
+
+    @property
+    def sip_sec_log_global_fail(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._handle_booleans(self._values['sip_security'].get('log_sip_global_failures'))
+
+    @property
+    def sip_sec_log_malformed(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._handle_booleans(self._values['sip_security'].get('log_sip_malformed'))
+
+    @property
+    def sip_sec_log_redirect_response(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._handle_booleans(self._values['sip_security'].get('log_sip_redirect_responses'))
+
+    @property
+    def sip_sec_log_sip_failure(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._handle_booleans(self._values['sip_security'].get('log_sip_request_failures'))
+
+    @property
+    def sip_sec_log_sip_server_err(self):
+        if self._values['sip_security'] is None:
+            return None
+        return self._handle_booleans(self._values['sip_security'].get('log_sip_server_errors'))
+
+    @property
+    def sip_storage_format_type(self):
+        if self._values['sip_security'] is None:
+            return None
+        if self._values['sip_security'].get('storage_format'):
+            return self._values['sip_security']['storage_format'].get('type')
+
+    @property
+    def sip_storage_format_delimiter(self):
+        if self._values['sip_security'] is None:
+            return None
+        if self._values['sip_security'].get('storage_format'):
+            return self._values['sip_security']['storage_format'].get('delimiter')
+
+    @property
+    def sip_storage_format_fields(self):
+        if self._values['sip_security'] is None:
+            return None
+        if self.sip_storage_format_type == 'none':
+            return None
+        if self._values['sip_security'].get('storage_format'):
+            fields = self._values['sip_security']['storage_format'].get('fields')
+            if fields:
+                valid = {'action', 'context_name', 'date_time', 'dest_ip', 'dest_port', 'route_domain', 'sip_callee',
+                         'sip_caller', 'sip_method_type', 'src_ip', 'src_port', 'vlan'
+                         }
+                if not set(fields).issubset(valid):
+                    raise F5ModuleError(f"Invalid fields value, list item must be one of: {valid}")
+                return fields
+
+    @property
+    def sip_storage_format_user_string(self):
+        if self._values['sip_security'] is None:
+            return None
+        if self.sip_storage_format_type == 'none':
+            return None
+        if self._values['sip_security'].get('storage_format'):
+            return self._values['sip_security']['storage_format'].get('user_string')
+
+    @property
+    def net_sec_publisher(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_publishers(self._values['network_security'].get('publisher'))
+
+    @property
+    def net_sec_log_acl_match_accept(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_booleans(self._values['network_security'].get('log_acl_match_accept'))
+
+    @property
+    def net_sec_log_acl_match_drop(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_booleans(self._values['network_security'].get('log_acl_match_drop'))
+
+    @property
+    def net_sec_log_acl_match_reject(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_booleans(self._values['network_security'].get('log_acl_match_reject'))
+
+    @property
+    def net_sec_rate_limit_log_acl_to_box_deny(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_booleans(self._values['network_security'].get('log_acl_to_box_deny'))
+
+    @property
+    def net_sec_log_geo_always(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_booleans(self._values['network_security'].get('log_geo_always'))
+
+    @property
+    def net_sec_log_ip_errors(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_booleans(self._values['network_security'].get('log_ip_errors'))
+
+    @property
+    def net_sec_log_tcp_errors(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_booleans(self._values['network_security'].get('log_tcp_errors'))
+
+    @property
+    def net_sec_log_tcp_events(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_booleans(self._values['network_security'].get('log_tcp_events'))
+
+    @property
+    def net_sec_log_translation_fields(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_booleans(self._values['network_security'].get('log_translation_fields'))
+
+    @property
+    def net_sec_log_user_always(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_booleans(self._values['network_security'].get('log_user_always'))
+
+    @property
+    def net_sec_log_uuid_field(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_booleans(self._values['network_security'].get('log_uuid_field'))
+
+    @property
+    def net_sec_rate_limit_acl_match_accept(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_rate_limit(
+            self._values['network_security'].get('rate_limit_acl_match_accept'), 'rate_limit_acl_match_accept'
+        )
+
+    @property
+    def net_sec_rate_limit_acl_match_drop(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_rate_limit(
+            self._values['network_security'].get('rate_limit_acl_match_drop'), 'rate_limit_acl_match_drop'
+        )
+
+    @property
+    def net_sec_rate_limit_match_reject(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_rate_limit(
+            self._values['network_security'].get('rate_limit_match_reject'), 'rate_limit_match_reject'
+        )
+
+    @property
+    def net_sec_rate_limit_aggregate_rate(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_rate_limit(
+            self._values['network_security'].get('rate_limit_aggregate_rate'), 'rate_limit_aggregate_rate'
+        )
+
+    @property
+    def net_sec_rate_limit_ip_errors(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_rate_limit(
+            self._values['network_security'].get('rate_limit_ip_errors'), 'rate_limit_ip_errors'
+        )
+
+    @property
+    def net_sec_rate_limit_tcp_errors(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_rate_limit(
+            self._values['network_security'].get('rate_limit_tcp_errors'), 'rate_limit_tcp_errors'
+        )
+
+    @property
+    def net_sec_rate_limit_tcp_events(self):
+        if self._values['network_security'] is None:
+            return None
+        return self._handle_rate_limit(
+            self._values['network_security'].get('rate_limit_tcp_events'), 'rate_limit_tcp_events'
+        )
+
+    @property
+    def net_storage_format_type(self):
+        if self._values['network_security'] is None:
+            return None
+        if self._values['network_security'].get('storage_format'):
+            return self._values['network_security']['storage_format'].get('type')
+
+    @property
+    def net_storage_format_delimiter(self):
+        if self._values['network_security'] is None:
+            return None
+        if self._values['network_security'].get('storage_format'):
+            return self._values['network_security']['storage_format'].get('delimiter')
+
+    @property
+    def net_storage_format_fields(self):
+        if self._values['network_security'] is None:
+            return None
+        if self.net_storage_format_type == 'none':
+            return None
+        if self._values['network_security'].get('storage_format'):
+            fields = self._values['network_security']['storage_format'].get('fields')
+            if fields:
+                valid = {
+                    'acl_policy_name', 'acl_policy_type', 'acl_rule_name', 'acl_rule_uuid', 'action', 'bigip_hostname',
+                    'context_name', 'context_type', 'date_time', 'dest_fqdn', 'dest_geo', 'dest_ip',
+                    'dest_ipint_categories', 'dest_port', 'drop_reason', 'management_ip_address', 'protocol',
+                    'route_domain', 'sa_translation_pool', 'sa_translation_type', 'source_fqdn',
+                    'source_ipint_categories', 'source_user', 'src_geo', 'src_ip', 'src_port', 'translated_dest_ip',
+                    'translated_dest_port', 'translated_ip_protocol', 'translated_route_domain', 'translated_src_ip',
+                    'translated_src_port', 'translated_vlan', 'vlan'
+                }
+                if not set(fields).issubset(valid):
+                    raise F5ModuleError(f"Invalid fields value, list item must be one of: {valid}")
+                return fields
+
+    @property
+    def net_storage_format_user_string(self):
+        if self._values['network_security'] is None:
+            return None
+        if self.net_storage_format_type == 'none':
+            return None
+        if self._values['network_security'].get('storage_format'):
+            return self._values['network_security']['storage_format'].get('user_string')
 
 
 class Changes(Parameters):
@@ -783,25 +2345,23 @@ class Changes(Parameters):
             raise
         return result
 
+    def _finalize_parameter(self, item):
+        result = self._filter_params(item)
+        if result:
+            return result
+
 
 class UsableChanges(Changes):
     @property
     def auto_discovery(self):
         if self._values['auto_discovery'] is None:
             return None
-        result = dict(
-            logPublisher=self._values['auto_discovery']
-        )
-        return result
+        return self._finalize_parameter(dict(logPublisher=self._values['auto_discovery']))
 
     @property
     def classification(self):
-        result = self._filter_params(
-            dict(logAllClassificationMatches=self._values['classification_log'],
-                 logPublisher=self._values['classification_pub'])
-        )
-        if result:
-            return result
+        return self._finalize_parameter(dict(logAllClassificationMatches=self._values['classification_log'],
+                                             logPublisher=self._values['classification_pub']))
 
     @property
     def dos_app(self):
@@ -816,17 +2376,13 @@ class UsableChanges(Changes):
 
     @property
     def protocol_inspect(self):
-        tmp = dict(logPacket=self._values['proto_inspect_log'], logPublisher=self._values['proto_inspect_pub'])
-        result = self._filter_params(tmp)
-        if result:
-            return result
+        return self._finalize_parameter(dict(logPacket=self._values['proto_inspect_log'],
+                                             logPublisher=self._values['proto_inspect_pub']))
 
     @property
     def packet_filter(self):
-        tmp = dict(aggregateRate=self._values['packet_filter_rate'], logPublisher=self._values['packet_filter_pub'])
-        result = self._filter_params(tmp)
-        if result:
-            return result
+        return self._finalize_parameter(dict(aggregateRate=self._values['packet_filter_rate'],
+                                             logPublisher=self._values['packet_filter_pub']))
 
     @property
     def bot_defense(self):
@@ -861,6 +2417,97 @@ class UsableChanges(Changes):
             result.append(element)
             return result
 
+    @property
+    def dns_security(self):
+        tmp_filter = self._filter_params(dict(
+            logDnsDrop=self._values['dns_sec_log_dns_drop'],
+            logDnsFilteredDrop=self._values['dns_sec_log_filter_drop'],
+            logDnsMalformed=self._values['dns_sec_log_malformed'],
+            logDnsMalicious=self._values['dns_sec_log_malicious'],
+            logDnsReject=self._values['dns_sec_log_dns_reject']
+        ))
+        tmp_format = self._filter_params(dict(
+            fieldListDelimiter=self._values['dns_storage_format_delimiter'],
+            type=self._values['dns_storage_format_type'],
+            fieldList=self._values['dns_storage_format_fields'],
+            userDefined=self._values['dns_storage_format_user_string']
+        ))
+        result = self._filter_params(dict(publisher=self._values['dns_sec_publisher']))
+
+        if tmp_filter:
+            result['filter'] = tmp_filter
+        if tmp_format:
+            result['format'] = tmp_format
+        if result:
+            return result
+
+    @property
+    def sip_security(self):
+        tmp_filter = self._filter_params(dict(
+            logSipDrop=self._values['sip_sec_log_sip_drop'],
+            logSipGlobalFailures=self._values['sip_sec_log_global_fail'],
+            logSipMalformed=self._values['sip_sec_log_malformed'],
+            logSipRedirectionResponses=self._values['sip_sec_log_redirect_response'],
+            logSipRequestFailures=self._values['sip_sec_log_sip_failure'],
+            logSipServerErrors=self._values['sip_sec_log_sip_server_err']
+        ))
+        tmp_format = self._filter_params(dict(
+            fieldListDelimiter=self._values['sip_storage_format_delimiter'],
+            type=self._values['sip_storage_format_type'],
+            fieldList=self._values['sip_storage_format_fields'],
+            userDefined=self._values['sip_storage_format_user_string']
+        ))
+        result = self._filter_params(dict(publisher=self._values['sip_sec_publisher']))
+
+        if tmp_filter:
+            result['filter'] = tmp_filter
+        if tmp_format:
+            result['format'] = tmp_format
+        if result:
+            return result
+
+    @property
+    def network_security(self):
+        tmp_filter = self._filter_params(dict(
+            logAclMatchAccept=self._values['net_sec_log_acl_match_accept'],
+            logAclMatchDrop=self._values['net_sec_log_acl_match_drop'],
+            logAclMatchReject=self._values['net_sec_log_acl_match_reject'],
+            logGeoAlways=self._values['net_sec_log_geo_always'],
+            logAclToBoxDeny=self._values['net_sec_rate_limit_log_acl_to_box_deny'],
+            logIpErrors=self._values['net_sec_log_ip_errors'],
+            logTcpErrors=self._values['net_sec_log_tcp_errors'],
+            logTcpEvents=self._values['net_sec_log_tcp_events'],
+            logTranslationFields=self._values['net_sec_log_translation_fields'],
+            logUserAlways=self._values['net_sec_log_user_always'],
+            logUuidField=self._values['net_sec_log_uuid_field']
+        ))
+        tmp_rate = self._filter_params(dict(
+            aclMatchAccept=self._values['net_sec_rate_limit_acl_match_accept'],
+            aclMatchDrop=self._values['net_sec_rate_limit_acl_match_drop'],
+            aclMatchReject=self._values['net_sec_rate_limit_match_reject'],
+            aggregateRate=self._values['net_sec_rate_limit_aggregate_rate'],
+            ipErrors=self._values['net_sec_rate_limit_ip_errors'],
+            tcpErrors=self._values['net_sec_rate_limit_tcp_errors'],
+            tcpEvents=self._values['net_sec_rate_limit_tcp_events'],
+        ))
+        tmp_format = self._filter_params(dict(
+            fieldListDelimiter=self._values['net_storage_format_delimiter'],
+            type=self._values['net_storage_format_type'],
+            fieldList=self._values['net_storage_format_fields'],
+            userDefined=self._values['net_storage_format_user_string']
+        ))
+
+        result = self._filter_params(dict(publisher=self._values['net_sec_publisher']))
+
+        if tmp_filter:
+            result['filter'] = tmp_filter
+        if tmp_format:
+            result['format'] = tmp_format
+        if tmp_rate:
+            result['rateLimit'] = tmp_rate
+        if result:
+            return result
+
 
 class ReportableChanges(Changes):
     returnables = [
@@ -870,8 +2517,19 @@ class ReportableChanges(Changes):
         'description',
         'dos_protection',
         'packet_filter',
-        'protocol_inspection'
+        'protocol_inspection',
+        'dns_security',
+        'sip_security',
+        'network_security'
     ]
+
+    @staticmethod
+    def _handle_rate(item):
+        if item is None:
+            return None
+        if item == 4294967295:
+            return 'indefinite'
+        return str(item)
 
     @property
     def auto_discovery(self):
@@ -881,65 +2539,128 @@ class ReportableChanges(Changes):
 
     @property
     def bot_defense(self):
-        tmp_filter = dict(
-            log_alarm=self._values['bot_log_alarm'],
-            log_block=self._values['bot_log_block'],
-            log_browser=self._values['bot_log_browser'],
-            log_browser_verification_action=self._values['bot_log_browser_verify'],
-            log_captcha=self._values['bot_log_captcha'],
-            log_challenge_failure_request=self._values['bot_log_challenge_failure'],
-            log_device_id_collection_request=self._values['bot_log_deviceid_coll_req'],
-            log_honeypot_page=self._values['bot_log_honey_pot'],
-            log_mobile_application=self._values['bot_log_mobile_app'],
-            log_none=self._values['bot_log_none'],
-            log_rate_limit=self._values['bot_log_rate_limit'],
-            log_redirect_to_pool=self._values['bot_log_redirect_to_pool'],
-            log_suspicious_browser=self._values['bot_log_suspect_browser'],
-            log_tcp_reset=self._values['bot_log_tcp_reset'],
-            log_trusted_bot=self._values['bot_log_trusted_bot'],
-            log_unknown=self._values['bot_log_unknown'],
-            log_untrusted_bot=self._values['bot_log_untrusted_bot']
-        )
-        log_filter = self._filter_params(tmp_filter)
-        result = self._filter_params(
+        return self._finalize_parameter(
             dict(publisher=self._values['bot_publisher'],
-                 send_remote_challenge_failure_messages=self._values['bot_remote_chall_fail_msg'])
+                 send_remote_challenge_failure_messages=flatten_boolean(self._values['bot_remote_chall_fail_msg']),
+                 log_alarm=flatten_boolean(self._values['bot_log_alarm']),
+                 log_block=flatten_boolean(self._values['bot_log_block']),
+                 log_browser=flatten_boolean(self._values['bot_log_browser']),
+                 log_browser_verification_action=flatten_boolean(self._values['bot_log_browser_verify']),
+                 log_captcha=flatten_boolean(self._values['bot_log_captcha']),
+                 log_challenge_failure_request=flatten_boolean(self._values['bot_log_challenge_failure']),
+                 log_device_id_collection_request=flatten_boolean(self._values['bot_log_deviceid_coll_req']),
+                 log_honeypot_page=flatten_boolean(self._values['bot_log_honey_pot']),
+                 log_mobile_application=flatten_boolean(self._values['bot_log_mobile_app']),
+                 log_none=flatten_boolean(self._values['bot_log_none']),
+                 log_rate_limit=flatten_boolean(self._values['bot_log_rate_limit']),
+                 log_redirect_to_pool=flatten_boolean(self._values['bot_log_redirect_to_pool']),
+                 log_suspicious_browser=flatten_boolean(self._values['bot_log_suspect_browser']),
+                 log_tcp_reset=flatten_boolean(self._values['bot_log_tcp_reset']),
+                 log_trusted_bot=flatten_boolean(self._values['bot_log_trusted_bot']),
+                 log_unknown=flatten_boolean(self._values['bot_log_unknown']),
+                 log_untrusted_bot=flatten_boolean(self._values['bot_log_untrusted_bot'])
+                 )
         )
-        if log_filter:
-            result['filter'] = log_filter
-        if result:
-            return result
 
     @property
     def classification(self):
-        result = self._filter_params(
-            dict(log_matches=self._values['classification_log'], publisher=self._values['classification_pub'])
+        return self._finalize_parameter(
+            dict(log_matches=flatten_boolean(self._values['classification_log']),
+                 publisher=self._values['classification_pub'])
         )
-        if result:
-            return result
 
     @property
     def dos_protection(self):
-        result = self._filter_params(
-            dict(application=self._values['dos_app_publisher'], network=self._values['dos_net_pub'],
-                 dns=self._values['dos_dns_pub'], sip=self._values['dos_sip_pub'])
+        return self._finalize_parameter(dict(
+            application=self._values['dos_app_publisher'], network=self._values['dos_net_pub'],
+            dns=self._values['dos_dns_pub'], sip=self._values['dos_sip_pub'])
         )
-        if result:
-            return result
 
     @property
     def packet_filter(self):
-        result = self._filter_params(
+        return self._finalize_parameter(
             dict(rate=self._values['packet_filter_rate'], publisher=self._values['packet_filter_pub'])
         )
+
+    @property
+    def protocol_inspection(self):
+        return self._finalize_parameter(
+            dict(log_packet=flatten_boolean(self._values['proto_inspect_log']),
+                 publisher=self._values['proto_inspect_pub'])
+        )
+
+    @property
+    def dns_security(self):
+        tmp_format = self._filter_params(dict(
+            delimiter=self._values['dns_storage_format_delimiter'],
+            type=self._values['dns_storage_format_type'],
+            fields=self._values['dns_storage_format_fields'],
+            user_string=self._values['dns_storage_format_user_string']
+        ))
+        result = self._filter_params(dict(
+            dns_sec_publisher=self._values['dns_sec_publisher'],
+            log_dns_drop=flatten_boolean(self._values['dns_sec_log_dns_drop']),
+            log_dns_filtered_drop=flatten_boolean(self._values['dns_sec_log_filter_drop']),
+            log_dns_malformed=flatten_boolean(self._values['dns_sec_log_malformed']),
+            log_dns_malicious=flatten_boolean(self._values['dns_sec_log_malicious']),
+            log_dns_reject=flatten_boolean(self._values['dns_sec_log_dns_reject'])
+        ))
+        if tmp_format:
+            result['storage_format'] = tmp_format
         if result:
             return result
 
     @property
-    def protocol_inspection(self):
-        result = self._filter_params(
-            dict(log_packet=self._values['proto_inspect_log'], publisher=self._values['proto_inspect_pub'])
-        )
+    def sip_security(self):
+        tmp_format = self._filter_params(dict(
+            delimiter=self._values['sip_storage_format_delimiter'],
+            type=self._values['sip_storage_format_type'],
+            fields=self._values['sip_storage_format_fields'],
+            user_string=self._values['sip_storage_format_user_string']
+        ))
+        result = self._filter_params(dict(
+            log_sip_drop=flatten_boolean(self._values['sip_sec_log_sip_drop']),
+            log_sip_global_failures=flatten_boolean(self._values['sip_sec_log_global_fail']),
+            log_sip_malformed=flatten_boolean(self._values['sip_sec_log_malformed']),
+            log_sip_redirect_responses=flatten_boolean(self._values['sip_sec_log_redirect_response']),
+            log_sip_request_failures=flatten_boolean(self._values['sip_sec_log_sip_failure']),
+            log_sip_server_errors=flatten_boolean(self._values['sip_sec_log_sip_server_err'])
+        ))
+        if tmp_format:
+            result['storage_format'] = tmp_format
+        if result:
+            return result
+
+    @property
+    def network_security(self):
+        tmp_format = self._filter_params(dict(
+            delimiter=self._values['net_storage_format_delimiter'],
+            type=self._values['net_storage_format_type'],
+            fields=self._values['net_storage_format_fields'],
+            user_string=self._values['net_storage_format_user_string']
+        ))
+        result = self._filter_params(dict(
+            log_acl_match_accept=flatten_boolean(self._values['net_sec_log_acl_match_accept']),
+            log_acl_match_drop=flatten_boolean(self._values['net_sec_log_acl_match_drop']),
+            log_acl_match_reject=flatten_boolean(self._values['net_sec_log_acl_match_reject']),
+            log_geo_always=flatten_boolean(self._values['net_sec_log_geo_always']),
+            log_acl_to_box_deny=flatten_boolean(self._values['net_sec_rate_limit_log_acl_to_box_deny']),
+            log_ip_errors=flatten_boolean(self._values['net_sec_log_ip_errors']),
+            log_tcp_errors=flatten_boolean(self._values['net_sec_log_tcp_errors']),
+            log_tcp_events=flatten_boolean(self._values['net_sec_log_tcp_events']),
+            log_translation_fields=flatten_boolean(self._values['net_sec_log_translation_fields']),
+            log_user_always=flatten_boolean(self._values['net_sec_log_user_always']),
+            log_uuid_field=flatten_boolean(self._values['net_sec_log_uuid_field']),
+            rate_limit_acl_match_accept=self._handle_rate(self._values['net_sec_rate_limit_acl_match_accept']),
+            rate_limit_acl_match_drop=self._handle_rate(self._values['net_sec_rate_limit_acl_match_drop']),
+            rate_limit_match_reject=self._handle_rate(self._values['net_sec_rate_limit_match_reject']),
+            rate_limit_aggregate_rate=self._handle_rate(self._values['net_sec_rate_limit_aggregate_rate']),
+            rate_limit_ip_errors=self._handle_rate(self._values['net_sec_rate_limit_ip_errors']),
+            rate_limit_tcp_errors=self._handle_rate(self._values['net_sec_rate_limit_tcp_errors']),
+            rate_limit_tcp_events=self._handle_rate(self._values['net_sec_rate_limit_tcp_events'])
+        ))
+        if tmp_format:
+            result['storage_format'] = tmp_format
         if result:
             return result
 
@@ -996,6 +2717,30 @@ class Difference(object):
     @property
     def classification_pub(self):
         return cmp_str_with_none(self.want.classification_pub, self.have.classification_pub)
+
+    @property
+    def dns_sec_publisher(self):
+        return cmp_str_with_none(self.want.dns_sec_publisher, self.have.dns_sec_publisher)
+
+    @property
+    def dns_storage_format_fields(self):
+        return cmp_simple_list(self.want.dns_storage_format_fields, self.have.dns_storage_format_fields, cmp_order=True)
+
+    @property
+    def sip_sec_publisher(self):
+        return cmp_str_with_none(self.want.sip_sec_publisher, self.have.sip_sec_publisher)
+
+    @property
+    def sip_storage_format_fields(self):
+        return cmp_simple_list(self.want.sip_storage_format_fields, self.have.sip_storage_format_fields, cmp_order=True)
+
+    @property
+    def net_sec_publisher(self):
+        return cmp_str_with_none(self.want.net_sec_publisher, self.have.net_sec_publisher)
+
+    @property
+    def net_storage_format_fields(self):
+        return cmp_simple_list(self.want.net_storage_format_fields, self.have.net_storage_format_fields, cmp_order=True)
 
 
 class ModuleManager(object):
@@ -1169,16 +2914,119 @@ class ModuleManager(object):
         params = self._add_missing_options(self.changes.api_params())
         params['name'] = self.want.name
         params['partition'] = self.want.partition
+        dns_sec = params.pop('dns_security', None)
+        sip_sec = params.pop('sip_security', None)
+        net_sec = params.pop('network_security', None)
+
         uri = "/mgmt/tm/security/log/profile/"
         response = self.client.post(uri, data=params)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
+
+        if dns_sec:
+            self._create_dns_security(dns_sec)
+
+        if sip_sec:
+            self._create_sip_security(sip_sec)
+
+        if net_sec:
+            self._create_net_security(net_sec)
+
+        return True
+
+    def _create_dns_security(self, params):
+        params['name'] = self.want.name
+        params['partition'] = self.want.partition
+
+        uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}/protocol-dns/"
+        response = self.client.post(uri, data=params)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        return True
+
+    def _create_sip_security(self, params):
+        params['name'] = self.want.name
+        params['partition'] = self.want.partition
+
+        uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}/protocol-sip/"
+        response = self.client.post(uri, data=params)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        return True
+
+    def _create_net_security(self, params):
+        params['name'] = self.want.name
+        params['partition'] = self.want.partition
+
+        uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}/network/"
+        response = self.client.post(uri, data=params)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
         return True
 
     def update_on_device(self):
         params = self._add_missing_options(self.changes.api_params())
-        uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}"
+        dns_sec = params.pop('dns_security', None)
+        sip_sec = params.pop('sip_security', None)
+        net_sec = params.pop('network_security', None)
+
+        if params:
+            uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}"
+            response = self.client.patch(uri, data=params)
+
+            if response['code'] not in [200, 201, 202]:
+                raise F5ModuleError(response['contents'])
+
+        if dns_sec and self.have.dns_sec_exists:
+            self._update_dns_security(dns_sec)
+        elif dns_sec and not self.have.dns_sec_exists:
+            self._create_dns_security(dns_sec)
+
+        if sip_sec and self.have.sip_sec_exists:
+            self._update_sip_security(sip_sec)
+        elif sip_sec and not self.have.sip_sec_exists:
+            self._create_sip_security(sip_sec)
+
+        if net_sec and self.have.net_sec_exists:
+            self._update_net_security(net_sec)
+        elif net_sec and not self.have.net_sec_exists:
+            self._create_net_security(net_sec)
+
+        return True
+
+    def _update_dns_security(self, params):
+        uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}/protocol-dns/" \
+              f"{transform_name(self.want.partition, self.want.name)}"
+
+        response = self.client.patch(uri, data=params)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        return True
+
+    def _update_sip_security(self, params):
+        uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}/protocol-sip/" \
+              f"{transform_name(self.want.partition, self.want.name)}"
+
+        response = self.client.patch(uri, data=params)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        return True
+
+    def _update_net_security(self, params):
+        uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}/network/" \
+              f"{transform_name(self.want.partition, self.want.name)}"
+
         response = self.client.patch(uri, data=params)
 
         if response['code'] not in [200, 201, 202]:
@@ -1200,7 +3048,61 @@ class ModuleManager(object):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        return ApiParameters(params=response['contents'])
+        result = ApiParameters(params=response['contents'])
+
+        dns_sec = self.read_dns_security_from_device()
+        sip_sec = self.read_sip_security_from_device()
+        net_sec = self.read_network_security_from_device()
+
+        if dns_sec:
+            result.update({'dns_security': dns_sec})
+
+        if sip_sec:
+            result.update({'sip_security': sip_sec})
+
+        if net_sec:
+            result.update({'network_security': net_sec})
+
+        return result
+
+    def read_dns_security_from_device(self):
+        uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}/protocol-dns/" \
+              f"{transform_name(self.want.partition, self.want.name)}"
+        response = self.client.get(uri)
+
+        if response['code'] == 404:
+            return False
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        return response['contents']
+
+    def read_sip_security_from_device(self):
+        uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}/protocol-sip/" \
+              f"{transform_name(self.want.partition, self.want.name)}"
+        response = self.client.get(uri)
+
+        if response['code'] == 404:
+            return False
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        return response['contents']
+
+    def read_network_security_from_device(self):
+        uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}/network/" \
+              f"{transform_name(self.want.partition, self.want.name)}"
+        response = self.client.get(uri)
+
+        if response['code'] == 404:
+            return False
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        return response['contents']
 
 
 class ArgumentSpec(object):
@@ -1224,37 +3126,138 @@ class ArgumentSpec(object):
                 options=dict(
                     publisher=dict(),
                     send_remote_challenge_failure_messages=dict(type='bool'),
-                    filter=dict(
+                    log_alarm=dict(type='bool'),
+                    log_block=dict(type='bool'),
+                    log_browser=dict(type='bool'),
+                    log_browser_verification_action=dict(type='bool'),
+                    log_captcha=dict(type='bool'),
+                    log_challenge_failure_request=dict(type='bool'),
+                    log_device_id_collection_request=dict(type='bool'),
+                    log_honeypot_page=dict(type='bool'),
+                    log_mobile_application=dict(type='bool'),
+                    log_none=dict(type='bool'),
+                    log_rate_limit=dict(type='bool'),
+                    log_redirect_to_pool=dict(type='bool'),
+                    log_suspicious_browser=dict(type='bool'),
+                    log_tcp_reset=dict(type='bool'),
+                    log_trusted_bot=dict(type='bool'),
+                    log_unknown=dict(type='bool'),
+                    log_untrusted_bot=dict(type='bool')
+                )
+            ),
+            dns_security=dict(
+                type='dict',
+                options=dict(
+                    publisher=dict(),
+                    log_dns_drop=dict(type='bool'),
+                    log_dns_filtered_drop=dict(type='bool'),
+                    log_dns_malformed=dict(type='bool'),
+                    log_dns_malicious=dict(type='bool'),
+                    log_dns_reject=dict(type='bool'),
+                    storage_format=dict(
                         type='dict',
                         options=dict(
-                            log_alarm=dict(type='bool'),
-                            log_block=dict(type='bool'),
-                            log_browser=dict(type='bool'),
-                            log_browser_verification_action=dict(type='bool'),
-                            log_captcha=dict(type='bool'),
-                            log_challenge_failure_request=dict(type='bool'),
-                            log_device_id_collection_request=dict(type='bool'),
-                            log_honeypot_page=dict(type='bool'),
-                            log_mobile_application=dict(type='bool'),
-                            log_none=dict(type='bool'),
-                            log_rate_limit=dict(type='bool'),
-                            log_redirect_to_pool=dict(type='bool'),
-                            log_suspicious_browser=dict(type='bool'),
-                            log_tcp_reset=dict(type='bool'),
-                            log_trusted_bot=dict(type='bool'),
-                            log_unknown=dict(type='bool'),
-                            log_untrusted_bot=dict(type='bool'),
+                            type=dict(
+                                choices=['field-list', 'user-defined', 'none']
+                            ),
+                            delimiter=dict(),
+                            fields=dict(
+                                type='list',
+                                elements='str'
+                            ),
+                            user_string=dict()
                         ),
-                        required_one_of=[
-                            ['log_alarm', 'log_block', 'log_browser', 'log_browser_verification_action',
-                             'log_captcha', 'log_challenge_failure_request', 'log_device_id_collection_request',
-                             'log_honeypot_page', 'log_mobile_application', 'log_none', 'log_rate_limit',
-                             'log_redirect_to_pool', 'log_suspicious_browser', 'log_tcp_reset', 'log_trusted_bot',
-                             'log_unknown', 'log_untrusted_bot']
+                        required_if=[
+                            ['type', 'user-defined', ['user_string']],
+                            ['type', 'field-list', ['fields']],
+                        ],
+                        mutually_exclusive=[
+                            ['fields', 'user_string'],
+                            ['user_string', 'delimiter']
                         ]
-                    ),
-                ),
+                    )
+                )
+            ),
+            sip_security=dict(
+                type='dict',
+                options=dict(
+                    publisher=dict(),
+                    log_sip_drop=dict(type='bool'),
+                    log_sip_global_failures=dict(type='bool'),
+                    log_sip_malformed=dict(type='bool'),
+                    log_sip_redirect_responses=dict(type='bool'),
+                    log_sip_request_failures=dict(type='bool'),
+                    log_sip_server_errors=dict(type='bool'),
+                    storage_format=dict(
+                        type='dict',
+                        options=dict(
+                            type=dict(
+                                choices=['field-list', 'user-defined', 'none']
+                            ),
+                            delimiter=dict(),
+                            fields=dict(
+                                type='list',
+                                elements='str'
+                            ),
+                            user_string=dict()
+                        ),
+                        required_if=[
+                            ['type', 'user-defined', ['user_string']],
+                            ['type', 'field-list', ['fields']],
+                        ],
+                        mutually_exclusive=[
+                            ['fields', 'user_string'],
+                            ['user_string', 'delimiter']
+                        ]
+                    )
+                )
+            ),
+            network_security=dict(
+                type='dict',
+                options=dict(
+                    publisher=dict(),
+                    log_acl_match_accept=dict(type='bool'),
+                    log_acl_match_drop=dict(type='bool'),
+                    log_acl_match_reject=dict(type='bool'),
+                    log_geo_always=dict(type='bool'),
+                    log_ip_errors=dict(type='bool'),
+                    log_tcp_errors=dict(type='bool'),
+                    log_tcp_events=dict(type='bool'),
+                    log_acl_to_box_deny=dict(type='bool'),
+                    log_translation_fields=dict(type='bool'),
+                    log_user_always=dict(type='bool'),
+                    log_uuid_field=dict(type='bool'),
+                    rate_limit_acl_match_accept=dict(),
+                    rate_limit_acl_match_drop=dict(),
+                    rate_limit_match_reject=dict(),
+                    rate_limit_aggregate_rate=dict(),
+                    rate_limit_ip_errors=dict(),
+                    rate_limit_tcp_errors=dict(),
+                    rate_limit_tcp_events=dict(),
+                    storage_format=dict(
+                        type='dict',
+                        options=dict(
+                            type=dict(
+                                choices=['field-list', 'user-defined', 'none']
+                            ),
+                            delimiter=dict(),
+                            fields=dict(
+                                type='list',
+                                elements='str'
+                            ),
+                            user_string=dict()
+                        ),
+                        required_if=[
+                            ['type', 'user-defined', ['user_string']],
+                            ['type', 'field-list', ['fields']],
+                        ],
+                        mutually_exclusive=[
+                            ['fields', 'user_string'],
+                            ['user_string', 'delimiter']
+                        ]
+                    )
 
+                )
             ),
             protocol_inspection=dict(
                 type='dict',
@@ -1284,7 +3287,7 @@ class ArgumentSpec(object):
             state=dict(
                 default='present',
                 choices=['present', 'absent']
-            ),
+            )
         )
         self.argument_spec = {}
         self.argument_spec.update(argument_spec)

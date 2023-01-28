@@ -1,0 +1,54 @@
+{
+    "kind": "tm:security:log:profile:network:networkstate",
+    "name": "test_log_profile",
+    "partition": "Common",
+    "fullPath": "/Common/test_log_profile",
+    "generation": 49556,
+    "selfLink": "https://localhost/mgmt/tm/security/log/profile/~Common~test_log_profile/network/~Common~test_log_profile?ver=16.0.0",
+    "filter": {
+        "logAclMatchAccept": "enabled",
+        "logAclMatchDrop": "disabled",
+        "logAclMatchReject": "enabled",
+        "logAclToBoxDeny": "disabled",
+        "logGeoAlways": "disabled",
+        "logIpErrors": "disabled",
+        "logTcpErrors": "disabled",
+        "logTcpEvents": "disabled",
+        "logTranslationFields": "disabled",
+        "logUserAlways": "disabled",
+        "logUuidField": "disabled"
+    },
+    "format": {
+        "fieldList": [
+            "acl_rule_name",
+            "action",
+            "src_ip"
+        ],
+        "fieldListReference": [
+            {
+                "link": "https://localhost/mgmt/tm/security/log/network-storage-field/acl_rule_name?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/log/network-storage-field/action?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/log/network-storage-field/src_ip?ver=16.0.0"
+            }
+        ],
+        "fieldListDelimiter": "-",
+        "type": "field-list"
+    },
+    "publisher": "/Common/local-db-publisher",
+    "publisherReference": {
+        "link": "https://localhost/mgmt/tm/sys/log-config/publisher/~Common~local-db-publisher?ver=16.0.0"
+    },
+    "rateLimit": {
+        "aclMatchAccept": 100,
+        "aclMatchDrop": 2000,
+        "aclMatchReject": 50,
+        "aggregateRate": 4294967295,
+        "ipErrors": 4294967295,
+        "tcpErrors": 4294967295,
+        "tcpEvents": 4294967295
+    }
+}

@@ -1,0 +1,65 @@
+{
+    "kind": "tm:security:ssh:profile:rules:rulesstate",
+    "name": "test_rule_1",
+    "fullPath": "test_rule_1",
+    "generation": 341,
+    "selfLink": "https://localhost/mgmt/tm/security/ssh/profile/~Common~test_ssh_profile/rules/test_rule_1?ver=16.1.1",
+    "identityUsers": [
+        "test_user_1"
+    ],
+    "log": "no",
+    "actions": [
+        {
+            "name": "test_action_name",
+            "agentAction": {
+                "control": "allow",
+                "log": "no"
+            },
+            "localForwardAction": {
+                "control": "allow",
+                "log": "no"
+            },
+            "log": "no",
+            "otherAction": {
+                "control": "allow",
+                "log": "no"
+            },
+            "remoteForwardAction": {
+                "control": "allow",
+                "log": "no"
+            },
+            "rexecAction": {
+                "control": "allow",
+                "log": "no"
+            },
+            "scpDownAction": {
+                "control": "allow",
+                "log": "no"
+            },
+            "scpUpAction": {
+                "control": "allow",
+                "log": "no"
+            },
+            "sftpDownAction": {
+                "control": "allow",
+                "log": "no"
+            },
+            "sftpUpAction": {
+                "control": "allow",
+                "log": "no"
+            },
+            "shellAction": {
+                "control": "allow",
+                "log": "no"
+            },
+            "subSystemAction": {
+                "control": "allow",
+                "log": "no"
+            },
+            "x11ForwardAction": {
+                "control": "allow",
+                "log": "no"
+            }
+        }
+    ]
+}

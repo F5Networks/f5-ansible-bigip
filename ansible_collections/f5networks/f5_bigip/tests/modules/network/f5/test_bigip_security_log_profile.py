@@ -75,25 +75,23 @@ class TestParameters(unittest.TestCase):
             bot_defense=dict(
                 publisher='local-db-publisher',
                 send_remote_challenge_failure_messages='no',
-                filter=dict(
-                    log_alarm=True,
-                    log_block=False,
-                    log_browser=True,
-                    log_browser_verification_action=True,
-                    log_captcha=False,
-                    log_challenge_failure_request=True,
-                    log_device_id_collection_request=False,
-                    log_honeypot_page=False,
-                    log_mobile_application=False,
-                    log_none=False,
-                    log_rate_limit=True,
-                    log_redirect_to_pool=False,
-                    log_suspicious_browser=True,
-                    log_tcp_reset=False,
-                    log_trusted_bot=True,
-                    log_unknown=True,
-                    log_untrusted_bot=True
-                )
+                log_alarm=True,
+                log_block=False,
+                log_browser=True,
+                log_browser_verification_action=True,
+                log_captcha=False,
+                log_challenge_failure_request=True,
+                log_device_id_collection_request=False,
+                log_honeypot_page=False,
+                log_mobile_application=False,
+                log_none=False,
+                log_rate_limit=True,
+                log_redirect_to_pool=False,
+                log_suspicious_browser=True,
+                log_tcp_reset=False,
+                log_trusted_bot=True,
+                log_unknown=True,
+                log_untrusted_bot=True
             )
         )
         p = ModuleParameters(params=args)
@@ -129,6 +127,31 @@ class TestParameters(unittest.TestCase):
         self.assertEqual(p.bot_log_unknown, 'enabled')
         self.assertEqual(p.bot_log_untrusted_bot, 'enabled')
 
+    def test_format_type_none(self):
+        args = dict(dns_security=dict(storage_format=dict(fields=['action'], user_string='foo', type='none')))
+
+        p = ModuleParameters(params=args)
+
+        self.assertIsNone(p.dns_storage_format_fields)
+        self.assertIsNone(p.dns_storage_format_user_string)
+        self.assertEqual(p.dns_storage_format_type, 'none')
+
+        args = dict(sip_security=dict(storage_format=dict(fields=['action'], user_string='foo', type='none')))
+
+        p = ModuleParameters(params=args)
+
+        self.assertIsNone(p.sip_storage_format_fields)
+        self.assertIsNone(p.sip_storage_format_user_string)
+        self.assertEqual(p.sip_storage_format_type, 'none')
+
+        args = dict(network_security=dict(storage_format=dict(fields=['action'], user_string='foo', type='none')))
+
+        p = ModuleParameters(params=args)
+
+        self.assertIsNone(p.net_storage_format_fields)
+        self.assertIsNone(p.net_storage_format_user_string)
+        self.assertEqual(p.net_storage_format_type, 'none')
+
     def test_invalid_rate_raises(self):
         args = dict(packet_filter=dict(rate=10000))
 
@@ -148,6 +171,62 @@ class TestParameters(unittest.TestCase):
             p.bot_publisher()
 
         self.assertIn('Publisher cannot be set to '' when configuring bot defense logging', err.exception.args[0])
+
+    def test_invalid_dns_storage_format_fields_raises(self):
+        args = dict(dns_security=dict(storage_format=dict(fields=['foo'])))
+
+        p = ModuleParameters(params=args)
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.dns_storage_format_fields()
+
+        self.assertIn('Invalid fields value, list item must be one of', err.exception.args[0])
+
+    def test_invalid_sip_storage_format_fields_raises(self):
+        args = dict(sip_security=dict(storage_format=dict(fields=['foo'])))
+
+        p = ModuleParameters(params=args)
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.sip_storage_format_fields()
+
+        self.assertIn('Invalid fields value, list item must be one of', err.exception.args[0])
+
+    def test_invalid_net_storage_format_fields_raises(self):
+        args = dict(network_security=dict(storage_format=dict(fields=['foo'])))
+
+        p = ModuleParameters(params=args)
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.net_storage_format_fields()
+
+        self.assertIn('Invalid fields value, list item must be one of', err.exception.args[0])
+
+    def test_invalid_net_rate_limit_raises(self):
+        args = dict(network_security=dict(rate_limit_acl_match_drop='foobar'))
+
+        p = ModuleParameters(params=args)
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.net_sec_rate_limit_acl_match_drop()
+
+        self.assertEqual(
+            "Invalid value for rate_limit_acl_match_drop must be in range 0 - 4294967295 or 'indefinite', got foobar.",
+            err.exception.args[0]
+        )
+
+    def test_out_of_scope_net_rate_limit_raises(self):
+        args = dict(network_security=dict(rate_limit_acl_match_drop='-1'))
+
+        p = ModuleParameters(params=args)
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.net_sec_rate_limit_acl_match_drop()
+
+        self.assertEqual(
+            "Value out of range: -1, valid rate_limit_acl_match_drop must be in range 0 - 4294967295 or 'indefinite'.",
+            err.exception.args[0]
+        )
 
     def test_module_parameters_none(self):
         args = dict(name='test_log_profile')
@@ -306,27 +385,26 @@ class TestManager(unittest.TestCase):
             bot_defense=dict(
                 publisher='local-db-publisher',
                 send_remote_challenge_failure_messages='no',
-                filter=dict(
-                    log_alarm=True,
-                    log_block=False,
-                    log_browser=True,
-                    log_browser_verification_action=True,
-                    log_captcha=False,
-                    log_challenge_failure_request=True,
-                    log_device_id_collection_request=False,
-                    log_honeypot_page=False,
-                    log_mobile_application=False,
-                    log_none=False,
-                    log_rate_limit=True,
-                    log_redirect_to_pool=False,
-                    log_suspicious_browser=True,
-                    log_tcp_reset=False,
-                    log_trusted_bot=True,
-                    log_unknown=True,
-                    log_untrusted_bot=True
-                )
+                log_alarm=True,
+                log_block=False,
+                log_browser=True,
+                log_browser_verification_action=True,
+                log_captcha=False,
+                log_challenge_failure_request=True,
+                log_device_id_collection_request=False,
+                log_honeypot_page=False,
+                log_mobile_application=False,
+                log_none=False,
+                log_rate_limit=True,
+                log_redirect_to_pool=False,
+                log_suspicious_browser=True,
+                log_tcp_reset=False,
+                log_trusted_bot=True,
+                log_unknown=True,
+                log_untrusted_bot=True
             )
-        ))
+        )
+        )
 
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
@@ -334,14 +412,14 @@ class TestManager(unittest.TestCase):
         )
 
         expected = {
-            'publisher': '/Common/local-db-publisher', 'send_remote_challenge_failure_messages': 'disabled',
-            'filter': {'log_alarm': 'enabled', 'log_block': 'disabled', 'log_browser': 'enabled',
-                       'log_browser_verification_action': 'enabled', 'log_captcha': 'disabled',
-                       'log_challenge_failure_request': 'enabled', 'log_device_id_collection_request':
-                           'disabled', 'log_honeypot_page': 'disabled', 'log_mobile_application': 'disabled',
-                       'log_none': 'disabled', 'log_rate_limit': 'enabled', 'log_redirect_to_pool': 'disabled',
-                       'log_suspicious_browser': 'enabled', 'log_tcp_reset': 'disabled', 'log_trusted_bot': 'enabled',
-                       'log_unknown': 'enabled', 'log_untrusted_bot': 'enabled'}
+            'publisher': '/Common/local-db-publisher', 'send_remote_challenge_failure_messages': 'no',
+            'log_alarm': 'yes', 'log_block': 'no', 'log_browser': 'yes',
+            'log_browser_verification_action': 'yes', 'log_captcha': 'no',
+            'log_challenge_failure_request': 'yes', 'log_device_id_collection_request': 'no',
+            'log_honeypot_page': 'no', 'log_mobile_application': 'no', 'log_none': 'no',
+            'log_rate_limit': 'yes', 'log_redirect_to_pool': 'no', 'log_suspicious_browser': 'yes',
+            'log_tcp_reset': 'no', 'log_trusted_bot': 'yes', 'log_unknown': 'yes',
+            'log_untrusted_bot': 'yes'
         }
         # Override methods in the specific type of manager
         mm = ModuleManager(module=module)
@@ -354,7 +432,7 @@ class TestManager(unittest.TestCase):
         self.assertDictEqual(results['bot_defense'], expected)
         self.assertEqual(results['description'], 'this is a log profile test')
         self.assertDictEqual(
-            results['classification'], {'log_matches': 'enabled', 'publisher': '/Common/local-db-publisher'}
+            results['classification'], {'log_matches': 'yes', 'publisher': '/Common/local-db-publisher'}
         )
         self.assertDictEqual(
             results['dos_protection'], {'application': '/Common/local-db-publisher',
@@ -363,7 +441,7 @@ class TestManager(unittest.TestCase):
         )
         self.assertDictEqual(results['packet_filter'], {'rate': 300, 'publisher': '/Common/local-db-publisher'})
         self.assertDictEqual(
-            results['protocol_inspection'], {'log_packet': 'enabled', 'publisher': '/Common/local-db-publisher'}
+            results['protocol_inspection'], {'log_packet': 'yes', 'publisher': '/Common/local-db-publisher'}
         )
 
     def test_create_log_security_profile_no_change(self, *args):
@@ -393,24 +471,185 @@ class TestManager(unittest.TestCase):
             bot_defense=dict(
                 publisher='local-db-publisher',
                 send_remote_challenge_failure_messages='no',
-                filter=dict(
-                    log_alarm=True,
-                    log_block=False,
-                    log_browser=True,
-                    log_browser_verification_action=True,
-                    log_captcha=False,
-                    log_challenge_failure_request=True,
-                    log_device_id_collection_request=False,
-                    log_honeypot_page=False,
-                    log_mobile_application=False,
-                    log_none=False,
-                    log_rate_limit=True,
-                    log_redirect_to_pool=False,
-                    log_suspicious_browser=True,
-                    log_tcp_reset=False,
-                    log_trusted_bot=True,
-                    log_unknown=True,
-                    log_untrusted_bot=True
+                log_alarm=True,
+                log_block=False,
+                log_browser=True,
+                log_browser_verification_action=True,
+                log_captcha=False,
+                log_challenge_failure_request=True,
+                log_device_id_collection_request=False,
+                log_honeypot_page=False,
+                log_mobile_application=False,
+                log_none=False,
+                log_rate_limit=True,
+                log_redirect_to_pool=False,
+                log_suspicious_browser=True,
+                log_tcp_reset=False,
+                log_trusted_bot=True,
+                log_unknown=True,
+                log_untrusted_bot=True
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+        ])
+
+        results = mm.exec_module()
+        self.assertFalse(results['changed'])
+
+    def test_create_log_security_profile_with_dns_security(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            description='this is a log profile test',
+            dos_protection=dict(
+                application='local-db-publisher',
+                network='local-db-publisher',
+                dns='local-db-publisher',
+                sip='local-db-publisher'
+            ),
+            protocol_inspection=dict(
+                log_packet=True,
+                publisher='local-db-publisher'
+            ),
+            packet_filter=dict(
+                rate=300,
+                publisher='local-db-publisher'
+            ),
+            classification=dict(
+                log_matches=True,
+                publisher='local-db-publisher'
+            ),
+            dns_security=dict(
+                publisher='local-db-publisher',
+                log_dns_drop=True,
+                log_dns_filtered_drop=True,
+                log_dns_malformed=True,
+                log_dns_malicious=True,
+                log_dns_reject=True,
+                storage_format=dict(
+                    type='field-list',
+                    delimiter='-',
+                    fields=[
+                        'action',
+                        'attack_type',
+                        'vlan',
+                        'dns_query_name',
+                        'dns_query_type'
+                    ]
+                )
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        expected = {
+            'dns_sec_publisher': '/Common/local-db-publisher', 'log_dns_drop': 'yes',
+            'log_dns_filtered_drop': 'yes', 'log_dns_malformed': 'yes',
+            'log_dns_malicious': 'yes', 'log_dns_reject': 'yes',
+            'storage_format': {'delimiter': '-', 'type': 'field-list',
+                               'fields': ['action', 'attack_type', 'vlan', 'dns_query_name', 'dns_query_type']
+                               }
+        }
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.client.post = Mock(return_value=dict(code=200, contents={}))
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertEqual(results['description'], 'this is a log profile test')
+        self.assertDictEqual(
+            results['classification'], {'log_matches': 'yes', 'publisher': '/Common/local-db-publisher'}
+        )
+        self.assertDictEqual(
+            results['dos_protection'], {'application': '/Common/local-db-publisher',
+                                        'network': '/Common/local-db-publisher',
+                                        'dns': '/Common/local-db-publisher', 'sip': '/Common/local-db-publisher'}
+        )
+        self.assertDictEqual(results['packet_filter'], {'rate': 300, 'publisher': '/Common/local-db-publisher'})
+        self.assertDictEqual(
+            results['protocol_inspection'], {'log_packet': 'yes', 'publisher': '/Common/local-db-publisher'}
+        )
+        self.assertEqual(results['dns_security'], expected)
+
+    def test_create_log_security_profile_dns_security_no_change(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            description='this is a log profile test',
+            auto_discovery='local-db-publisher',
+            dos_protection=dict(
+                application='local-db-publisher',
+                network='local-db-publisher',
+                dns='local-db-publisher',
+                sip='local-db-publisher'
+            ),
+            protocol_inspection=dict(
+                log_packet=True,
+                publisher='local-db-publisher'
+            ),
+            packet_filter=dict(
+                rate=300,
+                publisher='local-db-publisher'
+            ),
+            classification=dict(
+                log_matches=True,
+                publisher='local-db-publisher'
+            ),
+            bot_defense=dict(
+                publisher='local-db-publisher',
+                send_remote_challenge_failure_messages='no',
+                log_alarm=True,
+                log_block=False,
+                log_browser=True,
+                log_browser_verification_action=True,
+                log_captcha=False,
+                log_challenge_failure_request=True,
+                log_device_id_collection_request=False,
+                log_honeypot_page=False,
+                log_mobile_application=False,
+                log_none=False,
+                log_rate_limit=True,
+                log_redirect_to_pool=False,
+                log_suspicious_browser=True,
+                log_tcp_reset=False,
+                log_trusted_bot=True,
+                log_unknown=True,
+                log_untrusted_bot=True
+            ),
+            dns_security=dict(
+                publisher='local-db-publisher',
+                log_dns_drop=True,
+                log_dns_filtered_drop=True,
+                log_dns_malformed=True,
+                log_dns_malicious=True,
+                log_dns_reject=True,
+                storage_format=dict(
+                    type='field-list',
+                    delimiter='-',
+                    fields=[
+                        'action',
+                        'attack_type',
+                        'vlan',
+                        'dns_query_name',
+                        'dns_query_type'
+                    ]
                 )
             )
         ))
@@ -423,7 +662,297 @@ class TestManager(unittest.TestCase):
         # Override methods in the specific type of manager
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=True)
-        mm.client.get = Mock(return_value=dict(code=200, contents=load_fixture('load_log_security_profile.json')))
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=200, contents=load_fixture('load_log_security_profile_dns_sec.json')),
+            dict(code=404, contents={}), dict(code=404, contents={})
+        ])
+
+        results = mm.exec_module()
+        self.assertFalse(results['changed'])
+
+    def test_create_log_security_profile_with_sip_security(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            description='this is a log profile test',
+            dos_protection=dict(
+                application='local-db-publisher',
+                network='local-db-publisher',
+                dns='local-db-publisher',
+                sip='local-db-publisher'
+            ),
+            protocol_inspection=dict(
+                log_packet=True,
+                publisher='local-db-publisher'
+            ),
+            packet_filter=dict(
+                rate=300,
+                publisher='local-db-publisher'
+            ),
+            classification=dict(
+                log_matches=True,
+                publisher='local-db-publisher'
+            ),
+            sip_security=dict(
+                publisher='local-db-publisher',
+                log_sip_drop=True,
+                log_sip_global_failures=True,
+                log_sip_malformed=True,
+                log_sip_redirect_responses=True,
+                log_sip_request_failures=True,
+                log_sip_server_errors=False,
+                storage_format=dict(
+                    type='field-list',
+                    delimiter='-',
+                    fields=[
+                        'action',
+                        'context_name',
+                        'vlan',
+                        'sip_callee',
+                        'sip_caller'
+                    ]
+                )
+            )
+        ))
+
+        expected = {'log_sip_drop': 'yes', 'log_sip_global_failures': 'yes', 'log_sip_malformed': 'yes',
+                    'log_sip_redirect_responses': 'yes', 'log_sip_request_failures': 'yes',
+                    'log_sip_server_errors': 'no', 'storage_format': {'delimiter': '-', 'type': 'field-list',
+                                                                      'fields': ['action', 'context_name',
+                                                                                 'vlan', 'sip_callee', 'sip_caller']}}
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.client.post = Mock(return_value=dict(code=200, contents={}))
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertEqual(results['description'], 'this is a log profile test')
+        self.assertDictEqual(
+            results['classification'], {'log_matches': 'yes', 'publisher': '/Common/local-db-publisher'}
+        )
+        self.assertDictEqual(
+            results['dos_protection'], {'application': '/Common/local-db-publisher',
+                                        'network': '/Common/local-db-publisher',
+                                        'dns': '/Common/local-db-publisher', 'sip': '/Common/local-db-publisher'}
+        )
+        self.assertDictEqual(results['packet_filter'], {'rate': 300, 'publisher': '/Common/local-db-publisher'})
+        self.assertDictEqual(
+            results['protocol_inspection'], {'log_packet': 'yes', 'publisher': '/Common/local-db-publisher'}
+        )
+        self.assertEqual(results['sip_security'], expected)
+
+    def test_create_log_security_profile_with_sip_security_no_change(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            description='this is a log profile test',
+            dos_protection=dict(
+                application='local-db-publisher',
+                network='local-db-publisher',
+                dns='local-db-publisher',
+                sip='local-db-publisher'
+            ),
+            protocol_inspection=dict(
+                log_packet=True,
+                publisher='local-db-publisher'
+            ),
+            packet_filter=dict(
+                rate=300,
+                publisher='local-db-publisher'
+            ),
+            classification=dict(
+                log_matches=True,
+                publisher='local-db-publisher'
+            ),
+            sip_security=dict(
+                publisher='local-db-publisher',
+                log_sip_drop=True,
+                log_sip_global_failures=True,
+                log_sip_malformed=True,
+                log_sip_redirect_responses=True,
+                log_sip_request_failures=True,
+                log_sip_server_errors=False,
+                storage_format=dict(
+                    type='field-list',
+                    delimiter='-',
+                    fields=[
+                        'action',
+                        'context_name',
+                        'vlan',
+                        'sip_callee',
+                        'sip_caller'
+                    ]
+                )
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=404, contents={}),
+            dict(code=200, contents=load_fixture('load_log_security_profile_sip_sec.json')),
+            dict(code=404, contents={})
+        ])
+
+        results = mm.exec_module()
+        self.assertFalse(results['changed'])
+
+    def test_create_log_security_profile_with_network_security(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            description='this is a log profile test',
+            dos_protection=dict(
+                application='local-db-publisher',
+                network='local-db-publisher',
+                dns='local-db-publisher',
+                sip='local-db-publisher'
+            ),
+            protocol_inspection=dict(
+                log_packet=True,
+                publisher='local-db-publisher'
+            ),
+            packet_filter=dict(
+                rate=300,
+                publisher='local-db-publisher'
+            ),
+            classification=dict(
+                log_matches=True,
+                publisher='local-db-publisher'
+            ),
+            network_security=dict(
+                publisher='local-db-publisher',
+                log_acl_match_accept=True,
+                log_acl_match_drop=True,
+                log_acl_match_reject=True,
+                rate_limit_acl_match_accept='1000',
+                rate_limit_acl_match_drop='indefinite',
+                rate_limit_match_reject='0',
+                storage_format=dict(
+                    type='field-list',
+                    delimiter='-',
+                    fields=[
+                        'acl_policy_name',
+                        'acl_rule_name',
+                        'date_time',
+                        'action',
+                        'src_ip'
+                    ]
+                )
+            )
+        ))
+
+        expected = {
+            'log_acl_match_accept': 'yes', 'log_acl_match_drop': 'yes', 'log_acl_match_reject': 'yes',
+            'rate_limit_acl_match_accept': '1000', 'rate_limit_acl_match_drop': 'indefinite',
+            'rate_limit_match_reject': '0', 'storage_format': {'delimiter': '-', 'type': 'field-list',
+                                                               'fields': ['acl_policy_name', 'acl_rule_name',
+                                                                          'date_time', 'action', 'src_ip']}
+        }
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.client.post = Mock(return_value=dict(code=200, contents={}))
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertEqual(results['description'], 'this is a log profile test')
+        self.assertDictEqual(
+            results['classification'], {'log_matches': 'yes', 'publisher': '/Common/local-db-publisher'}
+        )
+        self.assertDictEqual(
+            results['dos_protection'], {'application': '/Common/local-db-publisher',
+                                        'network': '/Common/local-db-publisher',
+                                        'dns': '/Common/local-db-publisher', 'sip': '/Common/local-db-publisher'}
+        )
+        self.assertDictEqual(results['packet_filter'], {'rate': 300, 'publisher': '/Common/local-db-publisher'})
+        self.assertDictEqual(
+            results['protocol_inspection'], {'log_packet': 'yes', 'publisher': '/Common/local-db-publisher'}
+        )
+        self.assertEqual(results['network_security'], expected)
+
+    def test_create_log_security_profile_with_network_security_no_change(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            description='this is a log profile test',
+            dos_protection=dict(
+                application='local-db-publisher',
+                network='local-db-publisher',
+                dns='local-db-publisher',
+                sip='local-db-publisher'
+            ),
+            protocol_inspection=dict(
+                log_packet=True,
+                publisher='local-db-publisher'
+            ),
+            packet_filter=dict(
+                rate=300,
+                publisher='local-db-publisher'
+            ),
+            classification=dict(
+                log_matches=True,
+                publisher='local-db-publisher'
+            ),
+            network_security=dict(
+                publisher='local-db-publisher',
+                log_acl_match_accept=True,
+                log_acl_match_drop=True,
+                log_acl_match_reject=True,
+                rate_limit_acl_match_accept='1000',
+                rate_limit_acl_match_drop='indefinite',
+                rate_limit_match_reject='0',
+                storage_format=dict(
+                    type='field-list',
+                    delimiter='-',
+                    fields=[
+                        'acl_policy_name',
+                        'acl_rule_name',
+                        'date_time',
+                        'action',
+                        'src_ip'
+                    ]
+                )
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=404, contents={}),
+            dict(code=404, contents={}),
+            dict(code=200, contents=load_fixture('load_log_security_profile_network.json'))
+        ])
 
         results = mm.exec_module()
         self.assertFalse(results['changed'])
@@ -452,10 +981,8 @@ class TestManager(unittest.TestCase):
             name='test_log_profile',
             bot_defense=dict(
                 send_remote_challenge_failure_messages='yes',
-                filter=dict(
-                    log_alarm=False,
-                    log_block=True
-                )
+                log_alarm=False,
+                log_block=True
             ),
             packet_filter=dict(
                 rate=100
@@ -473,29 +1000,27 @@ class TestManager(unittest.TestCase):
         # Override methods in the specific type of manager
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=True)
-        mm.client.get = Mock(return_value=dict(code=200, contents=load_fixture('load_log_security_profile.json')))
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+        ])
         mm.client.patch = Mock(return_value=dict(code=200, contents={}))
 
         results = mm.exec_module()
 
         self.assertTrue(results['changed'])
-        self.assertDictEqual(
-            results['bot_defense'],
-            {'send_remote_challenge_failure_messages': 'enabled',
-             'filter': {'log_alarm': 'disabled', 'log_block': 'enabled'}}
-        )
+        self.assertDictEqual(results['bot_defense'],
+                             {'send_remote_challenge_failure_messages': 'yes', 'log_alarm': 'no', 'log_block': 'yes'})
         self.assertDictEqual(results['packet_filter'], {'rate': 100})
-        self.assertDictEqual(results['protocol_inspection'], {'log_packet': 'disabled', 'publisher': ''})
+        self.assertDictEqual(results['protocol_inspection'], {'log_packet': 'no', 'publisher': ''})
 
     def test_update_log_security_profile_no_change(self, *args):
         set_module_args(dict(
             name='test_log_profile',
             bot_defense=dict(
                 send_remote_challenge_failure_messages='yes',
-                filter=dict(
-                    log_alarm=False,
-                    log_block=True
-                )
+                log_alarm=False,
+                log_block=True
             ),
             packet_filter=dict(
                 rate=100
@@ -513,12 +1038,388 @@ class TestManager(unittest.TestCase):
         # Override methods in the specific type of manager
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=True)
-        mm.client.get = Mock(return_value=dict(
-            code=200, contents=load_fixture('load_log_security_profile_changed.json')
-        ))
+        mm.client.get = Mock(side_effect=[dict(
+            code=200, contents=load_fixture('load_log_security_profile_changed.json')),
+            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+        ])
 
         results = mm.exec_module()
 
+        self.assertFalse(results['changed'])
+
+    def test_update_log_security_profile_dns_security(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            bot_defense=dict(
+                send_remote_challenge_failure_messages='yes'
+            ),
+            dns_security=dict(
+                log_dns_drop=False,
+                storage_format=dict(
+                    type='field-list',
+                    fields=[
+                        'attack_type',
+                        'dns_query_name',
+                        'dns_query_type'
+                    ]
+                )
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=200, contents=load_fixture('load_log_security_profile_dns_sec.json')),
+            dict(code=404, contents={}), dict(code=404, contents={})
+        ])
+        mm.client.patch = Mock(return_value=dict(code=200, contents={}))
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertDictEqual(results['bot_defense'], {'send_remote_challenge_failure_messages': 'yes'})
+        self.assertDictEqual(
+            results['dns_security'], {'log_dns_drop': 'no',
+                                      'storage_format': {'fields': ['attack_type', 'dns_query_name', 'dns_query_type']}}
+        )
+
+    def test_update_log_security_profile_create_dns_security(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            dns_security=dict(
+                log_dns_drop=False,
+                storage_format=dict(
+                    type='field-list',
+                    fields=[
+                        'attack_type',
+                        'dns_query_name',
+                        'dns_query_type'
+                    ]
+                )
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        expected = {
+            'log_dns_drop': 'no', 'storage_format': {'type': 'field-list',
+                                                     'fields': ['attack_type', 'dns_query_name', 'dns_query_type']}
+        }
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+        ])
+        mm.client.post = Mock(return_value=dict(code=200, contents={}))
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertDictEqual(results['dns_security'], expected)
+        self.assertTrue(mm.client.post.called)
+        self.assertEqual(mm.client.post.call_count, 1)
+
+    def test_update_log_security_profile_dns_security_no_change(self, *args):
+        set_module_args(dict(
+            name='test_log_profile',
+            bot_defense=dict(
+                send_remote_challenge_failure_messages='yes',
+                log_alarm=False,
+                log_block=True
+            ),
+            packet_filter=dict(
+                rate=100
+            ),
+            protocol_inspection=dict(
+                log_packet=False,
+                publisher=''
+            ),
+            dns_security=dict(
+                log_dns_drop=False,
+                storage_format=dict(
+                    type='field-list',
+                    fields=[
+                        'attack_type',
+                        'dns_query_name',
+                        'dns_query_type'
+                    ]
+                )
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile_changed.json')),
+            dict(code=200, contents=load_fixture('load_log_security_profile_dns_sec_changed.json')),
+            dict(code=404, contents={}), dict(code=404, contents={})
+        ])
+
+        results = mm.exec_module()
+
+        self.assertFalse(results['changed'])
+
+    def test_update_log_security_profile_sip_security(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            sip_security=dict(
+                log_sip_global_failures=False,
+                log_sip_malformed=False,
+                storage_format=dict(
+                    fields=[
+                        'action',
+                        'sip_callee',
+                        'sip_caller'
+                    ]
+                )
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=404, contents={}),
+            dict(code=200, contents=load_fixture('load_log_security_profile_sip_sec.json')),
+            dict(code=404, contents={})
+        ])
+        mm.client.patch = Mock(return_value=dict(code=200, contents={}))
+
+        results = mm.exec_module()
+        self.assertTrue(results['changed'])
+        self.assertDictEqual(
+            results['sip_security'], {'log_sip_global_failures': 'no', 'log_sip_malformed': 'no',
+                                      'storage_format': {'fields': ['action', 'sip_callee', 'sip_caller']}}
+        )
+
+    def test_update_log_security_profile_create_sip_security(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            sip_security=dict(
+                log_sip_global_failures=False,
+                log_sip_malformed=False,
+                storage_format=dict(
+                    fields=[
+                        'action',
+                        'sip_callee',
+                        'sip_caller'
+                    ]
+                )
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        expected = {
+            'log_sip_global_failures': 'no', 'log_sip_malformed': 'no',
+            'storage_format': {'fields': ['action', 'sip_callee', 'sip_caller']}
+        }
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+        ])
+        mm.client.post = Mock(return_value=dict(code=200, contents={}))
+
+        results = mm.exec_module()
+        self.assertTrue(results['changed'])
+        self.assertDictEqual(results['sip_security'], expected)
+        self.assertTrue(mm.client.post.called)
+        self.assertEqual(mm.client.post.call_count, 1)
+
+    def test_update_log_security_profile_sip_security_no_change(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            sip_security=dict(
+                log_sip_global_failures=False,
+                log_sip_malformed=False,
+                storage_format=dict(
+                    fields=[
+                        'action',
+                        'sip_callee',
+                        'sip_caller'
+                    ]
+                )
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=404, contents={}),
+            dict(code=200, contents=load_fixture('load_log_security_profile_sip_sec_changed.json')),
+            dict(code=404, contents={})
+        ])
+
+        results = mm.exec_module()
+        self.assertFalse(results['changed'])
+
+    def test_update_log_security_profile_network_security(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            network_security=dict(
+                publisher='local-db-publisher',
+                log_acl_match_drop=False,
+                rate_limit_acl_match_accept='100',
+                rate_limit_acl_match_drop='2000',
+                rate_limit_match_reject='50',
+                storage_format=dict(
+                    fields=[
+                        'acl_rule_name',
+                        'action',
+                        'src_ip'
+                    ]
+                )
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=404, contents={}),
+            dict(code=404, contents={}),
+            dict(code=200, contents=load_fixture('load_log_security_profile_network.json'))
+        ])
+        mm.client.patch = Mock(return_value=dict(code=200, contents={}))
+
+        results = mm.exec_module()
+        self.assertTrue(results['changed'])
+        self.assertDictEqual(
+            results['network_security'], {'log_acl_match_drop': 'no', 'rate_limit_acl_match_accept': '100',
+                                          'rate_limit_acl_match_drop': '2000', 'rate_limit_match_reject': '50',
+                                          'storage_format': {'fields': ['acl_rule_name', 'action', 'src_ip']}}
+        )
+
+    def test_update_log_security_profile_create_network_security(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            network_security=dict(
+                publisher='local-db-publisher',
+                log_acl_match_drop=False,
+                rate_limit_acl_match_accept='100',
+                rate_limit_acl_match_drop='2000',
+                rate_limit_match_reject='50',
+                storage_format=dict(
+                    fields=[
+                        'acl_rule_name',
+                        'action',
+                        'src_ip'
+                    ]
+                )
+            )
+        ))
+
+        excpected = {
+            'log_acl_match_drop': 'no', 'rate_limit_acl_match_accept': '100',
+            'rate_limit_acl_match_drop': '2000', 'rate_limit_match_reject': '50',
+            'storage_format': {'fields': ['acl_rule_name', 'action', 'src_ip']}
+        }
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+        ])
+        mm.client.post = Mock(return_value=dict(code=200, contents={}))
+
+        results = mm.exec_module()
+        self.assertTrue(results['changed'])
+        self.assertDictEqual(results['network_security'], excpected)
+        self.assertTrue(mm.client.post.called)
+        self.assertEqual(mm.client.post.call_count, 1)
+
+    def test_update_log_security_profile_network_security_no_change(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            network_security=dict(
+                publisher='local-db-publisher',
+                log_acl_match_drop=False,
+                rate_limit_acl_match_accept='100',
+                rate_limit_acl_match_drop='2000',
+                rate_limit_match_reject='50',
+                storage_format=dict(
+                    fields=[
+                        'acl_rule_name',
+                        'action',
+                        'src_ip'
+                    ]
+                )
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=404, contents={}),
+            dict(code=404, contents={}),
+            dict(code=200, contents=load_fixture('load_log_security_profile_network_changed.json'))
+        ])
+
+        results = mm.exec_module()
         self.assertFalse(results['changed'])
 
     def test_update_log_security_profile_single_option(self, *args):
@@ -534,28 +1435,34 @@ class TestManager(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode
         )
 
-        expected_call_args = {
-            'sendRemoteChallengeFailureMessages': 'enabled', 'name': 'test_log_profile', 'partition': 'Common',
-            'localPublisher': '/Common/local-db-publisher',
-            'filter': {'logAlarm': 'enabled', 'logBlock': 'disabled', 'logBrowser': 'enabled',
-                       'logBrowserVerificationAction': 'enabled', 'logCaptcha': 'disabled',
-                       'logChallengeFailureRequest': 'enabled', 'logDeviceIdCollectionRequest': 'disabled',
-                       'logHoneyPotPage': 'disabled', 'logMobileApplication': 'disabled', 'logNone': 'disabled',
-                       'logRateLimit': 'enabled', 'logRedirectToPool': 'disabled', 'logSuspiciousBrowser': 'enabled',
-                       'logTcpReset': 'disabled', 'logTrustedBot': 'enabled', 'logUnknown': 'enabled',
-                       'logUntrustedBot': 'enabled'}
-        }
+        expected_call_args = {'sendRemoteChallengeFailureMessages': 'enabled', 'name': 'test_log_profile',
+                              'partition': 'Common', 'localPublisher': '/Common/local-db-publisher',
+                              'filter': {'logAlarm': 'enabled', 'logBlock': 'disabled', 'logBrowser': 'enabled',
+                                         'logBrowserVerificationAction': 'enabled', 'logCaptcha': 'disabled',
+                                         'logChallengeFailureRequest': 'enabled',
+                                         'logDeviceIdCollectionRequest': 'disabled',
+                                         'logHoneyPotPage': 'disabled', 'logMobileApplication': 'disabled',
+                                         'logNone': 'disabled', 'logRateLimit': 'enabled',
+                                         'logRedirectToPool': 'disabled', 'logSuspiciousBrowser': 'enabled',
+                                         'logTcpReset': 'disabled', 'logTrustedBot': 'enabled', 'logUnknown': 'enabled',
+                                         'logUntrustedBot': 'enabled'
+                                         }
+                              }
 
         # Override methods in the specific type of manager
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=True)
-        mm.client.get = Mock(return_value=dict(code=200, contents=load_fixture('load_log_security_profile.json')))
+        mm.read_dns_security_from_device = Mock(return_value=False)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+        ])
         mm.client.patch = Mock(return_value=dict(code=200, contents={}))
 
         results = mm.exec_module()
 
         self.assertTrue(results['changed'])
-        self.assertDictEqual(results['bot_defense'], {'send_remote_challenge_failure_messages': 'enabled'})
+        self.assertDictEqual(results['bot_defense'], {'send_remote_challenge_failure_messages': 'yes'})
         self.assertDictEqual(mm.client.patch.call_args_list[0][1]['data']['botDefense'][0], expected_call_args)
 
     def test_update_log_security_profile_fails(self, *args):
@@ -564,10 +1471,8 @@ class TestManager(unittest.TestCase):
             name='test_log_profile',
             bot_defense=dict(
                 send_remote_challenge_failure_messages='yes',
-                filter=dict(
-                    log_alarm=False,
-                    log_block=True
-                )
+                log_alarm=False,
+                log_block=True
             )
         ))
         module = AnsibleModule(
@@ -578,7 +1483,11 @@ class TestManager(unittest.TestCase):
         # Override methods in the specific type of manager
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=True)
-        mm.client.get = Mock(return_value=dict(code=200, contents=load_fixture('load_log_security_profile.json')))
+        mm.read_dns_security_from_device = Mock(return_value=False)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile.json')),
+            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+        ])
         mm.client.patch = Mock(return_value=dict(code=401, contents={'access denied'}))
 
         with self.assertRaises(F5ModuleError) as err:
@@ -726,3 +1635,56 @@ class TestManager(unittest.TestCase):
         mm._update_changed_options = Mock(return_value=False)
         mm.read_current_from_device = Mock(return_value=dict())
         self.assertFalse(mm.update())
+
+        mm.client.post = Mock(side_effect=[
+            dict(code=500, contents='server error'), dict(code=403, contents='forbidden'),
+            dict(code=401, contents='access denied')
+        ])
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm._create_dns_security(dict())
+        self.assertIn('server error', err.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm._create_sip_security(dict())
+        self.assertIn('forbidden', err.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm._create_net_security(dict())
+        self.assertIn('access denied', err.exception.args[0])
+
+        mm.client.patch = Mock(side_effect=[
+            dict(code=401, contents='access denied'),
+            dict(code=403, contents='forbidden'),
+            dict(code=500, contents='server error')
+        ])
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm._update_dns_security(dict())
+        self.assertIn('access denied', err.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm._update_sip_security(dict())
+        self.assertIn('forbidden', err.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm._update_net_security(dict())
+        self.assertIn('server error', err.exception.args[0])
+
+        mm.client.get = Mock(side_effect=[
+            dict(code=403, contents='forbidden'),
+            dict(code=401, contents='access denied'),
+            dict(code=500, contents='server error')
+        ])
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.read_dns_security_from_device()
+        self.assertIn('forbidden', err.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.read_sip_security_from_device()
+        self.assertIn('access denied', err.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.read_network_security_from_device()
+        self.assertIn('server error', err.exception.args[0])
