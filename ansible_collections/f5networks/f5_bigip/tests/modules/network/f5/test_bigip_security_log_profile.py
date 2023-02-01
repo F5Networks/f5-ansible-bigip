@@ -127,6 +127,53 @@ class TestParameters(unittest.TestCase):
         self.assertEqual(p.bot_log_unknown, 'enabled')
         self.assertEqual(p.bot_log_untrusted_bot, 'enabled')
 
+    def test_nat_partial_parameters(self):
+        args = dict(
+            nat=dict(
+                start_outbound_session=dict(include_dest_addr_port='no'),
+                end_outbound_session=dict(include_dest_addr_port='no')
+            )
+        )
+
+        p = ModuleParameters(params=args)
+
+        self.assertListEqual(p.nat_start_out_incl_dst_addr_port, [])
+        self.assertListEqual(p.nat_end_out_incl_dst_addr_port, [])
+
+        args = dict(nat=dict(publisher='foobar'))
+
+        p = ModuleParameters(params=args)
+
+        self.assertIsNone(p.nat_start_out_storage_format_type)
+        self.assertIsNone(p.nat_start_out_storage_format_delimiter)
+        self.assertIsNone(p.nat_start_out_storage_format_fields)
+        self.assertIsNone(p.nat_start_out_storage_format_user_string)
+
+        self.assertIsNone(p.nat_end_out_storage_format_type)
+        self.assertIsNone(p.nat_end_out_storage_format_delimiter)
+        self.assertIsNone(p.nat_end_out_storage_format_fields)
+        self.assertIsNone(p.nat_end_out_storage_format_user_string)
+
+        self.assertIsNone(p.nat_start_in_storage_format_type)
+        self.assertIsNone(p.nat_start_in_storage_format_delimiter)
+        self.assertIsNone(p.nat_start_in_storage_format_fields)
+        self.assertIsNone(p.nat_start_in_storage_format_user_string)
+
+        self.assertIsNone(p.nat_end_in_storage_format_type)
+        self.assertIsNone(p.nat_end_in_storage_format_delimiter)
+        self.assertIsNone(p.nat_end_in_storage_format_fields)
+        self.assertIsNone(p.nat_end_in_storage_format_user_string)
+
+        self.assertIsNone(p.nat_quota_exceeded_storage_format_type)
+        self.assertIsNone(p.nat_quota_exceeded_storage_format_delimiter)
+        self.assertIsNone(p.nat_quota_exceeded_storage_format_fields)
+        self.assertIsNone(p.nat_quota_exceeded_storage_format_user_string)
+
+        self.assertIsNone(p.nat_errors_storage_format_type)
+        self.assertIsNone(p.nat_errors_storage_format_delimiter)
+        self.assertIsNone(p.nat_errors_storage_format_fields)
+        self.assertIsNone(p.nat_errors_storage_format_user_string)
+
     def test_format_type_none(self):
         args = dict(dns_security=dict(storage_format=dict(fields=['action'], user_string='foo', type='none')))
 
@@ -151,6 +198,41 @@ class TestParameters(unittest.TestCase):
         self.assertIsNone(p.net_storage_format_fields)
         self.assertIsNone(p.net_storage_format_user_string)
         self.assertEqual(p.net_storage_format_type, 'none')
+
+        args = dict(nat=dict(
+            start_outbound_session=dict(storage_format=dict(fields=['event_name'], user_string='foo', type='none')),
+            start_inbound_session=dict(storage_format=dict(fields=['event_name'], user_string='foo', type='none')),
+            end_inbound_session=dict(storage_format=dict(fields=['event_name'], user_string='foo', type='none')),
+            end_outbound_session=dict(storage_format=dict(fields=['event_name'], user_string='foo', type='none')),
+            quota_exceeded=dict(storage_format=dict(fields=['event_name'], user_string='foo', type='none')),
+            errors=dict(storage_format=dict(fields=['event_name'], user_string='foo', type='none')),
+        ))
+
+        p = ModuleParameters(params=args)
+
+        self.assertIsNone(p.nat_start_out_storage_format_fields)
+        self.assertIsNone(p.nat_start_out_storage_format_user_string)
+        self.assertEqual(p.nat_start_out_storage_format_type, 'none')
+
+        self.assertIsNone(p.nat_end_out_storage_format_fields)
+        self.assertIsNone(p.nat_end_out_storage_format_user_string)
+        self.assertEqual(p.nat_end_out_storage_format_type, 'none')
+
+        self.assertIsNone(p.nat_start_in_storage_format_fields)
+        self.assertIsNone(p.nat_start_in_storage_format_user_string)
+        self.assertEqual(p.nat_start_in_storage_format_type, 'none')
+
+        self.assertIsNone(p.nat_end_in_storage_format_fields)
+        self.assertIsNone(p.nat_end_in_storage_format_user_string)
+        self.assertEqual(p.nat_end_in_storage_format_type, 'none')
+
+        self.assertIsNone(p.nat_quota_exceeded_storage_format_fields)
+        self.assertIsNone(p.nat_quota_exceeded_storage_format_user_string)
+        self.assertEqual(p.nat_quota_exceeded_storage_format_type, 'none')
+
+        self.assertIsNone(p.nat_errors_storage_format_fields)
+        self.assertIsNone(p.nat_errors_storage_format_user_string)
+        self.assertEqual(p.nat_errors_storage_format_type, 'none')
 
     def test_invalid_rate_raises(self):
         args = dict(packet_filter=dict(rate=10000))
@@ -228,6 +310,49 @@ class TestParameters(unittest.TestCase):
             err.exception.args[0]
         )
 
+    def test_invalid_nat_storage_format_fields_raises(self):
+        args = dict(nat=dict(
+            start_outbound_session=dict(storage_format=dict(fields=['foo'])),
+            start_inbound_session=dict(storage_format=dict(fields=['foo'])),
+            end_inbound_session=dict(storage_format=dict(fields=['foo'])),
+            end_outbound_session=dict(storage_format=dict(fields=['foo'])),
+            quota_exceeded=dict(storage_format=dict(fields=['foo'])),
+            errors=dict(storage_format=dict(fields=['foo'])),
+
+        ))
+
+        p = ModuleParameters(params=args)
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.nat_start_out_storage_format_fields()
+
+        self.assertIn('Invalid fields value, list item must be one of', err.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.nat_end_out_storage_format_fields()
+
+        self.assertIn('Invalid fields value, list item must be one of', err.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.nat_start_in_storage_format_fields()
+
+        self.assertIn('Invalid fields value, list item must be one of', err.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.nat_end_in_storage_format_fields()
+
+        self.assertIn('Invalid fields value, list item must be one of', err.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.nat_quota_exceeded_storage_format_fields()
+
+        self.assertIn('Invalid fields value, list item must be one of', err.exception.args[0])
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.nat_errors_storage_format_fields()
+
+        self.assertIn('Invalid fields value, list item must be one of', err.exception.args[0])
+
     def test_module_parameters_none(self):
         args = dict(name='test_log_profile')
 
@@ -264,6 +389,48 @@ class TestParameters(unittest.TestCase):
         self.assertIsNone(p.bot_log_trusted_bot)
         self.assertIsNone(p.bot_log_unknown)
         self.assertIsNone(p.bot_log_untrusted_bot)
+        self.assertIsNone(p.nat_publisher)
+        self.assertIsNone(p.nat_rate_limit_aggregate_rate)
+        self.assertIsNone(p.nat_log_sub_id)
+        self.assertIsNone(p.nat_lsn_legacy_mode)
+        self.assertIsNone(p.nat_start_out_action)
+        self.assertIsNone(p.nat_start_out_incl_dst_addr_port)
+        self.assertIsNone(p.nat_rate_limit_start_out_sess)
+        self.assertIsNone(p.nat_start_out_storage_format_type)
+        self.assertIsNone(p.nat_start_out_storage_format_delimiter)
+        self.assertIsNone(p.nat_start_out_storage_format_fields)
+        self.assertIsNone(p.nat_start_out_storage_format_user_string)
+        self.assertIsNone(p.nat_end_out_action)
+        self.assertIsNone(p.nat_end_out_incl_dst_addr_port)
+        self.assertIsNone(p.nat_rate_limit_end_out_sess)
+        self.assertIsNone(p.nat_end_out_storage_format_type)
+        self.assertIsNone(p.nat_end_out_storage_format_delimiter)
+        self.assertIsNone(p.nat_end_out_storage_format_fields)
+        self.assertIsNone(p.nat_end_out_storage_format_user_string)
+        self.assertIsNone(p.nat_start_in_action)
+        self.assertIsNone(p.nat_rate_limit_start_in_sess)
+        self.assertIsNone(p.nat_start_in_storage_format_type)
+        self.assertIsNone(p.nat_start_in_storage_format_delimiter)
+        self.assertIsNone(p.nat_start_in_storage_format_fields)
+        self.assertIsNone(p.nat_start_in_storage_format_user_string)
+        self.assertIsNone(p.nat_end_in_action)
+        self.assertIsNone(p.nat_rate_limit_end_in_sess)
+        self.assertIsNone(p.nat_end_in_storage_format_type)
+        self.assertIsNone(p.nat_end_in_storage_format_delimiter)
+        self.assertIsNone(p.nat_end_in_storage_format_fields)
+        self.assertIsNone(p.nat_end_in_storage_format_user_string)
+        self.assertIsNone(p.nat_quota_exceeded_action)
+        self.assertIsNone(p.nat_rate_limit_quota_exceeded)
+        self.assertIsNone(p.nat_quota_exceeded_storage_format_type)
+        self.assertIsNone(p.nat_quota_exceeded_storage_format_delimiter)
+        self.assertIsNone(p.nat_quota_exceeded_storage_format_fields)
+        self.assertIsNone(p.nat_quota_exceeded_storage_format_user_string)
+        self.assertIsNone(p.nat_errors_action)
+        self.assertIsNone(p.nat_rate_limit_errors)
+        self.assertIsNone(p.nat_errors_storage_format_type)
+        self.assertIsNone(p.nat_errors_storage_format_delimiter)
+        self.assertIsNone(p.nat_errors_storage_format_fields)
+        self.assertIsNone(p.nat_errors_storage_format_user_string)
 
     def test_api_parameters(self):
         args = load_fixture('load_log_security_profile.json')
@@ -337,6 +504,48 @@ class TestParameters(unittest.TestCase):
         self.assertIsNone(p.bot_log_trusted_bot)
         self.assertIsNone(p.bot_log_unknown)
         self.assertIsNone(p.bot_log_untrusted_bot)
+        self.assertIsNone(p.nat_publisher)
+        self.assertIsNone(p.nat_rate_limit_aggregate_rate)
+        self.assertIsNone(p.nat_log_sub_id)
+        self.assertIsNone(p.nat_lsn_legacy_mode)
+        self.assertIsNone(p.nat_start_out_action)
+        self.assertIsNone(p.nat_start_out_incl_dst_addr_port)
+        self.assertIsNone(p.nat_rate_limit_start_out_sess)
+        self.assertIsNone(p.nat_start_out_storage_format_type)
+        self.assertIsNone(p.nat_start_out_storage_format_delimiter)
+        self.assertIsNone(p.nat_start_out_storage_format_fields)
+        self.assertIsNone(p.nat_start_out_storage_format_user_string)
+        self.assertIsNone(p.nat_end_out_action)
+        self.assertIsNone(p.nat_end_out_incl_dst_addr_port)
+        self.assertIsNone(p.nat_rate_limit_end_out_sess)
+        self.assertIsNone(p.nat_end_out_storage_format_type)
+        self.assertIsNone(p.nat_end_out_storage_format_delimiter)
+        self.assertIsNone(p.nat_end_out_storage_format_fields)
+        self.assertIsNone(p.nat_end_out_storage_format_user_string)
+        self.assertIsNone(p.nat_start_in_action)
+        self.assertIsNone(p.nat_rate_limit_start_in_sess)
+        self.assertIsNone(p.nat_start_in_storage_format_type)
+        self.assertIsNone(p.nat_start_in_storage_format_delimiter)
+        self.assertIsNone(p.nat_start_in_storage_format_fields)
+        self.assertIsNone(p.nat_start_in_storage_format_user_string)
+        self.assertIsNone(p.nat_end_in_action)
+        self.assertIsNone(p.nat_rate_limit_end_in_sess)
+        self.assertIsNone(p.nat_end_in_storage_format_type)
+        self.assertIsNone(p.nat_end_in_storage_format_delimiter)
+        self.assertIsNone(p.nat_end_in_storage_format_fields)
+        self.assertIsNone(p.nat_end_in_storage_format_user_string)
+        self.assertIsNone(p.nat_quota_exceeded_action)
+        self.assertIsNone(p.nat_rate_limit_quota_exceeded)
+        self.assertIsNone(p.nat_quota_exceeded_storage_format_type)
+        self.assertIsNone(p.nat_quota_exceeded_storage_format_delimiter)
+        self.assertIsNone(p.nat_quota_exceeded_storage_format_fields)
+        self.assertIsNone(p.nat_quota_exceeded_storage_format_user_string)
+        self.assertIsNone(p.nat_errors_action)
+        self.assertIsNone(p.nat_rate_limit_errors)
+        self.assertIsNone(p.nat_errors_storage_format_type)
+        self.assertIsNone(p.nat_errors_storage_format_delimiter)
+        self.assertIsNone(p.nat_errors_storage_format_fields)
+        self.assertIsNone(p.nat_errors_storage_format_user_string)
 
 
 class TestManager(unittest.TestCase):
@@ -957,6 +1166,204 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
         self.assertFalse(results['changed'])
 
+    def test_create_log_security_profile_with_nat(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            description='this is a nat logging profile',
+            nat=dict(
+                publisher='local-db-publisher',
+                log_subscriber_id=True,
+                rate_limit_aggregate_rate='10000',
+                rate_limit_end_inbound_session='indefinite',
+                rate_limit_end_outbound_session='5000',
+                rate_limit_errors='6000',
+                rate_limit_quota_exceeded='7000',
+                rate_limit_start_inbound_session='8000',
+                rate_limit_start_outbound_session='9000',
+                start_outbound_session=dict(
+                    action='enabled',
+                    include_dest_addr_port='yes',
+                    storage_format=dict(
+                        delimiter='-',
+                        type='field-list',
+                        fields=['context_name', 'dest_ip', 'dest_port', 'event_name', 'protocol']
+                    )
+                ),
+                start_inbound_session=dict(
+                    action='backup-allocation-only',
+                    storage_format=dict(
+                        delimiter='-',
+                        type='field-list',
+                        fields=['context_name', 'dest_ip', 'dest_port', 'event_name', 'protocol']
+                    )
+                ),
+                end_inbound_session=dict(
+                    action='enabled',
+                    storage_format=dict(
+                        delimiter='-',
+                        type='field-list',
+                        fields=['context_name', 'dest_ip', 'dest_port', 'event_name', 'protocol']
+                    )
+                ),
+                end_outbound_session=dict(
+                    action='backup-allocation-only',
+                    include_dest_addr_port='yes',
+                    storage_format=dict(
+                        type='user-defined',
+                        user_string='foo,bar,baz'
+                    )
+                ),
+                quota_exceeded=dict(
+                    action='enabled',
+                    storage_format=dict(
+                        delimiter='-',
+                        type='field-list',
+                        fields=['dest_ip', 'dest_port', 'protocol']
+                    )
+                ),
+                errors=dict(
+                    action='enabled',
+                    storage_format=dict(
+                        type='user-defined',
+                        user_string='foo,bar,baz'
+                    )
+                )
+            ),
+        )
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        expected = {
+            'publisher': '/Common/local-db-publisher', 'log_subscriber_id': 'yes',
+            'rate_limit_aggregate_rate': '10000', 'rate_limit_end_inbound_session': 'indefinite',
+            'rate_limit_end_outbound_session': '5000', 'rate_limit_errors': '6000',
+            'rate_limit_quota_exceeded': '7000', 'rate_limit_start_inbound_session': '8000',
+            'rate_limit_start_outbound_session': '9000',
+            'start_outbound_session': {
+                'action': 'enabled', 'include_dest_addr_port': 'yes',
+                'storage_format': {'delimiter': '-', 'type': 'field-list',
+                                   'fields': ['context_name', 'dest_ip', 'dest_port', 'event_name', 'protocol']}
+            },
+            'end_outbound_session': {
+                'action': 'backup-allocation-only', 'include_dest_addr_port': 'yes',
+                'storage_format': {'type': 'user-defined', 'user_string': 'foo,bar,baz'}
+            },
+            'start_inbound_session': {
+                'action': 'backup-allocation-only',
+                'storage_format': {'delimiter': '-', 'type': 'field-list',
+                                   'fields': ['context_name', 'dest_ip', 'dest_port', 'event_name', 'protocol']}
+            },
+            'end_inbound_session': {
+                'action': 'enabled',
+                'storage_format': {'delimiter': '-', 'type': 'field-list',
+                                   'fields': ['context_name', 'dest_ip', 'dest_port', 'event_name', 'protocol']}
+            },
+            'quota_exceeded': {
+                'action': 'enabled',
+                'storage_format': {'delimiter': '-', 'type': 'field-list',
+                                   'fields': ['dest_ip', 'dest_port', 'protocol']}
+            },
+            'errors': {'action': 'enabled', 'storage_format': {'type': 'user-defined', 'user_string': 'foo,bar,baz'}}
+        }
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.client.post = Mock(return_value=dict(code=200, contents={}))
+
+        results = mm.exec_module()
+        self.assertTrue(results['changed'])
+        self.assertEqual(results['description'], 'this is a nat logging profile')
+        self.assertDictEqual(results['nat'], expected)
+
+    def test_create_log_security_profile_with_nat_no_change(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            description='this is a nat logging profile',
+            nat=dict(
+                publisher='local-db-publisher',
+                log_subscriber_id=True,
+                rate_limit_aggregate_rate='10000',
+                rate_limit_end_inbound_session='indefinite',
+                rate_limit_end_outbound_session='5000',
+                rate_limit_errors='6000',
+                rate_limit_quota_exceeded='7000',
+                rate_limit_start_inbound_session='8000',
+                rate_limit_start_outbound_session='9000',
+                start_outbound_session=dict(
+                    action='enabled',
+                    include_dest_addr_port='yes',
+                    storage_format=dict(
+                        delimiter='-',
+                        type='field-list',
+                        fields=['context_name', 'dest_ip', 'dest_port', 'event_name', 'protocol']
+                    )
+                ),
+                start_inbound_session=dict(
+                    action='backup-allocation-only',
+                    storage_format=dict(
+                        delimiter='-',
+                        type='field-list',
+                        fields=['context_name', 'dest_ip', 'dest_port', 'event_name', 'protocol']
+                    )
+                ),
+                end_inbound_session=dict(
+                    action='enabled',
+                    storage_format=dict(
+                        delimiter='-',
+                        type='field-list',
+                        fields=['context_name', 'dest_ip', 'dest_port', 'event_name', 'protocol']
+                    )
+                ),
+                end_outbound_session=dict(
+                    action='backup-allocation-only',
+                    include_dest_addr_port='yes',
+                    storage_format=dict(
+                        type='user-defined',
+                        user_string='foo,bar,baz'
+                    )
+                ),
+                quota_exceeded=dict(
+                    action='enabled',
+                    storage_format=dict(
+                        delimiter='-',
+                        type='field-list',
+                        fields=['dest_ip', 'dest_port', 'protocol']
+                    )
+                ),
+                errors=dict(
+                    action='enabled',
+                    storage_format=dict(
+                        type='user-defined',
+                        user_string='foo,bar,baz'
+                    )
+                )
+            ),
+        )
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile_with_nat.json')),
+            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+        ])
+
+        results = mm.exec_module()
+        self.assertFalse(results['changed'])
+
     def test_create_log_security_profile_fails(self, *args):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(name='test_log_profile'))
@@ -1464,6 +1871,134 @@ class TestManager(unittest.TestCase):
         self.assertTrue(results['changed'])
         self.assertDictEqual(results['bot_defense'], {'send_remote_challenge_failure_messages': 'yes'})
         self.assertDictEqual(mm.client.patch.call_args_list[0][1]['data']['botDefense'][0], expected_call_args)
+
+    def test_update_log_security_profile_with_nat(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            nat=dict(
+                log_subscriber_id=False,
+                rate_limit_aggregate_rate='3000000',
+                rate_limit_end_inbound_session='500000',
+                start_outbound_session=dict(
+                    storage_format=dict(
+                        delimiter='-',
+                        type='field-list',
+                        fields=['dest_ip', 'dest_port', 'context_name', 'event_name', 'protocol']
+                    )
+                ),
+                end_inbound_session=dict(
+                    action='enabled',
+                    storage_format=dict(
+                        delimiter='-',
+                        type='field-list',
+                        fields=['dest_ip', 'dest_port']
+                    )
+                ),
+                quota_exceeded=dict(
+                    storage_format=dict(
+                        delimiter=';',
+                    )
+                ),
+                errors=dict(
+                    action='enabled',
+                    storage_format=dict(
+                        type='field-list',
+                        fields=['dest_ip', 'dest_port', 'protocol']
+                    )
+                )
+            ),
+        )
+        )
+
+        expected = {
+            'log_subscriber_id': 'no', 'rate_limit_aggregate_rate': '3000000',
+            'rate_limit_end_inbound_session': '500000',
+            'start_outbound_session': {
+                'storage_format': {'fields': ['dest_ip', 'dest_port', 'context_name', 'event_name', 'protocol']}
+            },
+            'end_inbound_session': {
+                'storage_format': {'fields': ['dest_ip', 'dest_port']}
+            },
+            'quota_exceeded': {
+                'storage_format': {'delimiter': ';'}
+            },
+            'errors': {
+                'storage_format': {'type': 'field-list', 'fields': ['dest_ip', 'dest_port', 'protocol']}
+            }
+        }
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile_with_nat.json')),
+            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+        ])
+        mm.client.patch = Mock(return_value=dict(code=200, contents={}))
+
+        results = mm.exec_module()
+        self.assertTrue(results['changed'])
+        self.assertDictEqual(results['nat'], expected)
+
+    def test_update_log_security_profile_with_nat_no_change(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_log_profile',
+            nat=dict(
+                log_subscriber_id=False,
+                rate_limit_aggregate_rate='3000000',
+                rate_limit_end_inbound_session='500000',
+                start_outbound_session=dict(
+                    storage_format=dict(
+                        delimiter='-',
+                        type='field-list',
+                        fields=['dest_ip', 'dest_port', 'context_name', 'event_name', 'protocol']
+                    )
+                ),
+                end_inbound_session=dict(
+                    action='enabled',
+                    storage_format=dict(
+                        delimiter='-',
+                        type='field-list',
+                        fields=['dest_ip', 'dest_port']
+                    )
+                ),
+                quota_exceeded=dict(
+                    storage_format=dict(
+                        delimiter=';',
+                    )
+                ),
+                errors=dict(
+                    action='enabled',
+                    storage_format=dict(
+                        type='field-list',
+                        fields=['dest_ip', 'dest_port', 'protocol']
+                    )
+                )
+            ),
+        )
+        )
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.get = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_log_security_profile_with_nat_changed.json')),
+            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+        ])
+
+        results = mm.exec_module()
+        self.assertFalse(results['changed'])
 
     def test_update_log_security_profile_fails(self, *args):
         # Configure the arguments that would be sent to the Ansible module

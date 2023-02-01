@@ -71,7 +71,7 @@ class TestParameters(unittest.TestCase):
         p2 = ModuleParameters(params=args2)
 
         with self.assertRaises(F5ModuleError) as err1:
-            p1.timeout
+            p1.timeout()
 
         self.assertIn(
             "Timeout value must be between 10 and 1800 seconds.",
@@ -79,7 +79,7 @@ class TestParameters(unittest.TestCase):
         )
 
         with self.assertRaises(F5ModuleError) as err2:
-            p2.timeout
+            p2.timeout()
 
         self.assertIn(
             "Timeout value must be between 10 and 1800 seconds.",
@@ -129,11 +129,11 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm.client.get.side_effect = [
-            {'code': 200, 'contents': ['examples/simple_http']},
-            {'code': 200, 'contents': {'message': 'in progress'}},
-            {'code': 200, 'contents': {'message': 'success'}}
+            dict(code=200, contents=['examples/simple_http']),
+            dict(code=200, contents=load_fixture('fast_task_in_progress.json')),
+            dict(code=200, contents=load_fixture('fast_task_success.json'))
         ]
-        mm.client.post.return_value = {'code': 200, 'contents': {'message': [{'id': 1}]}}
+        mm.client.post.return_value = dict(code=202, contents=load_fixture('load_fast_create_response.json'))
 
         results = mm.exec_module()
 
@@ -142,7 +142,7 @@ class TestManager(unittest.TestCase):
         self.assertEqual(results['template'], 'examples/simple_http')
         self.assertEqual(results['content'], declaration)
 
-    def test_create_on_device_failure_no_change(self, *args):
+    def test_create_on_device_failure(self, *args):
         declaration = load_fixture('new_fast_app.json')
         set_module_args(dict(
             content=declaration,
@@ -158,17 +158,33 @@ class TestManager(unittest.TestCase):
             required_together=self.spec.required_together
         )
         mm = ModuleManager(module=module)
-        mm.template_exists = Mock()
-        mm.client.post.side_effect = [
-            {'code': 503, 'contents': 'service not available'},
-            {'code': 200, 'contents': {'message': [{'id': 1}]}}
-        ]
-        mm.wait_for_task = Mock(return_value={'message': 'no change'})
+        mm.template_exists = Mock(return_value=True)
+        mm.client.post.return_value = dict(code=503, contents=dict(message='declaration is invalid'))
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
 
-        self.assertIn('service not available', err.exception.args[0])
+        self.assertIn('declaration is invalid', err.exception.args[0]['message'])
+
+    def test_create_on_device_no_change(self, *args):
+        declaration = load_fixture('new_fast_app.json')
+        set_module_args(dict(
+            content=declaration,
+            template='examples/simple_http',
+            state='create',
+            timeout=600
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_together=self.spec.required_together
+        )
+        mm = ModuleManager(module=module)
+        mm.template_exists = Mock(return_value=True)
+        mm.client.post.return_value = dict(code=202, contents=load_fixture('load_fast_create_response.json'))
+        mm.client.get.return_value = dict(code=200, contents=load_fixture('fast_task_no_change.json'))
 
         results = mm.exec_module()
 
@@ -194,8 +210,8 @@ class TestManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm.wait_for_task = Mock(return_value={'message': 'success'})
 
-        mm.client.get.return_value = {'code': 200}
-        mm.client.patch.return_value = {'code': 200, 'contents': {'message': [{'id': 1}]}}
+        mm.client.get.return_value = dict(code=200)
+        mm.client.patch.return_value = dict(code=202, contents=load_fixture('load_fast_update_response.json'))
 
         results = mm.exec_module()
 
@@ -524,40 +540,34 @@ class TestManager(unittest.TestCase):
         )
         mm = ModuleManager(module=module)
 
-        with self.assertRaises(F5ModuleError) as err1:
-            resp = {'message': 'declaration failed'}
-            mm._check_for_errors_in_response(resp)
+        mm.client.get.side_effect = [
+            dict(code=200, contents=load_fixture('fast_task_failure.json')),
+            dict(code=503, contents='service not available'),
+        ]
 
-        self.assertIn('declaration failed', err1.exception.args[0])
+        with self.assertRaises(F5ModuleError) as err1:
+            mm.wait_for_task(path='/', interval=1, period=10)
+
+        self.assertIn('declaration is invalid', err1.exception.args[0])
 
         with self.assertRaises(F5ModuleError) as err2:
-            resp = {'message': 'declaration is invalid'}
-            mm._check_for_errors_in_response(resp)
-
-        self.assertIn('declaration is invalid', err2.exception.args[0])
-
-        mm.client.get.return_value = {'code': 503, 'contents': 'service not available'}
-
-        with self.assertRaises(F5ModuleError) as err3:
             mm._check_task_on_device('/')
 
-        self.assertIn('service not available', err3.exception.args[0])
+        self.assertIn('service not available', err2.exception.args[0])
 
-        mm._check_task_on_device = Mock(return_value={'message': 'in progress'})
-        mm._check_for_errors_in_response = Mock()
-
-        with self.assertRaises(F5ModuleError) as err4:
+        with self.assertRaises(F5ModuleError) as err3:
+            mm._check_task_on_device = Mock(return_value=dict(code=0, message='in progress'))
             mm.wait_for_task(path='/', interval=1, period=10)
 
         self.assertIn(
             "Module timeout reached, state change is unknown, "
             "please increase the timeout parameter for long lived actions.",
-            err4.exception.args[0]
+            err3.exception.args[0]
         )
 
-        mm.client.delete.return_value = {'code': 503, 'contents': 'service not available'}
+        mm.client.delete.return_value = dict(code=503, contents='service not available')
 
-        with self.assertRaises(F5ModuleError) as err5:
+        with self.assertRaises(F5ModuleError) as err4:
             mm.remove_from_device()
 
-        self.assertIn('service not available', err5.exception.args[0])
+        self.assertIn('service not available', err4.exception.args[0])

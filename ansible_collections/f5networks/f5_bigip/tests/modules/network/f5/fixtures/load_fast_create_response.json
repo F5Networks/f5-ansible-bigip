@@ -1,0 +1,25 @@
+{
+    "code": 202,
+    "requestId": 347,
+    "message": [
+        {
+            "id": "f6ca75dd-2524-4acb-8319-eb4def45dc77",
+            "name": "examples/simple_http",
+            "parameters": {
+                "tenant_name": "sample_tenant",
+                "application_name": "sample_app",
+                "virtual_port": 8081,
+                "virtual_address": "10.1.1.1",
+                "server_port": 12584,
+                "server_addresses": [
+                    "192.1.1.1",
+                    "192.1.1.2"
+                ]
+            }
+        }
+    ],
+    "_links": {
+        "self": "/mgmt/shared/fast/applications",
+        "task": "/mgmt/shared/fast/tasks/f6ca75dd-2524-4acb-8319-eb4def45dc77"
+    }
+}

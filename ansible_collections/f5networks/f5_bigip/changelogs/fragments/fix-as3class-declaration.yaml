@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - bigip_as3_deploy - fix in AS3 declaration to accommodate ADC class.

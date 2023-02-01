@@ -248,7 +248,15 @@ class ModuleManager(object):
                 "The provided 'content' could not be converted into valid json. If you "
                 "are using the 'to_nice_json' filter, please remove it."
             )
-        declaration['action'] = 'dry-run'
+        if declaration.get('class') == 'AS3':
+            declaration['action'] = 'dry-run'
+        else:
+            declaration = {
+                'class': 'AS3',
+                'persist': False,
+                'action': 'dry-run',
+                'declaration': declaration,
+            }
 
         if self.want.tenant:
             uri = "/mgmt/shared/appsvcs/declare/{0}".format(self.want.tenant)

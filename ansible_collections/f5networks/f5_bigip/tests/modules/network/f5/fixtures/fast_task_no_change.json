@@ -1,0 +1,25 @@
+{
+    "id": "43ee7606-6500-4921-aa23-9cad1e518c4c",
+    "code": 200,
+    "message": "no change",
+    "name": "examples/simple_http",
+    "parameters": {
+        "tenant_name": "sample_tenant",
+        "application_name": "sample_app",
+        "virtual_port": 8081,
+        "virtual_address": "10.1.1.1",
+        "server_port": 12584,
+        "server_addresses": [
+            "192.1.1.1",
+            "192.1.1.2"
+        ]
+    },
+    "tenant": "sample_tenant",
+    "application": "sample_app",
+    "operation": "update",
+    "timestamp": "2023-01-31T19:39:19.368Z",
+    "host": "localhost",
+    "_links": {
+        "self": "/mgmt/shared/fast/tasks/43ee7606-6500-4921-aa23-9cad1e518c4c"
+    }
+}

@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - bigip_fast_application - fix parsing of errors in the returned json payload

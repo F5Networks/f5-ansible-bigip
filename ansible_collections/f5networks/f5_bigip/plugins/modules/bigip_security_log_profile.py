@@ -444,6 +444,409 @@ options:
             description:
               - Specifies that the format the system uses to log messages is in the form of a user-defined string.
             type: str
+  nat:
+    description:
+      - Configures the system to log firewall NAT events.
+    type: dict
+    suboptions:
+      publisher:
+        description:
+          - Specifies the name of the log publisher used for logging Network Address Translation events.
+          - "If desired log publisher is configured on a different partition to where log profile is created
+            a publisher name must be specified in full_path format e.g. /Foo/my-publisher."
+        type: str
+      log_subscriber_id:
+        description:
+          - Enable/Disable logging of the subscriber ID associated with a subscriber IP address.
+        type: bool
+      lsn_legacy_mode:
+        description:
+          - Enable/Disable use of legacy CGNAT/LSN logging facility instead of the new Firewall NAT logging capability.
+          - When set to C(yes), the C(start_outbound_session), C(start_inbound_session),
+            C(end_inbound_session), C(end_outbound_session), C(quota_exceeded) and C(errors), must not be enabled.
+            Specifying C(action) to be either C(enabled) or C(backup-allocation-only) while C(lsn_legacy_mode) is C(yes)
+            will result in API errors.
+        type: bool
+      rate_limit_aggregate_rate:
+        description:
+          - Defines a rate limit for all combined NAT log messages per second. Beyond this rate limit,
+            log messages are not logged.
+          - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
+            C(indefinite) being synonymous.
+        type: str
+      rate_limit_start_outbound_session:
+        description:
+          - Sets a rate limit for logging of log entries at start of the translation event for a NAT client.
+          - If this rate limit is exceeded, log messages of this type are not logged until the threshold drops
+            below the specified rate.
+          - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
+            C(indefinite) being synonymous.
+        type: str
+      rate_limit_end_outbound_session:
+        description:
+          - Sets a rate limit for logging of log entries at end of translation event for a NAT client.
+          - If this rate limit is exceeded, log messages of this type are not logged until the threshold drops
+            below the specified rate.
+          - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
+            C(indefinite) being synonymous.
+        type: str
+      rate_limit_start_inbound_session:
+        description:
+          - Sets a rate limit for logging of log entries at the start of the incoming connection event for a
+            translated endpoint.
+          - If this rate limit is exceeded, log messages of this type are not logged until the threshold drops
+            below the specified rate.
+          - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
+            C(indefinite) being synonymous.
+        type: str
+      rate_limit_end_inbound_session:
+        description:
+          - Sets a rate limit for logging of log entries at the end of the incoming connection event for a
+            translated endpoint.
+          - If this rate limit is exceeded, log messages of this type are not logged until the threshold drops
+            below the specified rate.
+          - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
+            C(indefinite) being synonymous.
+        type: str
+      rate_limit_quota_exceeded:
+        description:
+          - Sets a rate limit for logging of log entries when a NAT client exceeds allocated resources.
+          - If this rate limit is exceeded, log messages of this type are not logged until the threshold drops
+            below the specified rate.
+          - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
+            C(indefinite) being synonymous.
+        type: str
+      rate_limit_errors:
+        description:
+          - Sets a rate limit for logging of events when NAT translation errors occur.
+          - If this rate limit is exceeded, log messages of this type are not logged until the threshold drops
+            below the specified rate.
+          - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
+            C(indefinite) being synonymous.
+        type: str
+      start_outbound_session:
+        description:
+          - Configuration of log entries generated at the start of the incoming connection event for a translated
+            endpoint.
+        type: dict
+        suboptions:
+          action:
+            description:
+              - When set to C(enabled) sets system to log entries for the start of the incoming connection event for a
+                translated endpoint.
+              - When set to C(disabled) disables logging of start of the incoming connection event for a
+                translated endpoint.
+              - When set to C(backup-allocation-only) sets the system to generate the associated type of log entries
+                only when the translation address for the client is chosen from the backup pool.
+            choices:
+              - enabled
+              - disabled
+              - backup-allocation-only
+            type: str
+          include_dest_addr_port:
+            description:
+              - Enable/Disable logging of destination IP address and port information.
+            type: bool
+          storage_format:
+            description:
+              - Configures custom formatting of NAT events log messages.
+            type: dict
+            suboptions:
+              type:
+                description:
+                  - Specifies the format type for log messages.
+                  - When set to C(none) the system uses default format type to log the messages to a Remote Syslog
+                    server.
+                  - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
+                  - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
+                  - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
+                type: str
+                choices:
+                  - field-list
+                  - user-defined
+                  - none
+              delimiter:
+                description:
+                  - Specifies the delimiter string, when C(type) is set to C(field-list).
+                type: str
+              fields:
+                description:
+                  - Lists the items the server logs, and the order in which the server logs them due to that the order
+                    of in which items are specified on the list matters. The server displays the items in the log
+                    sequentially from top down.
+                  - "The valid elements that can be specified in the list are: context_name, dest_ip, dest_port,
+                    event_name, protocol, route_domain, src_ip, src_port, sub_id, timestamp, translated_dest_ip,
+                    translated_dest_port, translated_route_domain, translated_src_ip, translated_src_port."
+                type: list
+                elements: str
+              user_string:
+                description:
+                  - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+                type: str
+      end_outbound_session:
+        description:
+          - Configuration of log entries generated at end of translation event for a NAT client.
+        type: dict
+        suboptions:
+          action:
+            description:
+              - When set to C(enabled) sets system to log entries for end of translation event for a NAT client.
+              - When set to C(disabled) disables logging of end of translation event for a NAT client.
+              - When set to C(backup-allocation-only) sets the system to generate the associated type of log entries
+                only when the translation address for the client is chosen from the backup pool.
+            choices:
+              - enabled
+              - disabled
+              - backup-allocation-only
+            type: str
+          include_dest_addr_port:
+            description:
+              - Enable/Disable logging of destination IP address and port information.
+            type: bool
+          storage_format:
+            description:
+              - Configures custom formatting of NAT events log messages.
+            type: dict
+            suboptions:
+              type:
+                description:
+                  - Specifies the format type for log messages.
+                  - When set to C(none) the system uses default format type to log the messages to a Remote Syslog
+                    server.
+                  - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
+                  - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
+                  - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
+                type: str
+                choices:
+                  - field-list
+                  - user-defined
+                  - none
+              delimiter:
+                description:
+                  - Specifies the delimiter string, when C(type) is set to C(field-list).
+                type: str
+              fields:
+                description:
+                  - Lists the items the server logs, and the order in which the server logs them due to that the order
+                    of in which items are specified on the list matters. The server displays the items in the log
+                    sequentially from top down.
+                  - "The valid elements that can be specified in the list are: context_name, dest_ip, dest_port,
+                    event_name, protocol, route_domain, src_ip, src_port, sub_id, timestamp, translated_dest_ip,
+                    translated_dest_port, translated_route_domain, translated_src_ip, translated_src_port."
+                type: list
+                elements: str
+              user_string:
+                description:
+                  - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+                type: str
+      start_inbound_session:
+        description:
+          - Configuration of log entries generated at the start of the incoming connection event for a
+            translated endpoint.
+        type: dict
+        suboptions:
+          action:
+            description:
+              - When set to C(enabled) sets system to log entries for start of the incoming connection event for a
+                translated endpoint.
+              - When set to C(disabled) disables logging of start of the incoming connection event for a
+                translated endpoint.
+              - When set to C(backup-allocation-only) sets the system to generate the associated type of log entries
+                only when the translation address for the client is chosen from the backup pool.
+            choices:
+              - enabled
+              - disabled
+              - backup-allocation-only
+            type: str
+          storage_format:
+            description:
+              - Configures custom formatting of NAT events log messages.
+            type: dict
+            suboptions:
+              type:
+                description:
+                  - Specifies the format type for log messages.
+                  - When set to C(none) the system uses default format type to log the messages to a Remote Syslog
+                    server.
+                  - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
+                  - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
+                  - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
+                type: str
+                choices:
+                  - field-list
+                  - user-defined
+                  - none
+              delimiter:
+                description:
+                  - Specifies the delimiter string, when C(type) is set to C(field-list).
+                type: str
+              fields:
+                description:
+                  - Lists the items the server logs, and the order in which the server logs them due to that the order
+                    of in which items are specified on the list matters. The server displays the items in the log
+                    sequentially from top down.
+                  - "The valid elements that can be specified in the list are: context_name, dest_ip, dest_port,
+                    event_name, protocol, route_domain, src_ip, src_port, sub_id, timestamp, translated_dest_ip,
+                    translated_dest_port, translated_route_domain, translated_src_ip, translated_src_port."
+                type: list
+                elements: str
+              user_string:
+                description:
+                  - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+                type: str
+      end_inbound_session:
+        description:
+          - Configuration of log entries generated the end of the incoming connection event for a translated endpoint.
+        type: dict
+        suboptions:
+          action:
+            description:
+              - When set to C(enabled) sets system to log entries for the end of the incoming connection event for a
+                translated endpoint.
+              - When set to C(disabled) disables logging of the end of the incoming connection event for a translated
+                endpoint.
+              - When set to C(backup-allocation-only) sets the system to generate the associated type of log entries
+                only when the translation address for the client is chosen from the backup pool.
+            choices:
+              - enabled
+              - disabled
+              - backup-allocation-only
+            type: str
+          storage_format:
+            description:
+              - Configures custom formatting of NAT events log messages.
+            type: dict
+            suboptions:
+              type:
+                description:
+                  - Specifies the format type for log messages.
+                  - When set to C(none) the system uses default format type to log the messages to a Remote Syslog
+                    server.
+                  - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
+                  - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
+                  - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
+                type: str
+                choices:
+                  - field-list
+                  - user-defined
+                  - none
+              delimiter:
+                description:
+                  - Specifies the delimiter string, when C(type) is set to C(field-list).
+                type: str
+              fields:
+                description:
+                  - Lists the items the server logs, and the order in which the server logs them due to that the order
+                    of in which items are specified on the list matters. The server displays the items in the log
+                    sequentially from top down.
+                  - "The valid elements that can be specified in the list are: context_name, dest_ip, dest_port,
+                    event_name, protocol, route_domain, src_ip, src_port, sub_id, timestamp, translated_dest_ip,
+                    translated_dest_port, translated_route_domain, translated_src_ip, translated_src_port."
+                type: list
+                elements: str
+              user_string:
+                description:
+                  - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+                type: str
+      quota_exceeded:
+        description:
+          - Configuration of log entries generated when a NAT client exceeds allocated resources.
+        type: dict
+        suboptions:
+          action:
+            description:
+              - When set to C(enabled) sets system to log entries generated when a NAT client exceeds allocated
+                resources.
+              - When set to C(disabled) disables logging of events when a NAT client exceeds allocated resources.
+            choices:
+              - enabled
+              - disabled
+            type: str
+          storage_format:
+            description:
+              - Configures custom formatting of NAT events log messages.
+            type: dict
+            suboptions:
+              type:
+                description:
+                  - Specifies the format type for log messages.
+                  - When set to C(none) the system uses default format type to log the messages to a Remote Syslog
+                    server.
+                  - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
+                  - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
+                  - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
+                type: str
+                choices:
+                  - field-list
+                  - user-defined
+                  - none
+              delimiter:
+                description:
+                  - Specifies the delimiter string, when C(type) is set to C(field-list).
+                type: str
+              fields:
+                description:
+                  - Lists the items the server logs, and the order in which the server logs them due to that the order
+                    of in which items are specified on the list matters. The server displays the items in the log
+                    sequentially from top down.
+                  - "The valid elements that can be specified in the list are: context_name, dest_ip, dest_port,
+                    event_name, protocol, route_domain, src_ip, src_port, sub_id, timestamp, translated_dest_ip,
+                    translated_dest_port, translated_route_domain, translated_src_ip, translated_src_port."
+                type: list
+                elements: str
+              user_string:
+                description:
+                  - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+                type: str
+      errors:
+        description:
+          - Configuration of log entries generated when a NAT translation errors occur.
+        type: dict
+        suboptions:
+          action:
+            description:
+              - When set to C(enabled) sets system to log entries generated when a NAT translation errors occur.
+              - When set to C(disabled) disables logging of entries generated when a NAT translation errors occur.
+            choices:
+              - enabled
+              - disabled
+            type: str
+          storage_format:
+            description:
+              - Configures custom formatting of NAT events log messages.
+            type: dict
+            suboptions:
+              type:
+                description:
+                  - Specifies the format type for log messages.
+                  - When set to C(none) the system uses default format type to log the messages to a Remote Syslog
+                    server.
+                  - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
+                  - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
+                  - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
+                type: str
+                choices:
+                  - field-list
+                  - user-defined
+                  - none
+              delimiter:
+                description:
+                  - Specifies the delimiter string, when C(type) is set to C(field-list).
+                type: str
+              fields:
+                description:
+                  - Lists the items the server logs, and the order in which the server logs them due to that the order
+                    of in which items are specified on the list matters. The server displays the items in the log
+                    sequentially from top down.
+                  - "The valid elements that can be specified in the list are: context_name, dest_ip, dest_port,
+                    event_name, protocol, route_domain, src_ip, src_port, sub_id, timestamp, translated_dest_ip,
+                    translated_dest_port, translated_route_domain, translated_src_ip, translated_src_port."
+                type: list
+                elements: str
+              user_string:
+                description:
+                  - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+                type: str
   protocol_inspection:
     description:
       - Configures system logging of events from the Protocol Inspection engine.
@@ -1127,6 +1530,343 @@ network_security:
           returned: changed
           type: str
           sample: "$action"
+nat:
+  description:
+    - Configures the system to log firewall NAT events.
+  returned: changed
+  type: complex
+  contains:
+    publisher:
+      description:
+        - The name of the log publisher used for logging Network Address Translation events.
+      returned: changed
+      type: str
+      sample: /Common/foo-publisher
+    log_subscriber_id:
+      description:
+        - Enable/Disable logging of the subscriber ID associated with a subscriber IP address.
+      returned: changed
+      type: bool
+      sample: yes
+    lsn_legacy_mode:
+      description:
+        - Enable/Disable use of legacy CGNAT/LSN logging facility instead of the new Firewall NAT logging capability.
+      returned: changed
+      type: bool
+      sample: yes
+    rate_limit_aggregate_rate:
+      description:
+        - The rate limit for all combined NAT log messages per second.
+      returned: changed
+      type: str
+      sample: indefinite
+    rate_limit_start_outbound_session:
+      description:
+        - The rate limit for logging of log entries at start of the translation event for a NAT client.
+      returned: changed
+      type: str
+      sample: indefinite
+    rate_limit_end_outbound_session:
+      description:
+        - The rate limit for logging of log entries at end of translation event for a NAT client.
+      returned: changed
+      type: str
+      sample: indefinite
+    rate_limit_start_inbound_session:
+      description:
+        - The rate limit for logging of log entries at the start of the incoming connection event for a
+          translated endpoint.
+      returned: changed
+      type: str
+      sample: indefinite
+    rate_limit_end_inbound_session:
+      description:
+        - The rate limit for logging of log entries at the end of the incoming connection event for a
+          translated endpoint.
+      returned: changed
+      type: str
+      sample: indefinite
+    rate_limit_quota_exceeded:
+      description:
+        - The rate limit for logging of log entries when a NAT client exceeds allocated resources.
+      returned: changed
+      type: str
+      sample: indefinite
+    rate_limit_errors:
+      description:
+        - The rate limit for logging of events when NAT translation errors occur.
+      returned: changed
+      type: str
+      sample: indefinite
+    start_outbound_session:
+      description:
+        - Configuration of log entries generated at the start of the incoming connection event for a
+          translated endpoint.
+      returned: changed
+      type: complex
+      contains:
+        action:
+          description:
+            - Configures system to log entries for the start of the incoming connection event for a
+              translated endpoint.
+          returned: changed
+          type: str
+          sample: enabled
+        include_dest_addr_port:
+          description:
+            - Enable/Disable logging of destination IP address and port information.
+          returned: changed
+          type: bool
+          sample: yes
+        storage_format:
+          description:
+            - The formatting of NAT events log messages.
+          returned: changed
+          type: complex
+          contains:
+            type:
+              description:
+                - The format type for log messages.
+              returned: changed
+              type: str
+              sample: user-defined
+            delimiter:
+              description:
+                - The delimiter string.
+              returned: changed
+              type: str
+              sample: "-"
+            fields:
+              description:
+                - The items the server logs.
+              returned: changed
+              type: list
+              sample: ['dest_ip', 'dest_port']
+            user_string:
+              description:
+                - User-defined string.
+              returned: changed
+              type: str
+              sample: "$dest_ip"
+    end_outbound_session:
+      description:
+        - Configuration of log entries generated at end of translation event for a NAT client.
+      returned: changed
+      type: complex
+      contains:
+        action:
+          description:
+            - Configures system to log entries for the end of translation event for a NAT client.
+          returned: changed
+          type: str
+          sample: enabled
+        include_dest_addr_port:
+          description:
+            - Enable/Disable logging of destination IP address and port information.
+          returned: changed
+          type: bool
+          sample: yes
+        storage_format:
+          description:
+            - The formatting of NAT events log messages.
+          returned: changed
+          type: complex
+          contains:
+            type:
+              description:
+                - The format type for log messages.
+              returned: changed
+              type: str
+              sample: user-defined
+            delimiter:
+              description:
+                - The delimiter string.
+              returned: changed
+              type: str
+              sample: "-"
+            fields:
+              description:
+                - The items the server logs.
+              returned: changed
+              type: list
+              sample: ['dest_ip', 'dest_port']
+            user_string:
+              description:
+                - User-defined string.
+              returned: changed
+              type: str
+              sample: "$dest_ip"
+    start_inbound_session:
+      description:
+        - Configuration of log entries generated at the start of the incoming connection event for a
+          translated endpoint.
+      returned: changed
+      type: complex
+      contains:
+        action:
+          description:
+            - Configures system to log entries for start of the incoming connection event for a
+              translated endpoint.
+          returned: changed
+          type: str
+          sample: enabled
+        storage_format:
+          description:
+            - The formatting of NAT events log messages.
+          returned: changed
+          type: complex
+          contains:
+            type:
+              description:
+                - The format type for log messages.
+              returned: changed
+              type: str
+              sample: user-defined
+            delimiter:
+              description:
+                - The delimiter string.
+              returned: changed
+              type: str
+              sample: "-"
+            fields:
+              description:
+                - The items the server logs.
+              returned: changed
+              type: list
+              sample: ['dest_ip', 'dest_port']
+            user_string:
+              description:
+                - User-defined string.
+              returned: changed
+              type: str
+              sample: "$dest_ip"
+    end_inbound_session:
+      description:
+        - Configuration of log entries generated the end of the incoming connection event for a translated endpoint.
+      returned: changed
+      type: complex
+      contains:
+        action:
+          description:
+            - Configures system to log entries for the end of the incoming connection event for a
+              translated endpoint.
+          returned: changed
+          type: str
+          sample: enabled
+        storage_format:
+          description:
+            - The formatting of NAT events log messages.
+          returned: changed
+          type: complex
+          contains:
+            type:
+              description:
+                - The format type for log messages.
+              returned: changed
+              type: str
+              sample: user-defined
+            delimiter:
+              description:
+                - The delimiter string.
+              returned: changed
+              type: str
+              sample: "-"
+            fields:
+              description:
+                - The items the server logs.
+              returned: changed
+              type: list
+              sample: ['dest_ip', 'dest_port']
+            user_string:
+              description:
+                - User-defined string.
+              returned: changed
+              type: str
+              sample: "$dest_ip"
+    quota_exceeded:
+      description:
+        - Configuration of log entries generated when a NAT client exceeds allocated resources.
+      returned: changed
+      type: complex
+      contains:
+        action:
+          description:
+            - Configures system to log entries generated when a NAT client exceeds allocated resources.
+          returned: changed
+          type: str
+          sample: enabled
+        storage_format:
+          description:
+            - The formatting of NAT events log messages.
+          returned: changed
+          type: complex
+          contains:
+            type:
+              description:
+                - The format type for log messages.
+              returned: changed
+              type: str
+              sample: user-defined
+            delimiter:
+              description:
+                - The delimiter string.
+              returned: changed
+              type: str
+              sample: "-"
+            fields:
+              description:
+                - The items the server logs.
+              returned: changed
+              type: list
+              sample: ['dest_ip', 'dest_port']
+            user_string:
+              description:
+                - User-defined string.
+              returned: changed
+              type: str
+              sample: "$dest_ip"
+    errors:
+      description:
+        - Configuration of log entries generated when a NAT translation errors occur.
+      returned: changed
+      type: complex
+      contains:
+        action:
+          description:
+            - Configures system to log entries generated when a NAT translation errors occur.
+          returned: changed
+          type: str
+          sample: enabled
+        storage_format:
+          description:
+            - The formatting of NAT events log messages.
+          returned: changed
+          type: complex
+          contains:
+            type:
+              description:
+                - The format type for log messages.
+              returned: changed
+              type: str
+              sample: user-defined
+            delimiter:
+              description:
+                - The delimiter string.
+              returned: changed
+              type: str
+              sample: "-"
+            fields:
+              description:
+                - The items the server logs.
+              returned: changed
+              type: list
+              sample: ['dest_ip', 'dest_port']
+            user_string:
+              description:
+                - User-defined string.
+              returned: changed
+              type: str
+              sample: "$dest_ip"
 '''
 from datetime import datetime
 
@@ -1171,7 +1911,8 @@ class Parameters(AnsibleF5Parameters):
         'botDefense',
         'dns_security',
         'sip_security',
-        'network_security'
+        'network_security',
+        'nat'
     ]
 
     returnables = [
@@ -1249,7 +1990,49 @@ class Parameters(AnsibleF5Parameters):
         'net_storage_format_type',
         'net_storage_format_delimiter',
         'net_storage_format_fields',
-        'net_storage_format_user_string'
+        'net_storage_format_user_string',
+        'nat_publisher',
+        'nat_rate_limit_aggregate_rate',
+        'nat_log_sub_id',
+        'nat_lsn_legacy_mode',
+        'nat_start_out_action',
+        'nat_start_out_incl_dst_addr_port',
+        'nat_rate_limit_start_out_sess',
+        'nat_start_out_storage_format_type',
+        'nat_start_out_storage_format_delimiter',
+        'nat_start_out_storage_format_fields',
+        'nat_start_out_storage_format_user_string',
+        'nat_end_out_action',
+        'nat_end_out_incl_dst_addr_port',
+        'nat_rate_limit_end_out_sess',
+        'nat_end_out_storage_format_type',
+        'nat_end_out_storage_format_delimiter',
+        'nat_end_out_storage_format_fields',
+        'nat_end_out_storage_format_user_string',
+        'nat_start_in_action',
+        'nat_rate_limit_start_in_sess',
+        'nat_start_in_storage_format_type',
+        'nat_start_in_storage_format_delimiter',
+        'nat_start_in_storage_format_fields',
+        'nat_start_in_storage_format_user_string',
+        'nat_end_in_action',
+        'nat_rate_limit_end_in_sess',
+        'nat_end_in_storage_format_type',
+        'nat_end_in_storage_format_delimiter',
+        'nat_end_in_storage_format_fields',
+        'nat_end_in_storage_format_user_string',
+        'nat_quota_exceeded_action',
+        'nat_rate_limit_quota_exceeded',
+        'nat_quota_exceeded_storage_format_type',
+        'nat_quota_exceeded_storage_format_delimiter',
+        'nat_quota_exceeded_storage_format_fields',
+        'nat_quota_exceeded_storage_format_user_string',
+        'nat_errors_action',
+        'nat_rate_limit_errors',
+        'nat_errors_storage_format_type',
+        'nat_errors_storage_format_delimiter',
+        'nat_errors_storage_format_fields',
+        'nat_errors_storage_format_user_string'
     ]
 
     updatables = [
@@ -1327,7 +2110,49 @@ class Parameters(AnsibleF5Parameters):
         'net_storage_format_type',
         'net_storage_format_delimiter',
         'net_storage_format_fields',
-        'net_storage_format_user_string'
+        'net_storage_format_user_string',
+        'nat_publisher',
+        'nat_rate_limit_aggregate_rate',
+        'nat_log_sub_id',
+        'nat_lsn_legacy_mode',
+        'nat_start_out_action',
+        'nat_start_out_incl_dst_addr_port',
+        'nat_rate_limit_start_out_sess',
+        'nat_start_out_storage_format_type',
+        'nat_start_out_storage_format_delimiter',
+        'nat_start_out_storage_format_fields',
+        'nat_start_out_storage_format_user_string',
+        'nat_end_out_action',
+        'nat_end_out_incl_dst_addr_port',
+        'nat_rate_limit_end_out_sess',
+        'nat_end_out_storage_format_type',
+        'nat_end_out_storage_format_delimiter',
+        'nat_end_out_storage_format_fields',
+        'nat_end_out_storage_format_user_string',
+        'nat_start_in_action',
+        'nat_rate_limit_start_in_sess',
+        'nat_start_in_storage_format_type',
+        'nat_start_in_storage_format_delimiter',
+        'nat_start_in_storage_format_fields',
+        'nat_start_in_storage_format_user_string',
+        'nat_end_in_action',
+        'nat_rate_limit_end_in_sess',
+        'nat_end_in_storage_format_type',
+        'nat_end_in_storage_format_delimiter',
+        'nat_end_in_storage_format_fields',
+        'nat_end_in_storage_format_user_string',
+        'nat_quota_exceeded_action',
+        'nat_rate_limit_quota_exceeded',
+        'nat_quota_exceeded_storage_format_type',
+        'nat_quota_exceeded_storage_format_delimiter',
+        'nat_quota_exceeded_storage_format_fields',
+        'nat_quota_exceeded_storage_format_user_string',
+        'nat_errors_action',
+        'nat_rate_limit_errors',
+        'nat_errors_storage_format_type',
+        'nat_errors_storage_format_delimiter',
+        'nat_errors_storage_format_fields',
+        'nat_errors_storage_format_user_string'
     ]
 
 
@@ -1759,6 +2584,258 @@ class ApiParameters(Parameters):
         return self._values['network_security']['format'].get('userDefined')
 
     @property
+    def nat_publisher(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat'].get('logPublisher')
+
+    @property
+    def nat_rate_limit_aggregate_rate(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['rateLimit'].get('aggregateRate')
+
+    @property
+    def nat_log_sub_id(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat'].get('logSubscriberId')
+
+    @property
+    def nat_lsn_legacy_mode(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat'].get('lsnLegacyMode')
+
+    @property
+    def nat_start_out_action(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['startOutboundSession'].get('action')
+
+    @property
+    def nat_start_out_incl_dst_addr_port(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['startOutboundSession'].get('elements')
+
+    @property
+    def nat_rate_limit_start_out_sess(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['rateLimit'].get('startOutboundSession')
+
+    @property
+    def nat_start_out_storage_format_type(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['startOutboundSession'].get('type')
+
+    @property
+    def nat_start_out_storage_format_delimiter(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['startOutboundSession'].get('fieldListDelimiter')
+
+    @property
+    def nat_start_out_storage_format_fields(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['startOutboundSession'].get('fieldList')
+
+    @property
+    def nat_start_out_storage_format_user_string(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['startOutboundSession'].get('userDefined')
+
+    @property
+    def nat_end_out_action(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['endOutboundSession'].get('action')
+
+    @property
+    def nat_end_out_incl_dst_addr_port(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['endOutboundSession'].get('elements')
+
+    @property
+    def nat_rate_limit_end_out_sess(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['rateLimit'].get('endOutboundSession')
+
+    @property
+    def nat_end_out_storage_format_type(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['endOutboundSession'].get('type')
+
+    @property
+    def nat_end_out_storage_format_delimiter(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['endOutboundSession'].get('fieldListDelimiter')
+
+    @property
+    def nat_end_out_storage_format_fields(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['endOutboundSession'].get('fieldList')
+
+    @property
+    def nat_end_out_storage_format_user_string(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['endOutboundSession'].get('userDefined')
+
+    @property
+    def nat_start_in_action(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat'].get('startInboundSession')
+
+    @property
+    def nat_rate_limit_start_in_sess(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['rateLimit'].get('startInboundSession')
+
+    @property
+    def nat_start_in_storage_format_type(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['startInboundSession'].get('type')
+
+    @property
+    def nat_start_in_storage_format_delimiter(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['startInboundSession'].get('fieldListDelimiter')
+
+    @property
+    def nat_start_in_storage_format_fields(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['startInboundSession'].get('fieldList')
+
+    @property
+    def nat_start_in_storage_format_user_string(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['startInboundSession'].get('userDefined')
+
+    @property
+    def nat_end_in_action(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat'].get('endInboundSession')
+
+    @property
+    def nat_rate_limit_end_in_sess(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['rateLimit'].get('endInboundSession')
+
+    @property
+    def nat_end_in_storage_format_type(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['endInboundSession'].get('type')
+
+    @property
+    def nat_end_in_storage_format_delimiter(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['endInboundSession'].get('fieldListDelimiter')
+
+    @property
+    def nat_end_in_storage_format_fields(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['endInboundSession'].get('fieldList')
+
+    @property
+    def nat_end_in_storage_format_user_string(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['endInboundSession'].get('userDefined')
+
+    @property
+    def nat_quota_exceeded_action(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat'].get('quotaExceeded')
+
+    @property
+    def nat_rate_limit_quota_exceeded(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['rateLimit'].get('quotaExceeded')
+
+    @property
+    def nat_quota_exceeded_storage_format_type(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['quotaExceeded'].get('type')
+
+    @property
+    def nat_quota_exceeded_storage_format_delimiter(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['quotaExceeded'].get('fieldListDelimiter')
+
+    @property
+    def nat_quota_exceeded_storage_format_fields(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['quotaExceeded'].get('fieldList')
+
+    @property
+    def nat_quota_exceeded_storage_format_user_string(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['quotaExceeded'].get('userDefined')
+
+    @property
+    def nat_errors_action(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat'].get('errors')
+
+    @property
+    def nat_rate_limit_errors(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['rateLimit'].get('errors')
+
+    @property
+    def nat_errors_storage_format_type(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['errors'].get('type')
+
+    @property
+    def nat_errors_storage_format_delimiter(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['errors'].get('fieldListDelimiter')
+
+    @property
+    def nat_errors_storage_format_fields(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['errors'].get('fieldList')
+
+    @property
+    def nat_errors_storage_format_user_string(self):
+        if self._values['nat'] is None:
+            return None
+        return self._values['nat']['format']['errors'].get('userDefined')
+
+    @property
     def bot_defense_exists(self):
         if self._values['bot_defense'] is None:
             return False
@@ -1784,6 +2861,10 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
+    valid_nat_fields = {'context_name', 'dest_ip', 'dest_port', 'event_name', 'protocol', 'route_domain', 'src_ip',
+                        'src_port', 'sub_id', 'timestamp', 'translated_dest_ip', 'translated_dest_port',
+                        'translated_route_domain', 'translated_src_ip', 'translated_src_port'}
+
     @staticmethod
     def _handle_booleans(item):
         result = flatten_boolean(item)
@@ -2333,6 +3414,408 @@ class ModuleParameters(Parameters):
         if self._values['network_security'].get('storage_format'):
             return self._values['network_security']['storage_format'].get('user_string')
 
+    @property
+    def nat_publisher(self):
+        if self._values['nat'] is None:
+            return None
+        return self._handle_publishers(self._values['nat'].get('publisher'))
+
+    @property
+    def nat_rate_limit_aggregate_rate(self):
+        if self._values['nat'] is None:
+            return None
+        return self._handle_rate_limit(
+            self._values['nat'].get('rate_limit_aggregate_rate'), 'rate_limit_aggregate_rate'
+        )
+
+    @property
+    def nat_log_sub_id(self):
+        if self._values['nat'] is None:
+            return None
+        return self._handle_booleans(self._values['nat'].get('log_subscriber_id'))
+
+    @property
+    def nat_lsn_legacy_mode(self):
+        if self._values['nat'] is None:
+            return None
+        return self._handle_booleans(self._values['nat'].get('lsn_legacy_mode'))
+
+    @property
+    def nat_start_out_action(self):
+        if self._values['nat'] is None:
+            return None
+        if self._values['nat'].get('start_outbound_session'):
+            return self._values['nat']['start_outbound_session'].get('action')
+
+    @property
+    def nat_start_out_incl_dst_addr_port(self):
+        if self._values['nat'] is None:
+            return None
+        if self._values['nat'].get('start_outbound_session'):
+            result = flatten_boolean(self._values['nat']['start_outbound_session'].get('include_dest_addr_port'))
+            if result == 'yes':
+                return ['destination']
+            if result == 'no':
+                return []
+
+    @property
+    def nat_rate_limit_start_out_sess(self):
+        if self._values['nat'] is None:
+            return None
+        return self._handle_rate_limit(
+            self._values['nat'].get('rate_limit_start_outbound_session'), 'rate_limit_start_outbound_session'
+        )
+
+    @property
+    def nat_start_out_storage_format_type(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('start_outbound_session'):
+            return None
+        if self._values['nat']['start_outbound_session'].get('storage_format'):
+            return self._values['nat']['start_outbound_session']['storage_format'].get('type')
+
+    @property
+    def nat_start_out_storage_format_delimiter(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('start_outbound_session'):
+            return None
+        if self._values['nat']['start_outbound_session'].get('storage_format'):
+            return self._values['nat']['start_outbound_session']['storage_format'].get('delimiter')
+
+    @property
+    def nat_start_out_storage_format_fields(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('start_outbound_session'):
+            return None
+        if self.nat_start_out_storage_format_type == 'none':
+            return None
+        if self._values['nat']['start_outbound_session'].get('storage_format'):
+            fields = self._values['nat']['start_outbound_session']['storage_format'].get('fields')
+            if fields:
+                if not set(fields).issubset(self.valid_nat_fields):
+                    raise F5ModuleError(f"Invalid fields value, list item must be one of: {self.valid_nat_fields}")
+                return fields
+
+    @property
+    def nat_start_out_storage_format_user_string(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('start_outbound_session'):
+            return None
+        if self.nat_start_out_storage_format_type == 'none':
+            return None
+        if self._values['nat']['start_outbound_session'].get('storage_format'):
+            return self._values['nat']['start_outbound_session']['storage_format'].get('user_string')
+
+    @property
+    def nat_end_out_action(self):
+        if self._values['nat'] is None:
+            return None
+        if self._values['nat'].get('end_outbound_session'):
+            return self._values['nat']['end_outbound_session'].get('action')
+
+    @property
+    def nat_end_out_incl_dst_addr_port(self):
+        if self._values['nat'] is None:
+            return None
+        if self._values['nat'].get('end_outbound_session'):
+            result = flatten_boolean(self._values['nat']['end_outbound_session'].get('include_dest_addr_port'))
+            if result == 'yes':
+                return ['destination']
+            if result == 'no':
+                return []
+
+    @property
+    def nat_rate_limit_end_out_sess(self):
+        if self._values['nat'] is None:
+            return None
+        return self._handle_rate_limit(
+            self._values['nat'].get('rate_limit_end_outbound_session'), 'rate_limit_end_outbound_session'
+        )
+
+    @property
+    def nat_end_out_storage_format_type(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('end_outbound_session'):
+            return None
+        if self._values['nat']['end_outbound_session'].get('storage_format'):
+            return self._values['nat']['end_outbound_session']['storage_format'].get('type')
+
+    @property
+    def nat_end_out_storage_format_delimiter(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('end_outbound_session'):
+            return None
+        if self._values['nat']['end_outbound_session'].get('storage_format'):
+            return self._values['nat']['end_outbound_session']['storage_format'].get('delimiter')
+
+    @property
+    def nat_end_out_storage_format_fields(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('end_outbound_session'):
+            return None
+        if self.nat_end_out_storage_format_type == 'none':
+            return None
+        if self._values['nat']['end_outbound_session'].get('storage_format'):
+            fields = self._values['nat']['end_outbound_session']['storage_format'].get('fields')
+            if fields:
+                if not set(fields).issubset(self.valid_nat_fields):
+                    raise F5ModuleError(f"Invalid fields value, list item must be one of: {self.valid_nat_fields}")
+                return fields
+
+    @property
+    def nat_end_out_storage_format_user_string(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('end_outbound_session'):
+            return None
+        if self.nat_end_out_storage_format_type == 'none':
+            return None
+        if self._values['nat']['end_outbound_session'].get('storage_format'):
+            return self._values['nat']['end_outbound_session']['storage_format'].get('user_string')
+
+    @property
+    def nat_start_in_action(self):
+        if self._values['nat'] is None:
+            return None
+        if self._values['nat'].get('start_inbound_session'):
+            return self._values['nat']['start_inbound_session'].get('action')
+
+    @property
+    def nat_rate_limit_start_in_sess(self):
+        if self._values['nat'] is None:
+            return None
+        return self._handle_rate_limit(
+            self._values['nat'].get('rate_limit_start_inbound_session'), 'rate_limit_start_inbound_session'
+        )
+
+    @property
+    def nat_start_in_storage_format_type(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('start_inbound_session'):
+            return None
+        if self._values['nat']['start_inbound_session'].get('storage_format'):
+            return self._values['nat']['start_inbound_session']['storage_format'].get('type')
+
+    @property
+    def nat_start_in_storage_format_delimiter(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('start_inbound_session'):
+            return None
+        if self._values['nat']['start_inbound_session'].get('storage_format'):
+            return self._values['nat']['start_inbound_session']['storage_format'].get('delimiter')
+
+    @property
+    def nat_start_in_storage_format_fields(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('start_inbound_session'):
+            return None
+        if self.nat_start_in_storage_format_type == 'none':
+            return None
+        if self._values['nat']['start_inbound_session'].get('storage_format'):
+            fields = self._values['nat']['start_inbound_session']['storage_format'].get('fields')
+            if fields:
+                if not set(fields).issubset(self.valid_nat_fields):
+                    raise F5ModuleError(f"Invalid fields value, list item must be one of: {self.valid_nat_fields}")
+                return fields
+
+    @property
+    def nat_start_in_storage_format_user_string(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('start_inbound_session'):
+            return None
+        if self.nat_start_in_storage_format_type == 'none':
+            return None
+        if self._values['nat']['start_inbound_session'].get('storage_format'):
+            return self._values['nat']['start_inbound_session']['storage_format'].get('user_string')
+
+    @property
+    def nat_end_in_action(self):
+        if self._values['nat'] is None:
+            return None
+        if self._values['nat'].get('end_inbound_session'):
+            return self._values['nat']['end_inbound_session'].get('action')
+
+    @property
+    def nat_rate_limit_end_in_sess(self):
+        if self._values['nat'] is None:
+            return None
+        return self._handle_rate_limit(
+            self._values['nat'].get('rate_limit_end_inbound_session'), 'rate_limit_end_inbound_session'
+        )
+
+    @property
+    def nat_end_in_storage_format_type(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('end_inbound_session'):
+            return None
+        if self._values['nat']['end_inbound_session'].get('storage_format'):
+            return self._values['nat']['end_inbound_session']['storage_format'].get('type')
+
+    @property
+    def nat_end_in_storage_format_delimiter(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('end_inbound_session'):
+            return None
+        if self._values['nat']['end_inbound_session'].get('storage_format'):
+            return self._values['nat']['end_inbound_session']['storage_format'].get('delimiter')
+
+    @property
+    def nat_end_in_storage_format_fields(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('end_inbound_session'):
+            return None
+        if self.nat_end_in_storage_format_type == 'none':
+            return None
+        if self._values['nat']['end_inbound_session'].get('storage_format'):
+            fields = self._values['nat']['end_inbound_session']['storage_format'].get('fields')
+            if fields:
+                if not set(fields).issubset(self.valid_nat_fields):
+                    raise F5ModuleError(f"Invalid fields value, list item must be one of: {self.valid_nat_fields}")
+                return fields
+
+    @property
+    def nat_end_in_storage_format_user_string(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('end_inbound_session'):
+            return None
+        if self.nat_end_in_storage_format_type == 'none':
+            return None
+        if self._values['nat']['end_inbound_session'].get('storage_format'):
+            return self._values['nat']['end_inbound_session']['storage_format'].get('user_string')
+
+    @property
+    def nat_quota_exceeded_action(self):
+        if self._values['nat'] is None:
+            return None
+        if self._values['nat'].get('quota_exceeded'):
+            return self._values['nat']['quota_exceeded'].get('action')
+
+    @property
+    def nat_rate_limit_quota_exceeded(self):
+        if self._values['nat'] is None:
+            return None
+        return self._handle_rate_limit(
+            self._values['nat'].get('rate_limit_quota_exceeded'), 'rate_limit_quota_exceeded'
+        )
+
+    @property
+    def nat_quota_exceeded_storage_format_type(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('quota_exceeded'):
+            return None
+        if self._values['nat']['quota_exceeded'].get('storage_format'):
+            return self._values['nat']['quota_exceeded']['storage_format'].get('type')
+
+    @property
+    def nat_quota_exceeded_storage_format_delimiter(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('quota_exceeded'):
+            return None
+        if self._values['nat']['quota_exceeded'].get('storage_format'):
+            return self._values['nat']['quota_exceeded']['storage_format'].get('delimiter')
+
+    @property
+    def nat_quota_exceeded_storage_format_fields(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('quota_exceeded'):
+            return None
+        if self.nat_quota_exceeded_storage_format_type == 'none':
+            return None
+        if self._values['nat']['quota_exceeded'].get('storage_format'):
+            fields = self._values['nat']['quota_exceeded']['storage_format'].get('fields')
+            if fields:
+                if not set(fields).issubset(self.valid_nat_fields):
+                    raise F5ModuleError(f"Invalid fields value, list item must be one of: {self.valid_nat_fields}")
+                return fields
+
+    @property
+    def nat_quota_exceeded_storage_format_user_string(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('quota_exceeded'):
+            return None
+        if self.nat_quota_exceeded_storage_format_type == 'none':
+            return None
+        if self._values['nat']['quota_exceeded'].get('storage_format'):
+            return self._values['nat']['quota_exceeded']['storage_format'].get('user_string')
+
+    @property
+    def nat_errors_action(self):
+        if self._values['nat'] is None:
+            return None
+        if self._values['nat'].get('errors'):
+            return self._values['nat']['errors'].get('action')
+
+    @property
+    def nat_rate_limit_errors(self):
+        if self._values['nat'] is None:
+            return None
+        return self._handle_rate_limit(
+            self._values['nat'].get('rate_limit_errors'), 'rate_limit_errors'
+        )
+
+    @property
+    def nat_errors_storage_format_type(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('errors'):
+            return None
+        if self._values['nat']['errors'].get('storage_format'):
+            return self._values['nat']['errors']['storage_format'].get('type')
+
+    @property
+    def nat_errors_storage_format_delimiter(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('errors'):
+            return None
+        if self._values['nat']['errors'].get('storage_format'):
+            return self._values['nat']['errors']['storage_format'].get('delimiter')
+
+    @property
+    def nat_errors_storage_format_fields(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('errors'):
+            return None
+        if self.nat_errors_storage_format_type == 'none':
+            return None
+        if self._values['nat']['errors'].get('storage_format'):
+            fields = self._values['nat']['errors']['storage_format'].get('fields')
+            if fields:
+                if not set(fields).issubset(self.valid_nat_fields):
+                    raise F5ModuleError(f"Invalid fields value, list item must be one of: {self.valid_nat_fields}")
+                return fields
+
+    @property
+    def nat_errors_storage_format_user_string(self):
+        if self._values['nat'] is None:
+            return None
+        if not self._values['nat'].get('errors'):
+            return None
+        if self.nat_errors_storage_format_type == 'none':
+            return None
+        if self._values['nat']['errors'].get('storage_format'):
+            return self._values['nat']['errors']['storage_format'].get('user_string')
+
 
 class Changes(Parameters):
     def to_return(self):  # pragma: no cover
@@ -2346,9 +3829,10 @@ class Changes(Parameters):
         return result
 
     def _finalize_parameter(self, item):
-        result = self._filter_params(item)
-        if result:
-            return result
+        if item:
+            result = self._filter_params(item)
+            if result:
+                return result
 
 
 class UsableChanges(Changes):
@@ -2508,6 +3992,76 @@ class UsableChanges(Changes):
         if result:
             return result
 
+    @property
+    def nat(self):
+        tmp_rate = self._finalize_parameter(dict(
+            aggregateRate=self._values['nat_rate_limit_aggregate_rate'],
+            endInboundSession=self._values['nat_rate_limit_end_in_sess'],
+            endOutboundSession=self._values['nat_rate_limit_end_out_sess'],
+            errors=self._values['nat_rate_limit_errors'],
+            quotaExceeded=self._values['nat_rate_limit_quota_exceeded'],
+            startInboundSession=self._values['nat_rate_limit_start_in_sess'],
+            startOutboundSession=self._values['nat_rate_limit_start_out_sess']
+        ))
+
+        tmp_format = self._finalize_parameter(dict(
+            startOutboundSession=self._finalize_parameter(dict(
+                fieldListDelimiter=self._values['nat_start_out_storage_format_delimiter'],
+                type=self._values['nat_start_out_storage_format_type'],
+                fieldList=self._values['nat_start_out_storage_format_fields'],
+                userDefined=self._values['nat_start_out_storage_format_user_string']
+            )),
+            endOutboundSession=self._finalize_parameter(dict(
+                fieldListDelimiter=self._values['nat_end_out_storage_format_delimiter'],
+                type=self._values['nat_end_out_storage_format_type'],
+                fieldList=self._values['nat_end_out_storage_format_fields'],
+                userDefined=self._values['nat_end_out_storage_format_user_string']
+            )),
+            startInboundSession=self._finalize_parameter(dict(
+                fieldListDelimiter=self._values['nat_start_in_storage_format_delimiter'],
+                type=self._values['nat_start_in_storage_format_type'],
+                fieldList=self._values['nat_start_in_storage_format_fields'],
+                userDefined=self._values['nat_start_in_storage_format_user_string']
+            )),
+            endInboundSession=self._finalize_parameter(dict(
+                fieldListDelimiter=self._values['nat_end_in_storage_format_delimiter'],
+                type=self._values['nat_end_in_storage_format_type'],
+                fieldList=self._values['nat_end_in_storage_format_fields'],
+                userDefined=self._values['nat_end_in_storage_format_user_string']
+            )),
+            quotaExceeded=self._finalize_parameter(dict(
+                fieldListDelimiter=self._values['nat_quota_exceeded_storage_format_delimiter'],
+                type=self._values['nat_quota_exceeded_storage_format_type'],
+                fieldList=self._values['nat_quota_exceeded_storage_format_fields'],
+                userDefined=self._values['nat_quota_exceeded_storage_format_user_string']
+            )),
+            errors=self._finalize_parameter(dict(
+                fieldListDelimiter=self._values['nat_errors_storage_format_delimiter'],
+                type=self._values['nat_errors_storage_format_type'],
+                fieldList=self._values['nat_errors_storage_format_fields'],
+                userDefined=self._values['nat_errors_storage_format_user_string']
+            )),
+        ))
+        return self._finalize_parameter(dict(
+            logPublisher=self._values['nat_publisher'],
+            logSubscriberId=self._values['nat_log_sub_id'],
+            lsnLegacyMode=self._values['nat_lsn_legacy_mode'],
+            quotaExceeded=self._values['nat_quota_exceeded_action'],
+            startInboundSession=self._values['nat_start_in_action'],
+            endInboundSession=self._values['nat_end_in_action'],
+            errors=self._values['nat_errors_action'],
+            endOutboundSession=self._finalize_parameter(dict(
+                action=self._values['nat_end_out_action'],
+                elements=self._values['nat_end_out_incl_dst_addr_port']
+            )),
+            startOutboundSession=self._finalize_parameter(dict(
+                action=self._values['nat_start_out_action'],
+                elements=self._values['nat_start_out_incl_dst_addr_port']
+            )),
+            format=tmp_format,
+            rateLimit=tmp_rate
+        ))
+
 
 class ReportableChanges(Changes):
     returnables = [
@@ -2520,8 +4074,18 @@ class ReportableChanges(Changes):
         'protocol_inspection',
         'dns_security',
         'sip_security',
-        'network_security'
+        'network_security',
+        'nat'
     ]
+
+    @staticmethod
+    def _handle_dest_addr_port(item):
+        if item is None:
+            return None
+        if item == ['destination']:
+            return 'yes'
+        if not item:
+            return 'no'
 
     @staticmethod
     def _handle_rate(item):
@@ -2664,6 +4228,80 @@ class ReportableChanges(Changes):
         if result:
             return result
 
+    @property
+    def nat(self):
+        result = self._finalize_parameter(dict(
+            publisher=self._values['nat_publisher'],
+            log_subscriber_id=flatten_boolean(self._values['nat_log_sub_id']),
+            lsn_legacy_mode=flatten_boolean(self._values['nat_lsn_legacy_mode']),
+            rate_limit_aggregate_rate=self._handle_rate(self._values['nat_rate_limit_aggregate_rate']),
+            rate_limit_end_inbound_session=self._handle_rate(self._values['nat_rate_limit_end_in_sess']),
+            rate_limit_end_outbound_session=self._handle_rate(self._values['nat_rate_limit_end_out_sess']),
+            rate_limit_errors=self._handle_rate(self._values['nat_rate_limit_errors']),
+            rate_limit_quota_exceeded=self._handle_rate(self._values['nat_rate_limit_quota_exceeded']),
+            rate_limit_start_inbound_session=self._handle_rate(self._values['nat_rate_limit_start_in_sess']),
+            rate_limit_start_outbound_session=self._handle_rate(self._values['nat_rate_limit_start_out_sess']),
+            start_outbound_session=self._finalize_parameter(dict(
+                action=self._values['nat_start_out_action'],
+                include_dest_addr_port=self._handle_dest_addr_port(self._values['nat_start_out_incl_dst_addr_port']),
+                storage_format=self._finalize_parameter(dict(
+                    delimiter=self._values['nat_start_out_storage_format_delimiter'],
+                    type=self._values['nat_start_out_storage_format_type'],
+                    fields=self._values['nat_start_out_storage_format_fields'],
+                    user_string=self._values['nat_start_out_storage_format_user_string']
+                ))
+            )),
+            end_outbound_session=self._finalize_parameter(dict(
+                action=self._values['nat_end_out_action'],
+                include_dest_addr_port=self._handle_dest_addr_port(self._values['nat_end_out_incl_dst_addr_port']),
+                storage_format=self._finalize_parameter(dict(
+                    delimiter=self._values['nat_end_out_storage_format_delimiter'],
+                    type=self._values['nat_end_out_storage_format_type'],
+                    fields=self._values['nat_end_out_storage_format_fields'],
+                    user_string=self._values['nat_end_out_storage_format_user_string']
+                ))
+            )),
+            start_inbound_session=self._finalize_parameter(dict(
+                action=self._values['nat_start_in_action'],
+                storage_format=self._finalize_parameter(dict(
+                    delimiter=self._values['nat_start_in_storage_format_delimiter'],
+                    type=self._values['nat_start_in_storage_format_type'],
+                    fields=self._values['nat_start_in_storage_format_fields'],
+                    user_string=self._values['nat_start_in_storage_format_user_string']
+                ))
+            )),
+            end_inbound_session=self._finalize_parameter(dict(
+                action=self._values['nat_end_in_action'],
+                storage_format=self._finalize_parameter(dict(
+                    delimiter=self._values['nat_end_in_storage_format_delimiter'],
+                    type=self._values['nat_end_in_storage_format_type'],
+                    fields=self._values['nat_end_in_storage_format_fields'],
+                    user_string=self._values['nat_end_in_storage_format_user_string']
+                ))
+            )),
+            quota_exceeded=self._finalize_parameter(dict(
+                action=self._values['nat_quota_exceeded_action'],
+                storage_format=self._finalize_parameter(dict(
+                    delimiter=self._values['nat_quota_exceeded_storage_format_delimiter'],
+                    type=self._values['nat_quota_exceeded_storage_format_type'],
+                    fields=self._values['nat_quota_exceeded_storage_format_fields'],
+                    user_string=self._values['nat_quota_exceeded_storage_format_user_string']
+                ))
+            )),
+            errors=self._finalize_parameter(dict(
+                action=self._values['nat_errors_action'],
+                storage_format=self._finalize_parameter(dict(
+                    delimiter=self._values['nat_errors_storage_format_delimiter'],
+                    type=self._values['nat_errors_storage_format_type'],
+                    fields=self._values['nat_errors_storage_format_fields'],
+                    user_string=self._values['nat_errors_storage_format_user_string']
+                ))
+            ))
+        ))
+
+        if result:
+            return result
+
 
 class Difference(object):
     def __init__(self, want, have=None):
@@ -2741,6 +4379,60 @@ class Difference(object):
     @property
     def net_storage_format_fields(self):
         return cmp_simple_list(self.want.net_storage_format_fields, self.have.net_storage_format_fields, cmp_order=True)
+
+    @property
+    def nat_publisher(self):
+        return cmp_str_with_none(self.want.nat_publisher, self.have.nat_publisher)
+
+    @property
+    def nat_start_out_incl_dst_addr_port(self):
+        return cmp_simple_list(self.want.nat_start_out_incl_dst_addr_port, self.have.nat_start_out_incl_dst_addr_port)
+
+    @property
+    def nat_end_out_incl_dst_addr_port(self):
+        return cmp_simple_list(self.want.nat_end_out_incl_dst_addr_port, self.have.nat_end_out_incl_dst_addr_port)
+
+    @property
+    def nat_start_out_storage_format_fields(self):
+        return cmp_simple_list(
+            self.want.nat_start_out_storage_format_fields,
+            self.have.nat_start_out_storage_format_fields, cmp_order=True
+        )
+
+    @property
+    def nat_end_out_storage_format_fields(self):
+        return cmp_simple_list(
+            self.want.nat_end_out_storage_format_fields,
+            self.have.nat_end_out_storage_format_fields, cmp_order=True
+        )
+
+    @property
+    def nat_start_in_storage_format_fields(self):
+        return cmp_simple_list(
+            self.want.nat_start_in_storage_format_fields,
+            self.have.nat_start_in_storage_format_fields, cmp_order=True
+        )
+
+    @property
+    def nat_end_in_storage_format_fields(self):
+        return cmp_simple_list(
+            self.want.nat_end_in_storage_format_fields,
+            self.have.nat_end_in_storage_format_fields, cmp_order=True
+        )
+
+    @property
+    def nat_quota_exceeded_storage_format_fields(self):
+        return cmp_simple_list(
+            self.want.nat_quota_exceeded_storage_format_fields,
+            self.have.nat_quota_exceeded_storage_format_fields, cmp_order=True
+        )
+
+    @property
+    def nat_errors_storage_format_fields(self):
+        return cmp_simple_list(
+            self.want.nat_errors_storage_format_fields,
+            self.have.nat_errors_storage_format_fields, cmp_order=True
+        )
 
 
 class ModuleManager(object):
@@ -3257,6 +4949,203 @@ class ArgumentSpec(object):
                         ]
                     )
 
+                )
+            ),
+            nat=dict(
+                type='dict',
+                options=dict(
+                    log_subscriber_id=dict(type='bool'),
+                    lsn_legacy_mode=dict(type='bool'),
+                    publisher=dict(),
+                    rate_limit_aggregate_rate=dict(),
+                    rate_limit_start_outbound_session=dict(),
+                    rate_limit_start_inbound_session=dict(),
+                    rate_limit_end_inbound_session=dict(),
+                    rate_limit_end_outbound_session=dict(),
+                    rate_limit_quota_exceeded=dict(),
+                    rate_limit_errors=dict(),
+                    start_outbound_session=dict(
+                        type='dict',
+                        options=dict(
+                            action=dict(
+                                choices=['enabled', 'disabled', 'backup-allocation-only']
+                            ),
+                            include_dest_addr_port=dict(type='bool'),
+                            storage_format=dict(
+                                type='dict',
+                                options=dict(
+                                    type=dict(
+                                        choices=['field-list', 'user-defined', 'none']
+                                    ),
+                                    delimiter=dict(),
+                                    fields=dict(
+                                        type='list',
+                                        elements='str'
+                                    ),
+                                    user_string=dict()
+                                ),
+                                required_if=[
+                                    ['type', 'user-defined', ['user_string']],
+                                    ['type', 'field-list', ['fields']],
+                                ],
+                                mutually_exclusive=[
+                                    ['fields', 'user_string'],
+                                    ['user_string', 'delimiter']
+                                ]
+                            ),
+                        )
+                    ),
+                    start_inbound_session=dict(
+                        type='dict',
+                        options=dict(
+                            action=dict(
+                                choices=['enabled', 'disabled', 'backup-allocation-only']
+                            ),
+                            storage_format=dict(
+                                type='dict',
+                                options=dict(
+                                    type=dict(
+                                        choices=['field-list', 'user-defined', 'none']
+                                    ),
+                                    delimiter=dict(),
+                                    fields=dict(
+                                        type='list',
+                                        elements='str'
+                                    ),
+                                    user_string=dict()
+                                ),
+                                required_if=[
+                                    ['type', 'user-defined', ['user_string']],
+                                    ['type', 'field-list', ['fields']],
+                                ],
+                                mutually_exclusive=[
+                                    ['fields', 'user_string'],
+                                    ['user_string', 'delimiter']
+                                ]
+                            ),
+                        )
+                    ),
+                    end_inbound_session=dict(
+                        type='dict',
+                        options=dict(
+                            action=dict(
+                                choices=['enabled', 'disabled', 'backup-allocation-only']
+                            ),
+                            storage_format=dict(
+                                type='dict',
+                                options=dict(
+                                    type=dict(
+                                        choices=['field-list', 'user-defined', 'none']
+                                    ),
+                                    delimiter=dict(),
+                                    fields=dict(
+                                        type='list',
+                                        elements='str'
+                                    ),
+                                    user_string=dict()
+                                ),
+                                required_if=[
+                                    ['type', 'user-defined', ['user_string']],
+                                    ['type', 'field-list', ['fields']],
+                                ],
+                                mutually_exclusive=[
+                                    ['fields', 'user_string'],
+                                    ['user_string', 'delimiter']
+                                ]
+                            ),
+                        )
+                    ),
+                    end_outbound_session=dict(
+                        type='dict',
+                        options=dict(
+                            action=dict(
+                                choices=['enabled', 'disabled', 'backup-allocation-only']
+                            ),
+                            include_dest_addr_port=dict(type='bool'),
+                            storage_format=dict(
+                                type='dict',
+                                options=dict(
+                                    type=dict(
+                                        choices=['field-list', 'user-defined', 'none']
+                                    ),
+                                    delimiter=dict(),
+                                    fields=dict(
+                                        type='list',
+                                        elements='str'
+                                    ),
+                                    user_string=dict()
+                                ),
+                                required_if=[
+                                    ['type', 'user-defined', ['user_string']],
+                                    ['type', 'field-list', ['fields']],
+                                ],
+                                mutually_exclusive=[
+                                    ['fields', 'user_string'],
+                                    ['user_string', 'delimiter']
+                                ]
+                            ),
+                        )
+                    ),
+                    quota_exceeded=dict(
+                        type='dict',
+                        options=dict(
+                            action=dict(
+                                choices=['enabled', 'disabled']
+                            ),
+                            storage_format=dict(
+                                type='dict',
+                                options=dict(
+                                    type=dict(
+                                        choices=['field-list', 'user-defined', 'none']
+                                    ),
+                                    delimiter=dict(),
+                                    fields=dict(
+                                        type='list',
+                                        elements='str'
+                                    ),
+                                    user_string=dict()
+                                ),
+                                required_if=[
+                                    ['type', 'user-defined', ['user_string']],
+                                    ['type', 'field-list', ['fields']],
+                                ],
+                                mutually_exclusive=[
+                                    ['fields', 'user_string'],
+                                    ['user_string', 'delimiter']
+                                ]
+                            ),
+                        )
+                    ),
+                    errors=dict(
+                        type='dict',
+                        options=dict(
+                            action=dict(
+                                choices=['enabled', 'disabled']
+                            ),
+                            storage_format=dict(
+                                type='dict',
+                                options=dict(
+                                    type=dict(
+                                        choices=['field-list', 'user-defined', 'none']
+                                    ),
+                                    delimiter=dict(),
+                                    fields=dict(
+                                        type='list',
+                                        elements='str'
+                                    ),
+                                    user_string=dict()
+                                ),
+                                required_if=[
+                                    ['type', 'user-defined', ['user_string']],
+                                    ['type', 'field-list', ['fields']],
+                                ],
+                                mutually_exclusive=[
+                                    ['fields', 'user_string'],
+                                    ['user_string', 'delimiter']
+                                ]
+                            ),
+                        )
+                    )
                 )
             ),
             protocol_inspection=dict(

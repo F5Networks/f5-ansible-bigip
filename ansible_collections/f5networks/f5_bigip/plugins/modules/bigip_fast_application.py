@@ -359,10 +359,6 @@ class ModuleManager(object):
         if response['code'] == 404:
             return False
 
-    def _check_for_errors_in_response(self, response):
-        if 'declaration failed' in response['message'] or 'declaration is invalid' in response['message']:
-            raise F5ModuleError(response['message'])
-
     def _check_task_on_device(self, path):
         response = self.client.get(path)
         if response['code'] not in [200, 201, 202]:
@@ -399,7 +395,9 @@ class ModuleManager(object):
     def wait_for_task(self, path, interval, period):
         for x in range(0, period):
             task = self._check_task_on_device(path)
-            self._check_for_errors_in_response(task)
+            if task['code'] != 200:
+                if task['message'] != 'in progress':
+                    raise F5ModuleError(task['message'])
             if task['message'] != 'in progress':
                 return task
             time.sleep(interval)

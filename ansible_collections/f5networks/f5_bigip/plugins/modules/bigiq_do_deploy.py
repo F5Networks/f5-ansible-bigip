@@ -109,7 +109,7 @@ from ..module_utils.common import (
 
 try:
     import json
-except ImportError:
+except ImportError:  # pragma: no cover
     import simplejson as json
 
 
@@ -163,7 +163,7 @@ class Changes(Parameters):
             for returnable in self.returnables:
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
-        except Exception:
+        except Exception:  # pragma: no cover
             raise
         return result
 
@@ -192,7 +192,7 @@ class ModuleManager(object):
         if changed:
             self.changes = UsableChanges(params=changed)
 
-    def _announce_deprecations(self, result):
+    def _announce_deprecations(self, result):  # pragma: no cover
         warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
@@ -216,7 +216,7 @@ class ModuleManager(object):
 
     def upsert(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         if self.want.task_id:
             return self.query_task()
@@ -249,7 +249,7 @@ class ModuleManager(object):
                 return True
         return False
 
-    def async_wait(self, task_id):
+    def async_wait(self, task_id):  # pragma: no cover
         delay, period = self.want.timeout
         task = self.wait_for_task(task_id, delay, period)
         if task:
@@ -318,5 +318,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

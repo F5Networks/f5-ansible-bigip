@@ -1,0 +1,15 @@
+{
+    "id": "b64b318e-1823-49bf-a9b3-323e5c4fd9f1",
+    "code": 422,
+    "message": "declaration is invalid\n/sample_tenant1/sample_app1/sample_app1_web_pool/members: pool member /sample_tenant1/sample_app1/sample_app1_web_pool/members/0 static address 192.1.1.1 conflicts with bigip node /sample_tenant/192.1.1.1",
+    "name": "",
+    "parameters": {},
+    "tenant": "sample_tenant1",
+    "application": "sample_app1",
+    "operation": "create",
+    "timestamp": "",
+    "host": "localhost",
+    "_links": {
+        "self": "/mgmt/shared/fast/tasks/b64b318e-1823-49bf-a9b3-323e5c4fd9f1"
+    }
+}

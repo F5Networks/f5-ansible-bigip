@@ -1,0 +1,209 @@
+{
+    "kind": "tm:security:log:profile:profilestate",
+    "name": "test_log_profile",
+    "partition": "Common",
+    "fullPath": "/Common/test_log_profile",
+    "generation": 67682,
+    "selfLink": "https://localhost/mgmt/tm/security/log/profile/~Common~test_log_profile?ver=16.0.0",
+    "autoDiscovery": {},
+    "builtIn": "disabled",
+    "classification": {
+        "logAllClassificationMatches": "disabled"
+    },
+    "description": "this is a nat logging profile",
+    "flowspec": {},
+    "hidden": "false",
+    "ipIntelligence": {
+        "aggregateRate": 4294967295,
+        "logGeo": "disabled",
+        "logRtbh": "disabled",
+        "logScrubber": "disabled",
+        "logShun": "disabled",
+        "logTranslationFields": "disabled"
+    },
+    "nat": {
+        "endInboundSession": "enabled",
+        "endOutboundSession": {
+            "action": "backup-allocation-only",
+            "elements": [
+                "destination"
+            ]
+        },
+        "errors": "enabled",
+        "format": {
+            "endInboundSession": {
+                "fieldList": [
+                    "dest_ip",
+                    "dest_port"
+                ],
+                "fieldListReference": [
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-end-inbound-storage-field/dest_ip?ver=16.0.0"
+                    },
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-end-inbound-storage-field/dest_port?ver=16.0.0"
+                    }
+                ],
+                "fieldListDelimiter": "-",
+                "type": "field-list"
+            },
+            "endOutboundSession": {
+                "fieldListDelimiter": ",",
+                "type": "user-defined",
+                "userDefined": "foo,bar,baz"
+            },
+            "errors": {
+                "fieldList": [
+                    "dest_ip",
+                    "dest_port",
+                    "protocol"
+                ],
+                "fieldListReference": [
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-errors-storage-field/dest_ip?ver=16.0.0"
+                    },
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-errors-storage-field/dest_port?ver=16.0.0"
+                    },
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-errors-storage-field/protocol?ver=16.0.0"
+                    }
+                ],
+                "fieldListDelimiter": ",",
+                "type": "field-list"
+            },
+            "quotaExceeded": {
+                "fieldList": [
+                    "dest_ip",
+                    "dest_port",
+                    "protocol"
+                ],
+                "fieldListReference": [
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-quota-ex-storage-field/dest_ip?ver=16.0.0"
+                    },
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-quota-ex-storage-field/dest_port?ver=16.0.0"
+                    },
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-quota-ex-storage-field/protocol?ver=16.0.0"
+                    }
+                ],
+                "fieldListDelimiter": ";",
+                "type": "field-list"
+            },
+            "startInboundSession": {
+                "fieldList": [
+                    "context_name",
+                    "dest_ip",
+                    "dest_port",
+                    "event_name",
+                    "protocol"
+                ],
+                "fieldListReference": [
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-start-inb-storage-field/context_name?ver=16.0.0"
+                    },
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-start-inb-storage-field/dest_ip?ver=16.0.0"
+                    },
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-start-inb-storage-field/dest_port?ver=16.0.0"
+                    },
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-start-inb-storage-field/event_name?ver=16.0.0"
+                    },
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-start-inb-storage-field/protocol?ver=16.0.0"
+                    }
+                ],
+                "fieldListDelimiter": "-",
+                "type": "field-list"
+            },
+            "startOutboundSession": {
+                "fieldList": [
+                    "dest_ip",
+                    "dest_port",
+                    "context_name",
+                    "event_name",
+                    "protocol"
+                ],
+                "fieldListReference": [
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-start-outb-storage-field/dest_ip?ver=16.0.0"
+                    },
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-start-outb-storage-field/dest_port?ver=16.0.0"
+                    },
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-start-outb-storage-field/context_name?ver=16.0.0"
+                    },
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-start-outb-storage-field/event_name?ver=16.0.0"
+                    },
+                    {
+                        "link": "https://localhost/mgmt/tm/security/log/nat-start-outb-storage-field/protocol?ver=16.0.0"
+                    }
+                ],
+                "fieldListDelimiter": "-",
+                "type": "field-list"
+            }
+        },
+        "logPublisher": "/Common/local-db-publisher",
+        "logPublisherReference": {
+            "link": "https://localhost/mgmt/tm/sys/log-config/publisher/~Common~local-db-publisher?ver=16.0.0"
+        },
+        "logSubscriberId": "disabled",
+        "lsnLegacyMode": "disabled",
+        "quotaExceeded": "enabled",
+        "rateLimit": {
+            "aggregateRate": 3000000,
+            "endInboundSession": 500000,
+            "endOutboundSession": 5000,
+            "errors": 6000,
+            "quotaExceeded": 7000,
+            "startInboundSession": 8000,
+            "startOutboundSession": 9000
+        },
+        "startInboundSession": "backup-allocation-only",
+        "startOutboundSession": {
+            "action": "enabled",
+            "elements": [
+                "destination"
+            ]
+        }
+    },
+    "netflow": {},
+    "packetFilter": {
+        "aggregateRate": 1000
+    },
+    "portMisuse": {
+        "aggregateRate": 4294967295
+    },
+    "protocolInspection": {
+        "logPacket": "disabled"
+    },
+    "trafficStatistics": {
+        "activeFlows": "disabled",
+        "missedFlows": "disabled",
+        "reapedFlows": "disabled",
+        "syncookies": "disabled",
+        "syncookiesWhitelist": "disabled"
+    },
+    "applicationReference": {
+        "link": "https://localhost/mgmt/tm/security/log/profile/~Common~test_log_profile/application?ver=16.0.0",
+        "isSubcollection": true
+    },
+    "networkReference": {
+        "link": "https://localhost/mgmt/tm/security/log/profile/~Common~test_log_profile/network?ver=16.0.0",
+        "isSubcollection": true
+    },
+    "protocolDnsReference": {
+        "link": "https://localhost/mgmt/tm/security/log/profile/~Common~test_log_profile/protocol-dns?ver=16.0.0",
+        "isSubcollection": true
+    },
+    "protocolSipReference": {
+        "link": "https://localhost/mgmt/tm/security/log/profile/~Common~test_log_profile/protocol-sip?ver=16.0.0",
+        "isSubcollection": true
+    }
+}
