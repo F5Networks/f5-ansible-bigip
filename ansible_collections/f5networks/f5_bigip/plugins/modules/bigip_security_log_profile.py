@@ -452,16 +452,16 @@ options:
       publisher:
         description:
           - Specifies the name of the log publisher used for logging Network Address Translation events.
-          - "If desired log publisher is configured on a different partition to where log profile is created
+          - "If the desired log publisher is configured on a different partition to where log profile is created
             a publisher name must be specified in full_path format e.g. /Foo/my-publisher."
         type: str
       log_subscriber_id:
         description:
-          - Enable/Disable logging of the subscriber ID associated with a subscriber IP address.
+          - Enable or disable logging of the subscriber ID associated with a subscriber IP address.
         type: bool
       lsn_legacy_mode:
         description:
-          - Enable/Disable use of legacy CGNAT/LSN logging facility instead of the new Firewall NAT logging capability.
+          - Enable or disable use of legacy CGNAT/LSN logging facility instead of the new Firewall NAT logging capability.
           - When set to C(yes), the C(start_outbound_session), C(start_inbound_session),
             C(end_inbound_session), C(end_outbound_session), C(quota_exceeded) and C(errors), must not be enabled.
             Specifying C(action) to be either C(enabled) or C(backup-allocation-only) while C(lsn_legacy_mode) is C(yes)
@@ -476,7 +476,7 @@ options:
         type: str
       rate_limit_start_outbound_session:
         description:
-          - Sets a rate limit for logging of log entries at start of the translation event for a NAT client.
+          - Sets a rate limit for logging of log entries at the start of the translation event for a NAT client.
           - If this rate limit is exceeded, log messages of this type are not logged until the threshold drops
             below the specified rate.
           - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
@@ -484,7 +484,7 @@ options:
         type: str
       rate_limit_end_outbound_session:
         description:
-          - Sets a rate limit for logging of log entries at end of translation event for a NAT client.
+          - Sets a rate limit for logging of log entries at the end of translation event for a NAT client.
           - If this rate limit is exceeded, log messages of this type are not logged until the threshold drops
             below the specified rate.
           - Valid values are C(0 - 4294967295) messages/sec, or C(indefinite). With values C(4294967295) and
@@ -532,11 +532,11 @@ options:
         suboptions:
           action:
             description:
-              - When set to C(enabled) sets system to log entries for the start of the incoming connection event for a
+              - When set to C(enabled), sets the system to log entries for the start of the incoming connection event
+                for a translated endpoint.
+              - When set to C(disabled), disables logging of the start of the incoming connection event for a
                 translated endpoint.
-              - When set to C(disabled) disables logging of start of the incoming connection event for a
-                translated endpoint.
-              - When set to C(backup-allocation-only) sets the system to generate the associated type of log entries
+              - When set to C(backup-allocation-only), sets the system to generate the associated type of log entries
                 only when the translation address for the client is chosen from the backup pool.
             choices:
               - enabled
@@ -545,7 +545,7 @@ options:
             type: str
           include_dest_addr_port:
             description:
-              - Enable/Disable logging of destination IP address and port information.
+              - Enable or disable logging of destination IP address and port information.
             type: bool
           storage_format:
             description:
@@ -555,10 +555,10 @@ options:
               type:
                 description:
                   - Specifies the format type for log messages.
-                  - When set to C(none) the system uses default format type to log the messages to a Remote Syslog
+                  - When set to C(none), the system uses the default format type to log the messages to a Remote Syslog
                     server.
-                  - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
-                  - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
+                  - When set to C(field-list), the system uses a set of fields, set in a specific order, to log messages.
+                  - When set to C(user-defined), the system uses a user-defined string to log messages.
                   - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
                 type: str
                 choices:
@@ -571,8 +571,8 @@ options:
                 type: str
               fields:
                 description:
-                  - Lists the items the server logs, and the order in which the server logs them due to that the order
-                    of in which items are specified on the list matters. The server displays the items in the log
+                  - Lists the items the server logs, and the order in which the server logs them. The order in which items
+                    are specified in the list matters. The server displays the items in the log
                     sequentially from top down.
                   - "The valid elements that can be specified in the list are: context_name, dest_ip, dest_port,
                     event_name, protocol, route_domain, src_ip, src_port, sub_id, timestamp, translated_dest_ip,
@@ -581,7 +581,7 @@ options:
                 elements: str
               user_string:
                 description:
-                  - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+                  - Specifies the format the system uses to log messages is in the form of a user-defined string.
                 type: str
       end_outbound_session:
         description:
@@ -590,9 +590,9 @@ options:
         suboptions:
           action:
             description:
-              - When set to C(enabled) sets system to log entries for end of translation event for a NAT client.
-              - When set to C(disabled) disables logging of end of translation event for a NAT client.
-              - When set to C(backup-allocation-only) sets the system to generate the associated type of log entries
+              - When set to C(enabled), sets system to log entries for end of translation events for a NAT client.
+              - When set to C(disabled), disables logging of end of translation events for a NAT client.
+              - When set to C(backup-allocation-only), sets the system to generate the associated type of log entries
                 only when the translation address for the client is chosen from the backup pool.
             choices:
               - enabled
@@ -601,21 +601,21 @@ options:
             type: str
           include_dest_addr_port:
             description:
-              - Enable/Disable logging of destination IP address and port information.
+              - Enable or disable logging of destination IP address and port information.
             type: bool
           storage_format:
             description:
-              - Configures custom formatting of NAT events log messages.
+              - Configures the custom formatting of NAT events log messages.
             type: dict
             suboptions:
               type:
                 description:
                   - Specifies the format type for log messages.
-                  - When set to C(none) the system uses default format type to log the messages to a Remote Syslog
+                  - When set to C(none), the system uses the default format type to log the messages to a Remote Syslog
                     server.
-                  - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
-                  - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
-                  - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
+                  - When set to C(field-list), the system uses a set of fields, set in a specific order, to log messages.
+                  - When set to C(user-defined), the system uses a user-defined string to log messages.
+                  - When set to C(none), the C(fields) and C(user_string) parameters are ignored.
                 type: str
                 choices:
                   - field-list
@@ -627,8 +627,8 @@ options:
                 type: str
               fields:
                 description:
-                  - Lists the items the server logs, and the order in which the server logs them due to that the order
-                    of in which items are specified on the list matters. The server displays the items in the log
+                  - Lists the items the server logs, and the order in which the server logs them. The order
+                    in which items are specified in the list matters. The server displays the items in the log
                     sequentially from top down.
                   - "The valid elements that can be specified in the list are: context_name, dest_ip, dest_port,
                     event_name, protocol, route_domain, src_ip, src_port, sub_id, timestamp, translated_dest_ip,
@@ -637,7 +637,7 @@ options:
                 elements: str
               user_string:
                 description:
-                  - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+                  - Specifies the format the system uses to log messages is in the form of a user-defined string.
                 type: str
       start_inbound_session:
         description:
@@ -647,11 +647,11 @@ options:
         suboptions:
           action:
             description:
-              - When set to C(enabled) sets system to log entries for start of the incoming connection event for a
+              - When set to C(enabled), sets the system to log entries for start of the incoming connection event for a
                 translated endpoint.
-              - When set to C(disabled) disables logging of start of the incoming connection event for a
+              - When set to C(disabled), disables logging of the start of the incoming connection event for a
                 translated endpoint.
-              - When set to C(backup-allocation-only) sets the system to generate the associated type of log entries
+              - When set to C(backup-allocation-only), sets the system to generate the associated type of log entries
                 only when the translation address for the client is chosen from the backup pool.
             choices:
               - enabled
@@ -660,16 +660,16 @@ options:
             type: str
           storage_format:
             description:
-              - Configures custom formatting of NAT events log messages.
+              - Configures the custom formatting of NAT events log messages.
             type: dict
             suboptions:
               type:
                 description:
                   - Specifies the format type for log messages.
-                  - When set to C(none) the system uses default format type to log the messages to a Remote Syslog
+                  - When set to C(none), the system uses default format type to log the messages to a Remote Syslog
                     server.
-                  - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
-                  - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
+                  - When set to C(field-list), the system uses a set of fields, set in a specific order, to log messages.
+                  - When set to C(user-defined), the system uses a user-defined string to log messages.
                   - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
                 type: str
                 choices:
@@ -682,8 +682,8 @@ options:
                 type: str
               fields:
                 description:
-                  - Lists the items the server logs, and the order in which the server logs them due to that the order
-                    of in which items are specified on the list matters. The server displays the items in the log
+                  - Lists the items the server logs, and the order in which the server logs them. The order
+                    in which items are specified in the list matters. The server displays the items in the log
                     sequentially from top down.
                   - "The valid elements that can be specified in the list are: context_name, dest_ip, dest_port,
                     event_name, protocol, route_domain, src_ip, src_port, sub_id, timestamp, translated_dest_ip,
@@ -692,20 +692,20 @@ options:
                 elements: str
               user_string:
                 description:
-                  - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+                  - Specifies the format the system uses to log messages is in the form of a user-defined string.
                 type: str
       end_inbound_session:
         description:
-          - Configuration of log entries generated the end of the incoming connection event for a translated endpoint.
+          - Configuration of log entries generated at the end of the incoming connection event for a translated endpoint.
         type: dict
         suboptions:
           action:
             description:
-              - When set to C(enabled) sets system to log entries for the end of the incoming connection event for a
+              - When set to C(enabled), sets system to log entries for the end of the incoming connection event for a
                 translated endpoint.
-              - When set to C(disabled) disables logging of the end of the incoming connection event for a translated
+              - When set to C(disabled), disables logging of the end of the incoming connection event for a translated
                 endpoint.
-              - When set to C(backup-allocation-only) sets the system to generate the associated type of log entries
+              - When set to C(backup-allocation-only), sets the system to generate the associated type of log entries
                 only when the translation address for the client is chosen from the backup pool.
             choices:
               - enabled
@@ -714,7 +714,7 @@ options:
             type: str
           storage_format:
             description:
-              - Configures custom formatting of NAT events log messages.
+              - Configures the custom formatting of NAT events log messages.
             type: dict
             suboptions:
               type:
@@ -723,7 +723,7 @@ options:
                   - When set to C(none) the system uses default format type to log the messages to a Remote Syslog
                     server.
                   - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
-                  - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
+                  - When set to C(user-defined) the system uses a user-defined string to log messages.
                   - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
                 type: str
                 choices:
@@ -736,8 +736,8 @@ options:
                 type: str
               fields:
                 description:
-                  - Lists the items the server logs, and the order in which the server logs them due to that the order
-                    of in which items are specified on the list matters. The server displays the items in the log
+                  - Lists the items the server logs, and the order in which the server logs them. The order
+                    in which items are specified in the list matters. The server displays the items in the log
                     sequentially from top down.
                   - "The valid elements that can be specified in the list are: context_name, dest_ip, dest_port,
                     event_name, protocol, route_domain, src_ip, src_port, sub_id, timestamp, translated_dest_ip,
@@ -746,7 +746,7 @@ options:
                 elements: str
               user_string:
                 description:
-                  - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+                  - Specifies the format the system uses to log messages is in the form of a user-defined string.
                 type: str
       quota_exceeded:
         description:
@@ -755,16 +755,16 @@ options:
         suboptions:
           action:
             description:
-              - When set to C(enabled) sets system to log entries generated when a NAT client exceeds allocated
+              - When set to C(enabled), sets the system to log entries generated when a NAT client exceeds allocated
                 resources.
-              - When set to C(disabled) disables logging of events when a NAT client exceeds allocated resources.
+              - When set to C(disabled), disables logging of events when a NAT client exceeds allocated resources.
             choices:
               - enabled
               - disabled
             type: str
           storage_format:
             description:
-              - Configures custom formatting of NAT events log messages.
+              - Configures the custom formatting of NAT events log messages.
             type: dict
             suboptions:
               type:
@@ -772,8 +772,8 @@ options:
                   - Specifies the format type for log messages.
                   - When set to C(none) the system uses default format type to log the messages to a Remote Syslog
                     server.
-                  - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
-                  - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
+                  - When set to C(field-list), the system uses a set of fields, set in a specific order, to log messages.
+                  - When set to C(user-defined) the system uses a user-defined string to log messages.
                   - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
                 type: str
                 choices:
@@ -786,8 +786,8 @@ options:
                 type: str
               fields:
                 description:
-                  - Lists the items the server logs, and the order in which the server logs them due to that the order
-                    of in which items are specified on the list matters. The server displays the items in the log
+                  - Lists the items the server logs, and the order in which the server logs them. The order
+                    in which items are specified in the list matters. The server displays the items in the log
                     sequentially from top down.
                   - "The valid elements that can be specified in the list are: context_name, dest_ip, dest_port,
                     event_name, protocol, route_domain, src_ip, src_port, sub_id, timestamp, translated_dest_ip,
@@ -796,7 +796,7 @@ options:
                 elements: str
               user_string:
                 description:
-                  - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+                  - Specifies the format the system uses to log messages is in the form of a user-defined string.
                 type: str
       errors:
         description:
@@ -805,15 +805,15 @@ options:
         suboptions:
           action:
             description:
-              - When set to C(enabled) sets system to log entries generated when a NAT translation errors occur.
-              - When set to C(disabled) disables logging of entries generated when a NAT translation errors occur.
+              - When set to C(enabled), sets the system to log entries generated when a NAT translation errors occur.
+              - When set to C(disabled), disables logging of entries generated when a NAT translation errors occur.
             choices:
               - enabled
               - disabled
             type: str
           storage_format:
             description:
-              - Configures custom formatting of NAT events log messages.
+              - Configures the custom formatting of NAT events log messages.
             type: dict
             suboptions:
               type:
@@ -822,7 +822,7 @@ options:
                   - When set to C(none) the system uses default format type to log the messages to a Remote Syslog
                     server.
                   - When set to C(field-list) the system uses a set of fields, set in a specific order, to log messages.
-                  - When set to C(user-defined) the system uses to log messages is in the form of a user-defined string.
+                  - When set to C(user-defined) the system uses a user-defined string to log messages.
                   - When set to C(none) the C(fields) and C(user_string) parameters are ignored.
                 type: str
                 choices:
@@ -835,8 +835,8 @@ options:
                 type: str
               fields:
                 description:
-                  - Lists the items the server logs, and the order in which the server logs them due to that the order
-                    of in which items are specified on the list matters. The server displays the items in the log
+                  - Lists the items the server logs, and the order in which the server logs them. The order
+                    in which items are specified in the list matters. The server displays the items in the log
                     sequentially from top down.
                   - "The valid elements that can be specified in the list are: context_name, dest_ip, dest_port,
                     event_name, protocol, route_domain, src_ip, src_port, sub_id, timestamp, translated_dest_ip,
@@ -845,7 +845,7 @@ options:
                 elements: str
               user_string:
                 description:
-                  - Specifies that the format the system uses to log messages is in the form of a user-defined string.
+                  - Specifies the format the system uses to log messages is in the form of a user-defined string.
                 type: str
   protocol_inspection:
     description:

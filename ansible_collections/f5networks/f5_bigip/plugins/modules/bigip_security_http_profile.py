@@ -11,14 +11,14 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_security_http_profile
-short_description: Manage security http profiles on a BIG-IP
+short_description: Manage security HTTP profiles on a BIG-IP
 description:
-  - Manage security http profiles on a BIG-IP.
+  - Manage security HTTP profiles on a BIG-IP.
 version_added: 1.13.0
 options:
   name:
     description:
-      - Specifies the name of the security http profile to manage.
+      - Specifies the name of the security HTTP profile to manage.
     type: str
     required: True
   parent:
@@ -30,7 +30,7 @@ options:
     type: str
   description:
     description:
-      - Specifies descriptive text that identifies security http profile.
+      - Specifies descriptive text that identifies security HTTP profile.
     type: str
   evasion_techniques:
     description:
@@ -39,7 +39,7 @@ options:
     suboptions:
       alarm:
         description:
-          - When set to C(yes) the system logs the request data whenever it detects an evasion technique.
+          - When set to C(yes), the system logs the request data whenever it detects an evasion technique.
         type: bool
       block:
         description:
@@ -53,7 +53,7 @@ options:
     suboptions:
       alarm:
         description:
-          - When set to C(yes) the system to logs the request data whenever it detects an illegal file type.
+          - When set to C(yes), the system logs the request data whenever it detects an illegal file type.
         type: bool
       block:
         description:
@@ -62,15 +62,15 @@ options:
       allowed:
         description:
           - Specifies a list of file types that are allowed by the system.
-          - When defined all but the file types in the C(allowed) list are considered illegal.
-          - Parameter mutually exclusive with C(disallowed)
+          - When defined, all but the file types in the C(allowed) list are considered illegal.
+          - This parameter is mutually exclusive with C(disallowed).
         type: list
         elements: str
       disallowed:
         description:
           - Specifies a list of file types that are disallowed by the system.
-          - When defined only file types found in disallowed list are considered illegal.
-          - Parameter mutually exclusive with C(allowed)
+          - When defined, only file types found in the disallowed list are considered illegal.
+          - This parameter is mutually exclusive with C(allowed).
         type: list
         elements: str
   http_protocol_checks:
@@ -81,7 +81,7 @@ options:
     suboptions:
       alarm:
         description:
-          - When set to C(yes) the system logs the request data whenever a request
+          - When set to C(yes), the system logs the request data whenever a request
             fails one of the enabled HTTP protocol checks.
         type: bool
       block:
@@ -90,41 +90,41 @@ options:
         type: bool
       bad_host_header:
         description:
-          - When set to C(yes) the system inspects requests to see whether they contain
+          - When set to C(yes), the system inspects requests to see whether they contain
             a non RFC compliant header value.
         type: bool
       bad_version:
         description:
-          - When set to C(yes) the system inspects requests to see whether they request information from a client using
+          - When set to C(yes), the system inspects requests to see whether they request information from a client using
             a legal HTTP protocol version number C(0.9 or higher).
         type: bool
       body_in_get_head:
         description:
-          - When set to C(yes) the system examines requests that use the HEAD or GET methods to see whether the requests
+          - When set to C(yes), the system examines requests that use the HEAD or GET methods to see whether the requests
             contain data in their bodies, which is considered illegal.
         type: bool
       chunked_with_content_length:
         description:
-          - When set to C(yes) the system examines chunked requests for a content-length header,
+          - When set to C(yes), the system examines chunked requests for a content-length header,
             which is not permitted.
         type: bool
       content_length_is_positive:
         description:
-          - When set to C(yes) the system examines requests to see whether their content length value
+          - When set to C(yes), the system examines requests to see whether their content length value
             is greater than zero.
         type: bool
       header_name_without_value:
         description:
-          - When set to C(yes) the system checks requests for valueless header names, which are considered illegal.
+          - When set to C(yes), the system checks requests for valueless header names, which are considered illegal.
         type: bool
       high_ascii_in_headers:
         description:
-          - When set to C(yes) the system inspects request headers for ASCII characters greater than 127,
+          - When set to C(yes), the system inspects request headers for ASCII characters greater than 127,
             which are not permitted.
         type: bool
       host_header_is_ip:
         description:
-          - When set to C(yes) the system verifies that the request's host header value is not an IP address.
+          - When set to C(yes), the system verifies the request's host header value is not an IP address.
         type: bool
       maximum_headers:
         description:
@@ -153,7 +153,7 @@ options:
         type: bool
       unparsable_content:
         description:
-          - When set to C(yes), the system examines requests for content that the system cannot parse,
+          - When set to C(yes), the system examines requests for content the system cannot parse,
             which is not permitted.
         type: bool
   method:
@@ -196,7 +196,7 @@ options:
         elements: str
   length:
     description:
-      - Specifies the default maximum length settings that the security profile considers legal, and specifies what
+      - Specifies the default maximum length settings the security profile considers legal, and specifies what
         action the system should take when it detects a request using an illegal length.
     type: dict
     suboptions:
@@ -211,23 +211,23 @@ options:
       post_data:
         description:
           - Indicates whether there is a maximum acceptable length, in bytes, for the POST data portion of a request.
-          - To specify no length restriction type C(0)
+          - To specify no length restriction, type C(0).
         type: int
       request:
         description:
           - Indicates whether there is a maximum acceptable length, in bytes, of a request, and if so, specifies it.
-          - To specify no length restriction type C(0)
+          - To specify no length restriction, type C(0).
         type: int
       uri:
         description:
           - Indicates whether there is a maximum acceptable length, in bytes, for a URL, and if so, specifies it.
-          - To specify no length restriction type C(0)
+          - To specify no length restriction, type C(0).
         type: int
       query_string:
         description:
           - Indicates whether there is a maximum acceptable length, in bytes, for the query string portion of a
             request, and if so, specifies it.
-          - To specify no length restriction type C(0)
+          - To specify no length restriction, type C(0).
         type: int
   response:
     description:
@@ -239,9 +239,9 @@ options:
           - Specifies which content, or URL, the system sends to the client in response to an illegal blocked request.
           - When set to C(default), specifies the system-supplied response text written in HTML.
           - When set to C(custom), specifies a modified response text set by the C(body) and C(header) parameters.
-          - When set to C(redirect), specifies that the system redirects the user to a specific web page
+          - When set to C(redirect), specifies the system redirects the user to a specific web page
             instead of viewing a blocking page. The link to the page can be specified by the C(url) parameter.
-          - When set to C(soap-fault), specified the system-supplied response written in SOAP fault message structure.
+          - When set to C(soap-fault), specifies the system-supplied response written in SOAP fault message structure.
             Use this type when a SOAP request is blocked due to an XML related violation.
           - When set to C(soap-fault) or C(default), the C(body) and C(header) parameters are ignored.
         type: str
@@ -253,13 +253,13 @@ options:
       body:
         description:
           - Specifies the HTML code the system sends to the client in response to an illegal blocked request.
-          - Parameter is required when C(type) is C(custom)
+          - This parameter is required when C(type) is C(custom).
         type: str
       header:
         description:
-          - Specifies the response headers that the system sends to the client in response to
+          - Specifies the response headers the system sends to the client in response to
             an illegal blocked request.
-          - Parameter is required when C(type) is C(custom)
+          - This parameter is required when C(type) is C(custom).
         type: str
       url:
         description:
@@ -272,8 +272,8 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures the security http profile is created.
-      - When C(absent), ensures the security http profile is removed.
+      - When C(present), ensures the security HTTP profile is created.
+      - When C(absent), ensures the security HTTP profile is removed.
     type: str
     choices:
       - absent
@@ -297,7 +297,7 @@ EXAMPLES = r'''
     ansible_httpapi_use_ssl: yes
 
   tasks:
-    - name: Create an http security profile
+    - name: Create an HTTP security profile
       bigip_security_http_profile:
         name: test_http_profile
         description: 'this is a test profile'
@@ -331,7 +331,7 @@ EXAMPLES = r'''
           type: 'redirect'
           url: 'https://you-are-banned.net'
 
-    - name: Modify an http security profile
+    - name: Modify an HTTP security profile
       bigip_security_http_profile:
         name: test_http_profile
         file_type:
@@ -346,7 +346,7 @@ EXAMPLES = r'''
             - 'PATCH'
             - 'DELETE'
 
-    - name: Delete an http security profile
+    - name: Delete an HTTP security profile
       bigip_security_http_profile:
         name: test_http_profile
         state: absent
@@ -355,7 +355,7 @@ EXAMPLES = r'''
 RETURN = r'''
 description:
   description:
-    - Specifies descriptive text that identifies security http profile.
+    - Specifies descriptive text that identifies security HTTP profile.
   returned: changed
   type: str
   sample: 'this is a text'
@@ -385,13 +385,13 @@ evasion_techniques:
       sample: no
 file_type:
   description:
-    - The file types the security profile considers legal and action to take if illegal file type has been detected.
+    - The file types the security profile considers legal and action to take if an illegal file type has been detected.
   returned: changed
   type: complex
   contains:
     alarm:
       description:
-        - The system to logs the request data whenever it detects an illegal file type.
+        - The system logs the request data whenever it detects an illegal file type.
       returned: changed
       type: bool
       sample: yes
@@ -415,13 +415,13 @@ file_type:
       sample: ['js', 'asp']
 http_protocol_checks:
   description:
-    - The validations the system should check and action to be taken if violation is detected.
+    - The validations the system should check and action to be taken if a violation is detected.
   returned: changed
   type: complex
   contains:
     alarm:
       description:
-        - The system to logs the request data whenever it detects an HTTP protocol violation.
+        - The system logs the request data whenever it detects an HTTP protocol violation.
       returned: changed
       type: bool
       sample: yes
@@ -477,7 +477,7 @@ http_protocol_checks:
       sample: yes
     host_header_is_ip:
       description:
-        - The system verifies that the request's host header value is not an IP address.
+        - The system verifies the request's host header value is not an IP address.
       returned: changed
       type: bool
       sample: yes
@@ -513,7 +513,7 @@ http_protocol_checks:
       sample: yes
     unparsable_content:
       description:
-        - The system examines requests for content that the system cannot parse.
+        - The system examines requests for content the system cannot parse.
       returned: changed
       type: bool
       sample: yes
@@ -567,7 +567,7 @@ header:
       sample: ['cookie']
 length:
   description:
-    - The default maximum length settings that the security profile considers legal.
+    - The default maximum length settings the security profile considers legal.
   returned: changed
   type: complex
   contains:
@@ -627,7 +627,7 @@ response:
       sample: "<html><head><title>Request Rejected</title></head><body>The requested URL was rejected.</body></html>"
     header:
       description:
-        - The response headers that the system sends to the client in response to an illegal blocked request.
+        - The response headers the system sends to the client in response to an illegal blocked request.
       returned: changed
       type: str
       sample: "HTTP/1.1 200 OK\nCache-Control: no-cache\nPragma: no-cache\nConnection: close"

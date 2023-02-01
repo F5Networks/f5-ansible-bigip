@@ -1,0 +1,10 @@
+{
+    "kind": "tm:security:ssh:profile:auth-info:auth-infostate",
+    "name": "test_auth",
+    "fullPath": "test_auth",
+    "generation": 72643,
+    "selfLink": "https://localhost/mgmt/tm/security/ssh/profile/~Common~test_ssh_profile/auth-info/test_auth?ver=16.0.0",
+    "proxyClientAuth": {},
+    "proxyServerAuth": {},
+    "realServerAuth": {}
+}

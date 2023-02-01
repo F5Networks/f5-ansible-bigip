@@ -11,8 +11,8 @@ import os
 
 from ansible.module_utils.basic import AnsibleModule
 
-from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_security_profile_ssh_rules
-from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_security_profile_ssh_rules import (
+from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_security_ssh_profile_rules
+from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_security_ssh_profile_rules import (
     ModuleParameters, ApiParameters, ArgumentSpec, ModuleManager
 )
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
@@ -153,7 +153,7 @@ class TestParameters(unittest.TestCase):
         m = ModuleParameters(params=args)
 
         with self.assertRaises(F5ModuleError) as err:
-            m.action_name
+            m.action_name()
 
         self.assertIn('action name cannot be None', err.exception.args[0])
 
@@ -161,10 +161,10 @@ class TestParameters(unittest.TestCase):
 class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
-        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_security_profile_ssh_rules.send_teem')
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_security_ssh_profile_rules.send_teem')
         self.m1 = self.p1.start()
         self.m1.return_value = True
-        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_security_profile_ssh_rules.F5Client')
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_security_ssh_profile_rules.F5Client')
         self.m2 = self.p2.start()
         self.m2.return_value = MagicMock()
         self.mock_module_helper = patch.multiple(AnsibleModule,
@@ -412,8 +412,8 @@ class TestManager(unittest.TestCase):
 
         self.assertIn(err.exception.args[0], 'Failed to delete the resource.')
 
-    @patch.object(bigip_security_profile_ssh_rules, 'Connection')
-    @patch.object(bigip_security_profile_ssh_rules.ModuleManager, 'exec_module', Mock(return_value={'changed': False}))
+    @patch.object(bigip_security_ssh_profile_rules, 'Connection')
+    @patch.object(bigip_security_ssh_profile_rules.ModuleManager, 'exec_module', Mock(return_value={'changed': False}))
     def test_main_function_success(self, *args):
         set_module_args(
             dict(
@@ -428,12 +428,12 @@ class TestManager(unittest.TestCase):
         )
 
         with self.assertRaises(AnsibleExitJson) as result:
-            bigip_security_profile_ssh_rules.main()
+            bigip_security_ssh_profile_rules.main()
 
         self.assertFalse(result.exception.args[0]['changed'])
 
-    @patch.object(bigip_security_profile_ssh_rules, 'Connection')
-    @patch.object(bigip_security_profile_ssh_rules.ModuleManager, 'exec_module',
+    @patch.object(bigip_security_ssh_profile_rules, 'Connection')
+    @patch.object(bigip_security_ssh_profile_rules.ModuleManager, 'exec_module',
                   Mock(side_effect=F5ModuleError('This module has failed.'))
                   )
     def test_main_function_failed(self, *args):
@@ -450,7 +450,7 @@ class TestManager(unittest.TestCase):
         )
 
         with self.assertRaises(AnsibleFailJson) as result:
-            bigip_security_profile_ssh_rules.main()
+            bigip_security_ssh_profile_rules.main()
 
         self.assertTrue(result.exception.args[0]['failed'])
         self.assertIn('This module has failed', result.exception.args[0]['msg'])

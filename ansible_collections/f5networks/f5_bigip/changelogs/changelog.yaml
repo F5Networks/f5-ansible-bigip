@@ -232,6 +232,31 @@ releases:
     - backport-ucs-fetch-feature.yaml
     - sslo-layer2-ipoffset-error-msg.yaml
     release_date: '2022-12-20'
+  1.13.0:
+    changes:
+      bugfixes:
+      - bigip_as3_deploy - fix in AS3 declaration to accommodate ADC class.
+      - bigip_fast_application - fix parsing of errors in the returned json payload
+    fragments:
+    - fix-as3class-declaration.yaml
+    - fix-fast-task-error-parsing.yaml
+    modules:
+    - description: Manage security HTTP profiles on a BIG-IP
+      name: bigip_security_http_profile
+      namespace: ''
+    - description: Manage security log profiles on a BIG-IP
+      name: bigip_security_log_profile
+      namespace: ''
+    - description: Manage SSH proxy security profiles on a BIG-IP
+      name: bigip_security_ssh_profile
+      namespace: ''
+    - description: Manage SSH proxy security key management on a BIG-IP
+      name: bigip_security_ssh_profile_keys
+      namespace: ''
+    - description: Manage SSH proxy security profile rules on a BIG-IP
+      name: bigip_security_ssh_profile_rules
+      namespace: ''
+    release_date: '2023-02-01'
   1.2.0:
     changes:
       bugfixes:

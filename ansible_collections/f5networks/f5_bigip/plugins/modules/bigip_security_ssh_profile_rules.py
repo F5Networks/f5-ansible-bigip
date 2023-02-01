@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2022, F5 Networks Inc.
+# Copyright: (c) 2023, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -10,7 +10,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: bigip_security_profile_ssh_rules
+module: bigip_security_ssh_profile_rules
 short_description: Manage SSH proxy security profile rules on a BIG-IP
 description:
   - Manage SSH proxy security profile rules on a BIG-IP.
@@ -18,22 +18,22 @@ version_added: 1.13.0
 options:
   name:
     description:
-      - Specifies the name of the rule that will be applied to ssh security profile.
+      - Specifies the name of the rule that will be applied to the SSH security profile.
     type: str
     required: True
   profile_name:
     description:
-      - Specifies the name of the SSH security profile to which this rule applies to.
+      - Specifies the name of the SSH security profile to which this rule applies.
     type: str
     required: True
   users:
     description:
-      - Specifies the list of users to be added to SSH proxy permissions list.
+      - Specifies the list of users to be added to the SSH proxy permissions list.
     type: list
     elements: str
   action:
     description:
-      - Species the action of the rule which is to be applied to the SSH security profile
+      - Species the action of the rule which is to be applied to the SSH security profile.
     type: dict
     suboptions:
       name:
@@ -43,18 +43,18 @@ options:
         required: true
       shell:
         description:
-          - Defines use of the C(shell) command to open an SSH shell channel
+          - Defines the use of the C(shell) command to open an SSH shell channel
             type.
         type: dict
         suboptions:
           control:
             description:
-              - When set to C(allow) allows setup of the session for the
+              - When set to C(allow), allows setup of the session for the
                 selected SSH channel action.
-              - When set to C(disallow), SSH channel action is denied and a
+              - When set to C(disallow), the SSH channel action is denied and a
                 I(command not accepted) message is sent.
-              - When set to C(terminate) SSH connection is terminated with reset
-                message when selected channel action is received.
+              - When set to C(terminate), the SSH connection is terminated with reset
+                message when the selected channel action is received.
               - When set to C(unspecified), no action is taken.
             type: str
             choices:
@@ -69,7 +69,7 @@ options:
             type: bool
       sub_system:
         description:
-          - Defines the use of the C(subsystem) command, to invoke remote
+          - Defines the use of the C(subsystem) command to invoke remote
             commands that are defined on the server over the SSH tunnel.
         type: dict
         suboptions:
@@ -77,9 +77,9 @@ options:
             description:
               - When set to C(allow) allows setup of the session for the
                 selected SSH channel action.
-              - When set to C(disallow), SSH channel action is denied and a
+              - When set to C(disallow), the SSH channel action is denied and a
                 I(command not accepted) message is sent.
-              - When set to C(terminate) SSH connection is terminated with reset
+              - When set to C(terminate) the SSH connection is terminated with reset
                 message when selected channel action is received.
               - When set to C(unspecified), no action is taken.
             type: str
@@ -101,11 +101,11 @@ options:
         suboptions:
           control:
             description:
-              - When set to C(allow) allows setup of the session for the
+              - When set to C(allow), allows setup of the session for the
                 selected SSH channel action.
-              - When set to C(disallow), SSH channel action is denied and a
+              - When set to C(disallow), the SSH channel action is denied and a
                 I(command not accepted) message is sent.
-              - When set to C(terminate) SSH connection is terminated with reset
+              - When set to C(terminate) the SSH connection is terminated with reset
                 message when selected channel action is received.
               - When set to C(unspecified), no action is taken.
             type: str
@@ -127,11 +127,11 @@ options:
         suboptions:
           control:
             description:
-              - When set to C(allow) allows setup of the session for the
+              - When set to C(allow), allows setup of the session for the
                 selected SSH channel action.
-              - When set to C(disallow), SSH channel action is denied and a
+              - When set to C(disallow), the SSH channel action is denied and a
                 I(command not accepted) message is sent.
-              - When set to C(terminate) SSH connection is terminated with reset
+              - When set to C(terminate) the SSH connection is terminated with reset
                 message when selected channel action is received.
               - When set to C(unspecified), no action is taken.
             type: str
@@ -153,11 +153,11 @@ options:
         suboptions:
           control:
             description:
-              - When set to C(allow) allows setup of the session for the
+              - When set to C(allow), allows setup of the session for the
                 selected SSH channel action.
-              - When set to C(disallow), SSH channel action is denied and a
+              - When set to C(disallow), the SSH channel action is denied and a
                 I(command not accepted) message is sent.
-              - When set to C(terminate) SSH connection is terminated with reset
+              - When set to C(terminate) the SSH connection is terminated with reset
                 message when selected channel action is received.
               - When set to C(unspecified), no action is taken.
             type: str
@@ -179,11 +179,11 @@ options:
         suboptions:
           control:
             description:
-              - When set to C(allow) allows setup of the session for the
+              - When set to C(allow), allows setup of the session for the
                 selected SSH channel action.
-              - When set to C(disallow), SSH channel action is denied and a
+              - When set to C(disallow), the SSH channel action is denied and a
                 I(command not accepted) message is sent.
-              - When set to C(terminate) SSH connection is terminated with reset
+              - When set to C(terminate) the SSH connection is terminated with reset
                 message when selected channel action is received.
               - When set to C(unspecified), no action is taken.
             type: str
@@ -205,11 +205,11 @@ options:
         suboptions:
           control:
             description:
-              - When set to C(allow) allows setup of the session for the
+              - When set to C(allow), allows setup of the session for the
                 selected SSH channel action.
-              - When set to C(disallow), SSH channel action is denied and a
+              - When set to C(disallow), the SSH channel action is denied and a
                 I(command not accepted) message is sent.
-              - When set to C(terminate) SSH connection is terminated with reset
+              - When set to C(terminate) the SSH connection is terminated with reset
                 message when selected channel action is received.
               - When set to C(unspecified), no action is taken.
             type: str
@@ -231,11 +231,11 @@ options:
         suboptions:
           control:
             description:
-              - When set to C(allow) allows setup of the session for the
+              - When set to C(allow), allows setup of the session for the
                 selected SSH channel action.
-              - When set to C(disallow), SSH channel action is denied and a
+              - When set to C(disallow), the SSH channel action is denied and a
                 I(command not accepted) message is sent.
-              - When set to C(terminate) SSH connection is terminated with reset
+              - When set to C(terminate) the SSH connection is terminated with reset
                 message when selected channel action is received.
               - When set to C(unspecified), no action is taken.
             type: str
@@ -257,11 +257,11 @@ options:
         suboptions:
           control:
             description:
-              - When set to C(allow) allows setup of the session for the
+              - When set to C(allow), allows setup of the session for the
                 selected SSH channel action.
-              - When set to C(disallow), SSH channel action is denied and a
+              - When set to C(disallow), the SSH channel action is denied and a
                 I(command not accepted) message is sent.
-              - When set to C(terminate) SSH connection is terminated with reset
+              - When set to C(terminate) the SSH connection is terminated with reset
                 message when selected channel action is received.
               - When set to C(unspecified), no action is taken.
             type: str
@@ -282,11 +282,11 @@ options:
         suboptions:
           control:
             description:
-              - When set to C(allow) allows setup of the session for the
+              - When set to C(allow), allows setup of the session for the
                 selected SSH channel action.
-              - When set to C(disallow), SSH channel action is denied and a
+              - When set to C(disallow), the SSH channel action is denied and a
                 I(command not accepted) message is sent.
-              - When set to C(terminate) SSH connection is terminated with reset
+              - When set to C(terminate) the SSH connection is terminated with reset
                 message when selected channel action is received.
               - When set to C(unspecified), no action is taken.
             type: str
@@ -302,19 +302,19 @@ options:
             type: bool
       agent:
         description:
-          - Defines the use of ssh-agent over the SSH tunnel.
-          - Agent forwarding specifies that the chain of SSH connections
+          - Defines the use of an ssh-agent over the SSH tunnel.
+          - Agent forwarding specifies the chain of SSH connections,
             forwards key challenges back to the original agent, removing the
             need for passwords or private keys on intermediate machines.
         type: dict
         suboptions:
           control:
             description:
-              - When set to C(allow) allows setup of the session for the
+              - When set to C(allow), allows setup of the session for the
                 selected SSH channel action.
-              - When set to C(disallow), SSH channel action is denied and a
+              - When set to C(disallow), the SSH channel action is denied and a
                 I(command not accepted) message is sent.
-              - When set to C(terminate) SSH connection is terminated with reset
+              - When set to C(terminate) the SSH connection is terminated with reset
                 message when selected channel action is received.
               - When set to C(unspecified), no action is taken.
             type: str
@@ -330,16 +330,16 @@ options:
             type: bool
       other:
         description:
-          - Defines the use of other SSH commands on SSH connection.
+          - Defines the use of other SSH commands on the SSH connection.
         type: dict
         suboptions:
           control:
             description:
-              - When set to C(allow) allows setup of the session for the
+              - When set to C(allow), allows setup of the session for the
                 selected SSH channel action.
-              - When set to C(disallow), SSH channel action is denied and a
+              - When set to C(disallow), the SSH channel action is denied and a
                 I(command not accepted) message is sent.
-              - When set to C(terminate) SSH connection is terminated with reset
+              - When set to C(terminate) the SSH connection is terminated with reset
                 message when selected channel action is received.
               - When set to C(unspecified), no action is taken.
             type: str
@@ -360,8 +360,8 @@ options:
     default: Common
   state:
     description:
-      - When C(present), ensures the SSH proxy security profile is created.
-      - When C(absent), ensures the SSH proxy security profile is removed.
+      - When C(present), ensures the SSH proxy security profile rule is created.
+      - When C(absent), ensures the SSH proxy security profile rule is removed.
     type: str
     choices:
       - absent
@@ -386,7 +386,7 @@ EXAMPLES = r'''
 
   tasks:
     - name: Create ssh profile rule
-      bigip_security_profile_ssh_rules:
+      bigip_security_ssh_profile_rules:
         name: test_rule_1
         users:
           - test_user_1
@@ -402,7 +402,7 @@ EXAMPLES = r'''
             log: yes
 
     - name: Modify ssh profile rule, add action
-      bigip_security_profile_ssh_rules:
+      bigip_security_ssh_profile_rules:
         name: test_rule_1
         users:
           - test_user_1
@@ -421,7 +421,7 @@ EXAMPLES = r'''
             log: yes
 
     - name: Delete ssh profile rule
-      bigip_security_profile_ssh_rules:
+      bigip_security_ssh_profile_rules:
         name: test_rule_1
         profile_name: test_ssh
         state: absent
@@ -434,7 +434,7 @@ action:
   type: dict
   sample: hash/dictionary of values
 users:
-  description: The list of users to be added to SSH proxy permissions list.
+  description: The list of users to be added to the SSH proxy permissions list.
   returned: changed
   type: list
   sample: ['...', '...']
@@ -445,7 +445,6 @@ from ansible.module_utils.basic import (
     AnsibleModule, env_fallback
 )
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
