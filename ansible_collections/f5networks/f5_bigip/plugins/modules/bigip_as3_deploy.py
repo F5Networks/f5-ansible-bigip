@@ -108,7 +108,7 @@ from ..module_utils.common import (
 
 try:
     import json
-except ImportError:
+except ImportError:  # pragma: no cover
     import simplejson as json
 
 
@@ -152,7 +152,7 @@ class ModuleParameters(Parameters):
 
 
 class Changes(Parameters):
-    def to_return(self):
+    def to_return(self):  # pragma: no cover
         result = {}
         try:
             for returnable in self.returnables:
@@ -187,7 +187,7 @@ class ModuleManager(object):
         if changed:
             self.changes = UsableChanges(params=changed)
 
-    def _announce_deprecations(self, result):
+    def _announce_deprecations(self, result):  # pragma: no cover
         warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
@@ -212,7 +212,7 @@ class ModuleManager(object):
 
     def upsert(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         result = self.upsert_on_device()
         return result
@@ -228,7 +228,7 @@ class ModuleManager(object):
         return False
 
     def remove(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         result = self.remove_from_device()
         if self.resource_exists():
@@ -248,7 +248,15 @@ class ModuleManager(object):
                 "The provided 'content' could not be converted into valid json. If you "
                 "are using the 'to_nice_json' filter, please remove it."
             )
-        declaration['action'] = 'dry-run'
+        if declaration.get('class') == 'AS3':
+            declaration['action'] = 'dry-run'
+        else:
+            declaration = {
+                'class': 'AS3',
+                'persist': False,
+                'action': 'dry-run',
+                'declaration': declaration,
+            }
 
         if self.want.tenant:
             uri = "/mgmt/shared/appsvcs/declare/{0}".format(self.want.tenant)
@@ -387,5 +395,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

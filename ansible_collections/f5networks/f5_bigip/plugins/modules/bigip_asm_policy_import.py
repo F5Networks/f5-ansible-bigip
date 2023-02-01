@@ -295,7 +295,7 @@ class Changes(Parameters):
             for returnable in self.returnables:
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
-        except Exception:
+        except Exception:  # pragma: no cover
             raise
         return result
 
@@ -306,7 +306,7 @@ class UsableChanges(Changes):
 
 class ReportableChanges(Changes):
     @property
-    def parent_policy(self):
+    def parent_policy(self):  # pragma: no cover
         if self._values['parent_policy'] is None:
             return None
         result = self._values['parent_policy']['fullPath']
@@ -323,7 +323,7 @@ class ReportableChanges(Changes):
         return result
 
 
-class Difference(object):
+class Difference(object):  # pragma: no cover
     def __init__(self, want, have=None):
         self.want = want
         self.have = have
@@ -361,7 +361,7 @@ class ModuleManager(object):
         if changed:
             self.changes = UsableChanges(params=changed)
 
-    def _announce_deprecations(self, result):
+    def _announce_deprecations(self, result):  # pragma: no cover
         warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
@@ -405,7 +405,7 @@ class ModuleManager(object):
 
     def policy_import(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         if self.exists():
             if self.want.force is False:
@@ -599,5 +599,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

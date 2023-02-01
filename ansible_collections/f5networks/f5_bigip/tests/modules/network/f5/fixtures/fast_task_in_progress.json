@@ -1,0 +1,15 @@
+{
+        "id": "f6ca75dd-2524-4acb-8319-eb4def45dc77",
+        "code": 0,
+        "message": "in progress",
+        "name": "",
+        "parameters": {},
+        "tenant": "sample_tenant",
+        "application": "sample_app",
+        "operation": "create",
+        "timestamp": "2023-01-31T19:44:54.764Z",
+        "host": "localhost",
+        "_links": {
+            "self": "/mgmt/shared/fast/tasks/f6ca75dd-2524-4acb-8319-eb4def45dc77"
+        }
+}

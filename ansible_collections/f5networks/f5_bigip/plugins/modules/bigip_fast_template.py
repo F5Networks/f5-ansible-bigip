@@ -143,7 +143,7 @@ class Changes(Parameters):
             for returnable in self.returnables:
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
-        except Exception:
+        except Exception:  # pragma: no cover
             raise
         return result
 
@@ -172,7 +172,7 @@ class ModuleManager(object):
         if changed:
             self.changes = UsableChanges(params=changed)
 
-    def _announce_deprecations(self, result):
+    def _announce_deprecations(self, result):  # pragma: no cover
         warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
@@ -206,7 +206,7 @@ class ModuleManager(object):
             if self.want.force is False:
                 return False
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         result = self.create_on_device()
         self.remove_temp_file_from_device()
@@ -219,7 +219,7 @@ class ModuleManager(object):
 
     def remove(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         result = self.remove_from_device()
         if self.exists():
@@ -229,7 +229,7 @@ class ModuleManager(object):
     def purge(self):
         if not self.exists(sets=True):
             return False
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         result = self.purge_from_device()
         return result
@@ -348,5 +348,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

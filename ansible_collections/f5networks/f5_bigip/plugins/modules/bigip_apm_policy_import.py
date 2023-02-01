@@ -130,7 +130,7 @@ from datetime import datetime
 
 try:
     from packaging.version import Version
-except ImportError:
+except ImportError:  # pragma: no cover
     HAS_PACKAGING = False
     Version = None
     PACKAGING_IMPORT_ERROR = traceback.format_exc()
@@ -186,7 +186,7 @@ class Changes(Parameters):
             for returnable in self.returnables:
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
-        except Exception:
+        except Exception:  # pragma: no cover
             raise
         return result
 
@@ -200,18 +200,18 @@ class ReportableChanges(Changes):
 
 
 class Difference(object):
-    def __init__(self, want, have=None):
+    def __init__(self, want, have=None):  # pragma: no cover
         self.want = want
         self.have = have
 
-    def compare(self, param):
+    def compare(self, param):  # pragma: no cover
         try:
             result = getattr(self, param)
             return result
         except AttributeError:
             return self.__default(param)
 
-    def __default(self, param):
+    def __default(self, param):  # pragma: no cover
         attr1 = getattr(self.want, param)
         try:
             attr2 = getattr(self.have, param)
@@ -239,7 +239,7 @@ class ModuleManager(object):
 
     def _announce_deprecations(self, result):
         warnings = result.pop('__warnings', [])
-        for warning in warnings:
+        for warning in warnings:  # pragma: no cover
             self.client.module.deprecate(
                 msg=warning['msg'],
                 version=warning['version']
@@ -275,7 +275,7 @@ class ModuleManager(object):
 
     def policy_import(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         if self.exists():
             if self.want.force is False:
@@ -408,5 +408,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

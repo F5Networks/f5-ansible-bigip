@@ -9,7 +9,7 @@ __metaclass__ = type
 from ansible.module_utils.six import iteritems
 
 
-def cmp_simple_list(want, have):
+def cmp_simple_list(want, have, cmp_order=False):
     if want is None:
         return None
     if have is None and want in ['', 'none']:
@@ -18,6 +18,10 @@ def cmp_simple_list(want, have):
         return []
     if have is None:
         return want
+    if cmp_order:
+        if set(want) == set(have):
+            if want != have:
+                return want
     if set(want) != set(have):
         return want
     return None
@@ -82,6 +86,19 @@ def compare_dictionary(want, have):
         return None
     else:
         return want
+
+
+def compare_key_values(want, have):
+    if want is None:
+        return None
+    if have is None:
+        return None
+    for k, v in have.items():
+        if k not in want.keys():
+            continue
+        if want[k] != have[k]:
+            return want
+    return None
 
 
 def nested_diff(want, have, invalid):

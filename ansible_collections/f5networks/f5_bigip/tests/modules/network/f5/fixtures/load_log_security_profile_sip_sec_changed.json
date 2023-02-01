@@ -1,0 +1,40 @@
+{
+    "kind": "tm:security:log:profile:protocol-sip:protocol-sipstate",
+    "name": "test_log_profile",
+    "partition": "Common",
+    "fullPath": "/Common/test_log_profile",
+    "generation": 49542,
+    "selfLink": "https://localhost/mgmt/tm/security/log/profile/~Common~test_log_profile/protocol-sip/~Common~test_log_profile?ver=16.0.0",
+    "filter": {
+        "logSipDrop": "enabled",
+        "logSipGlobalFailures": "disabled",
+        "logSipMalformed": "disabled",
+        "logSipRedirectionResponses": "enabled",
+        "logSipRequestFailures": "enabled",
+        "logSipServerErrors": "disabled"
+    },
+    "format": {
+        "fieldList": [
+            "action",
+            "sip_callee",
+            "sip_caller"
+        ],
+        "fieldListReference": [
+            {
+                "link": "https://localhost/mgmt/tm/security/log/protocol-sip-storage-field/action?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/log/protocol-sip-storage-field/sip_callee?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/log/protocol-sip-storage-field/sip_caller?ver=16.0.0"
+            }
+        ],
+        "fieldListDelimiter": "-",
+        "type": "field-list"
+    },
+    "publisher": "/Common/local-db-publisher",
+    "publisherReference": {
+        "link": "https://localhost/mgmt/tm/sys/log-config/publisher/~Common~local-db-publisher?ver=16.0.0"
+    }
+}

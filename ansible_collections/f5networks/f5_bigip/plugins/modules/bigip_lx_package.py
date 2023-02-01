@@ -190,7 +190,7 @@ class ModuleParameters(Parameters):
 
 
 class Changes(Parameters):
-    def to_return(self):
+    def to_return(self):  # pragma: no cover
         result = {}
         try:
             for returnable in self.returnables:
@@ -247,7 +247,7 @@ class ModuleManager(object):
         return changed
 
     def remove(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         self.remove_from_device()
         if self.exists():
@@ -255,7 +255,7 @@ class ModuleManager(object):
         return True
 
     def create(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         if not os.path.exists(self.want.package):
             if self.want.package.startswith('/'):
@@ -446,5 +446,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

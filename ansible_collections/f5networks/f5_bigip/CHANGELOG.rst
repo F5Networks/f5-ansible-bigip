@@ -5,6 +5,24 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v1.13.0
+=======
+
+Bugfixes
+--------
+
+- bigip_as3_deploy - fix in AS3 declaration to accommodate ADC class.
+- bigip_fast_application - fix parsing of errors in the returned json payload
+
+New Modules
+-----------
+
+- bigip_security_http_profile - Manage security HTTP profiles on a BIG-IP
+- bigip_security_log_profile - Manage security log profiles on a BIG-IP
+- bigip_security_ssh_profile - Manage SSH proxy security profiles on a BIG-IP
+- bigip_security_ssh_profile_keys - Manage SSH proxy security key management on a BIG-IP
+- bigip_security_ssh_profile_rules - Manage SSH proxy security profile rules on a BIG-IP
+
 v1.12.0
 =======
 

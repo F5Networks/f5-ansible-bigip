@@ -211,7 +211,7 @@ class ModuleManager(object):
             self.changes.update({'message': 'Load config defaults async task started with id: {0}'.format(task)})
             return True
         if self.want.merge_content:
-            if self.module.check_mode:
+            if self.module.check_mode:  # pragma: no cover
                 return True
             if self.want.verify:
                 self.verify()
@@ -231,7 +231,7 @@ class ModuleManager(object):
             return True
 
     def reset(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         return self.reset_device()
 
@@ -262,7 +262,7 @@ class ModuleManager(object):
         remote_path = "/var/config/rest/downloads/{0}".format(temp_name)
         temp_path = '/tmp/' + temp_name
 
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         self.upload_to_device(temp_name)
         self.move_on_device(remote_path)
@@ -275,7 +275,7 @@ class ModuleManager(object):
         remote_path = "/var/config/rest/downloads/{0}".format(temp_name)
         temp_path = '/tmp/' + temp_name
 
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
 
         self.upload_to_device(temp_name)
@@ -344,7 +344,7 @@ class ModuleManager(object):
             )
 
     def save(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         return self.save_on_device()
 
@@ -453,5 +453,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

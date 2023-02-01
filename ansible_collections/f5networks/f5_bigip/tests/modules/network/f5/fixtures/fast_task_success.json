@@ -1,0 +1,25 @@
+{
+    "id": "0bdbc5ab-0deb-43ba-ba2e-bdff0781d62d",
+    "code": 200,
+    "message": "success",
+    "name": "examples/simple_http",
+    "parameters": {
+        "tenant_name": "sample_tenant",
+        "application_name": "sample_app",
+        "virtual_port": 8081,
+        "virtual_address": "10.1.1.1",
+        "server_port": 12584,
+        "server_addresses": [
+            "192.1.1.1",
+            "192.1.1.2"
+        ]
+    },
+    "tenant": "sample_tenant",
+    "application": "sample_app",
+    "operation": "create",
+    "timestamp": "2023-01-31T19:16:41.985Z",
+    "host": "localhost",
+    "_links": {
+        "self": "/mgmt/shared/fast/tasks/0bdbc5ab-0deb-43ba-ba2e-bdff0781d62d"
+    }
+}

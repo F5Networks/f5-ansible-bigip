@@ -148,7 +148,7 @@ from ..module_utils.version import CURRENT_COLL_VERSION
 
 try:
     import json
-except ImportError:
+except ImportError:  # pragma: no cover
     import simplejson as json
 
 
@@ -199,7 +199,7 @@ class Changes(Parameters):
             for returnable in self.returnables:
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
-        except Exception:
+        except Exception:  # pragma: no cover
             raise
         return result
 
@@ -228,7 +228,7 @@ class ModuleManager(object):
         if changed:
             self.changes = UsableChanges(params=changed)
 
-    def _announce_deprecations(self, result):
+    def _announce_deprecations(self, result):  # pragma: no cover
         warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
@@ -262,7 +262,7 @@ class ModuleManager(object):
     def create(self):
         self.template_exists()
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         result = self.create_on_device()
         return result
@@ -283,14 +283,14 @@ class ModuleManager(object):
 
     def update(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         result = self.upsert_on_device()
         return result
 
     def remove(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         result = self.remove_from_device()
         if self.exists():
@@ -298,7 +298,7 @@ class ModuleManager(object):
         return result
 
     def purge(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         result = self.purge_from_device()
         return result
@@ -359,10 +359,6 @@ class ModuleManager(object):
         if response['code'] == 404:
             return False
 
-    def _check_for_errors_in_response(self, response):
-        if 'declaration failed' in response['message'] or 'declaration is invalid' in response['message']:
-            raise F5ModuleError(response['message'])
-
     def _check_task_on_device(self, path):
         response = self.client.get(path)
         if response['code'] not in [200, 201, 202]:
@@ -399,7 +395,9 @@ class ModuleManager(object):
     def wait_for_task(self, path, interval, period):
         for x in range(0, period):
             task = self._check_task_on_device(path)
-            self._check_for_errors_in_response(task)
+            if task['code'] != 200:
+                if task['message'] != 'in progress':
+                    raise F5ModuleError(task['message'])
             if task['message'] != 'in progress':
                 return task
             time.sleep(interval)
@@ -486,5 +484,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

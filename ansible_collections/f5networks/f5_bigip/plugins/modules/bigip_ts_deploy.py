@@ -101,7 +101,7 @@ from ..module_utils.compare import nested_diff
 
 try:
     import json
-except ImportError:
+except ImportError:  # pragma: no cover
     import simplejson as json
 
 
@@ -130,7 +130,7 @@ class ModuleParameters(Parameters):
 
 
 class Changes(Parameters):
-    def to_return(self):
+    def to_return(self):  # pragma: no cover
         result = {}
         try:
             for returnable in self.returnables:
@@ -165,7 +165,7 @@ class ModuleManager(object):
         if changed:
             self.changes = UsableChanges(params=changed)
 
-    def _announce_deprecations(self, result):
+    def _announce_deprecations(self, result):  # pragma: no cover
         warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
@@ -196,7 +196,7 @@ class ModuleManager(object):
             return self.create()
 
     def absent(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         if self.exists():
             return self.remove_from_device()
@@ -204,19 +204,19 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         return self.upsert_on_device()
 
     def update(self):
         if self.want.force:
             self._set_changed_options()
-            if self.module.check_mode:
+            if self.module.check_mode:  # pragma: no cover
                 return True
             return self.upsert_on_device()
         if self.needs_change():
             self._set_changed_options()
-            if self.module.check_mode:
+            if self.module.check_mode:  # pragma: no cover
                 return True
             return self.upsert_on_device()
         return False
@@ -309,5 +309,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

@@ -1,0 +1,94 @@
+{
+    "kind": "tm:security:http:profile:profilestate",
+    "name": "test_http_profile",
+    "partition": "Common",
+    "fullPath": "/Common/test_http_profile",
+    "generation": 9238,
+    "selfLink": "https://localhost/mgmt/tm/security/http/profile/~Common~test_http_profile?ver=16.0.0",
+    "caseSensitive": true,
+    "defaultsFrom": "/Common/http_security",
+    "defaultsFromReference": {
+        "link": "https://localhost/mgmt/tm/security/http/profile/~Common~http_security?ver=16.0.0"
+    },
+    "description": "this is a test profile",
+    "evasionTechniques": {
+        "alarm": "disabled",
+        "block": "enabled"
+    },
+    "fileTypes": {
+        "alarm": "disabled",
+        "block": "disabled",
+        "disallowed": true,
+        "values": [
+            "ZIP",
+            "JS",
+            "JSON"
+        ],
+        "valuesReference": [
+            {
+                "link": "https://localhost/mgmt/tm/security/http/file-type/ZIP?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/http/file-type/JS?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/http/file-type/JSON?ver=16.0.0"
+            }
+        ]
+    },
+    "httpRfc": {
+        "alarm": "enabled",
+        "badHostHeader": "disabled",
+        "badVersion": "disabled",
+        "block": "disabled",
+        "bodyInGetHead": "enabled",
+        "chunkedWithContentLength": "enabled",
+        "contentLengthIsPositive": "enabled",
+        "headerNameWithoutValue": "enabled",
+        "highAsciiInHeaders": "enabled",
+        "hostHeaderIsIp": "disabled",
+        "maximumHeaders": "20",
+        "nullInBody": "disabled",
+        "nullInHeaders": "enabled",
+        "postWithZeroLength": "disabled",
+        "severalContentLength": "enabled",
+        "unparsableContent": "enabled"
+    },
+    "mandatoryHeaders": {
+        "alarm": "disabled",
+        "block": "disabled",
+        "values": [
+            "authorization",
+            "cookie"
+        ],
+        "valuesReference": [
+            {
+                "link": "https://localhost/mgmt/tm/security/http/mandatory-header/authorization?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/http/mandatory-header/cookie?ver=16.0.0"
+            }
+        ]
+    },
+    "maximumLength": {
+        "alarm": "enabled",
+        "block": "disabled",
+        "postData": "any",
+        "queryString": "1024",
+        "request": "2048",
+        "uri": "512"
+    },
+    "methods": {
+        "alarm": "enabled",
+        "block": "enabled",
+        "values": [
+            "GET",
+            "PATCH"
+        ]
+    },
+    "response": {
+        "body": "<html><head><title>Request Rejected</title></head><body>The requested URL was rejected. Please consult with your administrator.<br><br>Your support ID is: <%TS.request.ID()%></body></html>",
+        "headers": "HTTP/1.1 200 OK\nCache-Control: no-cache\nPragma: no-cache\nConnection: close",
+        "type": "default"
+    }
+}

@@ -1,0 +1,18 @@
+{
+    "kind": "tm:security:ssh:profile:auth-info:auth-infostate",
+    "name": "test_auth",
+    "fullPath": "test_auth",
+    "generation": 72456,
+    "selfLink": "https://localhost/mgmt/tm/security/ssh/profile/~Common~test_ssh_profile/auth-info/test_auth?ver=16.0.0",
+    "proxyClientAuth": {
+        "privateKey": "$M$03$HaM1+Eqk+w1I/O5Au/0W3A==",
+        "publicKey": "this"
+    },
+    "proxyServerAuth": {
+        "privateKey": "$M$SD$//Lv5zyY27jV4McvFwGc5Q==",
+        "publicKey": "not"
+    },
+    "realServerAuth": {
+        "publicKey": "really"
+    }
+}

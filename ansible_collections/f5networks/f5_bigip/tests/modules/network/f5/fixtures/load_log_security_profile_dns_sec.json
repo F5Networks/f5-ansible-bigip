@@ -1,0 +1,47 @@
+{
+    "kind": "tm:security:log:profile:protocol-dns:protocol-dnsstate",
+    "name": "test_log_profile",
+    "partition": "Common",
+    "fullPath": "/Common/test_log_profile",
+    "generation": 35890,
+    "selfLink": "https://localhost/mgmt/tm/security/log/profile/~Common~test_log_profile/protocol-dns/~Common~test_log_profile?ver=16.0.0",
+    "filter": {
+        "logDnsDrop": "enabled",
+        "logDnsFilteredDrop": "enabled",
+        "logDnsMalformed": "enabled",
+        "logDnsMalicious": "enabled",
+        "logDnsReject": "enabled"
+    },
+    "format": {
+        "fieldList": [
+            "action",
+            "attack_type",
+            "vlan",
+            "dns_query_name",
+            "dns_query_type"
+        ],
+        "fieldListReference": [
+            {
+                "link": "https://localhost/mgmt/tm/security/log/protocol-dns-storage-field/action?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/log/protocol-dns-storage-field/attack_type?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/log/protocol-dns-storage-field/vlan?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/log/protocol-dns-storage-field/dns_query_name?ver=16.0.0"
+            },
+            {
+                "link": "https://localhost/mgmt/tm/security/log/protocol-dns-storage-field/dns_query_type?ver=16.0.0"
+            }
+        ],
+        "fieldListDelimiter": "-",
+        "type": "field-list"
+    },
+    "publisher": "/Common/local-db-publisher",
+    "publisherReference": {
+        "link": "https://localhost/mgmt/tm/sys/log-config/publisher/~Common~local-db-publisher?ver=16.0.0"
+    }
+}

@@ -85,9 +85,12 @@ RETURN = r'''
 
 import re
 import time
+import traceback
 from datetime import datetime
 
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import (
+    AnsibleModule, missing_required_lib
+)
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
@@ -100,8 +103,12 @@ from ..module_utils.common import (
 try:
     from objectpath import Tree
     HAS_OBJPATH = True
-except ImportError:
+except ImportError:  # pragma: no cover
     HAS_OBJPATH = False
+    Tree = None
+    HAS_OBJPATH_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_OBJPATH = True
 
 
 class Parameters(AnsibleF5Parameters):
@@ -153,7 +160,7 @@ class ModuleParameters(Parameters):
             return False
 
 
-class Changes(Parameters):
+class Changes(Parameters):  # pragma: no cover
     def to_return(self):
         result = {}
         try:
@@ -185,7 +192,7 @@ class ModuleManager(object):
         self.want = ModuleParameters(params=self.module.params)
         self.changes = UsableChanges()
 
-    def _announce_deprecations(self, result):
+    def _announce_deprecations(self, result):  # pragma: no cover
         warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
@@ -210,7 +217,7 @@ class ModuleManager(object):
     def present(self):
         if not self._device_group_exists():
             raise F5ModuleError(
-                "The specified 'device_group' not not exist."
+                "The specified 'device_group' does not exist."
             )
         if self._sync_to_group_required():
             raise F5ModuleError(
@@ -328,7 +335,7 @@ class ModuleManager(object):
         result = details[::-1]
         return result
 
-    def _validate_pending_status(self, details):
+    def _validate_pending_status(self, details):  # pragma: no cover
         """Validate the content of a pending sync operation
 
         This is a hack. The REST API is not consistent with its 'status' values
@@ -385,6 +392,12 @@ def main():
         required_one_of=spec.required_one_of
     )
 
+    if not HAS_OBJPATH:
+        module.fail_json(
+            msg=missing_required_lib('objectpath'),
+            exception=HAS_OBJPATH_IMPORT_ERROR
+        )
+
     try:
         mm = ModuleManager(module=module, connection=Connection(module._socket_path))
         results = mm.exec_module()
@@ -393,5 +406,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

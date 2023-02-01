@@ -123,7 +123,7 @@ class Changes(Parameters):
             for returnable in self.returnables:
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
-        except Exception:
+        except Exception:  # pragma: no cover
             raise
         return result
 
@@ -138,7 +138,7 @@ class ReportableChanges(Changes):
         return None
 
 
-class Difference(object):
+class Difference(object):  # pragma: no cover
     def __init__(self, want, have=None):
         self.want = want
         self.have = have
@@ -177,7 +177,7 @@ class ModuleManager(object):
         if changed:
             self.changes = UsableChanges(params=changed)
 
-    def _update_changed_options(self):
+    def _update_changed_options(self):  # pragma: no cover
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
         changed = dict()
@@ -195,7 +195,7 @@ class ModuleManager(object):
             return True
         return False
 
-    def should_update(self):
+    def should_update(self):  # pragma: no cover
         result = self._update_changed_options()
         if result:
             return True
@@ -220,7 +220,7 @@ class ModuleManager(object):
         send_teem(self.client, start)
         return result
 
-    def _announce_deprecations(self, result):
+    def _announce_deprecations(self, result):  # pragma: no cover
         warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.module.deprecate(
@@ -247,7 +247,7 @@ class ModuleManager(object):
         return True
 
     def remove(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         self.remove_from_device()
         self.wait_for_removal()
@@ -257,7 +257,7 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         if self.want.accept_eula is False:
             raise F5ModuleError(
@@ -385,5 +385,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

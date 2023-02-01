@@ -1,0 +1,72 @@
+{
+    "kind": "tm:security:ssh:profile:profilestate",
+    "name": "test_profile",
+    "partition": "Common",
+    "fullPath": "/Common/test_profile",
+    "generation": 114624,
+    "selfLink": "https://localhost/mgmt/tm/security/ssh/profile/~Common~test_profile?ver=16.0.0",
+    "description": "this is a new profile",
+    "langEnvTolerance": "any",
+    "timeout": 180,
+    "actions": [
+        {
+            "name": "foo",
+            "agentAction": {
+                "control": "terminate",
+                "log": "yes"
+            },
+            "localForwardAction": {
+                "control": "terminate",
+                "log": "yes"
+            },
+            "otherAction": {
+                "control": "terminate",
+                "log": "yes"
+            },
+            "remoteForwardAction": {
+                "control": "terminate",
+                "log": "yes"
+            },
+            "rexecAction": {
+                "control": "terminate",
+                "log": "yes"
+            },
+            "scpDownAction": {
+                "control": "disallow",
+                "log": "yes"
+            },
+            "scpUpAction": {
+                "control": "disallow",
+                "log": "yes"
+            },
+            "sftpDownAction": {
+                "control": "disallow",
+                "log": "yes"
+            },
+            "sftpUpAction": {
+                "control": "disallow",
+                "log": "yes"
+            },
+            "shellAction": {
+                "control": "disallow",
+                "log": "yes"
+            },
+            "subSystemAction": {
+                "control": "disallow",
+                "log": "yes"
+            },
+            "x11ForwardAction": {
+                "control": "terminate",
+                "log": "yes"
+            }
+        }
+    ],
+    "authInfoReference": {
+        "link": "https://localhost/mgmt/tm/security/ssh/profile/~Common~test_profile/auth-info?ver=16.0.0",
+        "isSubcollection": true
+    },
+    "rulesReference": {
+        "link": "https://localhost/mgmt/tm/security/ssh/profile/~Common~test_profile/rules?ver=16.0.0",
+        "isSubcollection": true
+    }
+}
