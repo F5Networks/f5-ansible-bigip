@@ -103,7 +103,7 @@ from ..module_utils.client import (
     F5Client, send_teem
 )
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters,
+    F5ModuleError, AnsibleF5Parameters, check_for_atc_errors, F5ATCError
 )
 
 try:
@@ -270,23 +270,6 @@ class ModuleManager(object):
 
         return all(msg.get('message', None) == 'no change' for msg in response['contents']['results'])
 
-    def _get_errors_from_response(self, messages):
-        results = []
-        if 'results' not in messages:
-            if 'message' in messages:
-                results.append(messages['message'])
-            if 'errors' in messages:
-                results += messages['errors']
-        else:
-            for message in messages['results']:
-                if 'message' in message and message['message'] in ['declaration failed', 'declaration is invalid']:
-                    results.append(message['message'])
-                if 'errors' in message:
-                    results += message['errors']
-                if 'response' in message:
-                    results.append(message['response'])
-        return results
-
     def _check_task_on_device(self, path):
         response = self.client.get(path)
         if response['code'] not in [200, 201, 202]:
@@ -312,10 +295,9 @@ class ModuleManager(object):
     def wait_for_task(self, path, delay, period):
         for x in range(0, period):
             task = self._check_task_on_device(path)
-            errors = self._get_errors_from_response(task)
+            errors = check_for_atc_errors(task)
             if errors:
-                message = "{0}".format('. '.join(errors))
-                raise F5ModuleError(message)
+                raise F5ATCError(errors)
             if any(msg.get('message', None) != 'in progress' for msg in task['results']):
                 return task
             time.sleep(delay)

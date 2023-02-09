@@ -41,23 +41,23 @@ class F5Client:
 
     @header
     def delete(self, url, **kwargs):
-        return self.plugin.send_request(url, method='DELETE', **kwargs)
+        return self.plugin.send_request(path=url, method='DELETE', **kwargs)
 
     @header
     def get(self, url, **kwargs):
-        return self.plugin.send_request(url, method='GET', **kwargs)
+        return self.plugin.send_request(path=url, method='GET', **kwargs)
 
     @header
     def patch(self, url, data=None, **kwargs):
-        return self.plugin.send_request(url, method='PATCH', data=data, **kwargs)
+        return self.plugin.send_request(path=url, method='PATCH', payload=data, **kwargs)
 
     @header
     def post(self, url, data=None, **kwargs):
-        return self.plugin.send_request(url, method='POST', data=data, **kwargs)
+        return self.plugin.send_request(path=url, method='POST', payload=data, **kwargs)
 
     @header
     def put(self, url, data=None, **kwargs):
-        return self.plugin.send_request(url, method='PUT', data=data, **kwargs)
+        return self.plugin.send_request(path=url, method='PUT', payload=data, **kwargs)
 
     @property
     def platform(self):

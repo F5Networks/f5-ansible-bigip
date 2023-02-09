@@ -165,6 +165,7 @@ except ImportError:
     PACKAGING_IMPORT_ERROR = traceback.format_exc()
 else:
     HAS_PACKAGING = True
+    PACKAGING_IMPORT_ERROR = None
 
 from ansible.module_utils.basic import (
     AnsibleModule, env_fallback, missing_required_lib

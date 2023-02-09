@@ -109,6 +109,7 @@ except ImportError:  # pragma: no cover
     HAS_OBJPATH_IMPORT_ERROR = traceback.format_exc()
 else:
     HAS_OBJPATH = True
+    HAS_OBJPATH_IMPORT_ERROR = None
 
 
 class Parameters(AnsibleF5Parameters):

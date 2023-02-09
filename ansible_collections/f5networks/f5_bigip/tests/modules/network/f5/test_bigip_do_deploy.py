@@ -73,10 +73,10 @@ class TestParameters(unittest.TestCase):
         p2 = ModuleParameters(params=args2)
 
         with self.assertRaises(F5ModuleError) as err1:
-            p1.timeout
+            p1.timeout()
 
         with self.assertRaises(F5ModuleError) as err2:
-            p2.timeout
+            p2.timeout()
 
         self.assertIn(
             "Timeout value must be between 150 and 3600 seconds.",

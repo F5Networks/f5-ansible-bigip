@@ -38,7 +38,7 @@ PRIVATE_KEYS_RE = re.compile('__.+__')
 
 class ActionModule(ActionNetworkModule):
 
-    def run(self, tmp=None, task_vars=None):
+    def run(self, task_vars=None):
         if self._task.args.get('src'):
             try:
                 self._handle_template()
@@ -46,7 +46,6 @@ class ActionModule(ActionNetworkModule):
                 return dict(failed=True, msg=to_text(exc))
 
         result = super(ActionModule, self).run(task_vars=task_vars)
-        del tmp  # tmp no longer has any effect
 
         if self._task.args.get('backup') and result.get('__backup__'):
             # User requested backup and no error occurred in module.

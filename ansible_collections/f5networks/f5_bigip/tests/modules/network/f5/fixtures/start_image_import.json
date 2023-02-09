@@ -1,5 +1,0 @@
-{
-    "f5-utils-file-transfer:output": {
-        "result": "File transfer is initiated.(/var/F5/partition/IMAGES/BIGIP-bigip14.1.x-miro-14.1.2.5-0.0.336.ALL-VELOS.qcow2.zip)"
-    }
-}

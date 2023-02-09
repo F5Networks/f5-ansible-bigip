@@ -78,7 +78,7 @@ class HttpApi(HttpApiBase):
             if provider and provider != 'local':
                 login_ref = self._get_login_ref(provider)
                 payload.update(login_ref)
-            response = self.send_request(LOGIN, method='POST', data=payload, headers=BASE_HEADERS)
+            response = self.send_request(path=LOGIN, method='POST', data=payload, headers=BASE_HEADERS)
         else:
             raise AnsibleConnectionFailure('Username and password are required for login.')
 
@@ -99,7 +99,7 @@ class HttpApi(HttpApiBase):
             return
         token = self.connection._auth.get('X-F5-Auth-Token', None)
         logout_uri = '{0}{1}'.format(LOGOUT, token)
-        self.send_request(logout_uri, method='DELETE')
+        self.send_request(path=logout_uri, method='DELETE')
 
     def handle_httperror(self, exc):
         if exc.code == 404:
@@ -121,7 +121,9 @@ class HttpApi(HttpApiBase):
             }
         }
 
-        response = self.send_request("/mgmt/shared/authn/exchange", method='POST', data=payload, headers=BASE_HEADERS)
+        response = self.send_request(
+            path="/mgmt/shared/authn/exchange", method='POST', data=payload, headers=BASE_HEADERS
+        )
 
         if response['code'] == 200 and 'token' in response['contents']:
             self.access_token = response['contents']['token'].get('token', None)
@@ -135,8 +137,10 @@ class HttpApi(HttpApiBase):
                 response['contents'])
             )
 
-    def send_request(self, url, method=None, **kwargs):
-        body = kwargs.pop('data', None)
+    def send_request(self, **kwargs):
+        url = kwargs.pop('path', '/')
+        body = kwargs.pop('payload', None)
+        method = kwargs.pop('method', None)
         data = json.dumps(body) if body else None
 
         try:
@@ -197,7 +201,7 @@ class HttpApi(HttpApiBase):
         )
 
     def _read_providers_on_device(self):
-        result = self.send_request('/info/system', method='GET')
+        result = self.send_request(path='/info/system', method='GET')
         return result['contents']
 
     def telemetry(self):

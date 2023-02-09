@@ -79,7 +79,7 @@ class HttpApi(HttpApiBase):
                 'loginProviderName': provider if provider else 'tmos'
             }
             self.user = username
-            response = self.send_request(LOGIN, method='POST', data=payload, headers=BASE_HEADERS)
+            response = self.send_request(path=LOGIN, method='POST', payload=payload, headers=BASE_HEADERS)
         else:
             raise AnsibleConnectionFailure('Username and password are required for login.')
 
@@ -99,7 +99,7 @@ class HttpApi(HttpApiBase):
             return
         token = self.connection._auth.get('X-F5-Auth-Token', None)
         logout_uri = '{0}{1}'.format(LOGOUT, token)
-        self.send_request(logout_uri, method='DELETE')
+        self.send_request(path=logout_uri, method='DELETE')
 
     def handle_httperror(self, exc):
         if exc.code == 404:
@@ -113,8 +113,10 @@ class HttpApi(HttpApiBase):
                 return True
         return False
 
-    def send_request(self, url, method=None, **kwargs):
-        body = kwargs.pop('data', None)
+    def send_request(self, **kwargs):
+        url = kwargs.pop('path', '/')
+        body = kwargs.pop('payload', None)
+        method = kwargs.pop('method', None)
         # allow for empty json to be passed as payload, useful for some endpoints
         data = json.dumps(body) if body or body == {} else None
         try:

@@ -31,7 +31,7 @@ display = Display()
 
 
 class ActionModule(ActionNetworkModule):
-    def run(self, tmp=None, task_vars=None):
+    def run(self, task_vars=None):
         self._config_module = True if self._task.action == 'bigip_imish_config' else False
         pc = self._play_context
 
