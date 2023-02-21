@@ -112,9 +112,13 @@ create_modify = """
                     "customService": {
                         "name": "{{ params.deployment_name }}",
                         "serviceType": "tap",
-                        "portRemap": {% if params.port_remap is defined %}true{% else %}false{% endif %},
-                        "serviceDownAction": "{{ params.service_down_action }}",
+                        {% if params.port_remap is defined %}
+                        "portRemap": true,
                         "httpPortRemapValue": {{ params.port_remap }},
+                        {% else %}
+                        "portRemap": false,
+                        {% endif %}
+                        "serviceDownAction": "{{ params.service_down_action }}",
                         "managedNetwork": {
                             "ipFamily": "both",
                             "serviceType": "tap",

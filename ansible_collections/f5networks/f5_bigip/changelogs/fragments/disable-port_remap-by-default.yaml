@@ -1,0 +1,3 @@
+---
+bugfixes:
+    - bigip_sslo_service_tap - make port_remap disbaled by default unless the user explicitly enables it by providing port value for port_remap
