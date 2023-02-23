@@ -36,7 +36,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 )
 
 
-def process_json(data, template):
+def process_json(data, template, raw=False):
     if JINA2_IMPORT_ERROR:
         raise_from(F5ModuleError('jinja2 package must be installed to use this collection'),
                    JINA2_IMPORT_ERROR
@@ -44,6 +44,8 @@ def process_json(data, template):
     jinja_env = Environment()
     template = jinja_env.from_string(template)
     content = template.render(params=data)
+    if raw:
+        return content
     my_json = json.loads(content)
     return my_json
 

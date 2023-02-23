@@ -1,0 +1,12 @@
+{
+    "isBase64": false,
+    "status": "NEW",
+    "file": "\n{\n   \"policy\" : {\n      \"name\": \"custom_awaf\",\n      \"fullPath\": \"/Common/custom_awaf\",\n      \"applicationLanguage\": \"auto-detect\",\n      \"caseInsensitive\": false,\n      \"enablePassiveMode\": false,\n      \"protocolIndependent\" : false,\n      \"enforcementMode\": \"transparent\",\n      \"template\": {\"name\": \"POLICY_TEMPLATE_RAPID_DEPLOYMENT\"},\n      \"server-technologies\": [{\"serverTechnologyName\": \"AngularJS\"}, {\"serverTechnologyName\": \"Apache Struts\"}, {\"serverTechnologyName\": \"Apache Tomcat\"}],\n      \"open-api-files\": [{\"link\": \"https://fake.com/path/to/file.txt\"}],\n      \"filetypes\": [{\"allowed\": true, \"name\": \"php\", \"type\": \"explicit\"}, {\"allowed\": true, \"name\": \"jpg\", \"type\": \"explicit\"}, {\"allowed\": false, \"name\": \"js\", \"type\": \"explicit\"}, {\"allowed\": false, \"name\": \"*\", \"type\": \"wildcard\"}],\n      \"policy-builder\": {\"learningMode\": \"manual\"},\n      \"type\": \"security\"\n   }\n}",
+    "lastUpdateMicros": 1.676824805e+15,
+    "getPolicyAttributesOnly": false,
+    "kind": "tm:asm:tasks:import-policy:import-policy-taskstate",
+    "selfLink": "https://localhost/mgmt/tm/asm/tasks/import-policy/qHmOqh11UEZrmTNEls83Zg?ver=16.1.3",
+    "id": "qHmOqh11UEZrmTNEls83Zg",
+    "startTime": "2023-02-19T16:40:05Z",
+    "retainInheritanceSettings": false
+}

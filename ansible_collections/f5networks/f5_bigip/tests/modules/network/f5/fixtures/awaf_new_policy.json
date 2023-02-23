@@ -1,0 +1,238 @@
+{
+   "policy" : {
+      "applicationLanguage" : "utf-8",
+      "caseInsensitive" : false,
+      "description" : "this is a test to check IPI behaviour with the Declarative WAF REST API",
+      "enablePassiveMode" : false,
+      "enforcementMode" : "blocking",
+      "fullPath" : "/Common/testIPI",
+      "ip-intelligence" : {
+         "enabled" : true,
+         "ipIntelligenceCategories" : [
+            {
+               "alarm" : true,
+               "block" : false,
+               "category" : "Spam Sources",
+               "description" : "The Spam Sources category includes Tunneling Spam messages through proxy, anomalous SMTP activities, and Forum Spam activities."
+            },
+            {
+               "alarm" : true,
+               "block" : true,
+               "category" : "Cloud-based Services",
+               "description" : "The Cloud-based Services category includes IP addresses and networks that are used by cloud providers."
+            },
+            {
+               "alarm" : true,
+               "block" : true,
+               "category" : "Mobile Threats",
+               "description" : "The Mobile Threats category includes IP addresses of malicious and unwanted mobile applications."
+            },
+            {
+               "alarm" : true,
+               "block" : true,
+               "category" : "Tor Proxies",
+               "description" : "The Tor Proxies category includes IP addresses acting as exit nodes for the Tor Network. Exit nodes are the last point along the proxy chain and make a direct connection to the originator\u00e2\u0080\u0099s intended destination."
+            },
+            {
+               "alarm" : false,
+               "block" : false,
+               "category" : "Windows Exploits",
+               "description" : "The Windows Exploits category includes active IP address offering or distributing malware, shell code, rootkits, worms, and viruses."
+            },
+            {
+               "alarm" : true,
+               "block" : true,
+               "category" : "Web Attacks",
+               "description" : "The Web Attacks category includes cross site scripting, iFrame injection, SQL injection, cross domain injection, and domain password brute force."
+            },
+            {
+               "alarm" : true,
+               "block" : true,
+               "category" : "BotNets",
+               "description" : "The Botnets category includes Botnet C&C channels and an infected zombie machine controlled by a Bot master."
+            },
+            {
+               "alarm" : true,
+               "block" : true,
+               "category" : "Scanners",
+               "description" : "The Scanners category includes all reconnaissance, such as probes, host scan, domain scan, and password brute force."
+            },
+            {
+               "alarm" : true,
+               "block" : true,
+               "category" : "Denial of Service",
+               "description" : "The Denial of Services category includes DOS, DDOS, anomalous syn flood, and anomalous traffic detection."
+            },
+            {
+               "alarm" : true,
+               "block" : true,
+               "category" : "Infected Sources",
+               "description" : "The Infected Sources category includes IP addresses currently known to be infected with malware, and IP addresses with an average low Reputation Index score. Enabling this category prevents access from sources identified to contact malware distribution points."
+            },
+            {
+               "alarm" : true,
+               "block" : true,
+               "category" : "Phishing Proxies",
+               "description" : "The Phishing Proxies category includes IP addresses hosting phishing sites, and other kind of fraud activities such as Ad Click Fraud and Gaming fraud."
+            },
+            {
+               "alarm" : true,
+               "block" : true,
+               "category" : "Anonymous Proxy",
+               "description" : "The Anonymous Proxy category includes IP addresses that provide proxy and anonymizing services."
+            }
+         ]
+      },
+      "name" : "testIPI",
+      "protocolIndependent" : false,
+      "server-technologies" : [
+         {
+            "serverTechnologyName" : "Apache/NCSA HTTP Server"
+         },
+         {
+            "serverTechnologyName" : "MySQL"
+         },
+         {
+            "serverTechnologyName" : "Node.js"
+         },
+         {
+            "serverTechnologyName" : "PHP"
+         },
+         {
+            "serverTechnologyName" : "jQuery"
+         }
+      ],
+      "signature-sets" : [
+         {
+            "alarm" : true,
+            "block" : true,
+            "learn" : true,
+            "name" : "MySQL Signatures (High/Medium Accuracy)",
+            "signatureSet" : {
+               "filter" : {
+                  "accuracyFilter" : "ge",
+                  "accuracyValue" : "medium",
+                  "hasCve" : "all",
+                  "lastUpdatedFilter" : "all",
+                  "riskFilter" : "all",
+                  "riskValue" : "all",
+                  "signatureType" : "all",
+                  "tagFilter" : "all",
+                  "userDefinedFilter" : "all"
+               },
+               "systems" : [
+                  {
+                     "name" : "MySQL"
+                  }
+               ],
+               "type" : "filter-based"
+            }
+         },
+         {
+            "alarm" : true,
+            "block" : true,
+            "learn" : true,
+            "name" : "Node.js Signatures (High/Medium Accuracy)",
+            "signatureSet" : {
+               "filter" : {
+                  "accuracyFilter" : "ge",
+                  "accuracyValue" : "medium",
+                  "hasCve" : "all",
+                  "lastUpdatedFilter" : "all",
+                  "riskFilter" : "all",
+                  "riskValue" : "all",
+                  "signatureType" : "all",
+                  "tagFilter" : "all",
+                  "userDefinedFilter" : "all"
+               },
+               "systems" : [
+                  {
+                     "name" : "Node.js"
+                  }
+               ],
+               "type" : "filter-based"
+            }
+         },
+         {
+            "alarm" : true,
+            "block" : true,
+            "learn" : true,
+            "name" : "Apache/NCSA HTTP Server Signatures (High/Medium Accuracy)",
+            "signatureSet" : {
+               "filter" : {
+                  "accuracyFilter" : "ge",
+                  "accuracyValue" : "medium",
+                  "hasCve" : "all",
+                  "lastUpdatedFilter" : "all",
+                  "riskFilter" : "all",
+                  "riskValue" : "all",
+                  "signatureType" : "all",
+                  "tagFilter" : "all",
+                  "userDefinedFilter" : "all"
+               },
+               "systems" : [
+                  {
+                     "name" : "Apache"
+                  }
+               ],
+               "type" : "filter-based"
+            }
+         },
+         {
+            "alarm" : true,
+            "block" : true,
+            "learn" : true,
+            "name" : "PHP Signatures (High/Medium Accuracy)",
+            "signatureSet" : {
+               "filter" : {
+                  "accuracyFilter" : "ge",
+                  "accuracyValue" : "medium",
+                  "hasCve" : "all",
+                  "lastUpdatedFilter" : "all",
+                  "riskFilter" : "all",
+                  "riskValue" : "all",
+                  "signatureType" : "all",
+                  "tagFilter" : "all",
+                  "userDefinedFilter" : "all"
+               },
+               "systems" : [
+                  {
+                     "name" : "PHP"
+                  }
+               ],
+               "type" : "filter-based"
+            }
+         },
+         {
+            "alarm" : true,
+            "block" : true,
+            "learn" : true,
+            "name" : "jQuery Signatures (High/Medium Accuracy)",
+            "signatureSet" : {
+               "filter" : {
+                  "accuracyFilter" : "ge",
+                  "accuracyValue" : "medium",
+                  "hasCve" : "all",
+                  "lastUpdatedFilter" : "all",
+                  "riskFilter" : "all",
+                  "riskValue" : "all",
+                  "signatureType" : "all",
+                  "tagFilter" : "all",
+                  "userDefinedFilter" : "all"
+               },
+               "systems" : [
+                  {
+                     "name" : "jQuery"
+                  }
+               ],
+               "type" : "filter-based"
+            }
+         }
+      ],
+      "softwareVersion" : "16.1.0",
+      "template" : {
+         "name" : "POLICY_TEMPLATE_RAPID_DEPLOYMENT"
+      },
+      "type" : "security"
+   }
+}
