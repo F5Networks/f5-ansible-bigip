@@ -38,6 +38,7 @@ class F5Client:
         self.module = kwargs.get('module', None)
         self.plugin = kwargs.get('client', None)
         self.transact = None
+        self.tmos_version = None
 
     @header
     def delete(self, url, **kwargs):
@@ -63,7 +64,10 @@ class F5Client:
     def platform(self):
         network_os = self.plugin.network_os()
         if network_os.split('.')[2] == 'bigip':
-            version = tmos_version(self)
+            if self.tmos_version:
+                version = self.tmos_version
+            else:
+                version = tmos_version(self)
         else:
             version = bigiq_version(self)
         return network_os.split('.')[2], version

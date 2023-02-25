@@ -176,10 +176,11 @@ options:
     description:
       - User provided JSON for a WAF policy, normally used as a end user template for rapid policy deployments.
       - The parameters in this module, when specified take precedence over parameters defined in C(policy_in_json), and
-        will overwrite then when a new WAF policy is created.
+        will overwrite them when a new WAF policy is created.
       - When using C(policy_in_json) to modify an existing WAF policy, the C(force) parameter must C(yes) in order
-        to apply the C(policy_in_json) in its entirety as each WAF contains parameters not covered by the parameters
-        in this module, therefore there is no comparison operation run on them, and they remain unchanged on the device.
+        to apply the C(policy_in_json) in its entirety as each WAF policy contains parameters not covered by the
+        parameters in this module, therefore there is no comparison operation run on them,
+        and they might remain unchanged on the device.
     type: raw
   force:
     description:
@@ -302,9 +303,9 @@ policy_id:
   returned: changed
   type: str
   sample: "yE48MEYUzFoeevnd8UjAoQ"
-json_string:
+json:
   description:
-    - Policy JSON in an escaped string format.
+    - Policy JSON in string format.
   returned: changed
   type: str
   sample: "\n{\n   \"policy\" : {\n      \"name\": \"foobar_awaf\",\n      \"fullPath\": \"/Common/foobar_awaf\"\n"
@@ -404,7 +405,7 @@ open_api_files:
     - List of links for open api files on the policy.
   returned: changed
   type: list
-  sample: ['http://foobar.com/file/api/foo.txt']
+  sample: ['https://foobar.com/file/api/foo.txt']
 '''
 
 import json
@@ -838,7 +839,6 @@ class ModuleManager(object):
         self.in_json = None
         self.policy_id = None
         self.json_dump = None
-        self.json_string = None
 
     def _set_changed_options(self):
         changed = {}
@@ -901,7 +901,7 @@ class ModuleManager(object):
             result.update(dict(json=self.json_dump))
         else:
             result.update(dict(policy_id=self.policy_id))
-            result.update(dict(json_string=self.json_string))
+            result.update(dict(json=self.json_dump))
         self._announce_deprecations(result)
         send_teem(self.client, start)
         return result
@@ -1004,23 +1004,21 @@ class ModuleManager(object):
         return False
 
     def create_on_device(self):
-        content, json_string = self.generate_policy_json()
+        content = self.generate_policy_json()
         if self.want.dump_json:
             return False, content
         task = self.import_policy(content)
         result = self.wait_for_task(task)
         self.policy_id = Path(urlparse(result['policyReference']['link']).path).name
-        self.json_string = json_string
         return True, None
 
     def update_on_device(self):
-        content, json_string = self.generate_policy_json(update=True)
+        content = self.generate_policy_json(update=True)
         if self.want.dump_json:
             return False, content
         task = self.import_policy(content, update=True)
         result = self.wait_for_task(task)
         self.policy_id = Path(urlparse(result['policyReference']['link']).path).name
-        self.json_string = json_string
         return True, None
 
     def import_policy(self, content, update=False):
@@ -1072,8 +1070,7 @@ class ModuleManager(object):
                 data = self.add_create_defaults(params)
 
         output = process_json(data, create_modify, raw=True)
-        json_string = json.dumps(output)
-        return output, json_string
+        return output
 
     def add_create_defaults(self, params):
         if self.changes.language is None:

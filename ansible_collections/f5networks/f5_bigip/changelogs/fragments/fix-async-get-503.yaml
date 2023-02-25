@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - bigip_config - fixes issue with GET calls returning 503 errors during async task execution

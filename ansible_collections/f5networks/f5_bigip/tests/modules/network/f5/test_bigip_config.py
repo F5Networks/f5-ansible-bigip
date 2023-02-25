@@ -79,11 +79,14 @@ class TestManager(unittest.TestCase):
         self.p1 = patch('time.sleep')
         self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_config.send_teem')
         self.p3 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_config.F5Client')
+        self.p4 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_config.tmos_version')
         self.p1.start()
         self.m2 = self.p2.start()
         self.m2.return_value = True
         self.m3 = self.p3.start()
         self.m3.return_value = MagicMock()
+        self.m4 = self.p4.start()
+        self.m4.return_value = '16.1.1'
         self.mock_module_helper = patch.multiple(AnsibleModule,
                                                  exit_json=exit_json,
                                                  fail_json=fail_json)
