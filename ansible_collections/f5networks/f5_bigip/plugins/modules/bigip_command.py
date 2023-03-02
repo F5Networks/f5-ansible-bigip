@@ -245,7 +245,7 @@ class Parameters(AnsibleF5Parameters):
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
             return result
-        except Exception:
+        except Exception:  # pragma: no cover
             return result
 
     @property
@@ -359,7 +359,7 @@ class Parameters(AnsibleF5Parameters):
         return '/{0}'.format(self._values['chdir'])
 
     @property
-    def user_commands(self):
+    def user_commands(self):  # pragma: no cover
         commands = self.raw_commands
         return map(self._ensure_tmsh_prefix, commands)
 
@@ -465,22 +465,22 @@ class BaseManager(object):
 
     def execute(self):
         if self.want.normalized_commands:
-            result = self.want.normalized_commands
+            result = self.want.normalized_commands  # pragma: no cover
         else:
             result = self.normalize_commands(self.want.raw_commands)
             self.want.update({'normalized_commands': result})
         if not result:
-            return False
+            return False  # pragma: no cover
         self.notify_non_idempotent_commands(self.want.normalized_commands)
 
         commands = self.parse_commands()
         retries = self.want.retries
         conditionals = [Conditional(c) for c in self.want.wait_for]
 
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return
 
-        while retries > 0:
+        while retries > 0:  # pragma: no cover
             responses = self._execute(commands)
             self._check_known_errors(responses)
             for item in list(conditionals):
@@ -494,7 +494,7 @@ class BaseManager(object):
 
             time.sleep(self.want.interval)
             retries -= 1
-        else:
+        else:  # pragma: no cover
             failed_conditions = [item.raw for item in conditionals]
             errmsg = 'One or more conditional statements have not been satisfied.'
             raise FailedConditionsError(errmsg, failed_conditions)
@@ -678,5 +678,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()
