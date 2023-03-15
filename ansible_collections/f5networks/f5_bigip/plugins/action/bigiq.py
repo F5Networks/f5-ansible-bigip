@@ -29,6 +29,6 @@ display = Display()
 
 
 class ActionModule(ActionNetworkModule):
-    def run(self, tmp=None, task_vars=None):
+    def run(self, task_vars=None):
         result = super(ActionModule, self).run(task_vars=task_vars)
         return result

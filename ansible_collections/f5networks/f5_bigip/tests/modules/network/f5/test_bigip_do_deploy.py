@@ -73,10 +73,10 @@ class TestParameters(unittest.TestCase):
         p2 = ModuleParameters(params=args2)
 
         with self.assertRaises(F5ModuleError) as err1:
-            p1.timeout
+            p1.timeout()
 
         with self.assertRaises(F5ModuleError) as err2:
-            p2.timeout
+            p2.timeout()
 
         self.assertIn(
             "Timeout value must be between 150 and 3600 seconds.",
@@ -121,6 +121,7 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
         )
         mm = ModuleManager(module=module)
 
@@ -142,6 +143,7 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
         )
         mm = ModuleManager(module=module)
 
@@ -169,6 +171,7 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
         )
 
         mm = ModuleManager(module=module)
@@ -192,6 +195,7 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
         )
         mm = ModuleManager(module=module)
         mm.client.post.return_value = {
@@ -213,6 +217,7 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
         )
         mm = ModuleManager(module=module)
         mm._check_task_on_device = Mock(return_value=(202, {'result': {'status': 'RUNNING'}}))
@@ -235,6 +240,7 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
         )
         mm = ModuleManager(module=module)
         mm._check_task_on_device = Mock(return_value=(503, {}))
@@ -257,6 +263,7 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
         )
         mm = ModuleManager(module=module)
         mm.client.get.side_effect = [
@@ -281,6 +288,7 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
         )
         mm = ModuleManager(module=module)
         mm._check_task_on_device = Mock(return_value=(503, {}))
@@ -304,6 +312,7 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
         )
         mm = ModuleManager(module=module)
         expected = ['invalid config - rolled back', '404: not found']
@@ -321,6 +330,7 @@ class TestManager(unittest.TestCase):
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
         )
         mm = ModuleManager(module=module)
         contents = {'message': 'invalid config - rolled back', 'errors': ['404: Unprocessed entity']}
@@ -332,6 +342,94 @@ class TestManager(unittest.TestCase):
             'invalid config - rolled back. 404: Unprocessed entity',
             err.exception.args[0]
         )
+
+    def test_dry_run_declaration(self, *args):
+        uuid = "b429c5ad-5ed9-4a61-83ab-bbcf27af8e26"
+        declaration = load_fixture('do_declaration.json')
+        set_module_args(dict(
+            content=declaration,
+            dry_run='yes'
+        ))
+
+        expected = {'async': True, 'controls': {'trace': True, 'traceResponse': True, 'dryRun': True}}
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.client.post.return_value = dict(code=202, contents=dict(id=uuid))
+        mm.client.get.return_value = dict(code=200, contents=load_fixture('do_dry_run_result.json'))
+
+        results = mm.exec_module()
+
+        self.assertFalse(results['changed'])
+        self.assertTrue(len(results['diff']) == 9)
+        self.assertLessEqual(expected.items(), mm.client.post.call_args[1]['data'].items())
+        self.assertEqual(results['message'], 'Dry run completed successfully.')
+
+    def test_dry_run_declaration_fails(self, *args):
+        declaration = load_fixture('do_declaration.json')
+        set_module_args(dict(
+            content=declaration,
+            dry_run='yes'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.client.post.return_value = dict(code=403, contents='forbidden')
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm._start_dry_run_on_device()
+
+        self.assertIn('forbidden', err.exception.args[0])
+
+    def test_invalid_content_error_dry_run(self, *args):
+        set_module_args(dict(
+            content='["invalid", "json"]',
+            dry_run='yes',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn(
+            "The provided 'content' could not be converted into valid json. If you "
+            "are using the 'to_nice_json' filter, please remove it.",
+            err.exception.args[0]
+        )
+
+    def test_empty_content_error_dry_run(self, *args):
+        set_module_args(dict(
+            dry_run='yes',
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn("Empty content cannot be specified when 'dry_run' is 'yes'", err.exception.args[0])
 
     @patch.object(bigip_do_deploy, 'Connection')
     @patch.object(bigip_do_deploy.ModuleManager, 'exec_module',

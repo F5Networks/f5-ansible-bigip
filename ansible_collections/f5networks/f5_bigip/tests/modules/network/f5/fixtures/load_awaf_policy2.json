@@ -1,0 +1,14 @@
+{
+    "kind": "tm:asm:policies:policycollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/asm/policies?$select=name%2Cpartition%2Cid&ver=16.1.3&$filter=contains%28name%2C%20%27foobar_awaf%27%29%20and%20contains%28partition%2C%20%27Common%27%29",
+    "totalItems": 1,
+    "items": [
+        {
+            "kind": "tm:asm:policies:policystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/mqpqW0IAYvBswslAuleC1A?ver=16.1.3",
+            "name": "foobar_awaf",
+            "id": "mqpqW0IAYvBswslAuleC1A",
+            "partition": "Common"
+        }
+    ]
+}

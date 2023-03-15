@@ -70,7 +70,7 @@ create_modify = """
                     "create": true,
                     "modify": false,
                     "networkError": false,
-                    "interface":{% if 'interface' in params.devices_to %}"{{ params.devices_to.interface }}"
+                    "interface":{% if 'interface' in params.devices_to %}["{{ params.devices_to.interface }}"]
                     {% else %}[]{% endif %},
                     "networkInterface": {% if 'interface' in params.devices_to -%}
                     "{{ params.devices_to.interface }}"{% else %}""{% endif %},
@@ -92,8 +92,8 @@ create_modify = """
                     "create": false
                 },
                 "existingBlockId": ""
-             }{% if params.devices_from is defined  and 'interface' in params.devices_from -%},{% endif %}{% endif %}
-             {% if params.devices_from is defined  and 'interface' in params.devices_from -%}
+             }{% if params.devices_from is defined -%},{% endif %}{% endif %}
+             {% if params.devices_from is defined -%}
                 {
                     "name": "{{ params.devices_from.name }}",
                     "partition": "Common",
@@ -105,13 +105,14 @@ create_modify = """
                         "create": true,
                         "modify": false,
                         "networkError": false,
-                        "interface":[
-                            "{{ params.devices_from.interface }}"
-                        ],
-                        "networkInterface": "{{ params.devices_from.interface }}",
-                        {% if params.devices_from.tag is defined -%}
-                        "tag": {{ params.devices_from.tag }},
-                        "networkTag": {{ params.devices_from.tag }}{% endif %}
+                        "interface":{% if 'interface' in params.devices_from %}["{{ params.devices_from.interface }}"]
+                        {% else %}[]{% endif %},
+                        "networkInterface": {% if 'interface' in params.devices_from -%}
+                        "{{ params.devices_from.interface }}"{% else %}""{% endif %},
+                        "tag": {% if 'interface' in params.devices_from and 'tag' in params.devices_from -%}
+                        {{ params.devices_from.tag }}{% else %}0{% endif %},
+                        "networkTag": {% if 'interface' in params.devices_from and 'tag' in params.devices_from -%}
+                        {{ params.devices_from.tag }}{% else %}0{% endif %}
                 },
                 "selfIpConfig":{
                     "create": true,

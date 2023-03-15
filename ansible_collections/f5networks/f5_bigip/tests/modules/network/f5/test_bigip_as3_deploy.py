@@ -153,8 +153,8 @@ class TestManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm.client.get.side_effect = [
             {'code': 200},
-            {'code': 202, 'contents': {'results': [{'message': 'in progress'}]}},
-            {'code': 200, 'contents': {'results': [{'message': 'success'}]}},
+            {'code': 202, 'contents': {'results': [{'code': 0, 'message': 'in progress', 'tenant': 'Sample_01'}]}},
+            {'code': 200, 'contents': {'results': [{'code': 200, 'message': 'success', 'tenant': 'Sample_01'}]}},
             {'code': 404},
         ]
         mm.client.delete.return_value = {'code': 202, 'contents': {'id': 1}}
@@ -192,10 +192,10 @@ class TestManager(unittest.TestCase):
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
 
-        self.assertIn((
-                      "declaration is invalid. /Sample_02/A1/web_pool2/members/0: "
-                      "should have required property 'bigip'"
-                      ), str(err.exception))
+        self.assertEqual(
+            "The operation has returned code: 422 with the following errors: /Sample_02/A1/web_pool2/members/0: "
+            "should have required property 'bigip'", str(err.exception)
+        )
 
     def test_upsert_multi_tenant_declaration_generates_errors(self, *args):
         declaration = load_fixture('as3_multiple_tenants_invalid.json')
@@ -224,10 +224,10 @@ class TestManager(unittest.TestCase):
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
 
-        self.assertIn((
-                      "declaration failed. 0107176c:3: Invalid Node, the IP "
-                      "address 192.0.1.12 already exists."
-                      ), str(err.exception))
+        self.assertEqual(
+            "The operation for Sample_02 has returned code: 422 with the following message: "
+            "0107176c:3: Invalid Node, the IP address 192.0.1.12 already exists.", err.exception.args[0]
+        )
 
     def test_upsert_response_status_error(self, *args):
         set_module_args(dict(
@@ -466,16 +466,6 @@ class TestManager(unittest.TestCase):
             required_if=self.spec.required_if
         )
         mm = ModuleManager(module=module)
-
-        msg = {
-            'message': 'service not available',
-            'errors': ['not able to reach the site']
-        }
-        expected = [msg['message'], msg['errors'][0]]
-
-        result = mm._get_errors_from_response(msg)
-
-        self.assertEqual(result, expected)
 
         mm.client.get.side_effect = [
             {'code': 503, 'contents': 'service not available'},

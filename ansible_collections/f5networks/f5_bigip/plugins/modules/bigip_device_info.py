@@ -7590,6 +7590,7 @@ except ImportError:
     PACKAGING_IMPORT_ERROR = traceback.format_exc()
 else:
     HAS_PACKAGING = True
+    PACKAGING_IMPORT_ERROR = None
 
 from ansible.module_utils.basic import (
     AnsibleModule, missing_required_lib, env_fallback
@@ -13012,12 +13013,10 @@ class LtmPolicyParameters(BaseParameters):
         result = []
         if actions is None or 'items' not in actions:
             return result
+        exclude_keys = ["poolReference", "name"]
         for action in actions['items']:
-            tmp = dict()
-            tmp['httpReply'] = flatten_boolean(action.pop('http_reply', None))
-            tmp['redirect'] = flatten_boolean(action.pop('redirect', None))
-            tmp['request'] = flatten_boolean(action.pop('request', None))
-            tmp['location'] = action.pop('location', None)
+            tmp = dict((k, v) for k, v in iteritems(action) if v != 0 and k not in exclude_keys)
+            self._remove_internal_keywords(tmp)
             result.append(self._filter_params(tmp))
         return result
 

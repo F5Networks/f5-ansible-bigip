@@ -60,7 +60,6 @@
                         "networkInterface": "1.1"
                     },
                     "customService": {
-                        "httpPortRemapValue": 80,
                         "managedNetwork": {
                             "ipFamily": "both",
                             "ipv4": {
@@ -86,7 +85,7 @@
                             "serviceType": "tap"
                         },
                         "name": "ssloS_tap_test",
-                        "portRemap": true,
+                        "portRemap": false,
                         "serviceDownAction": "ignore",
                         "serviceSpecific": {
                             "description": "",

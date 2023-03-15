@@ -1,0 +1,19 @@
+{
+    "isBase64": false,
+    "inline": true,
+    "minimal": false,
+    "status": "NEW",
+    "lastUpdateMicros": 1.67682591e+15,
+    "exportSuggestions": false,
+    "includeVulnerabilityAssessmentConfigurationAndData": true,
+    "kind": "tm:asm:tasks:export-policy:export-policy-taskstate",
+    "selfLink": "https://localhost/mgmt/tm/asm/tasks/export-policy/cTvbikVw9gsis8nW7BRzIw?ver=16.1.3",
+    "format": "json",
+    "filename": "foo.json",
+    "policyReference": {
+        "link": "https://localhost/mgmt/tm/asm/policies/TngPBJ2hfv4tOPTKQAvTGw?ver=16.1.3",
+        "fullPath": "/Common/custom_awaf"
+    },
+    "id": "cTvbikVw9gsis8nW7BRzIw",
+    "startTime": "2023-02-19T16:58:30Z"
+}

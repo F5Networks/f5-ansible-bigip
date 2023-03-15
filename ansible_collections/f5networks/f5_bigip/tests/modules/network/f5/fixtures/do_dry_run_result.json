@@ -1,0 +1,607 @@
+{
+    "id": "b429c5ad-5ed9-4a61-83ab-bbcf27af8e26",
+    "selfLink": "https://localhost/mgmt/shared/declarative-onboarding/task/b429c5ad-5ed9-4a61-83ab-bbcf27af8e26",
+    "result": {
+        "class": "Result",
+        "code": 200,
+        "status": "OK",
+        "dryRun": true,
+        "message": "success"
+    },
+    "declaration": {
+        "schemaVersion": "1.23.0",
+        "class": "Device",
+        "async": true,
+        "label": "my BIG-IP declaration for declarative onboarding",
+        "controls": {
+            "trace": true,
+            "traceResponse": true,
+            "dryRun": true
+        },
+        "Common": {
+            "class": "Tenant",
+            "mySystem": {
+                "class": "System",
+                "hostname": "bigip.example.com",
+                "cliInactivityTimeout": 1200,
+                "consoleInactivityTimeout": 1200,
+                "autoPhonehome": false,
+                "autoCheck": true,
+                "tmshAuditLog": true,
+                "guiAuditLog": false,
+                "mcpAuditLog": "enable",
+                "preserveOrigDhcpRoutes": false,
+                "guiSecurityBanner": true,
+                "guiSecurityBannerText": "Welcome to the BIG-IP Configuration Utility.\n\nLog in with your username and password using the fields on the left."
+            }
+        }
+    },
+    "traces": {
+        "desired": {
+            "Common": {
+                "System": {
+                    "hostname": "bigip.example.com",
+                    "consoleInactivityTimeout": 1200,
+                    "autoPhonehome": "disabled",
+                    "autoCheck": "enabled",
+                    "mcpAuditLog": "enable",
+                    "preserveOrigDhcpRoutes": false,
+                    "guiSecurityBanner": "enabled",
+                    "guiSecurityBannerText": "Welcome to the BIG-IP Configuration Utility.\n\nLog in with your username and password using the fields on the left.",
+                    "guiAudit": "disabled",
+                    "idleTimeout": 1200,
+                    "audit": "enabled"
+                },
+                "InternalUse": {
+                    "deviceNames": {
+                        "hostName": "bigip.example.com",
+                        "deviceName": "bigip.example.com"
+                    }
+                },
+                "DbVariables": {
+                    "config.auditing": "enable"
+                },
+                "ManagementIp": {
+                    "10.144.73.155/22": {
+                        "name": "10.144.73.155/22",
+                        "description": "configured-by-dhcp"
+                    }
+                },
+                "Provision": {
+                    "afm": "nominal",
+                    "apm": "none",
+                    "asm": "nominal",
+                    "avr": "none",
+                    "cgnat": "none",
+                    "dos": "none",
+                    "fps": "none",
+                    "gtm": "none",
+                    "ilx": "nominal",
+                    "lc": "none",
+                    "ltm": "nominal",
+                    "pem": "none",
+                    "sslo": "none",
+                    "swg": "none",
+                    "urldb": "none"
+                },
+                "NTP": {
+                    "timezone": "America/Los_Angeles"
+                },
+                "DNS": {
+                    "nameServers": [
+                        "172.27.1.1"
+                    ],
+                    "search": [
+                        "localhost"
+                    ]
+                },
+                "VLAN": {
+                    "foo1": {
+                        "name": "foo1",
+                        "autoLasthop": "default",
+                        "cmpHash": "default",
+                        "failsafe": "disabled",
+                        "failsafeAction": "failover-restart-tm",
+                        "failsafeTimeout": 90,
+                        "mtu": 1500,
+                        "tag": 123,
+                        "interfaces": []
+                    }
+                },
+                "ConfigSync": {
+                    "configsyncIp": "none"
+                },
+                "FailoverUnicast": {
+                    "unicastAddress": "none"
+                },
+                "FailoverMulticast": {
+                    "multicastIp": "any6",
+                    "multicastPort": 0,
+                    "multicastInterface": "none"
+                },
+                "MirrorIp": {
+                    "mirrorIp": "any6",
+                    "mirrorSecondaryIp": "any6"
+                },
+                "TrafficGroup": {
+                    "traffic-group-1": {
+                        "name": "traffic-group-1",
+                        "autoFailbackEnabled": "false",
+                        "autoFailbackTime": 60,
+                        "failoverMethod": "ha-order",
+                        "haLoadFactor": 1
+                    },
+                    "traffic-group-local-only": {
+                        "name": "traffic-group-local-only",
+                        "autoFailbackEnabled": "false",
+                        "autoFailbackTime": 60,
+                        "failoverMethod": "ha-order",
+                        "haLoadFactor": 1
+                    }
+                },
+                "ManagementRoute": {
+                    "default": {
+                        "name": "default",
+                        "description": "configured-by-dhcp",
+                        "gateway": "10.144.75.254",
+                        "mtu": 0,
+                        "network": "default"
+                    }
+                },
+                "Authentication": {
+                    "fallback": "false",
+                    "enabledSourceType": "local",
+                    "remoteUsersDefaults": {
+                        "defaultPartition": "all",
+                        "defaultRole": "no-access",
+                        "remoteConsoleAccess": "disabled"
+                    }
+                },
+                "RouteDomain": {
+                    "0": {
+                        "name": "0",
+                        "connectionLimit": 0,
+                        "id": 0,
+                        "strict": "enabled",
+                        "vlans": [
+                            "/Common/foo1",
+                            "/Common/http-tunnel",
+                            "/Common/socks-tunnel"
+                        ],
+                        "parent": "none"
+                    }
+                },
+                "SnmpTrapEvents": {
+                    "agentTrap": "enabled",
+                    "authTrap": "disabled",
+                    "bigipTraps": "enabled"
+                },
+                "SnmpAgent": {
+                    "allowedAddresses": [
+                        "127.0.0.0/8"
+                    ],
+                    "snmpv1": "enable",
+                    "snmpv2c": "enable",
+                    "sysContact": "Customer Name <admin@customer.com>",
+                    "sysLocation": "Network Closet 1"
+                },
+                "SnmpCommunity": {
+                    "comm-public": {
+                        "name": "comm-public",
+                        "access": "ro",
+                        "communityName": "public",
+                        "ipv6": "disabled",
+                        "source": "default",
+                        "oidSubset": "none"
+                    }
+                },
+                "DagGlobals": {
+                    "dagIpv6PrefixLen": 128,
+                    "icmpHash": "icmp",
+                    "roundRobinMode": "global"
+                },
+                "HTTPD": {
+                    "allow": [
+                        "all"
+                    ],
+                    "authPamIdleTimeout": 1200,
+                    "maxClients": 10,
+                    "sslCiphersuite": [
+                        "ECDHE-RSA-AES128-GCM-SHA256",
+                        "ECDHE-RSA-AES256-GCM-SHA384",
+                        "ECDHE-RSA-AES128-SHA",
+                        "ECDHE-RSA-AES256-SHA",
+                        "ECDHE-RSA-AES128-SHA256",
+                        "ECDHE-RSA-AES256-SHA384",
+                        "ECDHE-ECDSA-AES128-GCM-SHA256",
+                        "ECDHE-ECDSA-AES256-GCM-SHA384",
+                        "ECDHE-ECDSA-AES128-SHA",
+                        "ECDHE-ECDSA-AES256-SHA",
+                        "ECDHE-ECDSA-AES128-SHA256",
+                        "ECDHE-ECDSA-AES256-SHA384",
+                        "AES128-GCM-SHA256",
+                        "AES256-GCM-SHA384",
+                        "AES128-SHA",
+                        "AES256-SHA",
+                        "AES128-SHA256",
+                        "AES256-SHA256"
+                    ],
+                    "sslProtocol": "all -SSLv2 -SSLv3 -TLSv1"
+                },
+                "TrafficControl": {
+                    "acceptIpOptions": "disabled",
+                    "acceptIpSourceRoute": "disabled",
+                    "allowIpSourceRoute": "disabled",
+                    "continueMatching": "disabled",
+                    "maxIcmpRate": 100,
+                    "maxRejectRate": 250,
+                    "maxRejectRateTimeout": 30,
+                    "minPathMtu": 296,
+                    "pathMtuDiscovery": "enabled",
+                    "portFindLinear": 16,
+                    "portFindRandom": 16,
+                    "portFindThresholdTimeout": 30,
+                    "portFindThresholdTrigger": 8,
+                    "portFindThresholdWarning": "enabled",
+                    "rejectUnmatched": "enabled"
+                },
+                "SSHD": {
+                    "allow": [
+                        "ALL"
+                    ],
+                    "inactivityTimeout": 0
+                },
+                "Disk": {
+                    "applicationData": 26128384
+                },
+                "ManagementIpFirewall": {
+                    "description": "none",
+                    "rules": []
+                }
+            },
+            "parsed": true
+        },
+        "current": {
+            "parsed": true,
+            "Common": {
+                "InternalUse": {
+                    "deviceNames": {
+                        "hostName": "bigip.example.com",
+                        "deviceName": "bigip.example.com"
+                    }
+                },
+                "System": {
+                    "preserveOrigDhcpRoutes": true,
+                    "consoleInactivityTimeout": 0,
+                    "guiAudit": "disabled",
+                    "guiSecurityBanner": "enabled",
+                    "guiSecurityBannerText": "Welcome to the BIG-IP Configuration Utility.\n\nLog in with your username and password using the fields on the left.",
+                    "hostname": "bigip.example.com",
+                    "audit": "enabled",
+                    "idleTimeout": 0,
+                    "autoCheck": "enabled",
+                    "autoPhonehome": "enabled",
+                    "mcpAuditLog": "enable"
+                },
+                "DbVariables": {
+                    "config.auditing": "enable"
+                },
+                "ManagementIp": {
+                    "10.144.73.155/22": {
+                        "name": "10.144.73.155/22",
+                        "description": "configured-by-dhcp"
+                    }
+                },
+                "Provision": {
+                    "afm": "nominal",
+                    "apm": "none",
+                    "asm": "nominal",
+                    "avr": "none",
+                    "cgnat": "none",
+                    "dos": "none",
+                    "fps": "none",
+                    "gtm": "none",
+                    "ilx": "nominal",
+                    "lc": "none",
+                    "ltm": "nominal",
+                    "pem": "none",
+                    "sslo": "none",
+                    "swg": "none",
+                    "urldb": "none"
+                },
+                "NTP": {
+                    "servers": [
+                        "0.pool.ntp.org",
+                        "1.pool.ntp.org",
+                        "2.pool.ntp.org"
+                    ],
+                    "timezone": "UTC"
+                },
+                "DNS": {
+                    "nameServers": [
+                        "8.8.8.8",
+                        "2001:4860:4860::8844"
+                    ],
+                    "search": [
+                        "f5.com"
+                    ]
+                },
+                "VLAN": {
+                    "foo1": {
+                        "name": "foo1",
+                        "autoLasthop": "default",
+                        "cmpHash": "default",
+                        "failsafe": "disabled",
+                        "failsafeAction": "failover-restart-tm",
+                        "failsafeTimeout": 90,
+                        "mtu": 1500,
+                        "tag": 123,
+                        "interfaces": []
+                    }
+                },
+                "ConfigSync": {
+                    "configsyncIp": "none"
+                },
+                "FailoverUnicast": {
+                    "unicastAddress": "none"
+                },
+                "FailoverMulticast": {
+                    "multicastIp": "any6",
+                    "multicastPort": 0,
+                    "multicastInterface": "none"
+                },
+                "MirrorIp": {
+                    "mirrorIp": "any6",
+                    "mirrorSecondaryIp": "any6"
+                },
+                "TrafficGroup": {
+                    "traffic-group-1": {
+                        "name": "traffic-group-1",
+                        "autoFailbackEnabled": "false",
+                        "autoFailbackTime": 60,
+                        "failoverMethod": "ha-order",
+                        "haLoadFactor": 1
+                    },
+                    "traffic-group-local-only": {
+                        "name": "traffic-group-local-only",
+                        "autoFailbackEnabled": "false",
+                        "autoFailbackTime": 60,
+                        "failoverMethod": "ha-order",
+                        "haLoadFactor": 1
+                    }
+                },
+                "MAC_Masquerade": {
+                    "traffic-group-1": {
+                        "name": "traffic-group-1",
+                        "mac": "none",
+                        "trafficGroup": "traffic-group-1"
+                    },
+                    "traffic-group-local-only": {
+                        "name": "traffic-group-local-only",
+                        "mac": "none",
+                        "trafficGroup": "traffic-group-local-only"
+                    }
+                },
+                "ManagementRoute": {
+                    "default": {
+                        "name": "default",
+                        "description": "configured-by-dhcp",
+                        "gateway": "10.144.75.254",
+                        "mtu": 0,
+                        "network": "default"
+                    }
+                },
+                "Authentication": {
+                    "fallback": "false",
+                    "enabledSourceType": "local",
+                    "remoteUsersDefaults": {
+                        "defaultPartition": "all",
+                        "defaultRole": "no-access",
+                        "remoteConsoleAccess": "disabled"
+                    }
+                },
+                "RouteDomain": {
+                    "0": {
+                        "name": "0",
+                        "connectionLimit": 0,
+                        "id": 0,
+                        "strict": "enabled",
+                        "vlans": [
+                            "/Common/foo1",
+                            "/Common/http-tunnel",
+                            "/Common/socks-tunnel"
+                        ],
+                        "parent": "none"
+                    }
+                },
+                "SnmpTrapEvents": {
+                    "agentTrap": "enabled",
+                    "authTrap": "disabled",
+                    "bigipTraps": "enabled"
+                },
+                "SnmpAgent": {
+                    "allowedAddresses": [
+                        "127.0.0.0/8"
+                    ],
+                    "snmpv1": "enable",
+                    "snmpv2c": "enable",
+                    "sysContact": "Customer Name <admin@customer.com>",
+                    "sysLocation": "Network Closet 1"
+                },
+                "SnmpCommunity": {
+                    "comm-public": {
+                        "name": "comm-public",
+                        "access": "ro",
+                        "communityName": "public",
+                        "ipv6": "disabled",
+                        "source": "default",
+                        "oidSubset": "none"
+                    }
+                },
+                "DagGlobals": {
+                    "dagIpv6PrefixLen": 128,
+                    "icmpHash": "icmp",
+                    "roundRobinMode": "global"
+                },
+                "HTTPD": {
+                    "allow": [
+                        "all"
+                    ],
+                    "authPamIdleTimeout": 1200,
+                    "maxClients": 10,
+                    "sslCiphersuite": [
+                        "ECDHE-RSA-AES128-GCM-SHA256",
+                        "ECDHE-RSA-AES256-GCM-SHA384",
+                        "ECDHE-RSA-AES128-SHA",
+                        "ECDHE-RSA-AES256-SHA",
+                        "ECDHE-RSA-AES128-SHA256",
+                        "ECDHE-RSA-AES256-SHA384",
+                        "ECDHE-ECDSA-AES128-GCM-SHA256",
+                        "ECDHE-ECDSA-AES256-GCM-SHA384",
+                        "ECDHE-ECDSA-AES128-SHA",
+                        "ECDHE-ECDSA-AES256-SHA",
+                        "ECDHE-ECDSA-AES128-SHA256",
+                        "ECDHE-ECDSA-AES256-SHA384",
+                        "AES128-GCM-SHA256",
+                        "AES256-GCM-SHA384",
+                        "AES128-SHA",
+                        "AES256-SHA",
+                        "AES128-SHA256",
+                        "AES256-SHA256"
+                    ],
+                    "sslProtocol": "all -SSLv2 -SSLv3 -TLSv1"
+                },
+                "TrafficControl": {
+                    "acceptIpOptions": "disabled",
+                    "acceptIpSourceRoute": "disabled",
+                    "allowIpSourceRoute": "disabled",
+                    "continueMatching": "disabled",
+                    "maxIcmpRate": 100,
+                    "maxRejectRate": 250,
+                    "maxRejectRateTimeout": 30,
+                    "minPathMtu": 296,
+                    "pathMtuDiscovery": "enabled",
+                    "portFindLinear": 16,
+                    "portFindRandom": 16,
+                    "portFindThresholdTimeout": 30,
+                    "portFindThresholdTrigger": 8,
+                    "portFindThresholdWarning": "enabled",
+                    "rejectUnmatched": "enabled"
+                },
+                "SSHD": {
+                    "allow": [
+                        "ALL"
+                    ],
+                    "inactivityTimeout": 0
+                },
+                "Disk": {
+                    "applicationData": 26128384
+                },
+                "ManagementIpFirewall": {
+                    "description": "none",
+                    "rules": []
+                }
+            }
+        },
+        "diff": [
+            {
+                "kind": "E",
+                "path": [
+                    "Common",
+                    "System",
+                    "preserveOrigDhcpRoutes"
+                ],
+                "lhs": true,
+                "rhs": false
+            },
+            {
+                "kind": "E",
+                "path": [
+                    "Common",
+                    "System",
+                    "consoleInactivityTimeout"
+                ],
+                "lhs": 0,
+                "rhs": 1200
+            },
+            {
+                "kind": "E",
+                "path": [
+                    "Common",
+                    "System",
+                    "idleTimeout"
+                ],
+                "lhs": 0,
+                "rhs": 1200
+            },
+            {
+                "kind": "E",
+                "path": [
+                    "Common",
+                    "System",
+                    "autoPhonehome"
+                ],
+                "lhs": "enabled",
+                "rhs": "disabled"
+            },
+            {
+                "kind": "D",
+                "path": [
+                    "Common",
+                    "NTP",
+                    "servers"
+                ],
+                "lhs": [
+                    "0.pool.ntp.org",
+                    "1.pool.ntp.org",
+                    "2.pool.ntp.org"
+                ]
+            },
+            {
+                "kind": "E",
+                "path": [
+                    "Common",
+                    "NTP",
+                    "timezone"
+                ],
+                "lhs": "UTC",
+                "rhs": "America/Los_Angeles"
+            },
+            {
+                "kind": "A",
+                "path": [
+                    "Common",
+                    "DNS",
+                    "nameServers"
+                ],
+                "index": 1,
+                "item": {
+                    "kind": "D",
+                    "lhs": "2001:4860:4860::8844"
+                }
+            },
+            {
+                "kind": "E",
+                "path": [
+                    "Common",
+                    "DNS",
+                    "nameServers",
+                    0
+                ],
+                "lhs": "8.8.8.8",
+                "rhs": "172.27.1.1"
+            },
+            {
+                "kind": "E",
+                "path": [
+                    "Common",
+                    "DNS",
+                    "search",
+                    0
+                ],
+                "lhs": "f5.com",
+                "rhs": "localhost"
+            }
+        ]
+    }
+}

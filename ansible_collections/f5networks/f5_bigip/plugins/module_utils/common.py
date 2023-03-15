@@ -24,7 +24,9 @@ from ansible.module_utils.six import (
 from ansible.module_utils.parsing.convert_bool import (
     BOOLEANS_TRUE, BOOLEANS_FALSE
 )
-from collections import defaultdict
+from collections import (
+    defaultdict, namedtuple
+)
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config import (
     NetworkConfig, ConfigLine, ignore_line
@@ -34,7 +36,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 )
 
 
-def process_json(data, template):
+def process_json(data, template, raw=False):
     if JINA2_IMPORT_ERROR:
         raise_from(F5ModuleError('jinja2 package must be installed to use this collection'),
                    JINA2_IMPORT_ERROR
@@ -42,8 +44,24 @@ def process_json(data, template):
     jinja_env = Environment()
     template = jinja_env.from_string(template)
     content = template.render(params=data)
+    if raw:
+        return content
     my_json = json.loads(content)
     return my_json
+
+
+def check_for_atc_errors(task):
+    result = list()
+    AtcError = namedtuple('AtcError', ['code', 'status', 'tenant', 'err'])
+    if task.get('results'):
+        for msg in task.get('results'):
+            if msg['code'] != 200 and msg['message'] != 'in progress':
+                error = AtcError(
+                    code=msg['code'], status=msg['response'] if msg.get('response') else msg['message'],
+                    tenant=msg.get('tenant'), err=msg.get('errors')
+                )
+                result.append(error)
+    return result
 
 
 def fq_name(partition, value, sub_path=''):
@@ -312,3 +330,24 @@ class ImishConfig(NetworkConfig):
 
 class F5ModuleError(Exception):
     pass
+
+
+class F5ATCError(F5ModuleError):
+    """Detailed error for ATC declarative operations."""
+    def __init__(self, errors):
+        results = list()
+        for error in errors:
+            if error.tenant:
+                err = f"The operation for {error.tenant} has returned code: {error.code} with the following " \
+                      f"message: {error.status}"
+            elif error.err:
+                err_string = '\n'.join(e for e in error.err)
+                err = f"The operation has returned code: {error.code} with the following errors: {err_string}"
+
+            else:
+                err = f"The operation has returned code: {error.code} with the following message: {error.status}"
+            results.append(err)
+
+        self.msg = '\n'.join(response for response in results)
+        self.errors = errors
+        super().__init__(self.msg)

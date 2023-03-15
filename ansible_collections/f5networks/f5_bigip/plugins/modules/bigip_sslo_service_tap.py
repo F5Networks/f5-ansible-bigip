@@ -171,6 +171,7 @@ except ImportError:
     PACKAGING_IMPORT_ERROR = traceback.format_exc()
 else:
     HAS_PACKAGING = True
+    PACKAGING_IMPORT_ERROR = None
 
 from ansible.module_utils.basic import (
     AnsibleModule, missing_required_lib
@@ -248,7 +249,8 @@ class ApiParameters(Parameters):
 
     @property
     def port_remap(self):
-        return self._values['customService']['httpPortRemapValue']
+        if bool(self._values['customService']['portRemap']):
+            return self._values['customService']['httpPortRemapValue']
 
     @property
     def service_down_action(self):
@@ -524,8 +526,6 @@ class ModuleManager(object):
 
         if self.changes.mac_address is None:
             payload['mac_address'] = None
-        if self.changes.port_remap is None:
-            payload['port_remap'] = 80
         if self.want.service_down_action is None:
             payload['service_down_action'] = 'ignore'
 

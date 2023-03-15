@@ -37,7 +37,20 @@ options:
       - The ID of the async task as returned by the system in a previous module run.
       - Used to query the status of the task on the device, useful with longer running operations that require
         restarting services.
+      - This option is mutually exclusive with C(dry_run).
     type: str
+  dry_run:
+    description:
+      - Set this option to check what changes would be made on device if DO declaration was committed on device.
+      - When C(yes) the submitted DO declaration in C(content) is checked against existing configuration for any
+        changes, with diff returned in results, without making any changes.
+      - This option is mutually exclusive with C(task_id), and requires C(content) to be specified.
+      - No changes are required in to be made by the user to DO declaration to perform a dry run.
+      - While the operation is asynchronous, module does not require re-running to check for task status,
+        for longer running tasks which would be with larger DO declarations, it is recommended to increase C(timeout)
+        parameter from its default value.
+    type: bool
+    version_added: "2.0.0"
   timeout:
     description:
       - The amount of time in seconds to wait for the DO async interface to complete its task.
@@ -47,7 +60,8 @@ options:
     type: int
     default: 300
 notes:
-  - Due to limitations of the DO package, the module is not idempotent.
+  - While this module is not idempotent it offers a dry-run option to check for changes in configuration before they
+    are committed, see Parameters section for details.
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -88,6 +102,20 @@ EXAMPLES = r'''
       register: repeat
       when:
         - result.message == "Device is restarting services, unable to check task status."
+
+    - name: Dry run DO declaration
+      bigip_do_deploy:
+        content: "{{ lookup('file', 'do_provision.json') }}"
+        dry_run: 'yes'
+      register: result
+
+    - name: Assert Dry run DO declaration
+      assert:
+        that:
+          - result is not changed
+          - result is success
+          - result.message is search("Dry run completed successfully")
+          - result.diff | length > 0
 '''
 
 RETURN = r'''
@@ -99,13 +127,18 @@ content:
 task_id:
   description: The task ID returned by the system.
   returned: changed
-  type: dict
-  sample: hash/dictionary of values
+  type: str
+  sample: "9fe61ef703d0d3192016"
 message:
   description: Informative message of the task status.
-  returned: changed
-  type: dict
-  sample: hash/dictionary of values
+  returned: always
+  type: str
+  sample: 'task has been completed'
+diff:
+  description: Returns the detailed results of a diff from dry run operation.
+  returned: when dry_run is yes
+  type: list
+  sample: [{'foo': 'bar'}, {'baz': 'bar'}]
 '''
 import time
 from datetime import datetime
@@ -120,7 +153,7 @@ from ..module_utils.client import (
     F5Client, send_teem
 )
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters,
+    F5ModuleError, AnsibleF5Parameters, flatten_boolean
 )
 
 try:
@@ -134,7 +167,7 @@ class Parameters(AnsibleF5Parameters):
     api_attributes = []
 
     returnables = [
-        'content',
+        'content'
     ]
 
 
@@ -165,12 +198,20 @@ class ModuleParameters(Parameters):
 
         return delay, divisor
 
+    @property
+    def dry_run(self):
+        result = flatten_boolean(self._values['dry_run'])
+        if result == 'yes':
+            return True
+        return False
+
 
 class Changes(Parameters):
     returnables = [
         'task_id',
         'content',
         'message',
+        'diff'
     ]
 
     def to_return(self):
@@ -234,6 +275,8 @@ class ModuleManager(object):
         self._set_changed_options()
         if self.module.check_mode:  # pragma: no cover
             return True
+        if self.want.dry_run:
+            return self.dry_run_on_device()
         if self.want.task_id:
             return self.query_task()
         task = self.upsert_on_device()
@@ -248,6 +291,49 @@ class ModuleManager(object):
         if 'errors' in message:
             results += message['errors']
         return results
+
+    def _set_dry_run_on_declaration(self):
+        declaration = {}
+        if self.want.content is None:
+            raise F5ModuleError(
+                "Empty content cannot be specified when 'dry_run' is 'yes'."
+            )
+        try:
+            declaration.update(self.want.content)
+        except ValueError:
+            raise F5ModuleError(
+                "The provided 'content' could not be converted into valid json. If you "
+                "are using the 'to_nice_json' filter, please remove it."
+            )
+        set_dry_run = {
+            'async': True,
+            'controls': {
+                'trace': True,
+                'traceResponse': True,
+                'dryRun': True
+            }
+        }
+        declaration.update(set_dry_run)
+        return declaration
+
+    def _start_dry_run_on_device(self):
+        declaration = self._set_dry_run_on_declaration()
+
+        uri = "/mgmt/shared/declarative-onboarding/declare"
+        response = self.client.post(uri, data=declaration)
+
+        if response['code'] not in [200, 201, 202, 204, 207]:
+            raise F5ModuleError(response['contents'])
+        return response['contents']['id']
+
+    def dry_run_on_device(self):
+        delay, period = self.want.timeout
+        task_id = self._start_dry_run_on_device()
+        task = self.wait_for_task(task_id, delay, period)
+        if task and task.get('traces'):
+            self.changes.update({'message': 'Dry run completed successfully.'})
+            self.changes.update({'diff': task['traces'].get('diff')})
+        return False
 
     def upsert_on_device(self):
         uri = "/mgmt/shared/declarative-onboarding/declare"
@@ -323,6 +409,7 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             content=dict(type='raw'),
+            dry_run=dict(type='bool'),
             task_id=dict(),
             timeout=dict(
                 type='int',
@@ -332,7 +419,8 @@ class ArgumentSpec(object):
         self.argument_spec = {}
         self.argument_spec.update(argument_spec)
         self.mutually_exclusive = [
-            ['task_id', 'content']
+            ['task_id', 'content'],
+            ['task_id', 'dry_run']
         ]
 
 

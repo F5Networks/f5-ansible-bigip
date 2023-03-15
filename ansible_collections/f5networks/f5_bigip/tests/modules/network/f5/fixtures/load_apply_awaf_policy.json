@@ -1,0 +1,14 @@
+{
+    "executionStartTime": "2023-02-20T12:18:24Z",
+    "status": "COMPLETED",
+    "lastUpdateMicros": 1.676895513e+15,
+    "kind": "tm:asm:tasks:apply-policy:apply-policy-taskstate",
+    "selfLink": "https://localhost/mgmt/tm/asm/tasks/apply-policy/yE48MEYUzFoeevnd8UjAoQ?ver=16.1.3",
+    "policyReference": {
+        "link": "https://localhost/mgmt/tm/asm/policies/TngPBJ2hfv4tOPTKQAvTGw?ver=16.1.3",
+        "fullPath": "/Common/custom_awaf"
+    },
+    "endTime": "2023-02-20T12:18:34Z",
+    "startTime": "2023-02-20T12:18:24Z",
+    "id": "yE48MEYUzFoeevnd8UjAoQ"
+}

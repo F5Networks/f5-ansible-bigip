@@ -38,32 +38,36 @@ class F5Client:
         self.module = kwargs.get('module', None)
         self.plugin = kwargs.get('client', None)
         self.transact = None
+        self.tmos_version = None
 
     @header
     def delete(self, url, **kwargs):
-        return self.plugin.send_request(url, method='DELETE', **kwargs)
+        return self.plugin.send_request(path=url, method='DELETE', **kwargs)
 
     @header
     def get(self, url, **kwargs):
-        return self.plugin.send_request(url, method='GET', **kwargs)
+        return self.plugin.send_request(path=url, method='GET', **kwargs)
 
     @header
     def patch(self, url, data=None, **kwargs):
-        return self.plugin.send_request(url, method='PATCH', data=data, **kwargs)
+        return self.plugin.send_request(path=url, method='PATCH', payload=data, **kwargs)
 
     @header
     def post(self, url, data=None, **kwargs):
-        return self.plugin.send_request(url, method='POST', data=data, **kwargs)
+        return self.plugin.send_request(path=url, method='POST', payload=data, **kwargs)
 
     @header
     def put(self, url, data=None, **kwargs):
-        return self.plugin.send_request(url, method='PUT', data=data, **kwargs)
+        return self.plugin.send_request(path=url, method='PUT', payload=data, **kwargs)
 
     @property
     def platform(self):
         network_os = self.plugin.network_os()
         if network_os.split('.')[2] == 'bigip':
-            version = tmos_version(self)
+            if self.tmos_version:
+                version = self.tmos_version
+            else:
+                version = tmos_version(self)
         else:
             version = bigiq_version(self)
         return network_os.split('.')[2], version

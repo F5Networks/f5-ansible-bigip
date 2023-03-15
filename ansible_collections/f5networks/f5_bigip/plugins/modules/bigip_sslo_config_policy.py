@@ -298,6 +298,7 @@ except ImportError:
     PACKAGING_IMPORT_ERROR = traceback.format_exc()
 else:
     HAS_PACKAGING = True
+    PACKAGING_IMPORT_ERROR = None
 
 try:
     from netaddr import IPAddress
@@ -307,6 +308,7 @@ except ImportError:
     NETADDR_IMPORT_ERROR = traceback.format_exc()
 else:
     HAS_NETADDR = True
+    NETADDR_IMPORT_ERROR = None
 
 from ansible.module_utils.basic import (
     AnsibleModule, missing_required_lib

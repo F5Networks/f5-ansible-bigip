@@ -252,7 +252,7 @@ class TestParameters(unittest.TestCase):
         with self.assertRaises(F5ModuleError) as err:
             p.bot_publisher()
 
-        self.assertIn('Publisher cannot be set to '' when configuring bot defense logging', err.exception.args[0])
+        self.assertIn("Publisher cannot be set to", err.exception.args[0])
 
     def test_invalid_dns_storage_format_fields_raises(self):
         args = dict(dns_security=dict(storage_format=dict(fields=['foo'])))

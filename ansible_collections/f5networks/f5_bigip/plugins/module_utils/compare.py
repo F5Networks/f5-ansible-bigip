@@ -52,6 +52,8 @@ def compare_complex_list(want, have):
         return None
     if want is None:
         return None
+    if have is None:
+        return want
     w = []
     h = []
     for x in want:
@@ -80,6 +82,8 @@ def compare_dictionary(want, have):
         return None
     if want is None:
         return None
+    if have is None:
+        return want
     w = [(str(k), str(v)) for k, v in iteritems(want)]
     h = [(str(k), str(v)) for k, v in iteritems(have)]
     if set(w) == set(h):
@@ -92,7 +96,7 @@ def compare_key_values(want, have):
     if want is None:
         return None
     if have is None:
-        return None
+        return want
     for k, v in have.items():
         if k not in want.keys():
             continue
