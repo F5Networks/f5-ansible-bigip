@@ -1,3 +1,0 @@
----
-minor_changes:
-  - bigip_do_deploy - added an option to dry run declaration

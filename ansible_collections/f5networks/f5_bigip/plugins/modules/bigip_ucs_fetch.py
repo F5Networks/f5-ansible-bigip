@@ -434,7 +434,7 @@ class ModuleManager(object):
         self.changes.update({'message': 'UCS async task started with id: {0}'.format(task)})
 
     def create_async_task_on_device(self):
-        if self.want.passphrase:
+        if self.want.encryption_password:
             params = dict(
                 command='save',
                 name=self.want.src,

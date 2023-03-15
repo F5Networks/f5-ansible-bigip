@@ -1,3 +1,0 @@
----
-bugfixes:
-  - bigip_as3_deploy - added better error reporting to declarative operations

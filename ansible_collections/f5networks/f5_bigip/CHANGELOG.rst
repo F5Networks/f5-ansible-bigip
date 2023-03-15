@@ -5,6 +5,35 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v2.0.0
+======
+
+Minor Changes
+-------------
+
+- bigip_do_deploy - added an option to dry run declaration
+- bigip_sslo_service_http - refactored jinja templates to include a few conditional checks in devices_to and devices_from section
+
+Removed Features (previously deprecated)
+----------------------------------------
+
+- Removed all VELOS related modules from collection, use dedicated F5OS collection to manage VELOS devices https://github.com/F5Networks/f5-ansible-f5os instead
+- See porting guides section at https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html
+
+Bugfixes
+--------
+
+- bigip_as3_deploy - added better error reporting to declarative operations
+- bigip_config - fixes issue with GET calls returning 503 errors during async task execution
+- bigip_device_info - Included additional attributes for actions in ltm policy rules
+- bigip_sslo_service_tap - make port_remap disbaled by default unless the user explicitly enables it by providing port value for port_remap
+- bigip_ucs_fetch - fix a typo causing a bug that prevented ucs file from being encrypted with the provided passphrase
+
+New Modules
+-----------
+
+- bigip_awaf_policy - Manage WAF policy with input parameters
+
 v1.13.0
 =======
 

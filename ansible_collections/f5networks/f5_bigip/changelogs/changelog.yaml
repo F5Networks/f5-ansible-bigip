@@ -458,3 +458,37 @@ releases:
     - add-modify-sslo-topology.yaml
     - fix-delete-sslo-service-http.yaml
     release_date: '2022-08-17'
+  2.0.0:
+    changes:
+      bugfixes:
+      - bigip_as3_deploy - added better error reporting to declarative operations
+      - bigip_config - fixes issue with GET calls returning 503 errors during async
+        task execution
+      - bigip_device_info - Included additional attributes for actions in ltm policy
+        rules
+      - bigip_sslo_service_tap - make port_remap disbaled by default unless the user
+        explicitly enables it by providing port value for port_remap
+      - bigip_ucs_fetch - fix a typo causing a bug that prevented ucs file from being
+        encrypted with the provided passphrase
+      minor_changes:
+      - bigip_do_deploy - added an option to dry run declaration
+      - bigip_sslo_service_http - refactored jinja templates to include a few conditional
+        checks in devices_to and devices_from section
+      removed_features:
+      - Removed all VELOS related modules from collection, use dedicated F5OS collection
+        to manage VELOS devices https://github.com/F5Networks/f5-ansible-f5os instead
+      - See porting guides section at https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html
+    fragments:
+    - 2294-device-info-ltm-policies-attributes.yaml
+    - add-dry-run-do-declaration.yaml
+    - disable-port_remap-by-default.yaml
+    - fix-as3-error-reporting.yaml
+    - fix-async-get-503.yaml
+    - fix-passphrase-bug-bigip-ucs-passphrase.yaml
+    - remove-velos-modules.yaml
+    - sslo-http-template-refactoring.yaml
+    modules:
+    - description: Manage WAF policy with input parameters
+      name: bigip_awaf_policy
+      namespace: ''
+    release_date: '2023-03-15'

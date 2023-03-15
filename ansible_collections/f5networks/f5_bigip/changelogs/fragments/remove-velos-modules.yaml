@@ -1,4 +1,0 @@
----
-removed_features:
-  - Removed all VELOS related modules from collection, use dedicated F5OS collection to manage VELOS devices https://github.com/F5Networks/f5-ansible-f5os instead
-  - See porting guides section at https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/porting-guides.html

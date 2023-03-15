@@ -1,3 +1,0 @@
----
-bugfixes:
-  - bigip_device_info - Included additional attributes for actions in ltm policy rules
