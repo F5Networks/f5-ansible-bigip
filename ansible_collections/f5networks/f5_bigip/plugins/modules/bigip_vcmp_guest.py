@@ -75,9 +75,9 @@ options:
   delete_virtual_disk:
     description:
       - When C(state) is C(absent), the system additionally deletes the virtual disk associated
-        with the vCMP guest. By default, this value is C(no).
+        with the vCMP guest. By default, this value is C(false).
     type: bool
-    default: no
+    default: false
   mgmt_address:
     description:
       - Specifies the IP address and subnet or subnet mask you use to access

@@ -34,8 +34,8 @@ options:
     type: str
   force:
     description:
-      - When set to C(yes), any existing certificate/key with the same name is overwritten by the new import.
-    default: no
+      - When set to C(true), any existing certificate/key with the same name is overwritten by the new import.
+    default: false
     type: bool
   partition:
     description:

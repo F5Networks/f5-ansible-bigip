@@ -36,12 +36,12 @@ options:
     required: True
   force:
     description:
-      - If C(yes), the system uploads the file every time and replaces the file on the
-        device. If C(no), the file is only uploaded if it does not already
-        exist. Generally it should only be C(yes) in cases where you believe
+      - If C(true), the system uploads the file every time and replaces the file on the
+        device. If C(false), the file is only uploaded if it does not already
+        exist. Generally it should only be C(true) in cases where you believe
         the image was corrupted during upload.
     type: bool
-    default: no
+    default: false
   no_license:
     description:
       - Performs a full restore of the UCS file and all the files it contains,

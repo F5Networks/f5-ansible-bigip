@@ -23,37 +23,37 @@ options:
   dest:
     description:
       - A directory where you want to save the policy file.
-      - This option is ignored when C(inline) is set to c(yes).
+      - This option is ignored when C(inline) is set to C(true).
     type: path
   file:
     description:
       - The name of the file to be created on the remote device for downloading.
-      - When C(binary) is set to C(no), the ASM policy will be in XML format.
+      - When C(binary) is set to C(false), the ASM policy will be in XML format.
     type: str
   inline:
     description:
-      - If C(yes), the ASM policy will be exported C(inline) as a string instead of a file.
+      - If C(true), the ASM policy will be exported C(inline) as a string instead of a file.
       - The policy can be be retrieved in the playbook C(result) dictionary under the C(inline_policy) key.
     type: bool
   compact:
     description:
-      - If C(yes), only the ASM policy custom settings will be exported.
+      - If C(true), only the ASM policy custom settings will be exported.
       - Only applies to XML type ASM policy exports.
     type: bool
   base64:
     description:
-      - If C(yes), the returned C(inline) ASM policy content will be Base64 encoded.
+      - If C(true), the returned C(inline) ASM policy content will be Base64 encoded.
       - Only applies to C(inline) ASM policy exports.
     type: bool
   binary:
     description:
-      - If C(yes), the exported ASM policy will be in binary format.
+      - If C(true), the exported ASM policy will be in binary format.
       - Only applies to C(file) ASM policy exports.
     type: bool
   force:
     description:
-      - If C(no), the file will only be transferred if it does not exist in the the destination.
-    default: yes
+      - If C(false), the file will only be transferred if it does not exist in the the destination.
+    default: true
     type: bool
   partition:
     description:
@@ -133,22 +133,22 @@ inline:
   description: Set when the ASM policy to be exported is inline
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 compact:
   description: Set only to export custom ASM policy settings.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 base64:
   description: Set to encode inline export in Base64 format.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 binary:
   description: Set to export the ASM policy in binary format.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 '''
 
 import os

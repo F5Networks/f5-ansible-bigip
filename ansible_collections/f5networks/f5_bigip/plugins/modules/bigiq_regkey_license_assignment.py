@@ -29,11 +29,11 @@ options:
     required: True
   device:
     description:
-      - When C(managed) is C(no), specifies the address, or hostname, where the BIG-IQ
+      - When C(managed) is C(false), specifies the address, or hostname, where the BIG-IQ
         can reach the remote device to register.
-      - When C(managed) is C(yes), specifies the managed device, or device UUID, that
+      - When C(managed) is C(true), specifies the managed device, or device UUID, that
         you want to register.
-      - If C(managed) is C(yes), it is very important you do not have more than
+      - If C(managed) is C(true), it is very important you do not have more than
         one device with the same name. BIG-IQ internally recognizes devices by their ID,
         and therefore, this module cannot guarantee the correct device will be
         registered. The device returned is the device that is used.
@@ -55,12 +55,12 @@ options:
       - The username used to connect to the remote device.
       - This username should be one that has sufficient privileges on the remote device
         to do licensing. Usually this is the C(Administrator) role.
-      - When C(managed) is C(no), this parameter is required.
+      - When C(managed) is C(false), this parameter is required.
     type: str
   device_password:
     description:
       - The password of the C(device_username).
-      - When C(managed) is C(no), this parameter is required.
+      - When C(managed) is C(false), this parameter is required.
     type: str
   state:
     description:

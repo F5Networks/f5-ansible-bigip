@@ -18,14 +18,14 @@ version_added: "1.1.0"
 options:
   force:
     description:
-      - When C(yes), uploads the file every time and replaces the file on the
+      - When C(true), uploads the file every time and replaces the file on the
         device.
-      - When C(no), the file is only uploaded if it does not already
+      - When C(false), the file is only uploaded if it does not already
         exist.
-      - Generally should be C(yes) only in cases where you have reason
+      - Generally should be C(true) only in cases where you have reason
         to believe the image was corrupted during upload.
     type: bool
-    default: no
+    default: false
   state:
     description:
       - When C(present), ensures the image is uploaded.

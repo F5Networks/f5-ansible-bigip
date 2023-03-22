@@ -42,7 +42,7 @@ options:
   dry_run:
     description:
       - Set this option to check what changes would be made on device if DO declaration was committed on device.
-      - When C(yes) the submitted DO declaration in C(content) is checked against existing configuration for any
+      - When C(true) the submitted DO declaration in C(content) is checked against existing configuration for any
         changes, with diff returned in results, without making any changes.
       - This option is mutually exclusive with C(task_id), and requires C(content) to be specified.
       - No changes are required in to be made by the user to DO declaration to perform a dry run.

@@ -194,23 +194,23 @@ options:
   bypass_handshake_failure:
     description:
       - Defines the action to take if a server side TLS handshake failure is detected.
-      - A value of C(no) causes the connection to fail.
-      - A value of C(no) shuts down TLS decryption and allows the connection to proceed un-decrypted.
+      - A value of C(false) causes the connection to fail.
+      - A value of C(false) shuts down TLS decryption and allows the connection to proceed un-decrypted.
     type: bool
   bypass_client_cert_failure:
     description:
       - Defines the action to take if a server side TLS handshake client certificate request is detected.
-      - A value of C(no) causes the connection to fail.
-      - A value of C(yes) shuts down TLS decryption and allows the connection to proceed un-decrypted.
+      - A value of C(false) causes the connection to fail.
+      - A value of C(true) shuts down TLS decryption and allows the connection to proceed un-decrypted.
     type: bool
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes), does not make any changes on the device and always returns C(changed=False).
+      - When C(true), does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
         C(MODIFY) on an existing service no JSON output is generated.
     type: bool
-    default: no
+    default: false
   timeout:
     description:
       - The amount of time to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete, in seconds.
@@ -333,7 +333,7 @@ client_settings:
     alpn:
        description: "Enables or disables ALPN HTTP/2 full proxy."
        type: bool
-       sample: True
+       sample: true
     log_publisher:
        description: The log publisher used for client-side SSL-related events.
        type: str
@@ -384,13 +384,13 @@ bypass_handshake_failure:
     - Defines the action to take if a server side TLS handshake failure is detected.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 bypass_client_cert_failure:
   description:
     - Defines the action to take if a server side TLS handshake client certificate request is detected.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 '''
 
 import time

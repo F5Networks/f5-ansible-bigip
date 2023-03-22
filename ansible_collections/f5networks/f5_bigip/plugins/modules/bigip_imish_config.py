@@ -108,7 +108,7 @@ options:
         root directory or role root directory, if playbook is part of an
         Ansible role. If the directory does not exist, it is created.
     type: bool
-    default: 'no'
+    default: 'false'
   running_config:
     description:
       - By default, the module will connect to the remote device and
@@ -207,7 +207,7 @@ options:
         address families are configured.
       - Only used with the C(lines) parameter.
     type: bool
-    default: 'no'
+    default: 'false'
     version_added: "1.2.0"
 notes:
   - Abbreviated commands are NOT idempotent

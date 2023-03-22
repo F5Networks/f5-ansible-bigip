@@ -34,12 +34,12 @@ options:
     type: raw
   force:
     description:
-      - If C(yes), the declaration is uploaded regardless if there is a change or not, option is useful when changing
+      - If C(true), the declaration is uploaded regardless if there is a change or not, option is useful when changing
         declaration's C(cipherText) key/pair.
-      - If C(no), the declaration is only uploaded if there is a difference to what is on the device. The comparison is
+      - If C(false), the declaration is only uploaded if there is a difference to what is on the device. The comparison is
         not performed on declaration's C(cipherText) key/pair as the paraphrases returned by device are encrypted.
     type: bool
-    default: no
+    default: false
   state:
     description:
       - When C(state) is C(present), ensures the declaration is exists.

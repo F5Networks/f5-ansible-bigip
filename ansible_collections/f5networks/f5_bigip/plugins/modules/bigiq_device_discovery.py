@@ -46,7 +46,7 @@ options:
       - When set to true, BIG-IQ manually synchronizes configuration changes
         between members in a DSC cluster.
     type: bool
-    default: no
+    default: false
   conflict_policy:
     description:
       - Sets the conflict resolution policy for shared objects across BIG-IP devices, except LTM profiles and monitors.
@@ -90,12 +90,12 @@ options:
       - Specifies if the imported device is the first device in the access group to import shared configuration for that
         access group.
     type: bool
-    default: yes
+    default: true
   force:
     description:
       - Forces rediscovery and import of existing modules on the managed BIG-IP.
     type: bool
-    default: no
+    default: false
   modules:
     description:
       - List of modules to be discovered and imported into the device.
@@ -121,7 +121,7 @@ options:
         description:
           - Enables statistics collection on a device.
         type: bool
-        default: no
+        default: false
       interval:
         description:
           - Specifies the interval the data is collected from the discovered device, in seconds.
@@ -239,7 +239,7 @@ use_bigiq_sync:
   description: Indicates if BIG-IQ should manually synchronize DSC configuration.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 conflict_policy:
   description: Sets the conflict resolution policy for shared objects across BIG-IP devices.
   returned: changed
@@ -269,7 +269,7 @@ access_group_first_device:
   description: First device in the access group to import shared configuration for that access group.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 modules:
   description: List of modules to be discovered and imported into the device.
   returned: changed

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2021, F5 Networks Inc.
+# Copyright: (c) 2023, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -29,10 +29,10 @@ options:
     type: path
   asm_request_log:
     description:
-      - When C(true), includes ASM request log data. When C(False),
+      - When C(true), includes ASM request log data. When C(false),
         excludes ASM request log data.
     type: bool
-    default: no
+    default: false
   max_file_size:
     description:
       - Maximum file size of the QKview file, in bytes. By default, no max
@@ -43,12 +43,12 @@ options:
     description:
       - Include complete (all applicable) information in the QKview.
     type: bool
-    default: no
+    default: false
   exclude_core:
     description:
       - Exclude core files from the QKview.
     type: bool
-    default: no
+    default: false
   exclude:
     description:
       - Exclude various file from the QKview.
@@ -61,10 +61,10 @@ options:
       - bash_history
   force:
     description:
-      - If C(no), the file will only be transferred if the destination does not
+      - If C(false), the file will only be transferred if the destination does not
         exist.
     type: bool
-    default: yes
+    default: true
   timeout:
     description:
       - The amount of time in seconds to wait for the async interface to complete its task.
@@ -73,10 +73,10 @@ options:
     default: 300
   only_create_file:
     description:
-      - If C(yes), the file is created on the device and not downloaded. The file will not be deleted by the
+      - If C(true), the file is created on the device and not downloaded. The file will not be deleted by the
         module from the device.
     type: bool
-    default: no
+    default: false
     version_added: "1.10.0"
 notes:
   - This module does not include the "max time" or "restrict to blade" options.
