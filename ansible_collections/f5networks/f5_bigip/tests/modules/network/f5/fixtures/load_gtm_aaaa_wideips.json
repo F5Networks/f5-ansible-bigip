@@ -1,0 +1,26 @@
+{
+    "kind": "tm:gtm:wideip:aaaa:aaaacollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/gtm/wideip/aaaa?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:gtm:wideip:aaaa:aaaastate",
+            "name": "fake.wide-aaaa.net",
+            "partition": "Common",
+            "fullPath": "/Common/fake.wide-aaaa.net",
+            "generation": 70324,
+            "selfLink": "https://localhost/mgmt/tm/gtm/wideip/aaaa/~Common~fake.wide-aaaa.net?ver=16.0.0",
+            "enabled": true,
+            "failureRcode": "noerror",
+            "failureRcodeResponse": "disabled",
+            "failureRcodeTtl": 0,
+            "lastResortPool": "",
+            "minimalResponse": "enabled",
+            "persistCidrIpv4": 32,
+            "persistCidrIpv6": 128,
+            "persistence": "disabled",
+            "poolLbMode": "ratio",
+            "topologyPreferEdns0ClientSubnet": "disabled",
+            "ttlPersistence": 3600
+        }
+    ]
+}

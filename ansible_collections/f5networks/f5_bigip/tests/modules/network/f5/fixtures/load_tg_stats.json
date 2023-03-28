@@ -1,0 +1,33 @@
+{
+    "kind": "tm:cm:traffic-group:traffic-groupstats",
+    "generation": 498,
+    "selfLink": "https://localhost/mgmt/tm/cm/traffic-group/~Common~traffic-group-1/stats?ver=16.0.0",
+    "entries": {
+        "https://localhost/mgmt/tm/cm/traffic-group/~Common~traffic-group-1/~Common~traffic-group-1:~Common~bigip.example.com/stats": {
+            "nestedStats": {
+                "kind": "tm:cm:traffic-group:traffic-groupstats",
+                "selfLink": "https://localhost/mgmt/tm/cm/traffic-group/~Common~traffic-group-1/~Common~traffic-group-1:~Common~bigip.example.com/stats?ver=16.0.0",
+                "entries": {
+                    "activeReason": {
+                        "description": "-"
+                    },
+                    "deviceName": {
+                        "description": "/Common/bigip.example.com"
+                    },
+                    "failoverState": {
+                        "description": "active"
+                    },
+                    "nextActive": {
+                        "description": "false"
+                    },
+                    "previousActive": {
+                        "description": "true"
+                    },
+                    "trafficGroup": {
+                        "description": "/Common/traffic-group-1"
+                    }
+                }
+            }
+        }
+    }
+}

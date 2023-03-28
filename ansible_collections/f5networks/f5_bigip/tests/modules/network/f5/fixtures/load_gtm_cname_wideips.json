@@ -1,0 +1,26 @@
+{
+    "kind": "tm:gtm:wideip:cname:cnamecollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/gtm/wideip/cname?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:gtm:wideip:cname:cnamestate",
+            "name": "fake.wide-cname.net",
+            "partition": "Common",
+            "fullPath": "/Common/fake.wide-cname.net",
+            "generation": 70325,
+            "selfLink": "https://localhost/mgmt/tm/gtm/wideip/cname/~Common~fake.wide-cname.net?ver=16.0.0",
+            "enabled": true,
+            "failureRcode": "noerror",
+            "failureRcodeResponse": "disabled",
+            "failureRcodeTtl": 0,
+            "lastResortPool": "",
+            "minimalResponse": "enabled",
+            "persistCidrIpv4": 32,
+            "persistCidrIpv6": 128,
+            "persistence": "disabled",
+            "poolLbMode": "topology",
+            "topologyPreferEdns0ClientSubnet": "disabled",
+            "ttlPersistence": 3600
+        }
+    ]
+}

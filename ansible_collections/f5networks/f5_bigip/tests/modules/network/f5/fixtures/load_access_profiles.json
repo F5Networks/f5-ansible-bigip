@@ -1,0 +1,126 @@
+{
+    "kind": "tm:apm:profile:access:accesscollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/apm/profile/access?ver=16.1.3.3",
+    "items": [
+        {
+            "kind": "tm:apm:profile:access:accessstate",
+            "name": "access",
+            "partition": "Common",
+            "fullPath": "/Common/access",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/apm/profile/access/~Common~access?ver=16.1.3.3",
+            "acceptLanguages": [
+                "en"
+            ],
+            "accessPolicyTimeout": 300,
+            "customizationKey": "67d21e9f5193b8f22d9993096eb491f0",
+            "defaultLanguage": "en",
+            "domainMode": "single-domain",
+            "enforcePolicy": "true",
+            "tmGeneration": 0,
+            "generationAction": "noop",
+            "httponlyCookie": "false",
+            "inactivityTimeout": 900,
+            "logoutUriTimeout": 5,
+            "maxConcurrentSessions": 0,
+            "maxConcurrentUsers": 0,
+            "maxFailureDelay": 5,
+            "maxInProgressSessions": 128,
+            "maxSessionTimeout": 604800,
+            "minFailureDelay": 2,
+            "modifiedSinceLastPolicySync": "true",
+            "persistentCookie": "false",
+            "restrictToSingleClientIp": "false",
+            "samesiteCookie": "false",
+            "samesiteCookieAttrValue": "strict",
+            "scope": "profile",
+            "secureCookie": "true",
+            "type": "all",
+            "useHttp_503OnError": "false",
+            "userIdentityMethod": "http",
+            "webtopRedirectOnRootUri": "true",
+            "domainGroupsReference": {
+                "link": "https://localhost/mgmt/tm/apm/profile/access/~Common~access/domain-groups?ver=16.1.3.3",
+                "isSubcollection": true
+            }
+        },
+        {
+            "kind": "tm:apm:profile:access:accessstate",
+            "name": "foo_access",
+            "partition": "Common",
+            "fullPath": "/Common/foo_access",
+            "generation": 62760,
+            "selfLink": "https://localhost/mgmt/tm/apm/profile/access/~Common~foo_access?ver=16.1.3.3",
+            "acceptLanguages": [
+                "en"
+            ],
+            "accessPolicy": "/Common/foo_access",
+            "accessPolicyReference": {
+                "link": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~foo_access?ver=16.1.3.3"
+            },
+            "accessPolicyTimeout": 300,
+            "customizationGroup": "/Common/foo_access_logout",
+            "customizationGroupReference": {
+                "link": "https://localhost/mgmt/tm/apm/policy/customization-group/~Common~foo_access_logout?ver=16.1.3.3"
+            },
+            "customizationKey": "67d21e9f5193b8f22d9993096eb491f0",
+            "defaultLanguage": "en",
+            "defaultsFrom": "/Common/access",
+            "defaultsFromReference": {
+                "link": "https://localhost/mgmt/tm/apm/profile/access/~Common~access?ver=16.1.3.3"
+            },
+            "domainMode": "single-domain",
+            "enforcePolicy": "true",
+            "epsGroup": "/Common/foo_access_eps",
+            "epsGroupReference": {
+                "link": "https://localhost/mgmt/tm/apm/policy/customization-group/~Common~foo_access_eps?ver=16.1.3.3"
+            },
+            "errormapGroup": "/Common/foo_access_errormap",
+            "errormapGroupReference": {
+                "link": "https://localhost/mgmt/tm/apm/policy/customization-group/~Common~foo_access_errormap?ver=16.1.3.3"
+            },
+            "frameworkInstallationGroup": "/Common/foo_access_framework_installation",
+            "frameworkInstallationGroupReference": {
+                "link": "https://localhost/mgmt/tm/apm/policy/customization-group/~Common~foo_access_framework_installation?ver=16.1.3.3"
+            },
+            "generalUiGroup": "/Common/foo_access_general_ui",
+            "generalUiGroupReference": {
+                "link": "https://localhost/mgmt/tm/apm/policy/customization-group/~Common~foo_access_general_ui?ver=16.1.3.3"
+            },
+            "tmGeneration": 1,
+            "generationAction": "noop",
+            "httponlyCookie": "false",
+            "inactivityTimeout": 900,
+            "logoutUriTimeout": 5,
+            "maxConcurrentSessions": 0,
+            "maxConcurrentUsers": 0,
+            "maxFailureDelay": 5,
+            "maxInProgressSessions": 128,
+            "maxSessionTimeout": 604800,
+            "minFailureDelay": 2,
+            "modifiedSinceLastPolicySync": "true",
+            "persistentCookie": "false",
+            "restrictToSingleClientIp": "false",
+            "samesiteCookie": "false",
+            "samesiteCookieAttrValue": "strict",
+            "scope": "profile",
+            "secureCookie": "true",
+            "type": "ltm-apm",
+            "useHttp_503OnError": "false",
+            "userIdentityMethod": "http",
+            "webtopRedirectOnRootUri": "true",
+            "logSettings": [
+                "/Common/default-log-setting"
+            ],
+            "logSettingsReference": [
+                {
+                    "link": "https://localhost/mgmt/tm/apm/log-setting/~Common~default-log-setting?ver=16.1.3.3"
+                }
+            ],
+            "domainGroupsReference": {
+                "link": "https://localhost/mgmt/tm/apm/profile/access/~Common~foo_access/domain-groups?ver=16.1.3.3",
+                "isSubcollection": true
+            }
+        }
+    ]
+}

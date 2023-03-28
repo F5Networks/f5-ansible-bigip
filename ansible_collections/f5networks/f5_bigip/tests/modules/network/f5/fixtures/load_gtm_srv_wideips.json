@@ -1,0 +1,26 @@
+{
+    "kind": "tm:gtm:wideip:srv:srvcollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/gtm/wideip/srv?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:gtm:wideip:srv:srvstate",
+            "name": "fake.wide-srv.net",
+            "partition": "Common",
+            "fullPath": "/Common/fake.wide-srv.net",
+            "generation": 70328,
+            "selfLink": "https://localhost/mgmt/tm/gtm/wideip/srv/~Common~fake.wide-srv.net?ver=16.0.0",
+            "enabled": true,
+            "failureRcode": "noerror",
+            "failureRcodeResponse": "disabled",
+            "failureRcodeTtl": 0,
+            "lastResortPool": "",
+            "minimalResponse": "enabled",
+            "persistCidrIpv4": 32,
+            "persistCidrIpv6": 128,
+            "persistence": "disabled",
+            "poolLbMode": "round-robin",
+            "topologyPreferEdns0ClientSubnet": "disabled",
+            "ttlPersistence": 3600
+        }
+    ]
+}

@@ -1,0 +1,102 @@
+{
+    "kind": "tm:net:vlan:vlancollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/net/vlan?expandSubcollections=true&ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:net:vlan:vlanstate",
+            "name": "alice",
+            "partition": "Common",
+            "fullPath": "/Common/alice",
+            "generation": 370,
+            "selfLink": "https://localhost/mgmt/tm/net/vlan/~Common~alice?ver=16.0.0",
+            "autoLasthop": "default",
+            "cmpHash": "default",
+            "dagRoundRobin": "disabled",
+            "dagTunnel": "outer",
+            "failsafe": "disabled",
+            "failsafeAction": "failover-restart-tm",
+            "failsafeTimeout": 90,
+            "fwdMode": "l3",
+            "hardwareSyncookie": "disabled",
+            "ifIndex": 912,
+            "learning": "enable-forward",
+            "mtu": 1500,
+            "sflow": {
+                "pollInterval": 0,
+                "pollIntervalGlobal": "yes",
+                "samplingRate": 0,
+                "samplingRateGlobal": "yes"
+            },
+            "sourceChecking": "disabled",
+            "synFloodRateLimit": 1000,
+            "syncacheThreshold": 6000,
+            "tag": 3605,
+            "interfacesReference": {
+                "link": "https://localhost/mgmt/tm/net/vlan/~Common~alice/interfaces?ver=16.0.0",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:net:vlan:interfaces:interfacesstate",
+                        "name": "1.2",
+                        "fullPath": "1.2",
+                        "generation": 370,
+                        "selfLink": "https://localhost/mgmt/tm/net/vlan/~Common~alice/interfaces/1.2?ver=16.0.0",
+                        "tagMode": "none",
+                        "untagged": true,
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/net/interface/1.2?ver=16.0.0"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "tm:net:vlan:vlanstate",
+            "name": "foo1",
+            "partition": "Common",
+            "fullPath": "/Common/foo1",
+            "generation": 139,
+            "selfLink": "https://localhost/mgmt/tm/net/vlan/~Common~foo1?ver=16.0.0",
+            "autoLasthop": "default",
+            "cmpHash": "default",
+            "dagRoundRobin": "disabled",
+            "dagTunnel": "outer",
+            "failsafe": "disabled",
+            "failsafeAction": "failover-restart-tm",
+            "failsafeTimeout": 90,
+            "fwdMode": "l3",
+            "hardwareSyncookie": "disabled",
+            "ifIndex": 896,
+            "learning": "enable-forward",
+            "mtu": 1500,
+            "sflow": {
+                "pollInterval": 0,
+                "pollIntervalGlobal": "no",
+                "samplingRate": 0,
+                "samplingRateGlobal": "no"
+            },
+            "sourceChecking": "disabled",
+            "synFloodRateLimit": 1000,
+            "syncacheThreshold": 6000,
+            "tag": 123,
+            "interfacesReference": {
+                "link": "https://localhost/mgmt/tm/net/vlan/~Common~foo1/interfaces?ver=16.0.0",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:net:vlan:interfaces:interfacesstate",
+                        "name": "1.1",
+                        "fullPath": "1.1",
+                        "generation": 139,
+                        "selfLink": "https://localhost/mgmt/tm/net/vlan/~Common~foo1/interfaces/1.1?ver=16.0.0",
+                        "tagMode": "none",
+                        "tagged": true,
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/net/interface/1.1?ver=16.0.0"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

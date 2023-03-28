@@ -1,0 +1,792 @@
+{
+    "kind": "tm:ltm:virtual:virtualcollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/ltm/virtual?expandSubcollections=true&ver=16.1.3.3",
+    "items": [
+        {
+            "kind": "tm:ltm:virtual:virtualstate",
+            "name": "fake_dhcp",
+            "partition": "Common",
+            "fullPath": "/Common/fake_dhcp",
+            "generation": 89,
+            "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_dhcp?ver=16.1.3.3",
+            "addressStatus": "yes",
+            "autoLasthop": "default",
+            "cmpEnabled": "yes",
+            "connectionLimit": 0,
+            "creationTime": "2023-03-21T21:32:34Z",
+            "description": "Test Virtual Server",
+            "destination": "/Common/192.168.1.2:67",
+            "dhcpRelay": true,
+            "enabled": true,
+            "evictionProtected": "disabled",
+            "gtmScore": 0,
+            "ipProtocol": "any",
+            "lastModifiedTime": "2023-03-21T21:32:34Z",
+            "mask": "255.255.255.255",
+            "mirror": "disabled",
+            "mobileAppTunnel": "disabled",
+            "nat64": "disabled",
+            "rateLimit": "disabled",
+            "rateLimitDstMask": 0,
+            "rateLimitMode": "object",
+            "rateLimitSrcMask": 0,
+            "serversslUseSni": "disabled",
+            "serviceDownImmediateAction": "none",
+            "source": "0.0.0.0/0",
+            "sourceAddressTranslation": {
+                "type": "none"
+            },
+            "sourcePort": "preserve",
+            "synCookieStatus": "not-activated",
+            "translateAddress": "enabled",
+            "translatePort": "disabled",
+            "vlansDisabled": true,
+            "vsIndex": 3,
+            "metadata": [
+                {
+                    "name": "f5-ansible.last_modified",
+                    "persist": "true",
+                    "value": "2023-03-21 21:32:33.614219"
+                },
+                {
+                    "name": "f5-ansible.version",
+                    "persist": "true",
+                    "value": "2.14.3"
+                }
+            ],
+            "policiesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_dhcp/policies?ver=16.1.3.3",
+                "isSubcollection": true
+            },
+            "profilesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_dhcp/profiles?ver=16.1.3.3",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "dhcpv4",
+                        "partition": "Common",
+                        "fullPath": "/Common/dhcpv4",
+                        "generation": 89,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_dhcp/profiles/~Common~dhcpv4?ver=16.1.3.3",
+                        "context": "all",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/dhcpv4/~Common~dhcpv4?ver=16.1.3.3"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "tm:ltm:virtual:virtualstate",
+            "name": "fake_fwdip",
+            "partition": "Common",
+            "fullPath": "/Common/fake_fwdip",
+            "generation": 90,
+            "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_fwdip?ver=16.1.3.3",
+            "addressStatus": "yes",
+            "autoLasthop": "default",
+            "cmpEnabled": "yes",
+            "connectionLimit": 0,
+            "creationTime": "2023-03-21T21:32:40Z",
+            "description": "Test Virtual Server",
+            "destination": "/Common/192.168.1.3:443",
+            "enabled": true,
+            "evictionProtected": "disabled",
+            "gtmScore": 0,
+            "ipForward": true,
+            "ipProtocol": "tcp",
+            "lastModifiedTime": "2023-03-21T21:32:40Z",
+            "mask": "255.255.255.255",
+            "mirror": "disabled",
+            "mobileAppTunnel": "disabled",
+            "nat64": "disabled",
+            "rateLimit": "disabled",
+            "rateLimitDstMask": 0,
+            "rateLimitMode": "object",
+            "rateLimitSrcMask": 0,
+            "serversslUseSni": "disabled",
+            "serviceDownImmediateAction": "none",
+            "source": "0.0.0.0/0",
+            "sourceAddressTranslation": {
+                "type": "none"
+            },
+            "sourcePort": "preserve",
+            "synCookieStatus": "not-activated",
+            "translateAddress": "disabled",
+            "translatePort": "disabled",
+            "vlansDisabled": true,
+            "vsIndex": 4,
+            "metadata": [
+                {
+                    "name": "f5-ansible.last_modified",
+                    "persist": "true",
+                    "value": "2023-03-21 21:32:39.924493"
+                },
+                {
+                    "name": "f5-ansible.version",
+                    "persist": "true",
+                    "value": "2.14.3"
+                }
+            ],
+            "policiesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_fwdip/policies?ver=16.1.3.3",
+                "isSubcollection": true
+            },
+            "profilesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_fwdip/profiles?ver=16.1.3.3",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "fastL4",
+                        "partition": "Common",
+                        "fullPath": "/Common/fastL4",
+                        "generation": 90,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_fwdip/profiles/~Common~fastL4?ver=16.1.3.3",
+                        "context": "all",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/fastl4/~Common~fastL4?ver=16.1.3.3"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "tm:ltm:virtual:virtualstate",
+            "name": "fake_fwdl2",
+            "partition": "Common",
+            "fullPath": "/Common/fake_fwdl2",
+            "generation": 91,
+            "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_fwdl2?ver=16.1.3.3",
+            "addressStatus": "yes",
+            "autoLasthop": "default",
+            "cmpEnabled": "yes",
+            "connectionLimit": 0,
+            "creationTime": "2023-03-21T21:32:47Z",
+            "description": "Test Virtual Server",
+            "destination": "/Common/192.168.1.4:443",
+            "enabled": true,
+            "evictionProtected": "disabled",
+            "gtmScore": 0,
+            "ipProtocol": "tcp",
+            "l2Forward": true,
+            "lastModifiedTime": "2023-03-21T21:32:47Z",
+            "mask": "255.255.255.255",
+            "mirror": "disabled",
+            "mobileAppTunnel": "disabled",
+            "nat64": "disabled",
+            "rateLimit": "disabled",
+            "rateLimitDstMask": 0,
+            "rateLimitMode": "object",
+            "rateLimitSrcMask": 0,
+            "serversslUseSni": "disabled",
+            "serviceDownImmediateAction": "none",
+            "source": "0.0.0.0/0",
+            "sourceAddressTranslation": {
+                "type": "none"
+            },
+            "sourcePort": "preserve",
+            "synCookieStatus": "not-activated",
+            "translateAddress": "enabled",
+            "translatePort": "enabled",
+            "vlansDisabled": true,
+            "vsIndex": 5,
+            "metadata": [
+                {
+                    "name": "f5-ansible.last_modified",
+                    "persist": "true",
+                    "value": "2023-03-21 21:32:46.544396"
+                },
+                {
+                    "name": "f5-ansible.version",
+                    "persist": "true",
+                    "value": "2.14.3"
+                }
+            ],
+            "policiesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_fwdl2/policies?ver=16.1.3.3",
+                "isSubcollection": true
+            },
+            "profilesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_fwdl2/profiles?ver=16.1.3.3",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "fastL4",
+                        "partition": "Common",
+                        "fullPath": "/Common/fastL4",
+                        "generation": 91,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_fwdl2/profiles/~Common~fastL4?ver=16.1.3.3",
+                        "context": "all",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/fastl4/~Common~fastL4?ver=16.1.3.3"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "tm:ltm:virtual:virtualstate",
+            "name": "fake_internal",
+            "partition": "Common",
+            "fullPath": "/Common/fake_internal",
+            "generation": 92,
+            "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_internal?ver=16.1.3.3",
+            "addressStatus": "yes",
+            "autoLasthop": "default",
+            "cmpEnabled": "yes",
+            "connectionLimit": 0,
+            "creationTime": "2023-03-21T21:32:59Z",
+            "description": "Test Virtual Server",
+            "destination": "0.0.0.0:0",
+            "enabled": true,
+            "evictionProtected": "disabled",
+            "gtmScore": 0,
+            "internal": true,
+            "ipProtocol": "tcp",
+            "lastModifiedTime": "2023-03-21T21:32:59Z",
+            "mask": "255.255.255.255",
+            "mirror": "disabled",
+            "mobileAppTunnel": "disabled",
+            "nat64": "disabled",
+            "rateLimit": "disabled",
+            "rateLimitDstMask": 0,
+            "rateLimitMode": "object",
+            "rateLimitSrcMask": 0,
+            "serversslUseSni": "disabled",
+            "serviceDownImmediateAction": "none",
+            "source": "0.0.0.0/0",
+            "sourceAddressTranslation": {
+                "type": "none"
+            },
+            "sourcePort": "preserve",
+            "synCookieStatus": "not-activated",
+            "translateAddress": "disabled",
+            "translatePort": "disabled",
+            "vlansEnabled": true,
+            "vsIndex": 6,
+            "metadata": [
+                {
+                    "name": "f5-ansible.last_modified",
+                    "persist": "true",
+                    "value": "2023-03-21 21:32:58.930524"
+                },
+                {
+                    "name": "f5-ansible.version",
+                    "persist": "true",
+                    "value": "2.14.3"
+                }
+            ],
+            "policiesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_internal/policies?ver=16.1.3.3",
+                "isSubcollection": true
+            },
+            "profilesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_internal/profiles?ver=16.1.3.3",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "tcp",
+                        "partition": "Common",
+                        "fullPath": "/Common/tcp",
+                        "generation": 92,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_internal/profiles/~Common~tcp?ver=16.1.3.3",
+                        "context": "all",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~tcp?ver=16.1.3.3"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "tm:ltm:virtual:virtualstate",
+            "name": "fake_msgrouter",
+            "partition": "Common",
+            "fullPath": "/Common/fake_msgrouter",
+            "generation": 93,
+            "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_msgrouter?ver=16.1.3.3",
+            "addressStatus": "yes",
+            "autoLasthop": "default",
+            "cmpEnabled": "yes",
+            "connectionLimit": 0,
+            "creationTime": "2023-03-21T21:33:35Z",
+            "description": "Test Virtual Server",
+            "destination": "/Common/192.168.1.6:443",
+            "enabled": true,
+            "evictionProtected": "disabled",
+            "gtmScore": 0,
+            "ipProtocol": "tcp",
+            "lastModifiedTime": "2023-03-21T21:33:35Z",
+            "mask": "255.255.255.255",
+            "mirror": "disabled",
+            "mobileAppTunnel": "disabled",
+            "nat64": "disabled",
+            "rateLimit": "disabled",
+            "rateLimitDstMask": 0,
+            "rateLimitMode": "object",
+            "rateLimitSrcMask": 0,
+            "serversslUseSni": "disabled",
+            "serviceDownImmediateAction": "none",
+            "source": "0.0.0.0/0",
+            "sourceAddressTranslation": {
+                "type": "none"
+            },
+            "sourcePort": "preserve",
+            "synCookieStatus": "not-activated",
+            "translateAddress": "enabled",
+            "translatePort": "enabled",
+            "vlansDisabled": true,
+            "vsIndex": 7,
+            "metadata": [
+                {
+                    "name": "f5-ansible.last_modified",
+                    "persist": "true",
+                    "value": "2023-03-21 21:33:35.314704"
+                },
+                {
+                    "name": "f5-ansible.version",
+                    "persist": "true",
+                    "value": "2.14.3"
+                }
+            ],
+            "policiesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_msgrouter/policies?ver=16.1.3.3",
+                "isSubcollection": true
+            },
+            "profilesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_msgrouter/profiles?ver=16.1.3.3",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "diameter",
+                        "partition": "Common",
+                        "fullPath": "/Common/diameter",
+                        "generation": 93,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_msgrouter/profiles/~Common~diameter?ver=16.1.3.3",
+                        "context": "all",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/diameter/~Common~diameter?ver=16.1.3.3"
+                        }
+                    },
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "tcp",
+                        "partition": "Common",
+                        "fullPath": "/Common/tcp",
+                        "generation": 93,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_msgrouter/profiles/~Common~tcp?ver=16.1.3.3",
+                        "context": "all",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~tcp?ver=16.1.3.3"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "tm:ltm:virtual:virtualstate",
+            "name": "fake_perf_http",
+            "partition": "Common",
+            "fullPath": "/Common/fake_perf_http",
+            "generation": 94,
+            "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_perf_http?ver=16.1.3.3",
+            "addressStatus": "yes",
+            "autoLasthop": "default",
+            "cmpEnabled": "yes",
+            "connectionLimit": 0,
+            "creationTime": "2023-03-21T21:33:53Z",
+            "description": "Test Virtual Server",
+            "destination": "/Common/192.168.1.7:443",
+            "enabled": true,
+            "evictionProtected": "disabled",
+            "gtmScore": 0,
+            "ipProtocol": "tcp",
+            "lastModifiedTime": "2023-03-21T21:33:53Z",
+            "mask": "255.255.255.255",
+            "mirror": "disabled",
+            "mobileAppTunnel": "disabled",
+            "nat64": "disabled",
+            "rateLimit": "disabled",
+            "rateLimitDstMask": 0,
+            "rateLimitMode": "object",
+            "rateLimitSrcMask": 0,
+            "serversslUseSni": "disabled",
+            "serviceDownImmediateAction": "none",
+            "source": "0.0.0.0/0",
+            "sourceAddressTranslation": {
+                "type": "none"
+            },
+            "sourcePort": "preserve",
+            "synCookieStatus": "not-activated",
+            "translateAddress": "enabled",
+            "translatePort": "enabled",
+            "vlansDisabled": true,
+            "vsIndex": 8,
+            "metadata": [
+                {
+                    "name": "f5-ansible.last_modified",
+                    "persist": "true",
+                    "value": "2023-03-21 21:33:53.050158"
+                },
+                {
+                    "name": "f5-ansible.version",
+                    "persist": "true",
+                    "value": "2.14.3"
+                }
+            ],
+            "policiesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_perf_http/policies?ver=16.1.3.3",
+                "isSubcollection": true
+            },
+            "profilesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_perf_http/profiles?ver=16.1.3.3",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "fasthttp",
+                        "partition": "Common",
+                        "fullPath": "/Common/fasthttp",
+                        "generation": 94,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_perf_http/profiles/~Common~fasthttp?ver=16.1.3.3",
+                        "context": "all",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/fasthttp/~Common~fasthttp?ver=16.1.3.3"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "tm:ltm:virtual:virtualstate",
+            "name": "fake_perf_l4",
+            "partition": "Common",
+            "fullPath": "/Common/fake_perf_l4",
+            "generation": 95,
+            "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_perf_l4?ver=16.1.3.3",
+            "addressStatus": "yes",
+            "autoLasthop": "default",
+            "cmpEnabled": "yes",
+            "connectionLimit": 0,
+            "creationTime": "2023-03-21T21:34:16Z",
+            "description": "Test Virtual Server",
+            "destination": "/Common/192.168.1.8:443",
+            "enabled": true,
+            "evictionProtected": "disabled",
+            "gtmScore": 0,
+            "ipProtocol": "tcp",
+            "lastModifiedTime": "2023-03-21T21:34:16Z",
+            "mask": "255.255.255.255",
+            "mirror": "disabled",
+            "mobileAppTunnel": "disabled",
+            "nat64": "disabled",
+            "rateLimit": "disabled",
+            "rateLimitDstMask": 0,
+            "rateLimitMode": "object",
+            "rateLimitSrcMask": 0,
+            "serversslUseSni": "disabled",
+            "serviceDownImmediateAction": "none",
+            "source": "0.0.0.0/0",
+            "sourceAddressTranslation": {
+                "type": "none"
+            },
+            "sourcePort": "preserve",
+            "synCookieStatus": "not-activated",
+            "translateAddress": "enabled",
+            "translatePort": "enabled",
+            "vlansDisabled": true,
+            "vsIndex": 9,
+            "metadata": [
+                {
+                    "name": "f5-ansible.last_modified",
+                    "persist": "true",
+                    "value": "2023-03-21 21:34:15.809724"
+                },
+                {
+                    "name": "f5-ansible.version",
+                    "persist": "true",
+                    "value": "2.14.3"
+                }
+            ],
+            "policiesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_perf_l4/policies?ver=16.1.3.3",
+                "isSubcollection": true
+            },
+            "profilesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_perf_l4/profiles?ver=16.1.3.3",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "fastL4",
+                        "partition": "Common",
+                        "fullPath": "/Common/fastL4",
+                        "generation": 95,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_perf_l4/profiles/~Common~fastL4?ver=16.1.3.3",
+                        "context": "all",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/fastl4/~Common~fastL4?ver=16.1.3.3"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "tm:ltm:virtual:virtualstate",
+            "name": "fake_reject",
+            "partition": "Common",
+            "fullPath": "/Common/fake_reject",
+            "generation": 96,
+            "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_reject?ver=16.1.3.3",
+            "addressStatus": "yes",
+            "autoLasthop": "default",
+            "cmpEnabled": "yes",
+            "connectionLimit": 0,
+            "creationTime": "2023-03-21T21:34:23Z",
+            "description": "Test Virtual Server",
+            "destination": "/Common/192.168.1.9:443",
+            "enabled": true,
+            "evictionProtected": "disabled",
+            "gtmScore": 0,
+            "ipProtocol": "tcp",
+            "lastModifiedTime": "2023-03-21T21:34:23Z",
+            "mask": "255.255.255.255",
+            "mirror": "disabled",
+            "mobileAppTunnel": "disabled",
+            "nat64": "disabled",
+            "rateLimit": "disabled",
+            "rateLimitDstMask": 0,
+            "rateLimitMode": "object",
+            "rateLimitSrcMask": 0,
+            "reject": true,
+            "serversslUseSni": "disabled",
+            "serviceDownImmediateAction": "none",
+            "source": "0.0.0.0/0",
+            "sourceAddressTranslation": {
+                "type": "none"
+            },
+            "sourcePort": "preserve",
+            "synCookieStatus": "not-activated",
+            "translateAddress": "enabled",
+            "translatePort": "enabled",
+            "vlansDisabled": true,
+            "vsIndex": 10,
+            "metadata": [
+                {
+                    "name": "f5-ansible.last_modified",
+                    "persist": "true",
+                    "value": "2023-03-21 21:34:22.761327"
+                },
+                {
+                    "name": "f5-ansible.version",
+                    "persist": "true",
+                    "value": "2.14.3"
+                }
+            ],
+            "policiesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_reject/policies?ver=16.1.3.3",
+                "isSubcollection": true
+            },
+            "profilesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_reject/profiles?ver=16.1.3.3",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "tcp",
+                        "partition": "Common",
+                        "fullPath": "/Common/tcp",
+                        "generation": 96,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_reject/profiles/~Common~tcp?ver=16.1.3.3",
+                        "context": "all",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~tcp?ver=16.1.3.3"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "tm:ltm:virtual:virtualstate",
+            "name": "fake_standard",
+            "partition": "Common",
+            "fullPath": "/Common/fake_standard",
+            "generation": 88,
+            "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_standard?ver=16.1.3.3",
+            "addressStatus": "yes",
+            "autoLasthop": "default",
+            "cmpEnabled": "yes",
+            "connectionLimit": 0,
+            "creationTime": "2023-03-21T21:32:13Z",
+            "description": "Test Virtual Server",
+            "destination": "/Common/192.168.1.1:443",
+            "enabled": true,
+            "evictionProtected": "disabled",
+            "gtmScore": 0,
+            "ipProtocol": "tcp",
+            "lastModifiedTime": "2023-03-21T21:32:13Z",
+            "mask": "255.255.255.255",
+            "mirror": "disabled",
+            "mobileAppTunnel": "disabled",
+            "nat64": "disabled",
+            "rateLimit": "disabled",
+            "rateLimitDstMask": 0,
+            "rateLimitMode": "object",
+            "rateLimitSrcMask": 0,
+            "serversslUseSni": "disabled",
+            "serviceDownImmediateAction": "none",
+            "source": "0.0.0.0/0",
+            "sourceAddressTranslation": {
+                "type": "automap"
+            },
+            "sourcePort": "preserve",
+            "synCookieStatus": "not-activated",
+            "translateAddress": "enabled",
+            "translatePort": "enabled",
+            "vlansDisabled": true,
+            "vsIndex": 2,
+            "metadata": [
+                {
+                    "name": "f5-ansible.last_modified",
+                    "persist": "true",
+                    "value": "2023-03-21 21:32:12.459185"
+                },
+                {
+                    "name": "f5-ansible.version",
+                    "persist": "true",
+                    "value": "2.14.3"
+                }
+            ],
+            "policiesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_standard/policies?ver=16.1.3.3",
+                "isSubcollection": true
+            },
+            "profilesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_standard/profiles?ver=16.1.3.3",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "clientssl",
+                        "partition": "Common",
+                        "fullPath": "/Common/clientssl",
+                        "generation": 88,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_standard/profiles/~Common~clientssl?ver=16.1.3.3",
+                        "context": "clientside",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~clientssl?ver=16.1.3.3"
+                        }
+                    },
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "http",
+                        "partition": "Common",
+                        "fullPath": "/Common/http",
+                        "generation": 88,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_standard/profiles/~Common~http?ver=16.1.3.3",
+                        "context": "all",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/http/~Common~http?ver=16.1.3.3"
+                        }
+                    },
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "tcp",
+                        "partition": "Common",
+                        "fullPath": "/Common/tcp",
+                        "generation": 88,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_standard/profiles/~Common~tcp?ver=16.1.3.3",
+                        "context": "all",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~tcp?ver=16.1.3.3"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "tm:ltm:virtual:virtualstate",
+            "name": "fake_stateless",
+            "partition": "Common",
+            "fullPath": "/Common/fake_stateless",
+            "generation": 97,
+            "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_stateless?ver=16.1.3.3",
+            "addressStatus": "yes",
+            "autoLasthop": "default",
+            "cmpEnabled": "yes",
+            "connectionLimit": 0,
+            "creationTime": "2023-03-21T21:34:40Z",
+            "description": "Test Virtual Server",
+            "destination": "/Common/192.168.1.10:443",
+            "enabled": true,
+            "evictionProtected": "disabled",
+            "gtmScore": 0,
+            "ipProtocol": "udp",
+            "lastModifiedTime": "2023-03-21T21:34:40Z",
+            "mask": "255.255.255.255",
+            "mirror": "disabled",
+            "mobileAppTunnel": "disabled",
+            "nat64": "disabled",
+            "pool": "/Common/stateless-pool",
+            "poolReference": {
+                "link": "https://localhost/mgmt/tm/ltm/pool/~Common~stateless-pool?ver=16.1.3.3"
+            },
+            "rateLimit": "disabled",
+            "rateLimitDstMask": 0,
+            "rateLimitMode": "object",
+            "rateLimitSrcMask": 0,
+            "serversslUseSni": "disabled",
+            "serviceDownImmediateAction": "none",
+            "source": "0.0.0.0/0",
+            "sourceAddressTranslation": {
+                "type": "none"
+            },
+            "sourcePort": "preserve",
+            "stateless": true,
+            "synCookieStatus": "not-activated",
+            "translateAddress": "enabled",
+            "translatePort": "disabled",
+            "vlansDisabled": true,
+            "vsIndex": 11,
+            "metadata": [
+                {
+                    "name": "f5-ansible.last_modified",
+                    "persist": "true",
+                    "value": "2023-03-21 21:34:40.013838"
+                },
+                {
+                    "name": "f5-ansible.version",
+                    "persist": "true",
+                    "value": "2.14.3"
+                }
+            ],
+            "policiesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_stateless/policies?ver=16.1.3.3",
+                "isSubcollection": true
+            },
+            "profilesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_stateless/profiles?ver=16.1.3.3",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "udp",
+                        "partition": "Common",
+                        "fullPath": "/Common/udp",
+                        "generation": 97,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_stateless/profiles/~Common~udp?ver=16.1.3.3",
+                        "context": "all",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/udp/~Common~udp?ver=16.1.3.3"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

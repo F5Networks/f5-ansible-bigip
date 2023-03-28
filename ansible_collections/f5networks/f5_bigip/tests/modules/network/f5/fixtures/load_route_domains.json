@@ -1,0 +1,38 @@
+{
+    "kind": "tm:net:route-domain:route-domaincollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/net/route-domain?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:net:route-domain:route-domainstate",
+            "name": "0",
+            "partition": "Common",
+            "fullPath": "/Common/0",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/net/route-domain/~Common~0?ver=16.0.0",
+            "connectionLimit": 0,
+            "id": 0,
+            "strict": "enabled",
+            "throughputCapacity": "infinite",
+            "vlans": [
+                "/Common/http-tunnel",
+                "/Common/socks-tunnel",
+                "/Common/alice",
+                "/Common/foo1"
+            ],
+            "vlansReference": [
+                {
+                    "link": "https://localhost/mgmt/tm/net/tunnels/tunnel/~Common~http-tunnel?ver=16.0.0"
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/net/tunnels/tunnel/~Common~socks-tunnel?ver=16.0.0"
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/net/vlan/~Common~alice?ver=16.0.0"
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/net/vlan/~Common~foo1?ver=16.0.0"
+                }
+            ]
+        }
+    ]
+}

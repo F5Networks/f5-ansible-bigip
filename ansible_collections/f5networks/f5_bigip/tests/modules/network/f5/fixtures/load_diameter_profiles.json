@@ -1,0 +1,32 @@
+{
+    "kind": "tm:ltm:profile:diameter:diametercollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/ltm/profile/diameter?ver=16.1.3.3",
+    "items": [
+        {
+            "kind": "tm:ltm:profile:diameter:diameterstate",
+            "name": "diameter",
+            "partition": "Common",
+            "fullPath": "/Common/diameter",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/ltm/profile/diameter/~Common~diameter?ver=16.1.3.3",
+            "appService": "none",
+            "connectionPrime": "disabled",
+            "defaultsFrom": "none",
+            "description": "none",
+            "destinationRealm": "none",
+            "handshakeTimeout": 10,
+            "hostIpRewrite": "enabled",
+            "maxRetransmitAttempts": 1,
+            "maxWatchdogFailure": 10,
+            "originHostToClient": "none",
+            "originHostToServer": "none",
+            "originRealmToClient": "none",
+            "originRealmToServer": "none",
+            "parentAvp": "none",
+            "persistAvp": "Session-Id",
+            "resetOnTimeout": "enabled",
+            "retransmitTimeout": 10,
+            "watchdogTimeout": 0
+        }
+    ]
+}

@@ -7584,7 +7584,7 @@ from collections import namedtuple
 
 try:
     from packaging.version import Version
-except ImportError:
+except ImportError:  # pragma: no cover
     HAS_PACKAGING = False
     Version = None
     PACKAGING_IMPORT_ERROR = traceback.format_exc()
@@ -7605,7 +7605,7 @@ from ansible.module_utils.connection import Connection
 
 from ipaddress import ip_interface
 from ..module_utils.client import (
-    F5Client, tmos_version, modules_provisioned, send_teem, packages_installed
+    F5Client, modules_provisioned, send_teem, packages_installed
 )
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, flatten_boolean, fq_name
@@ -7615,7 +7615,7 @@ from ..module_utils.urls import parseStats
 from ..module_utils.ipaddress import is_valid_ip
 
 
-class BaseManager(object):
+class BaseManager(object):  # pragma: no cover
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
@@ -7656,17 +7656,15 @@ class BaseManager(object):
         self.installed_packages = []
 
     def exec_module(self):
-        start = datetime.datetime.now().isoformat()
         results = []
         facts = self.read_facts()
         for item in facts:
             attrs = item.to_return()
             results.append(attrs)
-        send_teem(self.client, start)
         return results
 
 
-class Parameters(AnsibleF5Parameters):
+class Parameters(AnsibleF5Parameters):  # pragma: no cover
     @property
     def gather_subset(self):
         if isinstance(self._values['gather_subset'], string_types):
@@ -7756,10 +7754,7 @@ class ApmAccessProfileFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class ApmAccessPolicyFactParameters(BaseParameters):
@@ -7823,10 +7818,7 @@ class ApmAccessPolicyFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class As3Parameters(BaseParameters):
@@ -7847,12 +7839,12 @@ class As3FactManager(BaseManager):
 
     def exec_module(self):
         facts = self._exec_module()
-        result = dict(as3_config=facts)
+        result = dict(as3_config=facts if facts else [])
         return result
 
     def _exec_module(self):
         if 'as3' not in self.installed_packages:
-            return []
+            return None
         facts = self.read_facts()
         return facts
 
@@ -7861,21 +7853,17 @@ class As3FactManager(BaseManager):
         return collection
 
     def read_collection_from_device(self):
-        result = dict()
         uri = "/mgmt/shared/appsvcs/declare"
         response = self.client.get(uri)
 
         if response['code'] == 204:
-            return []
+            return None
 
         if response['code'] not in [200, 201]:
             raise F5ModuleError(response['contents'])
 
-        if 'class' not in response['contents']:
-            return []
-
-        result['declaration'] = response['contents']
-        return result
+        if response['contents'].get('class'):
+            return [dict(declaration=response['contents'])]
 
 
 class AsmPolicyStatsParameters(BaseParameters):
@@ -7911,8 +7899,6 @@ class AsmPolicyStatsParameters(BaseParameters):
             return None
         return len([x for x in self._values['policies'] if x['isModified'] is True])
 
-
-class AsmPolicyStatsParametersv13(AsmPolicyStatsParameters):
     @property
     def policies_active(self):
         if self._values['policies'] is None or len(self._values['policies']) == 0:
@@ -7934,34 +7920,6 @@ class AsmPolicyStatsParametersv13(AsmPolicyStatsParameters):
         return self.policies_inactive
 
 
-class AsmPolicyStatsParametersv12(AsmPolicyStatsParameters):
-    @property
-    def policies_active(self):
-        if self._values['policies'] is None or len(self._values['policies']) == 0:
-            return None
-        return len([x for x in self._values['policies'] if x['active'] is True])
-
-    @property
-    def policies_inactive(self):
-        if self._values['policies'] is None or len(self._values['policies']) == 0:
-            return None
-        return len([x for x in self._values['policies'] if x['active'] is not True])
-
-    @property
-    def policies_attached(self):
-        if self._values['policies'] is None or len(self._values['policies']) == 0:
-            return None
-        return len([x for x in self._values['policies']
-                    if x['active'] is True and len(x['virtualServers']) > 0])
-
-    @property
-    def policies_unattached(self):
-        if self._values['policies'] is None or len(self._values['policies']) == 0:
-            return None
-        return len([x for x in self._values['policies']
-                    if x['active'] is False and len(x['virtualServers']) == 0])
-
-
 class AsmPolicyStatsFactManager(BaseManager):
     def __init__(self, *args, **kwargs):
         self.client = kwargs.get('client', None)
@@ -7980,19 +7938,9 @@ class AsmPolicyStatsFactManager(BaseManager):
         results = facts.to_return()
         return results
 
-    def version_is_less_than_13(self):
-        version = tmos_version(self.client)
-        if Version(version) < Version('13.0.0'):
-            return True
-        else:
-            return False
-
     def read_facts(self):
         collection = self.read_collection_from_device()
-        if self.version_is_less_than_13():
-            params = AsmPolicyStatsParametersv12(params=collection)
-        else:
-            params = AsmPolicyStatsParametersv13(params=collection)
+        params = AsmPolicyStatsParameters(params=collection)
         return params
 
     def read_collection_from_device(self):
@@ -8001,13 +7949,8 @@ class AsmPolicyStatsFactManager(BaseManager):
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
-        if 'items' not in response['contents']:
-            return dict(
-                policies=[]
-            )
-        return dict(
-            policies=response['contents']['items']
-        )
+
+        return dict(policies=response['contents'].get('items', []))
 
 
 class AsmPolicyFactParameters(BaseParameters):
@@ -8377,21 +8320,13 @@ class AsmPolicyFactManager(BaseManager):
     def _exec_module(self):
         if 'asm' not in self.provisioned_modules:
             return []
-        manager = self.get_manager()
-        return manager._exec_module()
-
-    def get_manager(self):
-        if self.version_is_less_than_13():
-            return AsmPolicyFactManagerV12(**self.kwargs)
-        else:
-            return AsmPolicyFactManagerV13(**self.kwargs)
-
-    def version_is_less_than_13(self):
-        version = tmos_version(self.client)
-        if Version(version) < Version('13.0.0'):
-            return True
-        else:
-            return False
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
 
     def read_facts(self):
         results = []
@@ -8412,42 +8347,6 @@ class AsmPolicyFactManager(BaseManager):
             n = n + 10
         return result
 
-
-class AsmPolicyFactManagerV12(AsmPolicyFactManager):
-    def _exec_module(self):
-        results = []
-        facts = self.read_facts()
-        for item in facts:
-            attrs = item.to_return()
-            results.append(attrs)
-        results = sorted(results, key=lambda k: k['full_path'])
-        return results
-
-    def read_collection_from_device(self, skip=0):
-        uri = "/mgmt/tm/asm/policies"
-        to_expand = 'policy-builder,geolocation-enforcement,csrf-protection'
-        query = '?$top=10&$skip={0}&$expand={1}&$filter=partition+eq+{2}'.format(skip, to_expand, self.module.params['partition'])
-
-        response = self.client.get(uri + query)
-
-        if response['code'] not in [200, 201, 202]:
-            raise F5ModuleError(response['contents'])
-
-        if 'items' not in response['contents']:
-            return []
-        return response['contents']['items']
-
-
-class AsmPolicyFactManagerV13(AsmPolicyFactManager):
-    def _exec_module(self):
-        results = []
-        facts = self.read_facts()
-        for item in facts:
-            attrs = item.to_return()
-            results.append(attrs)
-        results = sorted(results, key=lambda k: k['full_path'])
-        return results
-
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/asm/policies"
         to_expand = 'general,signature-settings,header-settings,cookie-settings,antivirus,' \
@@ -8458,9 +8357,7 @@ class AsmPolicyFactManagerV13(AsmPolicyFactManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        return response['contents']['items']
+        return response['contents'].get('items', [])
 
 
 class AsmServerTechnologyFactParameters(BaseParameters):
@@ -8491,21 +8388,12 @@ class AsmServerTechnologyFactManager(BaseManager):
         results = []
         if 'asm' not in self.provisioned_modules:
             return results
-        if self.version_is_less_than_13():
-            return results
         facts = self.read_facts()
         for item in facts:
             attrs = item.to_return()
             results.append(attrs)
         results = sorted(results, key=lambda k: k['server_technology_name'])
         return results
-
-    def version_is_less_than_13(self):
-        version = tmos_version(self.client)
-        if Version(version) < Version('13.0.0'):
-            return True
-        else:
-            return False
 
     def read_facts(self):
         results = []
@@ -8522,10 +8410,7 @@ class AsmServerTechnologyFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class AsmSignatureSetsFactParameters(BaseParameters):
@@ -8568,9 +8453,6 @@ class AsmSignatureSetsFactParameters(BaseParameters):
     @property
     def default_learn(self):
         return flatten_boolean(self._values['default_learn'])
-
-
-# TODO: add the following: filter, systems, signatureReferences
 
 
 class AsmSignatureSetsFactManager(BaseManager):
@@ -8622,10 +8504,7 @@ class AsmSignatureSetsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return None
-
-        return response['contents']['items']
+        return response['contents'].get('items', [])
 
 
 class ClientSslProfilesParameters(BaseParameters):
@@ -8946,10 +8825,7 @@ class ClientSslProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class CFEParameters(BaseParameters):
@@ -8970,12 +8846,12 @@ class CFEFactManager(BaseManager):
 
     def exec_module(self):
         facts = self._exec_module()
-        result = dict(cfe_config=facts)
+        result = dict(cfe_config=facts if facts else [])
         return result
 
     def _exec_module(self):
         if 'cfe' not in self.installed_packages:
-            return []
+            return None
         facts = self.read_facts()
         return facts
 
@@ -8984,15 +8860,14 @@ class CFEFactManager(BaseManager):
         return collection
 
     def read_collection_from_device(self):
-        result = dict()
         uri = "/mgmt/shared/cloud-failover/declare"
         response = self.client.get(uri)
 
         if response['code'] not in [200, 201]:
             raise F5ModuleError(response['contents'])
 
-        result['declaration'] = response['contents']['declaration']
-        return result
+        if response['contents'].get('message'):
+            return [dict(declaration=response['contents']['declaration'])]
 
 
 class DeviceGroupsParameters(BaseParameters):
@@ -9108,10 +8983,7 @@ class DeviceGroupsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class DevicesParameters(BaseParameters):
@@ -9295,12 +9167,12 @@ class DOFactManager(BaseManager):
 
     def exec_module(self):
         facts = self._exec_module()
-        result = dict(do_config=facts)
+        result = dict(do_config=facts if facts else [])
         return result
 
     def _exec_module(self):
         if 'do' not in self.installed_packages:
-            return []
+            return None
         facts = self.read_facts()
         return facts
 
@@ -9309,18 +9181,14 @@ class DOFactManager(BaseManager):
         return collection
 
     def read_collection_from_device(self):
-        result = dict()
         uri = "/mgmt/shared/declarative-onboarding/inspect"
         response = self.client.get(uri)
 
         if response['code'] not in [200, 201]:
             raise F5ModuleError(response['contents'])
 
-        if not response['contents']:
-            result['declaration'] = []
-        else:
-            result['declaration'] = response['contents'][0]['declaration']
-        return result
+        if response['contents'][0].get('declaration'):
+            return [dict(declaration=response['contents'][0]['declaration'])]
 
 
 class ExternalMonitorsParameters(BaseParameters):
@@ -9422,10 +9290,8 @@ class ExternalMonitorsFactManager(BaseManager):
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+
+        return response['contents'].get('items', [])
 
 
 class FastHttpProfilesParameters(BaseParameters):
@@ -9576,10 +9442,7 @@ class FastHttpProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class FastL4ProfilesParameters(BaseParameters):
@@ -9908,10 +9771,7 @@ class FastL4ProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GatewayIcmpMonitorsParameters(BaseParameters):
@@ -10013,10 +9873,7 @@ class GatewayIcmpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmXPoolsParameters(BaseParameters):
@@ -10258,10 +10115,7 @@ class GtmAPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmAaaaPoolsFactManager(BaseManager):
@@ -10314,10 +10168,7 @@ class GtmAaaaPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmCnamePoolsFactManager(BaseManager):
@@ -10370,10 +10221,7 @@ class GtmCnamePoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmMxPoolsFactManager(BaseManager):
@@ -10426,10 +10274,7 @@ class GtmMxPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmNaptrPoolsFactManager(BaseManager):
@@ -10482,10 +10327,7 @@ class GtmNaptrPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmSrvPoolsFactManager(BaseManager):
@@ -10538,10 +10380,7 @@ class GtmSrvPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmServersParameters(BaseParameters):
@@ -10619,11 +10458,12 @@ class GtmServersParameters(BaseParameters):
         uri = "{0}/stats".format(url)
         response = self.client.get(uri)
 
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
         result = parseStats(response['contents'])
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
+        if result:
+            return result.get('stats', {})
 
     def _process_vs_stats(self, link):
         result = dict()
@@ -10840,10 +10680,7 @@ class GtmServersFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmXWideIpsParameters(BaseParameters):
@@ -10970,10 +10807,7 @@ class GtmAWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmAaaaWideIpsFactManager(BaseManager):
@@ -11026,10 +10860,7 @@ class GtmAaaaWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmCnameWideIpsFactManager(BaseManager):
@@ -11082,10 +10913,7 @@ class GtmCnameWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmMxWideIpsFactManager(BaseManager):
@@ -11194,10 +11022,7 @@ class GtmNaptrWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmSrvWideIpsFactManager(BaseManager):
@@ -11250,10 +11075,7 @@ class GtmSrvWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmTopologyRegionParameters(BaseParameters):
@@ -11345,10 +11167,7 @@ class GtmTopologyRegionFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class HttpMonitorsParameters(BaseParameters):
@@ -11464,8 +11283,7 @@ class HttpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class HttpsMonitorsParameters(BaseParameters):
@@ -11583,8 +11401,7 @@ class HttpsMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class HttpProfilesParameters(BaseParameters):
@@ -11943,10 +11760,7 @@ class IappServicesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class IapplxPackagesParameters(BaseParameters):
@@ -12001,9 +11815,7 @@ class IapplxPackagesFactManager(BaseManager):
 
         status = self.wait_for_task(response['contents']['id'])
         if status == 'FINISHED':
-            uri = "/mgmt/shared/iapp/package-management-tasks/{0}".format(
-                response['contents']['id']
-            )
+            uri = f"/mgmt/shared/iapp/package-management-tasks/{response['contents']['id']}"
             response = self.client.get(uri)
             if response['code'] not in [200, 201, 202]:
                 raise F5ModuleError(response['contents'])
@@ -12012,14 +11824,10 @@ class IapplxPackagesFactManager(BaseManager):
             raise F5ModuleError(
                 "An error occurred querying iAppLX packages."
             )
-        result = response['contents']['queryResponse']
-        return result
+        return response['contents']['queryResponse']
 
     def wait_for_task(self, task_id):
-        uri = "/mgmt/shared/iapp/package-management-tasks/{0}".format(
-            task_id
-        )
-        response = None
+        uri = f"/mgmt/shared/iapp/package-management-tasks/{task_id}"
         for x in range(0, 60):
             response = self.client.get(uri)
 
@@ -12029,7 +11837,6 @@ class IapplxPackagesFactManager(BaseManager):
             if response['contents']['status'] in ['FINISHED', 'FAILED']:
                 return response['contents']['status']
             time.sleep(1)
-        return response['contents']['status']
 
 
 class IcmpMonitorsParameters(BaseParameters):
@@ -12131,10 +11938,7 @@ class IcmpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class InterfacesParameters(BaseParameters):
@@ -12187,15 +11991,13 @@ class InterfacesParameters(BaseParameters):
     def sflow_poll_interval_global(self):
         if self._values['sflow'] is None:
             return None
-        if 'pollIntervalGlobal' in self._values['sflow']:
-            return self._values['sflow']['pollIntervalGlobal']
+        return self._values['sflow'].get('pollIntervalGlobal')
 
     @property
     def sflow_poll_interval(self):
         if self._values['sflow'] is None:
             return None
-        if 'pollInterval' in self._values['sflow']:
-            return self._values['sflow']['pollInterval']
+        return self._values['sflow'].get('pollInterval')
 
     @property
     def mac_address(self):
@@ -12255,10 +12057,7 @@ class InterfacesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class InternalDataGroupsParameters(BaseParameters):
@@ -12322,10 +12121,7 @@ class InternalDataGroupsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class IrulesParameters(BaseParameters):
@@ -12425,16 +12221,11 @@ class IrulesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class LicenseParameters(BaseParameters):
-    api_map = {
-
-    }
+    api_map = {}
 
     returnables = [
         'license_start_date',
@@ -12793,8 +12584,9 @@ class LtmPoolsParameters(BaseParameters):
         """
         if self._values['metadata'] is None:
             return None
-        result = dict([(k['name'], k['value']) for k in self._values['metadata']])
-        return result
+        result = dict([(k['name'], k['value']) for k in self._values['metadata'] if k.get('value')])
+        if result:
+            return result
 
     @property
     def members(self):
@@ -12927,10 +12719,7 @@ class LtmPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
     def read_member_from_device(self, full_path):
         uri = "/mgmt/tm/ltm/pool/{0}/members".format(
@@ -12941,10 +12730,7 @@ class LtmPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
     def read_stats_from_device(self, full_path):
         uri = "/mgmt/tm/ltm/pool/{0}/stats".format(
@@ -12956,10 +12742,8 @@ class LtmPoolsFactManager(BaseManager):
             raise F5ModuleError(response['contents'])
 
         result = parseStats(response['contents'])
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
+        if result:
+            return result.get('stats', {})
 
 
 class LtmPolicyParameters(BaseParameters):
@@ -13081,10 +12865,7 @@ class LtmPolicyFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class NodesParameters(BaseParameters):
@@ -13186,26 +12967,38 @@ class NodesParameters(BaseParameters):
 
     @property
     def monitor_status(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['monitorStatus']
 
     @property
     def session_status(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['sessionStatus']
 
     @property
     def availability_status(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['status']['availabilityState']
 
     @property
     def enabled_status(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['status']['enabledState']
 
     @property
     def status_reason(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['status']['statusReason']
 
     @property
     def monitor_rule(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['monitorRule']
 
 
@@ -13259,10 +13052,7 @@ class NodesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
     def read_stats_from_device(self, full_path):
         uri = "/mgmt/tm/ltm/node/{0}/stats".format(
@@ -13274,10 +13064,8 @@ class NodesFactManager(BaseManager):
             raise F5ModuleError(response['contents'])
 
         result = parseStats(response['contents'])
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
+        if result:
+            return result.get('stats', {})
 
 
 class OneConnectProfilesParameters(BaseParameters):
@@ -13377,10 +13165,7 @@ class OneConnectProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class PartitionParameters(BaseParameters):
@@ -13432,10 +13217,7 @@ class PartitionFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class ProvisionInfoParameters(BaseParameters):
@@ -13491,10 +13273,7 @@ class ProvisionInfoFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class RouteDomainParameters(BaseParameters):
@@ -13587,10 +13366,7 @@ class RouteDomainFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SelfIpsParameters(BaseParameters):
@@ -13705,10 +13481,7 @@ class SelfIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class ServerSslProfilesParameters(BaseParameters):
@@ -14018,10 +13791,7 @@ class ServerSslProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SoftwareVolumesParameters(BaseParameters):
@@ -14045,15 +13815,15 @@ class SoftwareVolumesParameters(BaseParameters):
 
     @property
     def install_volume(self):
-        if self._values['media'] is None:
+        if not self._values['media']:
             return None
-        return self._values['media'].get('name', None)
+        return self._values['media'][0].get('name')
 
     @property
     def default_boot_location(self):
-        if self._values['media'] is None:
+        if not self._values['media']:
             return None
-        return flatten_boolean(self._values['media'].get('defaultBootLocation', None))
+        return flatten_boolean(self._values['media'][0].get('defaultBootLocation'))
 
     @property
     def active(self):
@@ -14097,10 +13867,7 @@ class SoftwareVolumesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SoftwareHotfixesParameters(BaseParameters):
@@ -14156,10 +13923,7 @@ class SoftwareHotfixesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SoftwareImagesParameters(BaseParameters):
@@ -14274,10 +14038,7 @@ class SoftwareImagesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SslCertificatesParameters(BaseParameters):
@@ -14379,10 +14140,7 @@ class SslCertificatesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SslKeysParameters(BaseParameters):
@@ -14461,10 +14219,7 @@ class SslKeysFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SystemDbParameters(BaseParameters):
@@ -14620,10 +14375,7 @@ class SystemDbFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SystemInfoParameters(BaseParameters):
@@ -15048,12 +14800,12 @@ class TSFactManager(BaseManager):
 
     def exec_module(self):
         facts = self._exec_module()
-        result = dict(ts_config=facts)
+        result = dict(ts_config=facts if facts else [])
         return result
 
     def _exec_module(self):
         if 'ts' not in self.installed_packages:
-            return []
+            return None
         facts = self.read_facts()
         return facts
 
@@ -15062,17 +14814,14 @@ class TSFactManager(BaseManager):
         return collection
 
     def read_collection_from_device(self):
-        result = dict()
         uri = "/mgmt/shared/telemetry/declare"
         response = self.client.get(uri)
 
-        if 'code' in response and response['code'] not in [200, 201]:
+        if response['code'] not in [200, 201]:
             raise F5ModuleError(response['contents'])
 
-        if 'message' not in response:
-            return []
-        result['declaration'] = response['contents']['declaration']
-        return result
+        if response['contents'].get('message'):
+            return [dict(declaration=response['contents']['declaration'])]
 
 
 class TcpMonitorsParameters(BaseParameters):
@@ -15181,10 +14930,7 @@ class TcpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class TcpHalfOpenMonitorsParameters(BaseParameters):
@@ -15273,10 +15019,7 @@ class TcpHalfOpenMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class TcpProfilesParameters(BaseParameters):
@@ -15702,10 +15445,7 @@ class TcpProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class TrafficGroupsParameters(BaseParameters):
@@ -15728,7 +15468,8 @@ class TrafficGroupsParameters(BaseParameters):
         'ha_load_factor',
         'ha_order',
         'is_floating',
-        'mac_masquerade_address'
+        'mac_masquerade_address',
+        'stats'
     ]
 
     @property
@@ -15812,10 +15553,7 @@ class TrafficGroupsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
     def read_stats_from_device(self, full_path):
         uri = "/mgmt/tm/cm/traffic-group/{0}/stats".format(
@@ -15827,10 +15565,8 @@ class TrafficGroupsFactManager(BaseManager):
             raise F5ModuleError(response['contents'])
 
         result = parseStats(response['contents'])
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
+        if result:
+            return result.get('stats', {})
 
 
 class TrunksParameters(BaseParameters):
@@ -15861,14 +15597,15 @@ class TrunksParameters(BaseParameters):
         'lacp_timeout',
         'interfaces',
         'distribution_hash',
-        'configured_member_count'
+        'configured_member_count',
+        'stats'
     ]
 
     @property
     def lacp_enabled(self):
-        if self._values['lacp_enabled'] is None:
+        if self._values['lacp_state'] is None:
             return None
-        elif self._values['lacp_enabled'] == 'disabled':
+        elif self._values['lacp_state'] == 'disabled':
             return 'no'
         return 'yes'
 
@@ -15882,7 +15619,9 @@ class TrunksParameters(BaseParameters):
 
     @property
     def media_status(self):
-        return self._values['stats']['status']
+        if not self._values['stats']:
+            return None
+        return self._values['stats'].get('status')
 
 
 class TrunksFactManager(BaseManager):
@@ -15934,10 +15673,7 @@ class TrunksFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
     def read_stats_from_device(self, full_path):
         uri = "/mgmt/tm/net/trunk/{0}/stats".format(
@@ -15949,10 +15685,8 @@ class TrunksFactManager(BaseManager):
             raise F5ModuleError(response['contents'])
 
         result = parseStats(response['contents'])
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
+        if result:
+            return result.get('stats', {})
 
 
 class UCSParameters(BaseParameters):
@@ -16039,10 +15773,7 @@ class UCSFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class UsersParameters(BaseParameters):
@@ -16112,10 +15843,7 @@ class UsersFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class UdpProfilesParameters(BaseParameters):
@@ -16228,10 +15956,7 @@ class UdpProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class VcmpGuestsParameters(BaseParameters):
@@ -16311,10 +16036,7 @@ class VcmpGuestsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class VirtualAddressesParameters(BaseParameters):
@@ -16429,10 +16151,7 @@ class VirtualAddressesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class VirtualServersParameters(BaseParameters):
@@ -16549,154 +16268,230 @@ class VirtualServersParameters(BaseParameters):
 
     @property
     def max_conn_duration(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['csMaxConnDur']
 
     @property
     def mean_conn_duration(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['csMeanConnDur']
 
     @property
     def min_conn_duration(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['csMinConnDur']
 
     @property
     def cpu_usage_ratio_last_5_min(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['fiveMinAvgUsageRatio']
 
     @property
     def cpu_usage_ratio_last_5_sec(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['fiveSecAvgUsageRatio']
 
     @property
     def cpu_usage_ratio_last_1_min(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['oneMinAvgUsageRatio']
 
     @property
     def cmp_mode(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['cmpEnableMode']
 
     @property
     def availability_status(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['status']['availabilityState']
 
     @property
     def status_reason(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['status']['statusReason']
 
     @property
     def total_requests(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['totRequests']
 
     @property
     def ephemeral_bits_in(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['bitsIn']
 
     @property
     def ephemeral_bits_out(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['bitsOut']
 
     @property
     def ephemeral_current_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['curConns']
 
     @property
     def ephemeral_evicted_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['evictedConns']
 
     @property
     def ephemeral_max_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['maxConns']
 
     @property
     def ephemeral_pkts_in(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['pktsIn']
 
     @property
     def ephemeral_pkts_out(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['pktsOut']
 
     @property
     def ephemeral_slow_killed(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['slowKilled']
 
     @property
     def ephemeral_total_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['totConns']
 
     @property
     def client_side_bits_in(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['bitsIn']
 
     @property
     def client_side_bits_out(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['bitsOut']
 
     @property
     def client_side_current_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['curConns']
 
     @property
     def client_side_evicted_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['evictedConns']
 
     @property
     def client_side_max_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['maxConns']
 
     @property
     def client_side_pkts_in(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['pktsIn']
 
     @property
     def client_side_pkts_out(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['pktsOut']
 
     @property
     def client_side_slow_killed(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['slowKilled']
 
     @property
     def client_side_total_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['totConns']
 
     @property
     def total_software_accepted_syn_cookies(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['accepts']
 
     @property
     def total_hardware_accepted_syn_cookies(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['hwAccepts']
 
     @property
     def total_hardware_syn_cookies(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['hwSyncookies']
 
     @property
     def hardware_syn_cookie_instances(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['hwsyncookieInstance']
 
     @property
     def total_software_rejected_syn_cookies(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['rejects']
 
     @property
     def software_syn_cookie_instances(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['swsyncookieInstance']
 
     @property
     def current_syn_cache(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['syncacheCurr']
 
     @property
     def syn_cache_overflow(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['syncacheOver']
 
     @property
     def total_software_syn_cookies(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['syncookies']
 
     @property
     def syn_cookies_status(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookieStatus']
 
     @property
@@ -17183,25 +16978,18 @@ class VirtualServersFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
     def read_stats_from_device(self, full_path):
-        uri = "/mgmt/tm/ltm/virtual/{0}/stats".format(
-            transform_name(name=full_path)
-        )
+        uri = f"/mgmt/tm/ltm/virtual/{transform_name(name=full_path)}/stats"
         response = self.client.get(uri)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
         result = parseStats(response['contents'])
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
+        if result:
+            return result.get('stats', {})
 
 
 class VlansParameters(BaseParameters):
@@ -17237,7 +17025,7 @@ class VlansParameters(BaseParameters):
         'sflow_sampling_rate_global',
         'source_check_enabled',
         'true_mac_address',
-        'tag',
+        'tag'
     ]
 
     @property
@@ -17281,13 +17069,15 @@ class VlansParameters(BaseParameters):
 
     @property
     def true_mac_address(self):
-        # Who made this field a "description"!?
-        return self._values['stats']['macTrue']
+        if not self._values['stats']:
+            return None
+        return self._values['stats'].get('macTrue')
 
     @property
     def tag(self):
-        # We can't agree on field names...SMH
-        return self._values['stats']['id']
+        if not self._values['stats']:
+            return None
+        return self._values['stats'].get('id')
 
     @property
     def failsafe_enabled(self):
@@ -17344,10 +17134,7 @@ class VlansFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
     def read_stats_from_device(self, full_path):
         uri = "/mgmt/tm/net/vlan/{0}/stats".format(
@@ -17359,10 +17146,8 @@ class VlansFactManager(BaseManager):
             raise F5ModuleError(response['contents'])
 
         result = parseStats(response['contents'])
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
+        if result:
+            return result.get('stats', {})
 
 
 class ManagementRouteParameters(BaseParameters):
@@ -17429,10 +17214,7 @@ class ManagementRouteFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class RemoteSyslogParameters(BaseParameters):
@@ -17579,6 +17361,7 @@ class ModuleManager(object):
         }
 
     def exec_module(self):
+        start = datetime.datetime.now().isoformat()
         self.handle_all_keyword()
         self.handle_profiles_keyword()
         self.handle_monitors_keyword()
@@ -17611,6 +17394,7 @@ class ModuleManager(object):
             result['queried'] = True
         else:
             result['queried'] = False
+        send_teem(F5Client(module=self.module, client=self.connection), start)
         return result
 
     def filter_excluded_facts(self):
@@ -17947,5 +17731,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

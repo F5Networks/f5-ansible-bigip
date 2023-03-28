@@ -17,8 +17,6 @@ from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_as3_deploy im
 )
 
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
-
-from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_bigip.tests.compat import unittest
 from ansible_collections.f5networks.f5_bigip.tests.compat.mock import Mock, patch, MagicMock
 from ansible_collections.f5networks.f5_bigip.tests.modules.utils import (

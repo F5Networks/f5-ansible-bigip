@@ -1,0 +1,66 @@
+{
+    "kind": "tm:ltm:node:nodestats",
+    "generation": 5450,
+    "selfLink": "https://localhost/mgmt/tm/ltm/node/~Common~7.3.67.8/stats?ver=16.0.0",
+    "entries": {
+        "https://localhost/mgmt/tm/ltm/node/~Common~7.3.67.8/stats": {
+            "nestedStats": {
+                "kind": "tm:ltm:node:nodestats",
+                "selfLink": "https://localhost/mgmt/tm/ltm/node/~Common~7.3.67.8/stats?ver=16.0.0",
+                "entries": {
+                    "addr": {
+                        "description": "7.3.67.8"
+                    },
+                    "curSessions": {
+                        "value": 0
+                    },
+                    "monitorRule": {
+                        "description": "min 1 of /Common/gateway_icmp /Common/icmp"
+                    },
+                    "monitorStatus": {
+                        "description": "down"
+                    },
+                    "tmName": {
+                        "description": "/Common/7.3.67.8"
+                    },
+                    "serverside.bitsIn": {
+                        "value": 0
+                    },
+                    "serverside.bitsOut": {
+                        "value": 0
+                    },
+                    "serverside.curConns": {
+                        "value": 0
+                    },
+                    "serverside.maxConns": {
+                        "value": 0
+                    },
+                    "serverside.pktsIn": {
+                        "value": 0
+                    },
+                    "serverside.pktsOut": {
+                        "value": 0
+                    },
+                    "serverside.totConns": {
+                        "value": 0
+                    },
+                    "sessionStatus": {
+                        "description": "enabled"
+                    },
+                    "status.availabilityState": {
+                        "description": "offline"
+                    },
+                    "status.enabledState": {
+                        "description": "enabled"
+                    },
+                    "status.statusReason": {
+                        "description": "/Common/gateway_icmp: No successful responses received before deadline. @2023/03/08 11:17:36. /Common/icmp: No successful responses received before deadline. @2023/03/08 11:17:36. "
+                    },
+                    "totRequests": {
+                        "value": 0
+                    }
+                }
+            }
+        }
+    }
+}

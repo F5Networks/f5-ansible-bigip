@@ -1,0 +1,242 @@
+{
+    "queryResponse": [
+        {
+            "name": "f5-iappslx-access-saml-sp",
+            "version": "2.5.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-access-saml-sp-2.5.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-service-discovery",
+            "version": "1.10.11",
+            "release": "1",
+            "arch": "noarch",
+            "packageName": "f5-service-discovery-1.10.11-1.noarch",
+            "tags": [
+                "PLUGIN"
+            ]
+        },
+        {
+            "name": "f5-iappslx-access-aad-apps",
+            "version": "1.2.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-access-aad-apps-1.2.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-iappslx-waf-app-protection",
+            "version": "1.5.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-waf-app-protection-1.5.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-declarative-onboarding",
+            "version": "1.35.0",
+            "release": "6",
+            "arch": "noarch",
+            "packageName": "f5-declarative-onboarding-1.35.0-6.noarch",
+            "tags": [
+                "PLUGIN"
+            ]
+        },
+        {
+            "name": "f5-cloud-failover",
+            "version": "1.14.0",
+            "release": "0",
+            "arch": "noarch",
+            "packageName": "f5-cloud-failover-1.14.0-0.noarch",
+            "tags": [
+                "PLUGIN"
+            ]
+        },
+        {
+            "name": "f5-iappslx-access-adfs",
+            "version": "2.5.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-access-adfs-2.5.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-iappslx-access-datasafe",
+            "version": "1.4.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-access-datasafe-1.4.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-appsvcs",
+            "version": "3.36.1",
+            "release": "1",
+            "arch": "noarch",
+            "packageName": "f5-appsvcs-3.36.1-1.noarch",
+            "tags": [
+                "PLUGIN"
+            ]
+        },
+        {
+            "name": "f5-iappslx-waf-api-protection",
+            "version": "2.5.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-waf-api-protection-2.5.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-iappslx-access-oauth-client-rs",
+            "version": "4.5.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-access-oauth-client-rs-4.5.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-iappslx-waf-app-comp-protection",
+            "version": "2.3.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-waf-app-comp-protection-2.3.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-iappslx-waf-openapispec-api-protection",
+            "version": "1.4.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-waf-openapispec-api-protection-1.4.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-iappslx-access-api-protection",
+            "version": "1.6.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-access-api-protection-1.6.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-iappslx-access-saml-idp",
+            "version": "3.5.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-access-saml-idp-3.5.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-iappslx-waf-bados-protection",
+            "version": "1.5.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-waf-bados-protection-1.5.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-iappslx-access-exchange",
+            "version": "2.4.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-access-exchange-2.4.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-iappslx-waf-centralized-policy-management",
+            "version": "1.2.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-waf-centralized-policy-management-1.2.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-iappslx-access-oauth-auth-server",
+            "version": "4.4.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-access-oauth-auth-server-4.4.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-iappslx-access-framework",
+            "version": "1.7.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-access-framework-1.7.0-0.0.1629.noarch",
+            "tags": [
+                "PLUGIN"
+            ]
+        },
+        {
+            "name": "f5-iappslx-access-zta",
+            "version": "1.4.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-access-zta-1.4.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        },
+        {
+            "name": "f5-iappslx-waf-bot-protection",
+            "version": "2.3.0",
+            "release": "0.0.1629",
+            "arch": "noarch",
+            "packageName": "f5-iappslx-waf-bot-protection-2.3.0-0.0.1629.noarch",
+            "tags": [
+                "IAPP"
+            ]
+        }
+    ],
+    "operation": "QUERY",
+    "id": "82d4514c-afd2-4b4f-909f-e231d16b31c2",
+    "status": "FINISHED",
+    "startTime": "2023-03-21T12:53:37.723-0700",
+    "endTime": "2023-03-21T12:53:37.767-0700",
+    "userReference": {
+        "link": "https://localhost/mgmt/shared/authz/users/admin"
+    },
+    "identityReferences": [
+        {
+            "link": "https://localhost/mgmt/shared/authz/users/admin"
+        }
+    ],
+    "ownerMachineId": "a4a55d4f-7e77-410b-96d3-bcaaf047b041",
+    "generation": 3,
+    "lastUpdateMicros": 1679428417767878,
+    "kind": "shared:iapp:package-management-tasks:iapppackagemanagementtaskstate",
+    "selfLink": "https://localhost/mgmt/shared/iapp/package-management-tasks/82d4514c-afd2-4b4f-909f-e231d16b31c2"
+}

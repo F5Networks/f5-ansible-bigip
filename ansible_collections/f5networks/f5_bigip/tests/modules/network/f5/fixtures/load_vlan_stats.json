@@ -1,0 +1,156 @@
+{
+    "kind": "tm:net:vlan:vlanstats",
+    "generation": 428,
+    "selfLink": "https://localhost/mgmt/tm/net/vlan/~Common~alice/stats?ver=16.0.0",
+    "entries": {
+        "https://localhost/mgmt/tm/net/vlan/~Common~alice/stats": {
+            "nestedStats": {
+                "kind": "tm:net:vlan:vlanstats",
+                "selfLink": "https://localhost/mgmt/tm/net/vlan/~Common~alice/stats?ver=16.0.0",
+                "entries": {
+                    "cVid": {
+                        "description": " "
+                    },
+                    "id": {
+                        "value": 3605
+                    },
+                    "ifname": {
+                        "description": "alice"
+                    },
+                    "macTrue": {
+                        "description": "fa:16:3e:df:7a:c7"
+                    },
+                    "mtu": {
+                        "value": 1500
+                    },
+                    "tmName": {
+                        "description": "/Common/alice"
+                    },
+                    "https://localhost/mgmt/tm/net/vlan/~Common~alice/ifc_stat/stats": {
+                        "nestedStats": {
+                            "entries": {
+                                "https://localhost/mgmt/tm/net/vlan/~Common~alice/ifc_stat/0/stats": {
+                                    "nestedStats": {
+                                        "entries": {
+                                            "hcInBroadcastPkts": {
+                                                "value": 11
+                                            },
+                                            "hcInMulticastPkts": {
+                                                "value": 126
+                                            },
+                                            "hcInOctets": {
+                                                "value": 30518
+                                            },
+                                            "hcInUcastPkts": {
+                                                "value": 121
+                                            },
+                                            "hcOutBroadcastPkts": {
+                                                "value": 11
+                                            },
+                                            "hcOutMulticastPkts": {
+                                                "value": 115
+                                            },
+                                            "hcOutOctets": {
+                                                "value": 14506
+                                            },
+                                            "hcOutUcastPkts": {
+                                                "value": 0
+                                            },
+                                            "inDiscards": {
+                                                "value": 0
+                                            },
+                                            "inErrors": {
+                                                "value": 0
+                                            },
+                                            "inUnknownProtos": {
+                                                "value": 0
+                                            },
+                                            "outDiscards": {
+                                                "value": 28
+                                            },
+                                            "outErrors": {
+                                                "value": 0
+                                            },
+                                            "pvaInOctets": {
+                                                "value": 0
+                                            },
+                                            "pvaInPkts": {
+                                                "value": 0
+                                            },
+                                            "pvaOutOctets": {
+                                                "value": 0
+                                            },
+                                            "pvaOutPkts": {
+                                                "value": 0
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "https://localhost/mgmt/tm/net/vlan/~Common~alice/members/stats": {
+                        "nestedStats": {
+                            "entries": {
+                                "https://localhost/mgmt/tm/net/vlan/~Common~alice/members/1.2/stats": {
+                                    "nestedStats": {
+                                        "entries": {
+                                            "tmName": {
+                                                "description": "1.2"
+                                            },
+                                            "tagMode": {
+                                                "description": "none"
+                                            },
+                                            "tagged": {
+                                                "description": "no"
+                                            },
+                                            "https://localhost/mgmt/tm/net/vlan/~Common~alice/members/1.2/interfaces/stats": {
+                                                "nestedStats": {
+                                                    "entries": {
+                                                        "https://localhost/mgmt/tm/net/vlan/~Common~alice/members/1.2/interfaces/1.2/stats": {
+                                                            "nestedStats": {
+                                                                "entries": {
+                                                                    "counters.bitsIn": {
+                                                                        "value": 115672
+                                                                    },
+                                                                    "counters.bitsOut": {
+                                                                        "value": 13280
+                                                                    },
+                                                                    "counters.dropsAll": {
+                                                                        "value": 0
+                                                                    },
+                                                                    "counters.errorsAll": {
+                                                                        "value": 0
+                                                                    },
+                                                                    "counters.pktsIn": {
+                                                                        "value": 121
+                                                                    },
+                                                                    "counters.pktsOut": {
+                                                                        "value": 18
+                                                                    },
+                                                                    "mediaActive": {
+                                                                        "description": "10000T-FD"
+                                                                    },
+                                                                    "tmName": {
+                                                                        "description": "1.2"
+                                                                    },
+                                                                    "status": {
+                                                                        "description": "up"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

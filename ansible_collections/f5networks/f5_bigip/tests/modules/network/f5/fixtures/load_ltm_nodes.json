@@ -1,0 +1,57 @@
+{
+    "kind": "tm:ltm:node:nodecollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/ltm/node?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:ltm:node:nodestate",
+            "name": "7.3.67.8",
+            "partition": "Common",
+            "fullPath": "/Common/7.3.67.8",
+            "generation": 5450,
+            "selfLink": "https://localhost/mgmt/tm/ltm/node/~Common~7.3.67.8?ver=16.0.0",
+            "address": "7.3.67.8",
+            "connectionLimit": 0,
+            "description": "ipv4 node",
+            "dynamicRatio": 1,
+            "ephemeral": "false",
+            "fqdn": {
+                "addressFamily": "ipv4",
+                "autopopulate": "disabled",
+                "downInterval": 5,
+                "interval": "3600"
+            },
+            "logging": "disabled",
+            "monitor": "min 1 of { /Common/gateway_icmp /Common/icmp }",
+            "rateLimit": "disabled",
+            "ratio": 1,
+            "session": "monitor-enabled",
+            "state": "down"
+        },
+        {
+            "kind": "tm:ltm:node:nodestate",
+            "name": "foo.bar.com",
+            "partition": "Common",
+            "fullPath": "/Common/foo.bar.com",
+            "generation": 5449,
+            "selfLink": "https://localhost/mgmt/tm/ltm/node/~Common~foo.bar.com?ver=16.0.0",
+            "address": "any6",
+            "connectionLimit": 0,
+            "description": "fqdn node",
+            "dynamicRatio": 1,
+            "ephemeral": "false",
+            "fqdn": {
+                "addressFamily": "ipv4",
+                "autopopulate": "disabled",
+                "downInterval": 5,
+                "interval": "3600",
+                "tmName": "foo.bar.com"
+            },
+            "logging": "disabled",
+            "monitor": "default",
+            "rateLimit": "disabled",
+            "ratio": 1,
+            "session": "user-enabled",
+            "state": "fqdn-up-no-addr"
+        }
+    ]
+}

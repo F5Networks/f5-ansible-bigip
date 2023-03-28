@@ -1,0 +1,18 @@
+{
+    "operation": "QUERY",
+    "id": "82d4514c-afd2-4b4f-909f-e231d16b31c2",
+    "status": "CREATED",
+    "userReference": {
+        "link": "https://localhost/mgmt/shared/authz/users/admin"
+    },
+    "identityReferences": [
+        {
+            "link": "https://localhost/mgmt/shared/authz/users/admin"
+        }
+    ],
+    "ownerMachineId": "a4a55d4f-7e77-410b-96d3-bcaaf047b041",
+    "generation": 1,
+    "lastUpdateMicros": 1679428417714680,
+    "kind": "shared:iapp:package-management-tasks:iapppackagemanagementtaskstate",
+    "selfLink": "https://localhost/mgmt/shared/iapp/package-management-tasks/82d4514c-afd2-4b4f-909f-e231d16b31c2"
+}

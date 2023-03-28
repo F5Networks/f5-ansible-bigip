@@ -1,0 +1,116 @@
+{
+    "kind": "tm:gtm:server:servercollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/gtm/server?expandSubcollections=true&ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:gtm:server:serverstate",
+            "name": "foo_gtm_server",
+            "partition": "Common",
+            "fullPath": "/Common/foo_gtm_server",
+            "generation": 70314,
+            "selfLink": "https://localhost/mgmt/tm/gtm/server/~Common~foo_gtm_server?ver=16.0.0",
+            "datacenter": "/Common/foo_dc",
+            "datacenterReference": {
+                "link": "https://localhost/mgmt/tm/gtm/datacenter/~Common~foo_dc?ver=16.0.0"
+            },
+            "enabled": true,
+            "exposeRouteDomains": "no",
+            "iqAllowPath": "yes",
+            "iqAllowServiceCheck": "yes",
+            "iqAllowSnmp": "yes",
+            "limitCpuUsage": 0,
+            "limitCpuUsageStatus": "disabled",
+            "limitMaxBps": 0,
+            "limitMaxBpsStatus": "disabled",
+            "limitMaxConnections": 0,
+            "limitMaxConnectionsStatus": "disabled",
+            "limitMaxPps": 0,
+            "limitMaxPpsStatus": "disabled",
+            "limitMemAvail": 0,
+            "limitMemAvailStatus": "disabled",
+            "linkDiscovery": "disabled",
+            "monitor": "/Common/bigip",
+            "proberFallback": "inherit",
+            "proberPreference": "inherit",
+            "product": "bigip",
+            "virtualServerDiscovery": "disabled",
+            "addresses": [
+                {
+                    "name": "6.5.7.4",
+                    "deviceName": "foo",
+                    "translation": "2.2.2.2"
+                }
+            ],
+            "devicesReference": {
+                "link": "https://localhost/mgmt/tm/gtm/server/~Common~foo_gtm_server/devices?ver=16.0.0",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:gtm:server:devices:devicesstate",
+                        "name": "foo",
+                        "fullPath": "foo",
+                        "generation": 70310,
+                        "selfLink": "https://localhost/mgmt/tm/gtm/server/~Common~foo_gtm_server/devices/foo?ver=16.0.0"
+                    }
+                ]
+            },
+            "virtualServersReference": {
+                "link": "https://localhost/mgmt/tm/gtm/server/~Common~foo_gtm_server/virtual-servers?ver=16.0.0",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:gtm:server:virtual-servers:virtual-serversstate",
+                        "name": "bar",
+                        "fullPath": "bar",
+                        "generation": 70313,
+                        "selfLink": "https://localhost/mgmt/tm/gtm/server/~Common~foo_gtm_server/virtual-servers/bar?ver=16.0.0",
+                        "destination": "11.11.11.11:80",
+                        "enabled": true,
+                        "limitMaxBps": 0,
+                        "limitMaxBpsStatus": "disabled",
+                        "limitMaxConnections": 0,
+                        "limitMaxConnectionsStatus": "disabled",
+                        "limitMaxPps": 0,
+                        "limitMaxPpsStatus": "disabled",
+                        "translationAddress": "none",
+                        "translationPort": 0
+                    },
+                    {
+                        "kind": "tm:gtm:server:virtual-servers:virtual-serversstate",
+                        "name": "baz",
+                        "fullPath": "baz",
+                        "generation": 70314,
+                        "selfLink": "https://localhost/mgmt/tm/gtm/server/~Common~foo_gtm_server/virtual-servers/baz?ver=16.0.0",
+                        "destination": "9.9.9.9:80",
+                        "enabled": true,
+                        "limitMaxBps": 0,
+                        "limitMaxBpsStatus": "disabled",
+                        "limitMaxConnections": 0,
+                        "limitMaxConnectionsStatus": "disabled",
+                        "limitMaxPps": 0,
+                        "limitMaxPpsStatus": "disabled",
+                        "translationAddress": "none",
+                        "translationPort": 0
+                    },
+                    {
+                        "kind": "tm:gtm:server:virtual-servers:virtual-serversstate",
+                        "name": "foo",
+                        "fullPath": "foo",
+                        "generation": 70312,
+                        "selfLink": "https://localhost/mgmt/tm/gtm/server/~Common~foo_gtm_server/virtual-servers/foo?ver=16.0.0",
+                        "destination": "5.6.7.8:80",
+                        "enabled": true,
+                        "limitMaxBps": 0,
+                        "limitMaxBpsStatus": "disabled",
+                        "limitMaxConnections": 0,
+                        "limitMaxConnectionsStatus": "disabled",
+                        "limitMaxPps": 0,
+                        "limitMaxPpsStatus": "disabled",
+                        "translationAddress": "none",
+                        "translationPort": 0
+                    }
+                ]
+            }
+        }
+    ]
+}

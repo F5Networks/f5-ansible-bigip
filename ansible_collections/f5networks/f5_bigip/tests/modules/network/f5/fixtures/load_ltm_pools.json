@@ -1,0 +1,53 @@
+{
+    "kind": "tm:ltm:pool:poolcollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/ltm/pool?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:ltm:pool:poolstate",
+            "name": "pool1",
+            "partition": "Common",
+            "fullPath": "/Common/pool1",
+            "generation": 5656,
+            "selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~pool1?ver=16.0.0",
+            "allowNat": "yes",
+            "allowSnat": "yes",
+            "description": "this is my pool",
+            "ignorePersistedWeight": "disabled",
+            "ipTosToClient": "pass-through",
+            "ipTosToServer": "pass-through",
+            "linkQosToClient": "pass-through",
+            "linkQosToServer": "pass-through",
+            "loadBalancingMode": "round-robin",
+            "minActiveMembers": 1,
+            "minUpMembers": 0,
+            "minUpMembersAction": "failover",
+            "minUpMembersChecking": "disabled",
+            "monitor": "/Common/http and /Common/tcp",
+            "queueDepthLimit": 0,
+            "queueOnConnectionLimit": "disabled",
+            "queueTimeLimit": 0,
+            "reselectTries": 0,
+            "serviceDownAction": "none",
+            "slowRampTime": 10,
+            "membersReference": {
+                "link": "https://localhost/mgmt/tm/ltm/pool/~Common~pool1/members?ver=16.0.0",
+                "isSubcollection": true
+            },
+            "metadata": [
+                {
+                    "name": "foo1:bar",
+                    "persist": "true"
+                },
+                {
+                    "name": "foo2:baz",
+                    "persist": "true"
+                },
+                {
+                    "name": "ansible",
+                    "persist": "true",
+                    "value": "2.4"
+                }
+            ]
+        }
+    ]
+}

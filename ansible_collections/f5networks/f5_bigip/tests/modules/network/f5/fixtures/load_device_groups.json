@@ -1,0 +1,166 @@
+{
+    "kind": "tm:cm:device-group:device-groupcollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/cm/device-group?expandSubcollections=true&ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:cm:device-group:device-groupstate",
+            "name": "datasync-device-bigip.example.com-dg",
+            "partition": "Common",
+            "fullPath": "/Common/datasync-device-bigip.example.com-dg",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/cm/device-group/~Common~datasync-device-bigip.example.com-dg?ver=16.0.0",
+            "asmSync": "disabled",
+            "autoSync": "enabled",
+            "fullLoadOnSync": "true",
+            "incrementalConfigSyncSizeMax": 1024,
+            "networkFailover": "disabled",
+            "saveOnAutoSync": "false",
+            "type": "sync-only",
+            "devicesReference": {
+                "link": "https://localhost/mgmt/tm/cm/device-group/~Common~datasync-device-bigip.example.com-dg/devices?ver=16.0.0",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:cm:device-group:devices:devicesstate",
+                        "name": "bigip.example.com",
+                        "partition": "Common",
+                        "fullPath": "/Common/bigip.example.com",
+                        "generation": 1,
+                        "selfLink": "https://localhost/mgmt/tm/cm/device-group/~Common~datasync-device-bigip.example.com-dg/devices/~Common~bigip.example.com?ver=16.0.0",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/cm/device/~Common~bigip.example.com?ver=16.0.0"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "tm:cm:device-group:device-groupstate",
+            "name": "datasync-global-dg",
+            "partition": "Common",
+            "fullPath": "/Common/datasync-global-dg",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/cm/device-group/~Common~datasync-global-dg?ver=16.0.0",
+            "asmSync": "disabled",
+            "autoSync": "disabled",
+            "fullLoadOnSync": "true",
+            "incrementalConfigSyncSizeMax": 1024,
+            "networkFailover": "disabled",
+            "saveOnAutoSync": "false",
+            "type": "sync-only",
+            "devicesReference": {
+                "link": "https://localhost/mgmt/tm/cm/device-group/~Common~datasync-global-dg/devices?ver=16.0.0",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:cm:device-group:devices:devicesstate",
+                        "name": "bigip.example.com",
+                        "partition": "Common",
+                        "fullPath": "/Common/bigip.example.com",
+                        "generation": 1,
+                        "selfLink": "https://localhost/mgmt/tm/cm/device-group/~Common~datasync-global-dg/devices/~Common~bigip.example.com?ver=16.0.0",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/cm/device/~Common~bigip.example.com?ver=16.0.0"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "tm:cm:device-group:device-groupstate",
+            "name": "device_trust_group",
+            "partition": "Common",
+            "fullPath": "/Common/device_trust_group",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/cm/device-group/~Common~device_trust_group?ver=16.0.0",
+            "asmSync": "disabled",
+            "autoSync": "enabled",
+            "fullLoadOnSync": "false",
+            "incrementalConfigSyncSizeMax": 1024,
+            "networkFailover": "disabled",
+            "saveOnAutoSync": "false",
+            "type": "sync-only",
+            "devicesReference": {
+                "link": "https://localhost/mgmt/tm/cm/device-group/~Common~device_trust_group/devices?ver=16.0.0",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:cm:device-group:devices:devicesstate",
+                        "name": "bigip.example.com",
+                        "partition": "Common",
+                        "fullPath": "/Common/bigip.example.com",
+                        "generation": 1,
+                        "selfLink": "https://localhost/mgmt/tm/cm/device-group/~Common~device_trust_group/devices/~Common~bigip.example.com?ver=16.0.0",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/cm/device/~Common~bigip.example.com?ver=16.0.0"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "tm:cm:device-group:device-groupstate",
+            "name": "dos-global-dg",
+            "partition": "Common",
+            "fullPath": "/Common/dos-global-dg",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/cm/device-group/~Common~dos-global-dg?ver=16.0.0",
+            "asmSync": "disabled",
+            "autoSync": "disabled",
+            "fullLoadOnSync": "true",
+            "incrementalConfigSyncSizeMax": 1024,
+            "networkFailover": "disabled",
+            "saveOnAutoSync": "false",
+            "type": "sync-only",
+            "devicesReference": {
+                "link": "https://localhost/mgmt/tm/cm/device-group/~Common~dos-global-dg/devices?ver=16.0.0",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:cm:device-group:devices:devicesstate",
+                        "name": "bigip.example.com",
+                        "partition": "Common",
+                        "fullPath": "/Common/bigip.example.com",
+                        "generation": 1,
+                        "selfLink": "https://localhost/mgmt/tm/cm/device-group/~Common~dos-global-dg/devices/~Common~bigip.example.com?ver=16.0.0",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/cm/device/~Common~bigip.example.com?ver=16.0.0"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "tm:cm:device-group:device-groupstate",
+            "name": "gtm",
+            "partition": "Common",
+            "fullPath": "/Common/gtm",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/cm/device-group/~Common~gtm?ver=16.0.0",
+            "asmSync": "disabled",
+            "autoSync": "disabled",
+            "fullLoadOnSync": "false",
+            "incrementalConfigSyncSizeMax": 1024,
+            "networkFailover": "disabled",
+            "saveOnAutoSync": "false",
+            "type": "sync-only",
+            "devicesReference": {
+                "link": "https://localhost/mgmt/tm/cm/device-group/~Common~gtm/devices?ver=16.0.0",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:cm:device-group:devices:devicesstate",
+                        "name": "bigip.example.com",
+                        "partition": "Common",
+                        "fullPath": "/Common/bigip.example.com",
+                        "generation": 1,
+                        "selfLink": "https://localhost/mgmt/tm/cm/device-group/~Common~gtm/devices/~Common~bigip.example.com?ver=16.0.0",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/cm/device/~Common~bigip.example.com?ver=16.0.0"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
