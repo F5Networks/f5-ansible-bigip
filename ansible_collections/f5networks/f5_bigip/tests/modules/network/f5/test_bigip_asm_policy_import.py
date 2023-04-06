@@ -92,7 +92,7 @@ class TestParameters(unittest.TestCase):
         p = ModuleParameters(params=args)
 
         with self.assertRaises(F5ModuleError) as err:
-            p.parent_policy
+            p.parent_policy()
 
         self.assertIn(
             "The 'policy_type' cannot be 'parent' if 'parent_policy' is defined.",

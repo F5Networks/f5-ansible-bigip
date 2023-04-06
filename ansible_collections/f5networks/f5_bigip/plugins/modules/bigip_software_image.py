@@ -155,7 +155,7 @@ class ModuleParameters(Parameters):
 
 
 class Changes(Parameters):
-    def to_return(self):
+    def to_return(self):  # pragma: no cover
         result = {}
         try:
             for returnable in self.returnables:
@@ -174,7 +174,7 @@ class ReportableChanges(Changes):
     pass
 
 
-class Difference(object):
+class Difference(object):  # pragma: no cover
     def __init__(self, want, have=None):
         self.want = want
         self.have = have
@@ -215,30 +215,6 @@ class ModuleManager(object):
         if changed:
             self.changes = UsableChanges(params=changed)
 
-    def _update_changed_options(self):
-        diff = Difference(self.want, self.have)
-        updatables = Parameters.updatables
-        changed = dict()
-        for k in updatables:
-            change = diff.compare(k)
-            if change is None:
-                continue
-            else:
-                if isinstance(change, dict):
-                    changed.update(change)
-                else:
-                    changed[k] = change
-        if changed:
-            self.changes = UsableChanges(params=changed)
-            return True
-        return False
-
-    def should_update(self):
-        result = self._update_changed_options()
-        if result:
-            return True
-        return False
-
     def exec_module(self):
         start = datetime.now().isoformat()
         changed = False
@@ -258,7 +234,7 @@ class ModuleManager(object):
         send_teem(self.client, start)
         return result
 
-    def _announce_deprecations(self, result):
+    def _announce_deprecations(self, result):  # pragma: no cover
         warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
@@ -317,7 +293,7 @@ class ModuleManager(object):
         return result
 
     def update(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         if self.want.force:
             # The process of updating is a forced re-creation.
@@ -327,7 +303,7 @@ class ModuleManager(object):
         return False
 
     def remove(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         self.remove_from_device()
 
@@ -348,14 +324,19 @@ class ModuleManager(object):
         file_mode = '0644'
         params = dict(
             command='run',
-            utilCmdArgs='-c "chown {0} {1};chmod {2} {1}"'.format(ownership, image_path, file_mode)
+            utilCmdArgs=f'-c "chown {ownership} {image_path};chmod {file_mode} {image_path}"'
         )
 
-        self.client.post(url, data=params)
+        response = self.client.post(url, data=params)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        return True
 
     def create(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
 
         self.create_on_device()
@@ -445,5 +426,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

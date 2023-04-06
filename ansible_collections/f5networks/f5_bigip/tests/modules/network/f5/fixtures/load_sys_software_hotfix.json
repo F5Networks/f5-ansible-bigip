@@ -1,0 +1,14 @@
+{
+    "kind": "tm:sys:software:hotfix:hotfixstate",
+    "name": "hotfix-bigip-12.1.1.2.84.204-hf2-ehf84",
+    "fullPath": "hotfix-bigip-12.1.1.2.84.204-hf2-ehf84",
+    "generation": 72608,
+    "selfLink": "https://localhost/mgmt/tm/sys/software/hotfix/hotfix-bigip-12.1.1.2.84.204-hf2-ehf84?ver=16.0.0",
+    "build": "2.84.204",
+    "checksum": "a8239df1e81eda803456cf595e9a2cdf",
+    "id": "HF2-ENG84",
+    "product": "BIG-IP",
+    "title": "Engineering Hotfix Version 2.84.204",
+    "verified": "yes",
+    "version": "12.1.1"
+}

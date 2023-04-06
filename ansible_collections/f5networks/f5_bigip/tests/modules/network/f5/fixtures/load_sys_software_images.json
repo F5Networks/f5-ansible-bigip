@@ -1,0 +1,66 @@
+{
+    "kind": "tm:sys:software:image:imagecollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/sys/software/image?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:sys:software:image:imagestate",
+            "name": "13.0.0.iso",
+            "fullPath": "13.0.0.iso",
+            "generation": 31,
+            "selfLink": "https://localhost/mgmt/tm/sys/software/image/13.0.0.iso?ver=16.0.0",
+            "build": "0.0.1645",
+            "buildDate": "Tue Jan 31 16 59 50 PST 2017",
+            "checksum": "db2b6c5fa73655e82721a19a777f4778",
+            "fileSize": "1689 MB",
+            "lastModified": "Mon Jun 21 23:53:49 2021",
+            "product": "BIG-IP",
+            "verified": "yes",
+            "version": "13.0.0"
+        },
+        {
+            "kind": "tm:sys:software:image:imagestate",
+            "name": "BIGIP-16.1.3.2-0.0.4.iso",
+            "fullPath": "BIGIP-16.1.3.2-0.0.4.iso",
+            "generation": 72606,
+            "selfLink": "https://localhost/mgmt/tm/sys/software/image/BIGIP-16.1.3.2-0.0.4.iso?ver=16.0.0",
+            "build": "0.0.4",
+            "buildDate": "Wed Sep 14 08 12 07 PDT 2022",
+            "checksum": "b155536e421f26277412609742881f1d",
+            "fileSize": "2629 MB",
+            "lastModified": "Wed Mar 29 08:11:01 2023",
+            "product": "BIG-IP",
+            "verified": "yes",
+            "version": "16.1.3.2"
+        },
+        {
+            "kind": "tm:sys:software:image:imagestate",
+            "name": "BIGIP-15.1.8.1.0.0.3.iso",
+            "fullPath": "BIGIP-15.1.8.1.0.0.3.iso",
+            "generation": 77,
+            "selfLink": "https://localhost/mgmt/tm/sys/software/image/BIGIP-15.1.8.1.0.0.3.iso?ver=16.0.0",
+            "build": "0.0.3",
+            "buildDate": "Fri Dec 16 05 41 59 PST 2022",
+            "checksum": "155a61859bca7fdf37fe02a7c96d3e5f",
+            "fileSize": "2567 MB",
+            "lastModified": "Tue Mar  7 09:29:52 2023",
+            "product": "BIG-IP",
+            "verified": "yes",
+            "version": "15.1.8.1"
+        },
+        {
+            "kind": "tm:sys:software:image:imagestate",
+            "name": "BIGIP-bigip16.1.x-bugs-16.1.3.3-0.0.1010.iso",
+            "fullPath": "BIGIP-bigip16.1.x-bugs-16.1.3.3-0.0.1010.iso",
+            "generation": 76,
+            "selfLink": "https://localhost/mgmt/tm/sys/software/image/BIGIP-bigip16.1.x-bugs-16.1.3.3-0.0.1010.iso?ver=16.0.0",
+            "build": "0.0.1010",
+            "buildDate": "Wed Mar 15 18 27 32 PDT 2023",
+            "checksum": "716c89087afd9c1ccd99064c56af24bb",
+            "fileSize": "2658 MB",
+            "lastModified": "Wed Mar 15 18:42:07 2023",
+            "product": "BIG-IP",
+            "verified": "yes",
+            "version": "16.1.3.3"
+        }
+    ]
+}
