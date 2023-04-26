@@ -106,7 +106,7 @@ options:
   auth_offload:
     description:
        - Enables or disables authentication offload to the HTTP service.
-       - When creating an HTTP service, if the parameter is not provided a default of C(no) is
+       - When creating an HTTP service, if the parameter is not provided a default of C(false) is
          assumed.
     type: bool
   monitor:
@@ -172,11 +172,11 @@ options:
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes), does not make any changes on the device and always returns C(changed=False).
+      - When C(true), does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
         C(MODIFY) on an existing service, no JSON output is generated.
     type: bool
-    default: no
+    default: false
   timeout:
     description:
       - The amount of time to wait for the C(CREATE) or C(MODIFY) task to complete, in seconds.

@@ -1,0 +1,129 @@
+{
+    "kind": "tm:sys:application:service:servicecollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/sys/application/service?ver=16.1.3.3",
+    "items": [
+        {
+            "kind": "tm:sys:application:service:servicestate",
+            "name": "foo_http",
+            "partition": "Common",
+            "subPath": "foo_http.app",
+            "fullPath": "/Common/foo_http.app/foo_http",
+            "generation": 63001,
+            "selfLink": "https://localhost/mgmt/tm/sys/application/service/~Common~foo_http.app~foo_http?ver=16.1.3.3",
+            "deviceGroup": "none",
+            "inheritedDevicegroup": "true",
+            "inheritedTrafficGroup": "true",
+            "strictUpdates": "enabled",
+            "template": "/Common/f5.http",
+            "templateReference": {
+                "link": "https://localhost/mgmt/tm/sys/application/template/~Common~f5.http?ver=16.1.3.3"
+            },
+            "templateModified": "no",
+            "trafficGroup": "/Common/traffic-group-1",
+            "trafficGroupReference": {
+                "link": "https://localhost/mgmt/tm/cm/traffic-group/~Common~traffic-group-1?ver=16.1.3.3"
+            },
+            "tables": [
+                {
+                    "name": "net__snatpool_members"
+                },
+                {
+                    "name": "pool__hosts",
+                    "columnNames": [
+                        "name"
+                    ],
+                    "rows": [
+                        {
+                            "row": [
+                                "fake.com"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "pool__members",
+                    "columnNames": [
+                        "addr",
+                        "port",
+                        "connection_limit"
+                    ],
+                    "rows": [
+                        {
+                            "row": [
+                                "",
+                                "80",
+                                "0"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "variables": [
+                {
+                    "name": "client__http_compression",
+                    "encrypted": "no",
+                    "value": "/#create_new#"
+                },
+                {
+                    "name": "monitor__monitor",
+                    "encrypted": "no",
+                    "value": "/#create_new#"
+                },
+                {
+                    "name": "monitor__response",
+                    "encrypted": "no"
+                },
+                {
+                    "name": "monitor__uri",
+                    "encrypted": "no",
+                    "value": "/"
+                },
+                {
+                    "name": "net__client_mode",
+                    "encrypted": "no",
+                    "value": "wan"
+                },
+                {
+                    "name": "net__server_mode",
+                    "encrypted": "no",
+                    "value": "lan"
+                },
+                {
+                    "name": "net__v13_tcp",
+                    "encrypted": "no",
+                    "value": "warn"
+                },
+                {
+                    "name": "pool__addr",
+                    "encrypted": "no",
+                    "value": "10.1.1.10"
+                },
+                {
+                    "name": "pool__pool_to_use",
+                    "encrypted": "no",
+                    "value": "/#create_new#"
+                },
+                {
+                    "name": "pool__port",
+                    "encrypted": "no",
+                    "value": "80"
+                },
+                {
+                    "name": "ssl__mode",
+                    "encrypted": "no",
+                    "value": "no_ssl"
+                },
+                {
+                    "name": "ssl_encryption_questions__advanced",
+                    "encrypted": "no",
+                    "value": "no"
+                },
+                {
+                    "name": "ssl_encryption_questions__help",
+                    "encrypted": "no",
+                    "value": "hide"
+                }
+            ]
+        }
+    ]
+}

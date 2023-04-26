@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2021, F5 Networks Inc.
+# Copyright: (c) 2023, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -29,10 +29,10 @@ options:
     type: path
   asm_request_log:
     description:
-      - When C(true), includes ASM request log data. When C(False),
+      - When C(true), includes ASM request log data. When C(false),
         excludes ASM request log data.
     type: bool
-    default: no
+    default: false
   max_file_size:
     description:
       - Maximum file size of the QKview file, in bytes. By default, no max
@@ -43,28 +43,24 @@ options:
     description:
       - Include complete (all applicable) information in the QKview.
     type: bool
-    default: no
+    default: false
   exclude_core:
     description:
       - Exclude core files from the QKview.
     type: bool
-    default: no
+    default: false
   exclude:
     description:
       - Exclude various file from the QKview.
+      - "Valid elements of the list include: all, audit, secure, bash_history."
     type: list
     elements: str
-    choices:
-      - all
-      - audit
-      - secure
-      - bash_history
   force:
     description:
-      - If C(no), the file will only be transferred if the destination does not
+      - If C(false), the file will only be transferred if the destination does not
         exist.
     type: bool
-    default: yes
+    default: true
   timeout:
     description:
       - The amount of time in seconds to wait for the async interface to complete its task.
@@ -73,10 +69,10 @@ options:
     default: 300
   only_create_file:
     description:
-      - If C(yes), the file is created on the device and not downloaded. The file will not be deleted by the
+      - If C(true), the file is created on the device and not downloaded. The file will not be deleted by the
         module from the device.
     type: bool
-    default: no
+    default: false
     version_added: "1.10.0"
 notes:
   - This module does not include the "max time" or "restrict to blade" options.
@@ -125,7 +121,7 @@ from datetime import datetime
 
 try:
     from packaging.version import Version
-except ImportError:
+except ImportError:  # pragma: no cover
     HAS_PACKAGING = False
     Version = None
     PACKAGING_IMPORT_ERROR = traceback.format_exc()
@@ -229,7 +225,7 @@ class Parameters(AnsibleF5Parameters):
 
         return int(delay), divisor
 
-    def to_return(self):
+    def to_return(self):  # pragma: no cover
         result = {}
         try:
             for returnable in self.returnables:
@@ -237,16 +233,6 @@ class Parameters(AnsibleF5Parameters):
             result = self._filter_params(result)
         except Exception:
             raise
-        return result
-
-    def api_params(self):
-        result = {}
-        for api_attribute in self.api_attributes:
-            if self.api_map is not None and api_attribute in self.api_map:
-                result[api_attribute] = getattr(self, self.api_map[api_attribute])
-            else:
-                result[api_attribute] = getattr(self, api_attribute)
-        result = self._filter_params(result)
         return result
 
 
@@ -286,14 +272,6 @@ class BaseManager(object):
         self.have = None
         self.want = Parameters(params=self.module.params)
         self.changes = Parameters()
-
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = Parameters(params=changed)
 
     def exec_module(self):
         start = datetime.now().isoformat()
@@ -434,11 +412,11 @@ class BaseManager(object):
             if response['code'] not in [200, 201, 202]:
                 time.sleep(10)
                 continue
-            if response['contents']['_taskState'] == 'FAILED':
+            if response['contents'].get('_taskState') == 'FAILED':
                 raise F5ModuleError(
                     "qkview creation task failed unexpectedly."
                 )
-            if response['contents']['_taskState'] == 'COMPLETED':
+            if response['contents'].get('_taskState') == 'COMPLETED':
                 return True
             time.sleep(interval)
         raise F5ModuleError('Operation timed out.')
@@ -453,10 +431,10 @@ class BaseManager(object):
         response = self.client.post(uri, data=params)
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
-        if 'commandResult' in response['contents']:
+        if response['contents'].get('commandResult'):
             raise F5ModuleError(
                 "Attempt to remove the temporary script returned with: {0}".format(
-                    response['contents']['commandResult']
+                    response['contents'].get('commandResult')
                 )
             )
         return True
@@ -527,10 +505,7 @@ class ArgumentSpec(object):
             ),
             exclude=dict(
                 type='list',
-                elements='str',
-                choices=[
-                    'all', 'audit', 'secure', 'bash_history'
-                ]
+                elements='str'
             ),
             only_create_file=dict(
                 default='no',
@@ -573,5 +548,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

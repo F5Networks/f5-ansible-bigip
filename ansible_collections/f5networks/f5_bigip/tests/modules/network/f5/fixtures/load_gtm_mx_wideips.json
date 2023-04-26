@@ -1,0 +1,26 @@
+{
+    "kind": "tm:gtm:wideip:mx:mxcollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/gtm/wideip/mx?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:gtm:wideip:mx:mxstate",
+            "name": "fake.wide-mx.net",
+            "partition": "Common",
+            "fullPath": "/Common/fake.wide-mx.net",
+            "generation": 70326,
+            "selfLink": "https://localhost/mgmt/tm/gtm/wideip/mx/~Common~fake.wide-mx.net?ver=16.0.0",
+            "enabled": true,
+            "failureRcode": "noerror",
+            "failureRcodeResponse": "disabled",
+            "failureRcodeTtl": 0,
+            "lastResortPool": "",
+            "minimalResponse": "enabled",
+            "persistCidrIpv4": 32,
+            "persistCidrIpv6": 128,
+            "persistence": "disabled",
+            "poolLbMode": "global-availability",
+            "topologyPreferEdns0ClientSubnet": "disabled",
+            "ttlPersistence": 3600
+        }
+    ]
+}

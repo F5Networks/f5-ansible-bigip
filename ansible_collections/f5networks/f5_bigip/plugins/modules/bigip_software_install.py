@@ -181,11 +181,11 @@ class ApiParameters(Parameters):
     def read_image_from_device(self, t):
         uri = "/mgmt/tm/sys/software/{0}".format(t)
         response = self.client.get(uri)
+        if response['code'] == 404:
+            return []
         if response['code'] not in [200, 201, 202]:
-            return []
-        if 'items' not in response['contents']:
-            return []
-        return [x['name'].split('/')[0] for x in response['contents']['items']]
+            raise F5ModuleError(response['contents'])
+        return [x['name'].split('/')[0] for x in response['contents'].get('items', [])]
 
     @property
     def block_device_image_names(self):
@@ -197,20 +197,20 @@ class ApiParameters(Parameters):
     def read_block_device_image_from_device(self):
         uri = "/mgmt/tm/sys/software/block-device-image/"
         response = self.client.get(uri)
+        if response['code'] == 404:
+            return []
         if response['code'] not in [200, 201, 202]:
-            return []
-        if 'items' not in response['contents']:
-            return []
-        return [x['name'] for x in response['contents']['items']]
+            raise F5ModuleError(response['contents'])
+        return [x['name'] for x in response['contents'].get('items', [])]
 
     def read_block_device_hotfix_from_device(self):
         uri = "/mgmt/tm/sys/software/block-device-hotfix/"
         response = self.client.get(uri)
+        if response['code'] == 404:
+            return []
         if response['code'] not in [200, 201, 202]:
-            return []
-        if 'items' not in response['contents']:
-            return []
-        return [x['name'] for x in response['contents']['items']]
+            raise F5ModuleError(response['contents'])
+        return [x['name'] for x in response['contents'].get('items', [])]
 
 
 class ModuleParameters(Parameters):
@@ -300,19 +300,19 @@ class ModuleParameters(Parameters):
         image = self.read_image_from_device(type='hotfix')
         if image:
             return image
-        return None
 
     def read_image_from_device(self, type):
         uri = "/mgmt/tm/sys/software/{0}/".format(type)
         response = self.client.get(uri)
 
-        if response['code'] not in [200, 201, 202]:
+        if response['code'] == 404:
             return None
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
 
-        if 'items' in response['contents']:
-            for item in response['contents']['items']:
-                if item['name'].startswith(self.image):
-                    return item
+        for item in response['contents'].get('items', []):
+            if item['name'].startswith(self.image):
+                return item
 
     def read_block_device_image(self):
         block_device_image = self.read_block_device_image_from_device()
@@ -321,31 +321,32 @@ class ModuleParameters(Parameters):
         block_device_image = self.read_block_device_hotfix_from_device()
         if block_device_image:
             return block_device_image
-        return None
 
     def read_block_device_image_from_device(self):
         uri = "/mgmt/tm/sys/software/block-device-image/"
         response = self.client.get(uri)
 
-        if response['code'] not in [200, 201, 202]:
+        if response['code'] == 404:
             return None
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
 
-        if 'items' in response['contents']:
-            for item in response['contents']['items']:
-                if item['name'].startswith(self.block_device_image):
-                    return item
+        for item in response['contents'].get('items', []):
+            if item['name'].startswith(self.block_device_image):
+                return item
 
     def read_block_device_hotfix_from_device(self):
         uri = "/mgmt/tm/sys/software/block-device-hotfix/"
         response = self.client.get(uri)
 
-        if response['code'] not in [200, 201, 202]:
+        if response['code'] == 404:
             return None
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
 
-        if 'items' in response['contents']:
-            for item in response['contents']['items']:
-                if item['name'].startswith(self.block_device_image):
-                    return item
+        for item in response['contents'].get('items', []):
+            if item['name'].startswith(self.block_device_image):
+                return item
 
 
 class Changes(Parameters):
@@ -354,7 +355,7 @@ class Changes(Parameters):
         'volume_uri'
     ]
 
-    def to_return(self):
+    def to_return(self):  # pragma: no cover
         result = {}
         try:
             for returnable in self.returnables:
@@ -373,7 +374,7 @@ class ReportableChanges(Changes):
     pass
 
 
-class Difference(object):
+class Difference(object):  # pragma: no cover
     def __init__(self, want, have=None):
         self.want = want
         self.have = have
@@ -405,38 +406,6 @@ class ModuleManager(object):
         self.changes = UsableChanges()
         self.volume_url = None
 
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = UsableChanges(params=changed)
-
-    def _update_changed_options(self):
-        diff = Difference(self.want, self.have)
-        updatables = Parameters.updatables
-        changed = dict()
-        for k in updatables:
-            change = diff.compare(k)
-            if change is None:
-                continue
-            else:
-                if isinstance(change, dict):
-                    changed.update(change)
-                else:
-                    changed[k] = change
-        if changed:
-            self.changes = UsableChanges(params=changed)
-            return True
-        return False
-
-    def should_update(self):
-        result = self._update_changed_options()
-        if result:
-            return True
-        return False
-
     def exec_module(self):
         start = datetime.now().isoformat()
         result = dict()
@@ -454,7 +423,7 @@ class ModuleManager(object):
         send_teem(self.client, start)
         return result
 
-    def _announce_deprecations(self, result):
+    def _announce_deprecations(self, result):  # pragma: no cover
         warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
@@ -476,10 +445,7 @@ class ModuleManager(object):
             return False
         return self.wait_for_software_install_on_device()
 
-    def _set_volume_url(self, item):
-        self.volume_url = urlparse(item['selfLink']).path
-
-    def volume_exists(self):
+    def determine_volume_url(self):
         uri = "/mgmt/tm/sys/software/volume/"
         response = self.client.get(uri)
 
@@ -488,11 +454,14 @@ class ModuleManager(object):
 
         for item in response['contents']['items']:
             if item['name'].startswith(self.want.volume):
-                self._set_volume_url(item)
+                self.volume_url = urlparse(item['selfLink']).path
                 break
 
         if not self.volume_url:
             self.volume_url = uri + self.want.volume
+
+    def volume_exists(self):
+        self.determine_volume_url()
 
         response = self.client.get(self.volume_url)
 
@@ -503,16 +472,17 @@ class ModuleManager(object):
 
         # version key can be missing in the event that an existing volume has
         # no installed software in it.
-        if self.want.version != response['contents'].get('version', None):
+        if self.want.version != response['contents'].get('version'):
             return False
-        if self.want.build != response['contents'].get('build', None):
+        if self.want.build != response['contents'].get('build'):
             return False
 
         if self.want.state == 'installed':
             return True
         if self.want.state == 'activated':
-            if 'defaultBootLocation' in response['contents']['media'][0]:
-                return True
+            if response['contents'].get('media'):
+                if 'defaultBootLocation' in response['contents']['media'][0]:
+                    return True
         return False
 
     def check_volume_status(self):
@@ -533,7 +503,7 @@ class ModuleManager(object):
             return False
 
     def update(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
 
         if self.want.type == "standard":
@@ -583,6 +553,7 @@ class ModuleManager(object):
         response = self.client.post(uri, data=params)
         vol_uri = urlparse(self.volume_url).path
         self.changes.update({'volume_uri': '{0}'.format(vol_uri)})
+
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
@@ -617,7 +588,7 @@ class ModuleManager(object):
                                 return True
                         if 'media' in response:
                             if 'defaultBootLocation' in response['media'][0]:
-                                # We need to pause as volume might show  as default boot location but not active when
+                                # We need to pause as volume might show as default boot location but not active when
                                 # the unit is in process of booting to volume, we pause to verify
                                 # this is indeed happening
                                 time.sleep(7)
@@ -695,5 +666,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

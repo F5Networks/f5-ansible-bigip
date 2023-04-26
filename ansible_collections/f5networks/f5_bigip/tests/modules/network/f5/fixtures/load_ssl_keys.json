@@ -1,0 +1,57 @@
+{
+    "kind": "tm:sys:file:ssl-key:ssl-keycollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/sys/file/ssl-key?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:sys:file:ssl-key:ssl-keystate",
+            "name": "default.key",
+            "partition": "Common",
+            "fullPath": "/Common/default.key",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/sys/file/ssl-key/~Common~default.key?ver=16.0.0",
+            "checksum": "SHA1:1704:4dd3a90a167a33fb54b8bd3433b46a239d16b6d9",
+            "createTime": "2022-01-25T10:35:44Z",
+            "createdBy": "root",
+            "curveName": "none",
+            "keySize": 2048,
+            "keyType": "rsa-private",
+            "lastUpdateTime": "2022-01-25T10:35:44Z",
+            "mode": 33188,
+            "revision": 1,
+            "securityType": "normal",
+            "size": 1704,
+            "systemPath": "/config/ssl/ssl.key/default.key",
+            "updatedBy": "root",
+            "certOrderManagerReference": {
+                "link": "https://localhost/mgmt/tm/sys/file/ssl-key/~Common~default.key/cert-order-manager?ver=16.0.0",
+                "isSubcollection": true
+            }
+        },
+        {
+            "kind": "tm:sys:file:ssl-key:ssl-keystate",
+            "name": "f5_api_com.key",
+            "partition": "Common",
+            "fullPath": "/Common/f5_api_com.key",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/sys/file/ssl-key/~Common~f5_api_com.key?ver=16.0.0",
+            "checksum": "SHA1:3306:af4aff9aaedee7ef6b6d549835bb2c106c2a3efc",
+            "createTime": "2023-03-07T08:55:07Z",
+            "createdBy": "root",
+            "curveName": "none",
+            "keySize": 4096,
+            "keyType": "rsa-private",
+            "lastUpdateTime": "2023-03-07T08:55:07Z",
+            "mode": 33184,
+            "passphrase": "$M$eX$WUhWwdoz0bqMuPojKewD44Xhe66hFLC7ChLJmR89zDEc+TPz7AIrsBGEoheuWyzDpTbGF57+XPvSGOe5qpApj3Yop650MBSHuih6l1kIenE=",
+            "revision": 1,
+            "securityType": "password",
+            "size": 3306,
+            "sourcePath": "file:///config/ssl/ssl.key/f5_api_com.key",
+            "updatedBy": "root",
+            "certOrderManagerReference": {
+                "link": "https://localhost/mgmt/tm/sys/file/ssl-key/~Common~f5_api_com.key/cert-order-manager?ver=16.0.0",
+                "isSubcollection": true
+            }
+        }
+    ]
+}

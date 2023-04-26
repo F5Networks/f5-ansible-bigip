@@ -1,0 +1,51 @@
+{
+    "kind": "tm:apm:policy:access-policy:access-policycollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/apm/policy/access-policy?ver=16.1.3.3",
+    "items": [
+        {
+            "kind": "tm:apm:policy:access-policy:access-policystate",
+            "name": "foo_access",
+            "partition": "Common",
+            "fullPath": "/Common/foo_access",
+            "generation": 62759,
+            "selfLink": "https://localhost/mgmt/tm/apm/policy/access-policy/~Common~foo_access?ver=16.1.3.3",
+            "defaultEnding": "/Common/foo_access_end_deny",
+            "defaultEndingReference": {
+                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~foo_access_end_deny?ver=16.1.3.3"
+            },
+            "maxMacroLoopCount": 1,
+            "oneshotMacro": "false",
+            "startItem": "/Common/foo_access_ent",
+            "startItemReference": {
+                "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~foo_access_ent?ver=16.1.3.3"
+            },
+            "type": "access-policy",
+            "items": [
+                {
+                    "name": "foo_access_end_allow",
+                    "partition": "Common",
+                    "priority": 0,
+                    "nameReference": {
+                        "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~foo_access_end_allow?ver=16.1.3.3"
+                    }
+                },
+                {
+                    "name": "foo_access_end_deny",
+                    "partition": "Common",
+                    "priority": 0,
+                    "nameReference": {
+                        "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~foo_access_end_deny?ver=16.1.3.3"
+                    }
+                },
+                {
+                    "name": "foo_access_ent",
+                    "partition": "Common",
+                    "priority": 0,
+                    "nameReference": {
+                        "link": "https://localhost/mgmt/tm/apm/policy/policy-item/~Common~foo_access_ent?ver=16.1.3.3"
+                    }
+                }
+            ]
+        }
+    ]
+}

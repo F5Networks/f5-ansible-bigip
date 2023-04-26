@@ -1,0 +1,57 @@
+{
+    "kind": "tm:gtm:server:virtual-servers:virtual-serversstats",
+    "generation": 70314,
+    "selfLink": "https://localhost/mgmt/tm/gtm/server/~Common~foo_gtm_server/virtual-servers/bar/stats?ver=16.0.0",
+    "entries": {
+        "https://localhost/mgmt/tm/gtm/server/~Common~foo_gtm_server/virtual-servers/bar/stats": {
+            "nestedStats": {
+                "kind": "tm:gtm:server:virtual-servers:virtual-serversstats",
+                "selfLink": "https://localhost/mgmt/tm/gtm/server/~Common~foo_gtm_server/virtual-servers/bar/stats?ver=16.0.0",
+                "entries": {
+                    "destination": {
+                        "description": "11.11.11.11:80"
+                    },
+                    "linkName": {
+                        "description": "---"
+                    },
+                    "metrics.bitsPerSecIn": {
+                        "value": 0
+                    },
+                    "metrics.bitsPerSecOut": {
+                        "value": 0
+                    },
+                    "metrics.connections": {
+                        "value": 0
+                    },
+                    "metrics.pktsPerSecIn": {
+                        "value": 0
+                    },
+                    "metrics.pktsPerSecOut": {
+                        "value": 0
+                    },
+                    "metrics.vsScore": {
+                        "value": 0
+                    },
+                    "picks": {
+                        "value": 0
+                    },
+                    "status.availabilityState": {
+                        "description": "offline"
+                    },
+                    "status.enabledState": {
+                        "description": "enabled"
+                    },
+                    "status.statusReason": {
+                        "description": " Monitor /Common/bigip : no reply from big3d: timed out"
+                    },
+                    "uptime": {
+                        "description": "---"
+                    },
+                    "vsName": {
+                        "description": "bar"
+                    }
+                }
+            }
+        }
+    }
+}

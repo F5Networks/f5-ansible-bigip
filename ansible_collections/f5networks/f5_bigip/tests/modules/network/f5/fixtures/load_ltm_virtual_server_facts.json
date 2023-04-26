@@ -1,0 +1,104 @@
+{
+    "kind": "tm:ltm:virtual:virtualcollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/ltm/virtual?expandSubcollections=true&ver=16.1.3.3",
+    "items": [
+         {
+            "kind": "tm:ltm:virtual:virtualstate",
+            "name": "fake_standard",
+            "partition": "Common",
+            "fullPath": "/Common/fake_standard",
+            "generation": 88,
+            "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_standard?ver=16.1.3.3",
+            "addressStatus": "yes",
+            "autoLasthop": "default",
+            "cmpEnabled": "yes",
+            "connectionLimit": 0,
+            "creationTime": "2023-03-21T21:32:13Z",
+            "description": "Test Virtual Server",
+            "destination": "/Common/192.168.1.1:443",
+            "enabled": true,
+            "evictionProtected": "disabled",
+            "gtmScore": 0,
+            "ipProtocol": "tcp",
+            "lastModifiedTime": "2023-03-21T21:32:13Z",
+            "mask": "255.255.255.255",
+            "mirror": "disabled",
+            "mobileAppTunnel": "disabled",
+            "nat64": "disabled",
+            "rateLimit": "disabled",
+            "rateLimitDstMask": 0,
+            "rateLimitMode": "object",
+            "rateLimitSrcMask": 0,
+            "serversslUseSni": "disabled",
+            "serviceDownImmediateAction": "none",
+            "source": "0.0.0.0/0",
+            "sourceAddressTranslation": {
+                "type": "automap"
+            },
+            "sourcePort": "preserve",
+            "synCookieStatus": "not-activated",
+            "translateAddress": "enabled",
+            "translatePort": "enabled",
+            "vlansDisabled": true,
+            "vsIndex": 2,
+            "metadata": [
+                {
+                    "name": "f5-ansible.last_modified",
+                    "persist": "true",
+                    "value": "2023-03-21 21:32:12.459185"
+                },
+                {
+                    "name": "f5-ansible.version",
+                    "persist": "true",
+                    "value": "2.14.3"
+                }
+            ],
+            "policiesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_standard/policies?ver=16.1.3.3",
+                "isSubcollection": true
+            },
+            "profilesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_standard/profiles?ver=16.1.3.3",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "clientssl",
+                        "partition": "Common",
+                        "fullPath": "/Common/clientssl",
+                        "generation": 88,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_standard/profiles/~Common~clientssl?ver=16.1.3.3",
+                        "context": "clientside",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~clientssl?ver=16.1.3.3"
+                        }
+                    },
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "http",
+                        "partition": "Common",
+                        "fullPath": "/Common/http",
+                        "generation": 88,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_standard/profiles/~Common~http?ver=16.1.3.3",
+                        "context": "all",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/http/~Common~http?ver=16.1.3.3"
+                        }
+                    },
+                    {
+                        "kind": "tm:ltm:virtual:profiles:profilesstate",
+                        "name": "tcp",
+                        "partition": "Common",
+                        "fullPath": "/Common/tcp",
+                        "generation": 88,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~Common~fake_standard/profiles/~Common~tcp?ver=16.1.3.3",
+                        "context": "all",
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/profile/tcp/~Common~tcp?ver=16.1.3.3"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

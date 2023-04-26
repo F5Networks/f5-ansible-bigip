@@ -1,0 +1,151 @@
+{
+    "kind": "tm:sys:file:ssl-cert:ssl-certcollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/sys/file/ssl-cert?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:sys:file:ssl-cert:ssl-certstate",
+            "name": "ca-bundle.crt",
+            "partition": "Common",
+            "fullPath": "/Common/ca-bundle.crt",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~ca-bundle.crt?ver=16.0.0",
+            "certificateKeyCurveName": "none",
+            "certificateKeySize": 2048,
+            "checksum": "SHA1:4871247:f881d0dceda4398b08d7369caad8729e94a868d2",
+            "createTime": "2020-06-24T01:29:01Z",
+            "createdBy": "root",
+            "expirationDate": 1893455999,
+            "expirationString": "Dec 31 23:59:59 2029 GMT",
+            "fingerprint": "SHA256/B5:BD:2C:B7:9C:BD:19:07:29:8D:6B:DF:48:42:E5:16:D8:C7:8F:A6:FC:96:D2:5F:71:AF:81:4E:16:CC:24:5E",
+            "isBundle": "true",
+            "issuer": "CN=Starfield Services Root Certificate Authority,OU=http://certificates.starfieldtech.com/repository/,O=Starfield Technologies, Inc.,L=Scottsdale,ST=Arizona,C=US",
+            "keyType": "rsa-public",
+            "lastUpdateTime": "2020-06-24T01:29:01Z",
+            "mode": 33261,
+            "revision": 1,
+            "size": 4871247,
+            "subject": "CN=Starfield Services Root Certificate Authority,OU=http://certificates.starfieldtech.com/repository/,O=Starfield Technologies, Inc.,L=Scottsdale,ST=Arizona,C=US",
+            "systemPath": "/config/ssl/ssl.crt/ca-bundle.crt",
+            "updatedBy": "root",
+            "version": 3,
+            "bundleCertificatesReference": {
+                "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~ca-bundle.crt/bundle-certificates?ver=16.0.0",
+                "isSubcollection": true
+            },
+            "certValidatorsReference": {
+                "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~ca-bundle.crt/cert-validators?ver=16.0.0",
+                "isSubcollection": true
+            }
+        },
+        {
+            "kind": "tm:sys:file:ssl-cert:ssl-certstate",
+            "name": "default.crt",
+            "partition": "Common",
+            "fullPath": "/Common/default.crt",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~default.crt?ver=16.0.0",
+            "certificateKeyCurveName": "none",
+            "certificateKeySize": 2048,
+            "checksum": "SHA1:1338:82e4800c0502674f024fd56e4458fb78187e1ae0",
+            "createTime": "2022-01-25T10:35:44Z",
+            "createdBy": "root",
+            "email": "root@localhost.localdomain",
+            "expirationDate": 1958466944,
+            "expirationString": "Jan 23 10:35:44 2032 GMT",
+            "fingerprint": "SHA256/7C:29:1B:05:37:90:B6:70:B0:E5:CB:2E:65:BB:C0:EA:99:46:1D:45:70:8A:68:2C:B9:EA:74:E8:7A:0F:4B:F4",
+            "isBundle": "false",
+            "issuer": "emailAddress=root@localhost.localdomain,CN=localhost.localdomain,OU=IT,O=MyCompany,L=Seattle,ST=WA,C=US",
+            "keyType": "rsa-public",
+            "lastUpdateTime": "2022-01-25T10:35:44Z",
+            "mode": 33188,
+            "revision": 1,
+            "serialNumber": "380774144",
+            "size": 1338,
+            "subject": "emailAddress=root@localhost.localdomain,CN=localhost.localdomain,OU=IT,O=MyCompany,L=Seattle,ST=WA,C=US",
+            "systemPath": "/config/ssl/ssl.crt/default.crt",
+            "updatedBy": "root",
+            "version": 3,
+            "bundleCertificatesReference": {
+                "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~default.crt/bundle-certificates?ver=16.0.0",
+                "isSubcollection": true
+            },
+            "certValidatorsReference": {
+                "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~default.crt/cert-validators?ver=16.0.0",
+                "isSubcollection": true
+            }
+        },
+        {
+            "kind": "tm:sys:file:ssl-cert:ssl-certstate",
+            "name": "f5-ca-bundle.crt",
+            "partition": "Common",
+            "fullPath": "/Common/f5-ca-bundle.crt",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~f5-ca-bundle.crt?ver=16.0.0",
+            "certificateKeyCurveName": "none",
+            "certificateKeySize": 2048,
+            "checksum": "SHA1:2151:0b3091b2d597dfb584d18b92d3f0b082d5913b34",
+            "createTime": "2020-06-23T23:27:20Z",
+            "createdBy": "root",
+            "expirationDate": 1922896554,
+            "expirationString": "Dec  7 17:55:54 2030 GMT",
+            "fingerprint": "SHA256/43:DF:57:74:B0:3E:7F:EF:5F:E4:0D:93:1A:7B:ED:F1:BB:2E:6B:42:73:8C:4E:6D:38:41:10:3D:3A:A7:F3:39",
+            "isBundle": "false",
+            "issuer": "CN=Entrust Root Certification Authority - G2,OU=(c) 2009 Entrust, Inc. - for authorized use only,OU=See www.entrust.net/legal-terms,O=Entrust, Inc.,C=US",
+            "keyType": "rsa-public",
+            "lastUpdateTime": "2020-06-23T23:27:20Z",
+            "mode": 33188,
+            "revision": 1,
+            "serialNumber": "1246989352",
+            "size": 2151,
+            "subject": "CN=Entrust Root Certification Authority - G2,OU=(c) 2009 Entrust, Inc. - for authorized use only,OU=See www.entrust.net/legal-terms,O=Entrust, Inc.,C=US",
+            "systemPath": "/config/ssl/ssl.crt/f5-ca-bundle.crt",
+            "updatedBy": "root",
+            "version": 3,
+            "bundleCertificatesReference": {
+                "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~f5-ca-bundle.crt/bundle-certificates?ver=16.0.0",
+                "isSubcollection": true
+            },
+            "certValidatorsReference": {
+                "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~f5-ca-bundle.crt/cert-validators?ver=16.0.0",
+                "isSubcollection": true
+            }
+        },
+        {
+            "kind": "tm:sys:file:ssl-cert:ssl-certstate",
+            "name": "f5-irule.crt",
+            "partition": "Common",
+            "fullPath": "/Common/f5-irule.crt",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~f5-irule.crt?ver=16.0.0",
+            "certificateKeyCurveName": "none",
+            "certificateKeySize": 2048,
+            "checksum": "SHA1:1728:0e41ec7bddceae530c3c2c8ffa5e7262947e3a0e",
+            "createTime": "2020-06-23T23:27:20Z",
+            "createdBy": "root",
+            "email": "support@f5.com",
+            "expirationDate": 1815944413,
+            "expirationString": "Jul 18 21:00:13 2027 GMT",
+            "fingerprint": "SHA256/AC:08:EA:3F:0E:AC:C8:DD:A2:2A:7D:AA:73:02:86:1E:1F:38:51:4A:80:D3:E6:AE:4E:6B:01:0C:68:FF:18:D2",
+            "isBundle": "false",
+            "issuer": "emailAddress=support@f5.com,CN=support.f5.com,OU=Product Development,O=F5 Networks,L=Seattle,ST=Washington,C=US",
+            "keyType": "rsa-public",
+            "lastUpdateTime": "2020-06-23T23:27:20Z",
+            "mode": 33188,
+            "revision": 1,
+            "serialNumber": "87:ae:02:f9:18:f9:4a:11",
+            "size": 1728,
+            "subject": "emailAddress=support@f5.com,CN=support.f5.com,OU=Product Development,O=F5 Networks,L=Seattle,ST=Washington,C=US",
+            "systemPath": "/config/ssl/ssl.crt/f5-irule.crt",
+            "updatedBy": "root",
+            "version": 3,
+            "bundleCertificatesReference": {
+                "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~f5-irule.crt/bundle-certificates?ver=16.0.0",
+                "isSubcollection": true
+            },
+            "certValidatorsReference": {
+                "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~f5-irule.crt/cert-validators?ver=16.0.0",
+                "isSubcollection": true
+            }
+        }
+    ]
+}

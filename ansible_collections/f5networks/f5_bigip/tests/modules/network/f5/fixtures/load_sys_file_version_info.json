@@ -1,0 +1,6 @@
+{
+    "kind": "tm:util:bash:runstate",
+    "command": "run",
+    "utilCmdArgs": "-c 'cat /VERSION' ",
+    "commandResult": "Product: BIG-IP\nVersion: 16.0.0\nBuild: 0.0.12\nSequence: 16.0.0-0.0.12.0\nBaseBuild: 0.0.12\nEdition: Final\nDate: Tue Jun 23 18:31:26 PDT 2020\nBuilt: 200623183126\nChangelist: 3348116\nJobID: 1207889\n"
+}

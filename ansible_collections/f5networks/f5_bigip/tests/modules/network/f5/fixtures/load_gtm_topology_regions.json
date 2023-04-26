@@ -1,0 +1,25 @@
+{
+    "kind": "tm:gtm:region:regioncollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/gtm/region?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:gtm:region:regionstate",
+            "name": "fake_region",
+            "partition": "Common",
+            "fullPath": "/Common/fake_region",
+            "generation": 70400,
+            "selfLink": "https://localhost/mgmt/tm/gtm/region/~Common~fake_region?ver=16.0.0",
+            "regionMembers": [
+                {
+                    "name": "continent AN"
+                },
+                {
+                    "name": "isp /Common/AOL"
+                },
+                {
+                    "name": "subnet 191.1.1.0/24"
+                }
+            ]
+        }
+    ]
+}

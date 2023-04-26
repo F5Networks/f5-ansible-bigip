@@ -71,10 +71,10 @@ options:
     required: True
   force:
     description:
-      - If C(no), the file will only be transferred if the destination does not
+      - If C(false), the file will only be transferred if the destination does not
         exist.
     type: bool
-    default: yes
+    default: true
   partition:
     description:
       - Device partition to manage resources on.

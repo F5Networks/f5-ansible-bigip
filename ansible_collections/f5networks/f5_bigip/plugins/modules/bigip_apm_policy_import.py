@@ -35,9 +35,9 @@ options:
     type: path
   force:
     description:
-      - When set to C(yes), any existing policy with the same name is overwritten by the new import.
+      - When set to C(true), any existing policy with the same name is overwritten by the new import.
       - If a policy does not exist, this setting is ignored.
-    default: no
+    default: false
     type: bool
   partition:
     description:
@@ -46,11 +46,11 @@ options:
     default: Common
   reuse_objects:
     description:
-      - When set to C(yes) and objects referred within the policy exist on the BIG-IP,
+      - When set to C(true) and objects referred within the policy exist on the BIG-IP,
         those are used instead of the objects defined in the policy.
       - Reusing existing objects reduces configuration size.
       - The configuration of existing objects might differ from the configuration of the objects defined in the policy!
-    default: yes
+    default: true
     type: bool
 notes:
   - Requires BIG-IP >= 14.0.0
@@ -116,12 +116,12 @@ force:
   description: Set when overwriting an existing policy or profile.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 reuse_objects:
   description: Set when reusing existing objects on the BIG-IP.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 '''
 
 import os

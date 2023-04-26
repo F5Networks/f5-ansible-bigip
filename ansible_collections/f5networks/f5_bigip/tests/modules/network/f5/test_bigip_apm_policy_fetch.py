@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2018, F5 Networks Inc.
+# Copyright: (c) 2023, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -97,10 +97,10 @@ class TestParameters(unittest.TestCase):
              patch.object(bigip_apm_policy_fetch.os.path, 'exists', Mock(return_value=False)),\
              patch.object(bigip_apm_policy_fetch.os, 'stat', Mock(side_effect=[OSError('permission denied'), OSError()])):
             with self.assertRaises(F5ModuleError) as err1:
-                p.fulldest
+                p.fulldest()
 
             with self.assertRaises(F5ModuleError) as err2:
-                p.fulldest
+                p.fulldest()
 
             self.assertIn(
                 f"Destination directory {os.path.dirname(p.dest)} is not accessible",

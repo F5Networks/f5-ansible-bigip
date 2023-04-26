@@ -462,9 +462,9 @@ options:
       lsn_legacy_mode:
         description:
           - Enable or disable use of legacy CGNAT/LSN logging facility instead of the new Firewall NAT logging capability.
-          - When set to C(yes), the C(start_outbound_session), C(start_inbound_session),
+          - When set to C(true), the C(start_outbound_session), C(start_inbound_session),
             C(end_inbound_session), C(end_outbound_session), C(quota_exceeded) and C(errors), must not be enabled.
-            Specifying C(action) to be either C(enabled) or C(backup-allocation-only) while C(lsn_legacy_mode) is C(yes)
+            Specifying C(action) to be either C(enabled) or C(backup-allocation-only) while C(lsn_legacy_mode) is C(true)
             will result in API errors.
         type: bool
       rate_limit_aggregate_rate:
@@ -1036,109 +1036,109 @@ bot_defense:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_alarm:
       description:
         - Enable/Disable logging of requests triggering ALARM mitigation action of the Bot Defense logging profile.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_block:
       description:
         - Enable/Disable logging of requests triggering Block mitigation action of the Bot Defense logging profile.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_browser:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_browser_verification_action:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_captcha:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_challenge_failure_request:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_device_id_collection_request:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_honeypot_page:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_mobile_application:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_none:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_rate_limit:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_redirect_to_pool:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_suspicious_browser:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_tcp_reset:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_trusted_bot:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_unknown:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_untrusted_bot:
       description:
         - "TBD"
       returned: changed
       type: bool
-      sample: yes
+      sample: true
 classification:
   description:
     - The system logging of events from the Classification engine.
@@ -1150,7 +1150,7 @@ classification:
           - Enables/Disable logging of all events from the Classification engine.
         returned: changed
         type: bool
-        sample: yes
+        sample: true
     publisher:
       description:
         - The name of the log publisher used for logging of Classification engine events.
@@ -1222,7 +1222,7 @@ protocol_inspection:
         - Enables/Disable logging of packet payload for Protocol Inspection events.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     publisher:
       description:
         - The name of the log publisher used for logging of Protocol Inspection events.
@@ -1246,31 +1246,31 @@ dns_security:
         - Enable/Disable logging of dropped DNS requests.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_dns_filtered_drop:
       description:
         - Enable/Disable logging of DNS requests dropped due to DNS query/header-opcode filtering.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_dns_malformed:
       description:
         - Enable/Disable logging of malformed DNS requests.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_dns_malicious:
       description:
         - Enable/Disable logging of malicious DNS requests.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_dns_reject:
       description:
         - Enable/Disable logging of rejected DNS requests.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     storage_format:
       description:
         - The formatting of DNS security log messages.
@@ -1319,37 +1319,37 @@ sip_security:
         - Enable/Disable logging of dropped SIP requests.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_sip_global_failures:
       description:
         - Enable/Disable logging of SIP global failures.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_sip_malformed:
       description:
         - Enable/Disable logging of malformed SIP requests.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_sip_redirect_responses:
       description:
         - Enable/Disable logging of SIP redirection responses.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_sip_request_failures:
       description:
         - Enable/Disable logging of SIP request failures.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_sip_server_errors:
       description:
         - Enable/Disable logging of SIP server errors.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     storage_format:
       description:
         - The formatting of SIP security log messages.
@@ -1397,67 +1397,67 @@ network_security:
         - Enable/Disable logging of packets that match ACL rules action accept.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_acl_match_drop:
       description:
         - Enable/Disable logging of packets that match ACL rules action drop.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_acl_match_reject:
       description:
         - Enable/Disable logging of packets that match ACL rules action reject.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_geo_always:
       description:
         - Enable/Disable logging of Geo IP Location information.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_ip_errors:
       description:
         - Enable/Disable logging of IP errors.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_tcp_events:
       description:
         - Enable/Disable logging of TCP events.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_tcp_errors:
       description:
         - Enable/Disable logging of TCP errors.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_translation_fields:
       description:
         - Enable/Disable logging of translation fields in ACL and TCP events.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_acl_to_box_deny:
       description:
         - nable/Disable logging of any packet that is dropped or denied by management port firewall rules.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_user_always:
       description:
         - Enable/Disable logging of certain subscriber information.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     log_uuid_field:
       description:
         - Enable/Disable logging of UUID of the specific rule that triggered the log message.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     rate_limit_acl_match_accept:
       description:
         - The rate limit for all network firewall log messages with this acl match accept action.
@@ -1547,13 +1547,13 @@ nat:
         - Enable/Disable logging of the subscriber ID associated with a subscriber IP address.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     lsn_legacy_mode:
       description:
         - Enable/Disable use of legacy CGNAT/LSN logging facility instead of the new Firewall NAT logging capability.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     rate_limit_aggregate_rate:
       description:
         - The rate limit for all combined NAT log messages per second.
@@ -1617,7 +1617,7 @@ nat:
             - Enable/Disable logging of destination IP address and port information.
           returned: changed
           type: bool
-          sample: yes
+          sample: true
         storage_format:
           description:
             - The formatting of NAT events log messages.
@@ -1665,7 +1665,7 @@ nat:
             - Enable/Disable logging of destination IP address and port information.
           returned: changed
           type: bool
-          sample: yes
+          sample: true
         storage_format:
           description:
             - The formatting of NAT events log messages.

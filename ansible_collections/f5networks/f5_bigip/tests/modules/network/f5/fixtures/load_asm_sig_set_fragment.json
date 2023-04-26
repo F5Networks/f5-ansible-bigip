@@ -1,0 +1,305 @@
+{
+    "previousLink": "https://localhost/mgmt/tm/asm/signature-sets?$skip=0&$top=2&ver=16.1.3",
+    "totalPages": 17,
+    "pageIndex": 2,
+    "selfLink": "https://localhost/mgmt/tm/asm/signature-sets?$skip=2&$top=2&ver=16.1.3",
+    "kind": "tm:asm:signature-sets:signature-setcollectionstate",
+    "startIndex": 3,
+    "itemsPerPage": 2,
+    "totalItems": 34,
+    "nextLink": "https://localhost/mgmt/tm/asm/signature-sets?$skip=4&$top=2&ver=16.1.3",
+    "items": [
+        {
+            "isUserDefined": true,
+            "assignToPolicyByDefault": false,
+            "kind": "tm:asm:signature-sets:signature-setstate",
+            "selfLink": "https://localhost/mgmt/tm/asm/signature-sets/Qv3YrNzr8DG9xMgRxJwlBQ?ver=16.1.3",
+            "systems": [
+                {
+                    "systemReference": {
+                        "link": "https://localhost/mgmt/tm/asm/signature-systems/KEtRPm0thOz8nAgANYZdmg?ver=16.1.3"
+                    }
+                }
+            ],
+            "category": "User-defined",
+            "signatureReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/4hzrcnHM_6BZK0eIVLmwug?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Apache mod_ntlm overflow / format string vulnerability",
+                    "signatureId": 200000179
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/BBEcpKv-Ci1f3rA71-EDTA?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Apache Solr injection attempt (solr.RunExecutableListener) (Parameter)",
+                    "signatureId": 200004419
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/Y1Etnz7kb0KiyJRSy78tSw?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Apache Solr injection attempt (solr.RunExecutableListener) (Header)",
+                    "signatureId": 200004420
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/7k-RLsorFrQIHmsPcs_vWA?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Apache Solr injection attempt (solr.RunExecutableListener) (URI)",
+                    "signatureId": 200004421
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/3UDU35GMNP3d4LyYfuqqcg?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Apache mod_php Line Break Parsing",
+                    "signatureId": 200004467
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/IEjAyYsrvHUKlZSDqUIZtA?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "(GHDB) Apache Cocoon error",
+                    "signatureId": 200009150
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/TGCptTfgGtnaaQ_Biw50Xg?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Apache Tika information disclosure vulnerability",
+                    "signatureId": 200009261
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/BGitPX38-uYLgA87EafJLg?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "\"httpd.conf\" access",
+                    "signatureId": 200010016
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/6t8xgHN35SNf1d7smoT4aQ?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "\"httpd.conf\" access (Parameter)",
+                    "signatureId": 200010042
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/-hRLwFvqsQxRjyeK0E0aKw?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Apache mod_authnz_ldap Accept-Language Buffer Overflow",
+                    "signatureId": 200011069
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/I7z4k8UO9xxrdPaUyncURg?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "DOS \"Range Header DoS Attempt\" (Headers)",
+                    "signatureId": 200012011
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/vNyrB7lw7YKWJHyAXDlZww?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Apache fnmatch DoS Attack",
+                    "signatureId": 200012013
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/OR98kYahu8wBdMyjBX9SBQ?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Apache Digest authentication uninitialized memory reflection",
+                    "signatureId": 200012027
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/J3jfbUrbwHszqn3-FAI2zQ?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Apache mod_proxy Connection DoS",
+                    "signatureId": 200012065
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/NAAjN9BjXIym4myBolx6LQ?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Apache mod_jk \"/jkstatus\" access",
+                    "signatureId": 200013013
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/aBmaK-swYu5MWXUxnQIT0A?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "mod_rewrite LineFeed open redirect",
+                    "signatureId": 200020141
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/RRW3eJpdJ6W12hUutwoGEg?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": ".htpasswd access",
+                    "signatureId": 200100007
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/PhFzkZ2OFdYA38Co86bCiw?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": ".www_acl access",
+                    "signatureId": 200100013
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/w5t3Ez1vwKm8UIKbk6gJJg?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": ".wwwacl access",
+                    "signatureId": 200100014
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/8ajAfzkWIM6rc7_Mi5_w5Q?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": ".htaccess access",
+                    "signatureId": 200100015
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/pp_-BgkdWf2Pe9cDotxb2g?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "server-status access",
+                    "signatureId": 200100018
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/QhsOv7bzgcT5IywlI0URfg?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "server-info access",
+                    "signatureId": 200100019
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/pNs2lGcFBK3Siy7jgDLzeA?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": ".htgroup access",
+                    "signatureId": 200100021
+                }
+            ],
+            "id": "Qv3YrNzr8DG9xMgRxJwlBQ",
+            "filter": {
+                "riskFilter": "all",
+                "userDefinedFilter": "all",
+                "accuracyValue": "medium",
+                "hasCve": "all",
+                "accuracyFilter": "ge",
+                "lastUpdatedFilter": "all",
+                "riskValue": "all",
+                "signatureType": "all",
+                "tagFilter": "all"
+            },
+            "name": "Apache/NCSA HTTP Server Signatures (High/Medium Accuracy)",
+            "lastUpdateMicros": 0,
+            "defaultAlarm": false,
+            "type": "filter-based",
+            "signatureCount": 23,
+            "defaultBlock": false,
+            "defaultLearn": false
+        },
+        {
+            "isUserDefined": true,
+            "assignToPolicyByDefault": false,
+            "kind": "tm:asm:signature-sets:signature-setstate",
+            "selfLink": "https://localhost/mgmt/tm/asm/signature-sets/fmwqhS5kepbRzuFRcOKdkQ?ver=16.1.3",
+            "systems": [
+                {
+                    "systemReference": {
+                        "link": "https://localhost/mgmt/tm/asm/signature-systems/OygZ3Uwk7aL68gUu70SVUQ?ver=16.1.3"
+                    }
+                }
+            ],
+            "category": "User-defined",
+            "signatureReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/E5En7IouHDZ8SwzXY4hN6g?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Node.js JS-YAML code execution !!js/undefined",
+                    "signatureId": 200004178
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/KVsA7ms8heLGtkqqQzdkAQ?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Node.js JS-YAML code execution !!js/regexp",
+                    "signatureId": 200004179
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/ZBL3VX7TWy8XrH0SAUeBqg?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Node.js JS-YAML code execution !!js/function",
+                    "signatureId": 200004180
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/gAYDP1RAmEhMH1AQQNsi9A?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Node.js Serialized Object Remote Code Execution (Parameter)",
+                    "signatureId": 200004282
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/71dvzXmTkMOmM0mMMV894A?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Node.js Serialized Object Remote Code Execution (Header)",
+                    "signatureId": 200004283
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/SSntQSRQw-nqOL1xJAvm9w?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Node.js Serialized Object Remote Code Execution (URI)",
+                    "signatureId": 200004284
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/7OuWDk2DME44D2xifH8Vng?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Node.js \"funcster\" Deserialization Library Arbitrary Code Execution (Parameter)",
+                    "signatureId": 200004468
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/fH-y49k6fWPQ0E7Iz7j1CA?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Node.js \"funcster\" Deserialization Library Arbitrary Code Execution (Header)",
+                    "signatureId": 200004469
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/bZzvUxLwFxm3-MsPL5JDOA?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "JavaScript Object Prototype Pollution (Parameter)",
+                    "signatureId": 200004993
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/1sdB30UDMOVLSBaE63B5lw?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "JavaScript Object Prototype Pollution (Header)",
+                    "signatureId": 200004994
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/Yj4ojZvdj74plIIfUAwLxw?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Node.js WebSocket Handshake zlib DoS",
+                    "signatureId": 200012031
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/UVAA8_o0IjkLUZv1s4FDgw?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Node.js Buffer.alloc DoS (Parameter)",
+                    "signatureId": 200012044
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/USLMInki9juerLLxOyU_PA?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "Node.js Buffer.alloc DoS (Header)",
+                    "signatureId": 200012045
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/signatures/NYqppsk5aYuaCNy0CKb-Vg?ver=16.1.3",
+                    "isUserDefined": false,
+                    "name": "UTF-8 CRLF Injection",
+                    "signatureId": 200023005
+                }
+            ],
+            "id": "fmwqhS5kepbRzuFRcOKdkQ",
+            "filter": {
+                "riskFilter": "all",
+                "userDefinedFilter": "all",
+                "accuracyValue": "medium",
+                "hasCve": "all",
+                "accuracyFilter": "ge",
+                "lastUpdatedFilter": "all",
+                "riskValue": "all",
+                "signatureType": "all",
+                "tagFilter": "all"
+            },
+            "name": "Node.js Signatures (High/Medium Accuracy)",
+            "lastUpdateMicros": 0,
+            "defaultAlarm": false,
+            "type": "filter-based",
+            "signatureCount": 14,
+            "defaultBlock": false,
+            "defaultLearn": false
+        }
+    ]
+}

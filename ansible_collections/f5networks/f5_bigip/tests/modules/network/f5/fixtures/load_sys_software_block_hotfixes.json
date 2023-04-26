@@ -1,0 +1,22 @@
+{
+    "kind": "tm:sys:software:block-device-hotfix:block-device-hotfixcollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/sys/software/block-device-hotfix?ver=16.1.3.3",
+    "items": [
+        {
+            "kind": "tm:sys:software:block-device-hotfix:block-device-hotfixstate",
+            "name": "Hotfix-BIGIP-12.1.2.2.0.276-HF2.iso",
+            "fullPath": "Hotfix-BIGIP-12.1.2.2.0.276-HF2.iso",
+            "generation": 238,
+            "selfLink": "https://localhost/mgmt/tm/sys/software/block-device-hotfix/Hotfix-BIGIP-12.1.2.2.0.276-HF2.iso?ver=16.1.3.3",
+            "build": "2.0.276",
+            "checksum": "1c7a34cdd8c2e473c25d3ac816dbd31c",
+            "deviceAgent": "vcmp-virtual-cdrom",
+            "id": "HF2",
+            "product": "BIG-IP",
+            "resourceId": "840fa748-7e1c-59ca-a17a-fe158940a6cc",
+            "title": "Hotfix Version 2.0.276",
+            "verified": "yes",
+            "version": "12.1.2"
+        }
+    ]
+}

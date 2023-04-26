@@ -16,6 +16,7 @@ import socket
 
 from time import time
 from ssl import SSLError
+from http.client import RemoteDisconnected
 from datetime import datetime
 
 from ansible.module_utils.urls import open_url
@@ -79,7 +80,7 @@ class TeemClient:
                 data=payload
             )
         # we need to ensure that any connection errors to TEEM do not cause failure of module to run.
-        except (HTTPError, URLError, SSLError):
+        except (HTTPError, URLError, SSLError, RemoteDisconnected):
             return None
 
         ok = re.search(r'20[01-4]', str(response.code))

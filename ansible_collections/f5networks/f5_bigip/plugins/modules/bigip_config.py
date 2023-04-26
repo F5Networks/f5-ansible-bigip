@@ -22,7 +22,7 @@ options:
       - The C(save) argument instructs the module to save the
         running-config to startup-config.
     type: bool
-    default: no
+    default: false
   reset:
     description:
       - Loads the default configuration on the device.
@@ -32,7 +32,7 @@ options:
         execution. We recommend changing the C(ansible_httpapi_password) before checking for the reset
         task state.
     type: bool
-    default: no
+    default: false
   merge_content:
     description:
       - The file that contains desired configuration to be merged.
@@ -44,11 +44,11 @@ options:
       - Validates the specified configuration to see whether it is
         valid to replace the running configuration.
       - The running configuration will not be changed.
-      - When this parameter is set to C(yes), no change is reported
+      - When this parameter is set to C(true), no change is reported
         by the module.
       - Verifies the operation is synchronous and does not require checking for task completion.
     type: bool
-    default: no
+    default: false
   task_id:
     description:
       - The ID of the async task as returned by the system in a previous module run.

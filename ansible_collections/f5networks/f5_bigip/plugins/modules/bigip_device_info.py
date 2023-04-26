@@ -358,25 +358,25 @@ asm_policies:
           this setting indicates if the policy is bound to any Virtual Server.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     apply:
       description:
         - In TMOS 13.x and later, this setting indicates if an ASM policy has pending changes that need to be applied.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     protocol_independent:
       description:
         - Indicates if the ASM policy differentiates between HTTP/WS and HTTPS/WSS URLs.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     has_parent:
       description:
         - Indicates if the ASM policy is a child of another ASM policy.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     type:
       description:
         - The type of policy, can be C(Security) or C(Parent).
@@ -425,7 +425,7 @@ asm_policies:
         - Indicates the system has confidence in an XFF (X-Forwarded-For) header in the request.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     custom_xff_headers:
       description:
         - List of custom XFF headers trusted by the system.
@@ -437,20 +437,20 @@ asm_policies:
         - Indicates if the ASM policy treats file types, URLs, and parameters as case sensitive.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     signature_staging:
       description:
         - Specifies if the staging feature is active on the ASM policy.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     place_signatures_in_staging:
       description:
         - Specifies if the system places new or updated signatures in staging
           for the number of days specified in the enforcement readiness period.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     enforcement_readiness_period:
       description:
         - Period, in days, both security policy entities and attack signatures
@@ -475,13 +475,13 @@ asm_policies:
         - Specifies whether the system should inspect all HTTP uploads.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     mask_credit_card_numbers_in_request:
       description:
         - Indicates if the system masks credit card numbers.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     maximum_http_header_length:
       description:
         - Maximum length of an HTTP header name and value that the system processes.
@@ -493,7 +493,7 @@ asm_policies:
         - Specifies how the security policy processes URLs that use dynamic sessions.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     maximum_cookie_header_length:
       description:
         - Maximum length of a cookie header name and value that the system processes.
@@ -517,13 +517,13 @@ asm_policies:
         - Specifies if CSRF protection is active on the ASM policy.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     csrf_protection_ssl_only:
       description:
         - Specifies that only HTTPS URLs will be checked for CSRF protection.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     csrf_protection_expiration_time_in_seconds:
       description:
         - Specifies how long, in seconds, a configured CSRF token is valid before it expires.
@@ -646,34 +646,34 @@ asm_signature_sets:
         - Specifies this signature set was added by a user.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     assign_to_policy_by_default:
       description:
         - Indicates whether the system assigns this signature set to a new created security policy by default.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     default_alarm:
       description:
         - Displays whether the security policy logs the request data in the Statistics
           screen if a request matches a signature that is included in the signature set.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     default_block:
       description:
         - When the security policy enforcement mode is Blocking, displays
           how the system treats requests that match a signature included in the signature set.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     default_learn:
       description:
         - Displays whether the security policy learns all requests that match a signature
           that is included in the signature set.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
   sample: hash/dictionary of values
 client_ssl_profiles:
   description: Client SSL profile related information.
@@ -704,7 +704,7 @@ client_ssl_profiles:
         - Enables or disables non-SSL connections.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     authenticate_depth:
       description:
         - Specifies the authenticate depth. This is the client certificate chain maximum traversal depth.
@@ -787,7 +787,7 @@ client_ssl_profiles:
         - Enables or disables ModSSL method emulation.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     peer_certification_mode:
       description:
         - Specifies the peer certificate mode.
@@ -796,34 +796,34 @@ client_ssl_profiles:
       sample: ignore
     sni_require:
       description:
-        - When this option is C(yes), a client connection that does not
+        - When this option is C(true), a client connection that does not
           specify a known server name or does not support SNI extension will
           be rejected.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     sni_default:
       description:
-        - When C(yes), this profile is the default SSL profile when the server
+        - When C(true), this profile is the default SSL profile when the server
           name in a client connection does not match any configured server
           names, or a client connection does not specify any server name at
           all.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     strict_resume:
       description:
         - Enables or disables strict-resume.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     profile_mode_enabled:
       description:
         - Specifies the profile mode, which enables or disables SSL
           processing.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     renegotiation_maximum_record_delay:
       description:
         - Maximum number of SSL records the traffic
@@ -844,7 +844,7 @@ client_ssl_profiles:
         - Specifies whether renegotiations are enabled.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     server_name:
       description:
         - Specifies the server names to be matched with SNI (server name
@@ -858,21 +858,21 @@ client_ssl_profiles:
         - Enables or disables session-ticket.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     unclean_shutdown:
       description:
         - Whether to force the SSL profile to perform a clean shutdown of all SSL
           connections or not
       returned: queried
       type: bool
-      sample: no
+      sample: false
     retain_certificate:
       description:
         - APM module requires storing certificate in SSL session. When
-          C(no), certificate will not be stored in SSL session.
+          C(false), certificate will not be stored in SSL session.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     secure_renegotiation_mode:
       description:
         - Specifies the secure renegotiation mode.
@@ -905,13 +905,13 @@ client_ssl_profiles:
           port number.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     forward_proxy_enabled:
       description:
         - Enables or disables the SSL forward proxy feature.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     forward_proxy_ca_passphrase:
       description:
         - Specifies the passphrase of the key file that is used as the
@@ -1082,7 +1082,7 @@ devices:
         - Whether or not this device is the one that was queried for information.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     software_version:
       description:
         - Displays the software version number.
@@ -1154,7 +1154,7 @@ device_groups:
         - Whether the device group automatically synchronizes configuration data to its members.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     description:
       description:
         - Description of the device group.
@@ -1173,7 +1173,7 @@ device_groups:
           synchronization is performed.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     incremental_config_sync_size_maximum:
       description:
         - Specifies the maximum size (in KB) to devote to incremental config sync cached transactions.
@@ -1185,7 +1185,7 @@ device_groups:
         - Specifies whether network failover is used.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     type:
       description:
         - Specifies the type of device group.
@@ -1197,7 +1197,7 @@ device_groups:
         - Specifies whether to synchronize ASM configurations of device group members.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
   sample: hash/dictionary of values
 external_monitors:
   description: External monitor related information.
@@ -1266,7 +1266,7 @@ external_monitors:
           resource to B(up) at the next successful monitor check.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     time_until_up:
       description:
         - Specifies the amount of time, in seconds, after the first
@@ -1340,12 +1340,12 @@ fasthttp_profiles:
       sample: 0
     oneconnect_replenish':
       description:
-        - When C(yes), specifies the system will not keep a steady-state maximum of
+        - When C(true), specifies the system will not keep a steady-state maximum of
           connections to the back-end, unless the number of connections to the pool have
           dropped beneath the C(minimum_pool_size) specified in the profile.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     oneconnect_ramp_up_increment:
       description:
         - The increment in which the system makes additional connections available, when
@@ -1367,11 +1367,11 @@ fasthttp_profiles:
       sample: My profile
     force_http_1_0_response:
       description:
-        - When C(yes), specifies the server sends responses to clients in the HTTP/1.0
+        - When C(true), specifies the server sends responses to clients in the HTTP/1.0
           format.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     request_header_insert:
       description:
         - A string the system inserts as a header in an HTTP request. If the header
@@ -1381,10 +1381,10 @@ fasthttp_profiles:
       sample: "X-F5-Authentication: foo"
     http_1_1_close_workarounds:
       description:
-        - When C(yes), specifies the server uses workarounds for HTTP 1.1 close issues.
+        - When C(true), specifies the server uses workarounds for HTTP 1.1 close issues.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     idle_timeout:
       description:
         - Length of time that a connection is idle (has no traffic) before the connection
@@ -1398,7 +1398,7 @@ fasthttp_profiles:
           client IP address, to use with connection pooling.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     maximum_header_size:
       description:
         - Maximum amount of HTTP header data the system buffers before making a load
@@ -1427,11 +1427,11 @@ fasthttp_profiles:
       sample: 0
     reset_on_timeout:
       description:
-        - When C(yes), specifies the system sends a reset packet (RST) in addition to
+        - When C(true), specifies the system sends a reset packet (RST) in addition to
           deleting the connection, when a connection exceeds the idle timeout value.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     server_close_timeout:
       description:
         - Number of seconds after which the system closes a client connection, when the system
@@ -1445,14 +1445,14 @@ fasthttp_profiles:
           from the server.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     server_timestamp:
       description:
         - Whether the BIG-IP system processes timestamp request packets in cookie responses
           from the server.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     unclean_shutdown:
       description:
         - How the system handles closing connections. Values provided may be C(enabled), C(disabled),
@@ -1507,14 +1507,14 @@ fastl4_profiles:
           the FIX stream drops down to the ePVA hardware.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     hardware_syn_cookie:
       description:
         - Enables or disables hardware SYN cookie support when PVA10 is present on the system.
         - This option is deprecated in version 13.0.0 and is replaced by C(syn-cookie-enable).
       returned: queried
       type: bool
-      sample: no
+      sample: false
     idle_timeout:
       description:
         - Specifies the number of seconds a connection is idle before the connection is
@@ -1596,7 +1596,7 @@ fastl4_profiles:
           back-end server pool.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     link_qos_to_client:
       description:
         - Specifies a Link Quality of Service (QoS) (VLAN priority) number
@@ -1621,7 +1621,7 @@ fastl4_profiles:
           client or the server.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     loose_init:
       description:
         - Specifies the system initializes a connection when it
@@ -1629,7 +1629,7 @@ fastl4_profiles:
           than requiring a SYN packet for connection initiation.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     mss_override:
       description:
         - Specifies a maximum segment size (MSS) override for server
@@ -1683,20 +1683,20 @@ fastl4_profiles:
         - Specifies if automatic aging from ePVA flow cache is enabled or not.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     pva_flow_evict:
       description:
         - Specifies if this flow can be evicted upon hash collision with a
           new flow learn snoop request.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     pva_offload_dynamic:
       description:
         - Specifies whether PVA flow dynamic offloading is enabled or not.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     pva_offload_state:
       description:
         - Specifies at what stage the ePVA performs hardware offload.
@@ -1711,7 +1711,7 @@ fastl4_profiles:
         - Specifies whether to reassemble fragments.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     receive_window:
       description:
         - Specifies the window size to use, in bytes.
@@ -1724,35 +1724,35 @@ fastl4_profiles:
         - Specifies whether you want to reset connections on timeout.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     rtt_from_client:
       description:
         - Enables or disables the TCP timestamp options to measure the round
           trip time to the client.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     rtt_from_server:
       description:
         - Enables or disables the TCP timestamp options to measure the round
           trip time to the server.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     server_sack:
       description:
         - Specifies whether to support the server sack option in cookie responses
           by default.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     server_timestamp:
       description:
         - Specifies whether to support the server timestamp option in cookie
           responses by default.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     software_syn_cookie:
       description:
         - Enables or disables software SYN cookie support when PVA10 is not present
@@ -1761,13 +1761,13 @@ fastl4_profiles:
           C(syn_cookie_enabled).
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     syn_cookie_enabled:
       description:
         - Enables syn-cookies capability on this virtual server.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     syn_cookie_mss:
       description:
         - Specifies a maximum segment size (MSS) for server connections when
@@ -1781,7 +1781,7 @@ fastl4_profiles:
           software SYN Cookies.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     tcp_close_timeout:
       description:
         - Specifies a TCP close timeout in seconds.
@@ -1794,7 +1794,7 @@ fastl4_profiles:
           SYNs that conform with RFC1948, and allow timestamp recycling.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     tcp_handshake_timeout:
       description:
         - Specifies a TCP handshake timeout in seconds.
@@ -1807,7 +1807,7 @@ fastl4_profiles:
           passing to the server on an initiating SYN.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     tcp_time_wait_timeout:
       description:
         - Specifies a TCP time_wait timeout in milliseconds.
@@ -1872,7 +1872,7 @@ gateway_icmp_monitors:
         - Whether adaptive response time monitoring is enabled for this monitor.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     adaptive_divergence_type:
       description:
         - Specifies whether the adaptive-divergence-value is C(relative) or
@@ -1922,7 +1922,7 @@ gateway_icmp_monitors:
           resource to (B)up at the next successful monitor check.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     time_until_up:
       description:
         - Specifies the amount of time, in seconds, after the first
@@ -1942,7 +1942,7 @@ gateway_icmp_monitors:
         - Specifies whether the monitor operates in transparent mode.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     up_interval:
       description:
         - Specifies, in seconds, the frequency at which the system issues
@@ -1984,7 +1984,7 @@ gtm_pools:
           pool.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     enabled:
       description:
         - Specifies the pool is enabled.
@@ -2297,12 +2297,12 @@ gtm_wide_ips:
       type: bool
     failure_rcode:
       description:
-        - Specifies the DNS RCODE used when C(failure_rcode_response) is C(yes).
+        - Specifies the DNS RCODE used when C(failure_rcode_response) is C(true).
       returned: queried
       type: int
     failure_rcode_response:
       description:
-        - When C(yes), specifies the system returns a RCODE response to
+        - When C(true), specifies the system returns a RCODE response to
           Wide IP requests after exhausting all load balancing methods.
       returned: queried
       type: bool
@@ -2380,7 +2380,7 @@ gtm_topology_regions:
               region members can be C(IS) or C(IS-NOT).
           returned: when configured for the region member.
           type: bool
-          sample: yes
+          sample: true
         subnet:
           description:
             - An IP address and network mask in the CIDR format.
@@ -2472,7 +2472,7 @@ http_monitors:
         - Whether adaptive response time monitoring is enabled for this monitor.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     adaptive_divergence_type:
       description:
         - Specifies whether the adaptive-divergence-value is C(relative) or
@@ -2528,7 +2528,7 @@ http_monitors:
           resource to (B)up at the next successful monitor check.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     receive_string:
       description:
         - Specifies the text string the monitor looks for in the
@@ -2551,7 +2551,7 @@ http_monitors:
           object down instead of up.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     send_string:
       description:
         - Specifies the text string the monitor sends to the target
@@ -2578,7 +2578,7 @@ http_monitors:
         - Specifies whether the monitor operates in transparent mode.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     up_interval:
       description:
         - Specifies, in seconds, the frequency at which the system issues
@@ -2628,7 +2628,7 @@ https_monitors:
         - Whether adaptive response time monitoring is enabled for this monitor.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     adaptive_divergence_type:
       description:
         - Specifies whether the adaptive-divergence-value is C(relative) or
@@ -2684,7 +2684,7 @@ https_monitors:
           resource to up at the next successful monitor check.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     receive_string:
       description:
         - Specifies the text string the monitor looks for in the
@@ -2707,7 +2707,7 @@ https_monitors:
           object down instead of up.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     send_string:
       description:
         - Specifies the text string the monitor sends to the target
@@ -2740,7 +2740,7 @@ https_monitors:
         - Specifies whether the monitor operates in transparent mode.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     up_interval:
       description:
         - Specifies, in seconds, the frequency at which the system issues
@@ -2792,16 +2792,16 @@ http_profiles:
           (XFF) headers, if they exist.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     allow_truncated_redirects:
       description:
         - Specifies the pass-through behavior when a redirect lacking the
           trailing carriage-return and line feed pair at the end of the headers
           is parsed.
-        - When C(no), the system will silently drop the invalid HTTP.
+        - When C(false), the system will silently drop the invalid HTTP.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     excess_client_headers:
       description:
         - Specifies the pass-through behavior when the C(max_header_count) value is
@@ -2883,23 +2883,23 @@ http_profiles:
       sample: deny
     hsts_include_subdomains:
       description:
-        - When C(yes), applies the HSTS policy to the HSTS host and its subdomains.
+        - When C(true), applies the HSTS policy to the HSTS host and its subdomains.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     hsts_enabled:
       description:
-        - When C(yes), enables the HTTP Strict Transport Security settings.
+        - When C(true), enables the HTTP Strict Transport Security settings.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     insert_xforwarded_for:
       description:
-        - When C(yes), specifies the system inserts an X-Forwarded-For header in
+        - When C(true), specifies the system inserts an X-Forwarded-For header in
           an HTTP request with the client IP address, to use with connection pooling.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     lws_max_columns:
       description:
         - Specifies the maximum column width for any given line, when inserting an HTTP
@@ -2909,11 +2909,11 @@ http_profiles:
       sample: 80
     onconnect_transformations:
       description:
-        - When C(yes), specifies the system performs HTTP header transformations
+        - When C(true), specifies the system performs HTTP header transformations
           for the purpose of keeping connections open.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     proxy_mode:
       description:
         - Specifies the proxy mode for this profile. Either reverse, explicit, or transparent.
@@ -3000,26 +3000,26 @@ iapp_services:
         - Whether the device group is inherited or not.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     inherited_traffic_group:
       description:
         - Whether the traffic group is inherited or not.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     strict_updates:
       description:
         - Whether strict updates are enabled or not.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     template_modified:
       description:
         - Whether template the service is based on is modified from its
           default value, or not.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     traffic_group:
       description:
         - Traffic group the service is a part of.
@@ -3091,7 +3091,7 @@ icmp_monitors:
         - Whether adaptive response time monitoring is enabled for this monitor.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     adaptive_divergence_type:
       description:
         - Specifies whether the adaptive-divergence-value is C(relative) or
@@ -3140,7 +3140,7 @@ icmp_monitors:
         - Specifies whether the system automatically changes the status of a
           resource to (B)up at the next successful monitor check.
       type: bool
-      sample: yes
+      sample: true
     time_until_up:
       description:
         - Specifies the amount of time, in seconds, after the first
@@ -3160,7 +3160,7 @@ icmp_monitors:
         - Specifies whether the monitor operates in transparent mode.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     up_interval:
       description:
         - Specifies, in seconds, the frequency at which the system issues
@@ -3223,7 +3223,7 @@ interfaces:
         - Whether the interface is enabled or not.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     if_index:
       description:
         - The index assigned to this interface.
@@ -3278,19 +3278,19 @@ interfaces:
           overrides the object-level poll-interval setting.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     stp_auto_edge_port:
       description:
         - STP edge port detection.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     stp_enabled:
       description:
         - Whether STP is enabled or not.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     stp_link_type:
       description:
         - Specifies the STP link type for the interface.
@@ -3320,7 +3320,7 @@ irules:
         - Whether the verification of the iRule should be ignored or not.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     checksum:
       description:
         - Checksum of the iRule as calculated by BIG-IP.
@@ -3470,13 +3470,13 @@ ltm_pools:
         - Whether NATs are automatically enabled or disabled for any connections using this pool.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     allow_snat:
       description:
         - Whether SNATs are automatically enabled or disabled for any connections using this pool.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     client_ip_tos:
       description:
         - Whether the system sets a Type of Service (ToS) level within a packet sent to the client,
@@ -3522,7 +3522,7 @@ ltm_pools:
         - Specifies not to count the weight of persisted connections on pool members when making load balancing decisions.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     lb_method:
       description:
         - Load balancing method used by the pool.
@@ -3566,7 +3566,7 @@ ltm_pools:
         - Enables or disables the C(minimum_up_members) feature.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     name:
       description:
         - Relative name of the resource in the BIG-IP.
@@ -3627,7 +3627,7 @@ ltm_pools:
         - Enable or disable queuing connections when pool member or node connection limits are reached.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     queue_time_limit:
       description:
         - Specifies the maximum time, in milliseconds, a connection will remain queued.
@@ -3763,13 +3763,13 @@ ltm_pools:
             - Whether the node backing the pool member is ephemeral or not.
           returned: queried
           type: bool
-          sample: yes
+          sample: true
         fqdn_autopopulate:
           description:
             - Whether the node should scale to the IP address set returned by DNS.
           returned: queried
           type: bool
-          sample: yes
+          sample: true
         full_path:
           description:
             - Full name of the resource as know to the BIG-IP.
@@ -3782,13 +3782,13 @@ ltm_pools:
             - Whether the pool member inherits the encapsulation profile from the parent pool.
           returned: queried
           type: bool
-          sample: no
+          sample: false
         logging:
           description:
             - Whether the monitor applied should log its actions.
           returned: queried
           type: bool
-          sample: no
+          sample: false
         monitors:
           description:
             - The Monitors active on the pool member. Monitor names are in their "full_path" form.
@@ -3824,7 +3824,7 @@ ltm_pools:
             - The maximum number of connections per second allowed for a pool member.
           returned: queried
           type: bool
-          sample: no
+          sample: false
         ratio:
           description:
             - The weight of the pool for load balancing purposes.
@@ -3914,19 +3914,19 @@ ltm_policies:
                 - Indicates if the action affects a reply to a given HTTP request.
               returned: when defined in the action.
               type: bool
-              sample: yes
+              sample: true
             redirect:
               description:
                 - This action will redirect a request.
               returned: when defined in the action.
               type: bool
-              sample: no
+              sample: false
             request:
               description:
                 - This policy action is performed on connection requests.
               returned: when defined in the action.
               type: bool
-              sample: no
+              sample: false
             location:
               description:
                 - This action will come from the given location.
@@ -3945,43 +3945,43 @@ ltm_policies:
                 - Specifies the value matched on is case insensitive.
               returned: when defined in the condition.
               type: bool
-              sample: no
+              sample: false
             case_sensitive:
               description:
                 - Specifies the value matched on is case sensitive.
               returned: when defined in the condition.
               type: bool
-              sample: yes
+              sample: true
             contains_string:
               description:
                 - Specifies the value matches if it contains a certain string.
               returned: when defined in the condition.
               type: bool
-              sample: yes
+              sample: true
             external:
               description:
                 - Specifies the value matched on is from the external side of a connection.
               returned: when defined in the condition.
               type: bool
-              sample: yes
+              sample: true
             http_basic_auth:
               description:
                 - This condition matches on basic HTTP authorization.
               returned: when defined in the condition.
               type: bool
-              sample: no
+              sample: false
             http_host:
               description:
                 - This condition matches on an HTTP host.
               returned: when defined in the condition.
               type: bool
-              sample: yes
+              sample: true
             http_uri:
               description:
                 - This condition matches on an HTTP URI.
               returned: when defined in the condition.
               type: bool
-              sample: no
+              sample: false
             datagroup:
               description:
                 - This condition matches on an HTTP URI.
@@ -3993,55 +3993,55 @@ ltm_policies:
                 - This condition matches on TCP parameters.
               returned: when defined in the condition.
               type: bool
-              sample: no
+              sample: false
             address:
               description:
                 - This condition matches on a TCP address.
               returned: when defined in the condition.
               type: bool
-              sample: no
+              sample: false
             matches:
               description:
                 - This condition matches on an address.
               returned: when defined in the condition.
               type: bool
-              sample: no
+              sample: false
             proxy_connect:
               description:
                 - Specifies the value matched on is proxyConnect.
               returned: when defined in the condition.
               type: bool
-              sample: no
+              sample: false
             proxy_request:
               description:
                 - Specifies the value matched on is proxyRequest.
               returned: when defined in the condition.
               type: bool
-              sample: no
+              sample: false
             remote:
               description:
                 - Specifies the value matched on is remote.
               returned: when defined in the condition.
               type: bool
-              sample: no
+              sample: false
             request:
               description:
                 - This policy matches on a request.
               returned: when defined in the condition.
               type: bool
-              sample: yes
+              sample: true
             username:
               description:
                 - Matches on a username.
               returned: when defined in the condition.
               type: bool
-              sample: yes
+              sample: true
             all:
               description:
                 - Matches all.
               returned: when defined in the condition.
               type: bool
-              sample: yes
+              sample: true
             values:
               description:
                 - The specified values will be matched on.
@@ -4207,7 +4207,7 @@ nodes:
         - Indicates if the system automatically creates ephemeral nodes using DNS discovered IPs.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     fqdn_address_type:
       description:
         - The address family of the automatically created ephemeral nodes.
@@ -4305,7 +4305,7 @@ oneconnect_profiles:
           server, but also among similar virtual servers.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     source_mask:
       description:
         - Specifies a source IP mask.
@@ -4545,7 +4545,7 @@ self_ips:
         - Whether the Self IP is a floating address or not.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     traffic_group:
       description:
         - Traffic group the Self IP is associated with.
@@ -4578,7 +4578,7 @@ self_ips:
         - Whether or not the traffic group is inherited.
       returned: queried
       type: bool
-      sample: no
+      sample: false
   sample: hash/dictionary of values
 server_ssl_profiles:
   description: Server SSL related information.
@@ -4621,7 +4621,7 @@ server_ssl_profiles:
         - Use the specified CRL file, even if it has expired.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     authentication_frequency:
       description:
         - Specifies the frequency of authentication.
@@ -4647,7 +4647,7 @@ server_ssl_profiles:
           client certificate that the server asks for.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     bypass_on_handshake_alert:
       description:
         - Enables or disables SSL forward proxy bypass on receiving
@@ -4655,7 +4655,7 @@ server_ssl_profiles:
           message during the serverside SSL handshake.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     c3d_ca_cert:
       description:
         - Name of the certificate file used as the
@@ -4769,13 +4769,13 @@ server_ssl_profiles:
         - Enables or disables ModSSL methods.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     mode:
       description:
         - Enables or disables SSL processing.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     ocsp:
       description:
         - Specifies the name of the OCSP profile for validating
@@ -4801,14 +4801,14 @@ server_ssl_profiles:
           authorization, authentication, auditing steps.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     proxy_ssl_passthrough:
       description:
         - Allows Proxy SSL to passthrough the traffic when ciphersuite negotiated
           between the client and server is not supported.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     renegotiate_period:
       description:
         - Number of seconds from the initial connect time
@@ -4827,20 +4827,20 @@ server_ssl_profiles:
         - Whether renegotiations are enabled.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     retain_certificate:
       description:
-        - APM module requires storing certificates in the SSL session. When C(no),
+        - APM module requires storing certificates in the SSL session. When C(false),
           a certificate will not be stored in the SSL session.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     generic_alert:
       description:
         - Enables or disables generic-alert.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     secure_renegotiation:
       description:
         - Specifies the secure renegotiation mode.
@@ -4859,41 +4859,41 @@ server_ssl_profiles:
           peer.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     session_ticket:
       description:
         - Enables or disables session-ticket.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     sni_default:
       description:
-        - When C(yes), this profile is the default SSL profile when the server
+        - When C(true), this profile is the default SSL profile when the server
           name in a client connection does not match any configured server
           names, or a client connection does not specify any server name at
           all.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     sni_require:
       description:
-        - When C(yes), connections to a server that do not support SNI
+        - When C(true), connections to a server that do not support SNI
           extension will be rejected.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     ssl_c3d:
       description:
         - Enables or disables SSL Client certificate constrained delegation.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     ssl_forward_proxy_enabled:
       description:
         - Enables or disables the ssl-forward-proxy feature.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     ssl_sign_hash:
       description:
         - Specifies the SSL sign hash algorithm which is used to sign and verify
@@ -4907,23 +4907,23 @@ server_ssl_profiles:
         - Enables or disables the ssl-forward-proxy-bypass feature.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     strict_resume:
       description:
         - Enables or disables the resumption of SSL sessions after an
           unclean shutdown.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     unclean_shutdown:
       description:
-        - Specifies, when C(yes), that the SSL profile performs unclean
+        - When C(true), specifies the SSL profile performs unclean
           shutdowns of all SSL connections. This means underlying TCP
           connections are closed without exchanging the required SSL
           shutdown alerts.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     untrusted_cert_response_control:
       description:
         - Specifies the BIG-IP action when the server certificate has
@@ -4988,7 +4988,7 @@ software_hotfixes:
         - Specifies whether the system has verified this image.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     version:
       description:
         - Version of software contained in the image.
@@ -5058,7 +5058,7 @@ software_images:
         - Whether or not the system has verified this image.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     version:
       description:
         - Version of software contained in the image.
@@ -5078,7 +5078,7 @@ software_volumes:
         - An active volume contains the currently running version of software.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     base_build:
       description:
         - Base build version of the software installed in the volume.
@@ -5104,7 +5104,7 @@ software_volumes:
         - Whether this volume is the default boot location or not.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     name:
       description:
         - Relative name of the resource in the BIG-IP.
@@ -5199,7 +5199,7 @@ ssl_certs:
           whether it contains more than one certificate).
       returned: queried
       type: bool
-      sample: no
+      sample: false
     fingerprint:
       description:
         - Displays the SHA-256 fingerprint of the certificate.
@@ -5615,7 +5615,7 @@ tcp_monitors:
         - Whether adaptive response time monitoring is enabled for this monitor.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     adaptive_divergence_type:
       description:
         - Specifies whether the adaptive-divergence-value is C(relative) or
@@ -5671,7 +5671,7 @@ tcp_monitors:
           resource to up at the next successful monitor check.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     reverse:
       description:
         - Specifies whether the monitor operates in reverse mode. When the
@@ -5679,7 +5679,7 @@ tcp_monitors:
           object down instead of up.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     time_until_up:
       description:
         - Specifies the amount of time, in seconds, after the first
@@ -5699,7 +5699,7 @@ tcp_monitors:
         - Specifies whether the monitor operates in transparent mode.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     up_interval:
       description:
         - Specifies, in seconds, the frequency at which the system issues
@@ -5758,7 +5758,7 @@ tcp_half_open_monitors:
           resource to up at the next successful monitor check.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     time_until_up:
       description:
         - Specifies the amount of time, in seconds, after the first
@@ -5778,7 +5778,7 @@ tcp_half_open_monitors:
         - Specifies whether the monitor operates in transparent mode.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     up_interval:
       description:
         - Specifies, in seconds, the frequency at which the system issues
@@ -5819,39 +5819,39 @@ tcp_profiles:
     abc:
       description:
         - Appropriate Byte Counting (RFC 3465)
-        - When C(yes), increases the congestion window by basing the amount to
+        - When C(true), increases the congestion window by basing the amount to
           increase on the number of previously unacknowledged bytes that each ACK covers.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     ack_on_push:
       description:
-        - When C(yes), specifies significantly improved performance to Microsoft
+        - When C(true), specifies significantly improved performance to Microsoft
           Windows and MacOS peers who are writing out on a very small send buffer.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     auto_proxy_buffer:
       description:
-        - When C(yes), specifies the system uses the network measurements to set
+        - When C(true), specifies the system uses the network measurements to set
           the optimal proxy buffer size.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     auto_receive_window:
       description:
-        - When C(yes), specifies the system uses the network measurements to
+        - When C(true), specifies the system uses the network measurements to
           set the optimal receive window size.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     auto_send_buffer:
       description:
-        - When C(yes), specifies the system uses the network measurements to
+        - When C(true), specifies the system uses the network measurements to
           set the optimal send buffer size.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     close_wait:
       description:
         - Specifies the length of time a TCP connection remains in the LAST-ACK
@@ -5867,13 +5867,13 @@ tcp_profiles:
       sample: indefinite
     congestion_metrics_cache:
       description:
-        - When C(yes), specifies the system uses a cache for storing congestion
+        - When C(true), specifies the system uses a cache for storing congestion
           metrics.
         - Subsequently, because these metrics are already known and cached, the initial
           slow-start ramp for previously-encountered peers improves.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     congestion_metrics_cache_timeout:
       description:
         - Specifies the number of seconds for which entries in the congestion metrics
@@ -5893,13 +5893,13 @@ tcp_profiles:
       sample: high-speed
     deferred_accept:
       description:
-        - When C(yes), specifies the system defers allocation of the connection
+        - When C(true), specifies the system defers allocation of the connection
           chain context until the system has received the payload from the client.
         - Enabling this setting is useful in dealing with 3-way handshake denial-of-service
           attacks.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     delay_window_control:
       description:
         - Specifies the system uses an estimate of queuing delay as a measure of
@@ -5907,52 +5907,52 @@ tcp_profiles:
           of data sent.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     delayed_acks:
       description:
         - When checked (enabled), specifies the system can send fewer than one ACK
           (acknowledgment) segment per data segment received.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     dsack:
       description:
         - D-SACK (RFC 2883)
-        - When C(yes), specifies the use of the selective ACK (SACK) option to acknowledge
+        - When C(true), specifies the use of the selective ACK (SACK) option to acknowledge
           duplicate segments.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     early_retransmit:
       description:
-        - When C(yes), specifies the system uses early retransmit (as specified in
+        - When C(true), specifies the system uses early retransmit (as specified in
           RFC 5827) to reduce the recovery time for connections that are receive- buffer
           or user-data limited.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     explicit_congestion_notification:
       description:
-        - When C(yes), specifies the system uses the TCP flags CWR (congestion window
+        - When C(true), specifies the system uses the TCP flags CWR (congestion window
           reduction) and ECE (ECN-Echo) to notify its peer of congestion and congestion
           counter-measures.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     enhanced_loss_recovery:
       description:
         - Specifies whether the system uses enhanced loss recovery to recover from random
           packet losses more effectively.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     fast_open:
       description:
-        - When C(yes), specifies, the system supports TCP Fast Open, which reduces
+        - When C(true), specifies, the system supports TCP Fast Open, which reduces
           latency by allowing a client to include the first packet of data with the SYN
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     fast_open_cookie_expiration:
       description:
         - Specifies the number of seconds that a Fast Open Cookie delivered to a client
@@ -6034,12 +6034,12 @@ tcp_profiles:
       sample: 50
     limited_transmit_recovery:
       description:
-        - When C(yes), specifies the system uses limited transmit recovery
+        - When C(true), specifies the system uses limited transmit recovery
           revisions for fast retransmits (as specified in RFC 3042) to reduce
           the recovery time for connections on a lossy network.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     link_qos:
       description:
         - Specifies the L2 Quality of Service (QoS) level the system inserts
@@ -6069,11 +6069,11 @@ tcp_profiles:
       sample: 1460
     md5_signature:
       description:
-        - When C(yes), specifies to use RFC2385 TCP-MD5 signatures to protect
+        - When C(true), specifies to use RFC2385 TCP-MD5 signatures to protect
           TCP traffic against intermediate tampering.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     minimum_rto:
       description:
         - Specifies the minimum length of time the system waits for
@@ -6083,26 +6083,26 @@ tcp_profiles:
       sample: 1000
     multipath_tcp:
       description:
-        - When C(yes), specifies the system accepts Multipath TCP (MPTCP)
+        - When C(true), specifies the system accepts Multipath TCP (MPTCP)
           connections, which allow multiple client-side flows to connect to a
           single server-side flow.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     mptcp_checksum:
       description:
-        - When C(yes), specifies the system calculates the checksum for
+        - When C(true), specifies the system calculates the checksum for
           MPTCP connections.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     mptcp_checksum_verify:
       description:
-        - When C(yes), specifies the system verifies the checksum for
+        - When C(true), specifies the system verifies the checksum for
           MPTCP connections.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     mptcp_fallback:
       description:
         - Specifies an action on fallback, that is, when MPTCP transitions
@@ -6112,12 +6112,12 @@ tcp_profiles:
       sample: reset
     mptcp_fast_join:
       description:
-        - When C(yes), specifies a FAST join, allowing data to be sent on the
+        - When C(true), specifies a FAST join, allowing data to be sent on the
           MP_JOIN_SYN, which can allow a server response to occur in parallel
           with the JOIN.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     mptcp_idle_timeout:
       description:
         - Specifies the number of seconds that an MPTCP connection is idle
@@ -6138,14 +6138,14 @@ tcp_profiles:
           for long-lived MPTCP sessions.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     mptcp_no_join_dss_ack:
       description:
         - When checked (enabled), specifies no DSS option is sent on the
           JOIN ACK.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     mptcp_rto_max:
       description:
         - Specifies the number of RTOs (retransmission timeouts) before declaring
@@ -6179,7 +6179,7 @@ tcp_profiles:
           number of short segments on the network.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     pkt_loss_ignore_burst:
       description:
         - Specifies the probability of performing congestion control when
@@ -6211,20 +6211,20 @@ tcp_profiles:
       sample: 32768
     proxy_max_segment:
       description:
-        - When C(yes), specifies the system attempts to advertise the same
+        - When C(true), specifies the system attempts to advertise the same
           maximum segment size (MSS) to the server-side connection as that of the
           client-side connection.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     proxy_options:
       description:
-        - When C(yes), specifies the system advertises an option (such as
+        - When C(true), specifies the system advertises an option (such as
           time stamps) to the server only when the option is negotiated with the
           client.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     push_flag:
       description:
         - Specifies how the BIG-IP system receives ACKs.
@@ -6233,11 +6233,11 @@ tcp_profiles:
       sample: default
     rate_pace:
       description:
-        - When C(yes), specifies the system paces the egress packets to
+        - When C(true), specifies the system paces the egress packets to
           avoid dropping packets, allowing for optimum goodput.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     rate_pace_max_rate:
       description:
         - Specifies the maximum rate in bytes per second to which the system
@@ -6253,12 +6253,12 @@ tcp_profiles:
       sample: 65535
     reset_on_timeout:
       description:
-        - When C(yes), specifies the system sends a reset packet (RST)
+        - When C(true), specifies the system sends a reset packet (RST)
           in addition to deleting the connection, when a connection exceeds
           the idle timeout value.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     retransmit_threshold:
       description:
         - Specifies the number of duplicate ACKs (retransmit threshold) to start
@@ -6268,19 +6268,19 @@ tcp_profiles:
       sample: 3
     selective_acks:
       description:
-        - When C(yes), specifies the system processes data using
+        - When C(true), specifies the system processes data using
           selective ACKs (SACKs) whenever possible, to improve system performance.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     selective_nack:
       description:
-        - When C(yes), specifies the system processes data using a selective
+        - When C(true), specifies the system processes data using a selective
           negative acknowledgment (SNACK) whenever possible, to improve system
           performance.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     send_buffer:
       description:
         - Specifies the SEND window size.
@@ -6289,12 +6289,12 @@ tcp_profiles:
       sample: 65535
     slow_start:
       description:
-        - When C(yes), specifies the system uses Slow-Start Congestion
+        - When C(true), specifies the system uses Slow-Start Congestion
           Avoidance as described in RFC3390 in order to ramp up traffic without
           causing excessive congestion on the link.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     syn_cookie_enable:
       description:
         - Specifies the default (if no DoS profile is associated) number of
@@ -6302,14 +6302,14 @@ tcp_profiles:
           before SYN Cookie challenges are enabled for that virtual server.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     syn_cookie_white_list:
       description:
         - Specifies whether or not to use a SYN Cookie WhiteList when doing
           software SYN Cookies.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     syn_retrans_to_base:
       description:
         - Specifies the initial RTO (Retransmission TimeOut) base multiplier
@@ -6319,19 +6319,19 @@ tcp_profiles:
       sample: 3000
     tail_loss_probe:
       description:
-        - When C(yes), specifies the system uses Tail Loss Probe to
+        - When C(true), specifies the system uses Tail Loss Probe to
           reduce the number of retransmission timeouts.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     time_wait_recycle:
       description:
-        - When C(yes), specifies that connections in a TIME-WAIT state are
+        - When C(true), specifies that connections in a TIME-WAIT state are
           reused when the system receives a SYN packet, indicating a request
           for a new connection.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     time_wait:
       description:
         - Specifies the length of time that a TCP connection remains in the
@@ -6341,18 +6341,18 @@ tcp_profiles:
       sample: 2000
     timestamps:
       description:
-        - When C(yes), specifies the system uses the timestamps extension
+        - When C(true), specifies the system uses the timestamps extension
           for TCP (as specified in RFC 1323) to enhance high-speed network performance.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     verified_accept:
       description:
-        - When C(yes), specifies the system can actually communicate with
+        - When C(true), specifies the system can actually communicate with
           the server before establishing a client connection.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     zero_window_timeout:
       description:
         - Specifies the timeout in milliseconds for terminating a connection
@@ -6390,7 +6390,7 @@ traffic_groups:
           device.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     auto_failback_time:
       description:
         - Specifies the time required to fail back.
@@ -6418,7 +6418,7 @@ traffic_groups:
           in the device group.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     mac_masquerade_address:
       description:
         - Specifies a MAC address for the traffic group.
@@ -6466,13 +6466,13 @@ trunks:
         - Whether LACP is enabled or not.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     stp_enabled:
       description:
         - Whether Spanning Tree Protocol (STP) is enabled or not.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     operational_member_count:
       description:
         - Number of working members associated with the trunk.
@@ -6484,7 +6484,7 @@ trunks:
         - Whether the media that is part of the trunk is up or not.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     link_selection_policy:
       description:
         - The LACP policy the trunk uses to determine which member link can handle
@@ -6535,7 +6535,7 @@ ucs:
         - Whether the file is encrypted or not
       returned: queried
       type: bool
-      sample: no
+      sample: false
     file_size:
       description:
         - Size of the UCS file in bytes.
@@ -6584,7 +6584,7 @@ udp_profiles:
         - Allow the passage of datagrams that contain header information, but no essential data.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     buffer_max_bytes:
       description:
         - Ingress buffer byte limit. Maximum allowed value is 16777215.
@@ -6602,7 +6602,7 @@ udp_profiles:
         - Load balance UDP datagram by datagram
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     idle_timeout:
       description:
         - Number of seconds that a connection is idle before
@@ -6673,14 +6673,14 @@ udp_profiles:
           checksum processing.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     proxy_mss:
       description:
-        - When C(yes), specifies the system advertises the same mss
+        - When C(true), specifies the system advertises the same mss
           to the server as was negotiated with the client.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
   sample: hash/dictionary of values
 users:
   description: Details of the users on the system.
@@ -6874,14 +6874,14 @@ virtual_addresses:
         - Whether or not ARP is enabled for the specified virtual address.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     auto_delete_enabled:
       description:
         - Indicates if the virtual address will be deleted automatically on
           deletion of the last associated virtual server or not.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     connection_limit:
       description:
         - Concurrent connection limit for one or more virtual
@@ -6900,13 +6900,13 @@ virtual_addresses:
         - Whether the virtual address is enabled or not.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     icmp_echo:
       description:
         - Whether the virtual address should reply to ICMP echo requests.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     floating:
       description:
         - Property derived from the traffic group. A floating virtual
@@ -6914,7 +6914,7 @@ virtual_addresses:
           address by all devices of a BIG-IP traffic-group.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     netmask:
       description:
         - Netmask of the virtual address.
@@ -6926,7 +6926,7 @@ virtual_addresses:
         - Specifies the route advertisement setting for the virtual address.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     traffic_group:
       description:
         - Traffic group on which the virtual address is active.
@@ -6938,13 +6938,13 @@ virtual_addresses:
         - Whether or not spanning is enabled for the specified virtual address.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     inherited_traffic_group:
       description:
         - Indicates if the traffic group is inherited from the parent folder.
       returned: queried
       type: bool
-      sample: no
+      sample: false
   sample: hash/dictionary of values
 virtual_servers:
   description: Virtual address related information.
@@ -7043,7 +7043,7 @@ virtual_servers:
         - Whether or not clustered multi-processor (CMP) acceleration is enabled.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     cmp_mode:
       description:
         - The clustered-multiprocessing mode.
@@ -7067,7 +7067,7 @@ virtual_servers:
         - Whether or not the virtual is enabled.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     ephemeral_bits_in:
       description:
         - Number of ephemeral ingress bits.
@@ -7237,13 +7237,13 @@ virtual_servers:
         - Enables or disables port translation.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     translate_address:
       description:
         - Enables or disables address translation for the virtual server.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     vlans:
       description:
         - List of VLANs on which the virtual server is either enabled or disabled.
@@ -7269,7 +7269,7 @@ virtual_servers:
         - Whether or not NAT64 is enabled.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     source_port_behavior:
       description:
         - Specifies whether the system preserves the source port of the connection.
@@ -7373,7 +7373,7 @@ virtual_servers:
         - Whether or not connection mirroring is enabled.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     irules:
       description:
         - List of iRules that customize the virtual server to direct and manage traffic.
@@ -7476,7 +7476,7 @@ vlans:
         - Whether failsafe is enabled or not.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     failsafe_timeout:
       description:
         - Number of seconds that an active unit can run without detecting network traffic
@@ -7521,7 +7521,7 @@ vlans:
             - Whether the interface is tagged or not.
           returned: queried
           type: bool
-          sample: no
+          sample: false
     mtu:
       description:
         - Specific maximum transition unit (MTU) for the VLAN.
@@ -7540,7 +7540,7 @@ vlans:
           poll-interval setting.
       returned: queried
       type: bool
-      sample: no
+      sample: false
     sflow_sampling_rate:
       description:
         - Ratio of packets observed to the samples generated.
@@ -7553,13 +7553,13 @@ vlans:
           sampling-rate setting.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     source_check_enabled:
       description:
         - Specifies that only connections that have a return route in the routing table are accepted.
       returned: queried
       type: bool
-      sample: yes
+      sample: true
     true_mac_address:
       description:
         - Media access control (MAC) address for the lowest-numbered interface assigned to this VLAN.
@@ -7584,7 +7584,7 @@ from collections import namedtuple
 
 try:
     from packaging.version import Version
-except ImportError:
+except ImportError:  # pragma: no cover
     HAS_PACKAGING = False
     Version = None
     PACKAGING_IMPORT_ERROR = traceback.format_exc()
@@ -7605,7 +7605,7 @@ from ansible.module_utils.connection import Connection
 
 from ipaddress import ip_interface
 from ..module_utils.client import (
-    F5Client, tmos_version, modules_provisioned, send_teem, packages_installed
+    F5Client, modules_provisioned, send_teem, packages_installed
 )
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, transform_name, flatten_boolean, fq_name
@@ -7615,7 +7615,7 @@ from ..module_utils.urls import parseStats
 from ..module_utils.ipaddress import is_valid_ip
 
 
-class BaseManager(object):
+class BaseManager(object):  # pragma: no cover
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
@@ -7656,17 +7656,15 @@ class BaseManager(object):
         self.installed_packages = []
 
     def exec_module(self):
-        start = datetime.datetime.now().isoformat()
         results = []
         facts = self.read_facts()
         for item in facts:
             attrs = item.to_return()
             results.append(attrs)
-        send_teem(self.client, start)
         return results
 
 
-class Parameters(AnsibleF5Parameters):
+class Parameters(AnsibleF5Parameters):  # pragma: no cover
     @property
     def gather_subset(self):
         if isinstance(self._values['gather_subset'], string_types):
@@ -7756,10 +7754,7 @@ class ApmAccessProfileFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class ApmAccessPolicyFactParameters(BaseParameters):
@@ -7823,10 +7818,7 @@ class ApmAccessPolicyFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class As3Parameters(BaseParameters):
@@ -7847,12 +7839,12 @@ class As3FactManager(BaseManager):
 
     def exec_module(self):
         facts = self._exec_module()
-        result = dict(as3_config=facts)
+        result = dict(as3_config=facts if facts else [])
         return result
 
     def _exec_module(self):
         if 'as3' not in self.installed_packages:
-            return []
+            return None
         facts = self.read_facts()
         return facts
 
@@ -7861,21 +7853,17 @@ class As3FactManager(BaseManager):
         return collection
 
     def read_collection_from_device(self):
-        result = dict()
         uri = "/mgmt/shared/appsvcs/declare"
         response = self.client.get(uri)
 
         if response['code'] == 204:
-            return []
+            return None
 
         if response['code'] not in [200, 201]:
             raise F5ModuleError(response['contents'])
 
-        if 'class' not in response['contents']:
-            return []
-
-        result['declaration'] = response['contents']
-        return result
+        if response['contents'].get('class'):
+            return [dict(declaration=response['contents'])]
 
 
 class AsmPolicyStatsParameters(BaseParameters):
@@ -7911,8 +7899,6 @@ class AsmPolicyStatsParameters(BaseParameters):
             return None
         return len([x for x in self._values['policies'] if x['isModified'] is True])
 
-
-class AsmPolicyStatsParametersv13(AsmPolicyStatsParameters):
     @property
     def policies_active(self):
         if self._values['policies'] is None or len(self._values['policies']) == 0:
@@ -7934,34 +7920,6 @@ class AsmPolicyStatsParametersv13(AsmPolicyStatsParameters):
         return self.policies_inactive
 
 
-class AsmPolicyStatsParametersv12(AsmPolicyStatsParameters):
-    @property
-    def policies_active(self):
-        if self._values['policies'] is None or len(self._values['policies']) == 0:
-            return None
-        return len([x for x in self._values['policies'] if x['active'] is True])
-
-    @property
-    def policies_inactive(self):
-        if self._values['policies'] is None or len(self._values['policies']) == 0:
-            return None
-        return len([x for x in self._values['policies'] if x['active'] is not True])
-
-    @property
-    def policies_attached(self):
-        if self._values['policies'] is None or len(self._values['policies']) == 0:
-            return None
-        return len([x for x in self._values['policies']
-                    if x['active'] is True and len(x['virtualServers']) > 0])
-
-    @property
-    def policies_unattached(self):
-        if self._values['policies'] is None or len(self._values['policies']) == 0:
-            return None
-        return len([x for x in self._values['policies']
-                    if x['active'] is False and len(x['virtualServers']) == 0])
-
-
 class AsmPolicyStatsFactManager(BaseManager):
     def __init__(self, *args, **kwargs):
         self.client = kwargs.get('client', None)
@@ -7980,19 +7938,9 @@ class AsmPolicyStatsFactManager(BaseManager):
         results = facts.to_return()
         return results
 
-    def version_is_less_than_13(self):
-        version = tmos_version(self.client)
-        if Version(version) < Version('13.0.0'):
-            return True
-        else:
-            return False
-
     def read_facts(self):
         collection = self.read_collection_from_device()
-        if self.version_is_less_than_13():
-            params = AsmPolicyStatsParametersv12(params=collection)
-        else:
-            params = AsmPolicyStatsParametersv13(params=collection)
+        params = AsmPolicyStatsParameters(params=collection)
         return params
 
     def read_collection_from_device(self):
@@ -8001,13 +7949,8 @@ class AsmPolicyStatsFactManager(BaseManager):
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
-        if 'items' not in response['contents']:
-            return dict(
-                policies=[]
-            )
-        return dict(
-            policies=response['contents']['items']
-        )
+
+        return dict(policies=response['contents'].get('items', []))
 
 
 class AsmPolicyFactParameters(BaseParameters):
@@ -8377,21 +8320,13 @@ class AsmPolicyFactManager(BaseManager):
     def _exec_module(self):
         if 'asm' not in self.provisioned_modules:
             return []
-        manager = self.get_manager()
-        return manager._exec_module()
-
-    def get_manager(self):
-        if self.version_is_less_than_13():
-            return AsmPolicyFactManagerV12(**self.kwargs)
-        else:
-            return AsmPolicyFactManagerV13(**self.kwargs)
-
-    def version_is_less_than_13(self):
-        version = tmos_version(self.client)
-        if Version(version) < Version('13.0.0'):
-            return True
-        else:
-            return False
+        results = []
+        facts = self.read_facts()
+        for item in facts:
+            attrs = item.to_return()
+            results.append(attrs)
+        results = sorted(results, key=lambda k: k['full_path'])
+        return results
 
     def read_facts(self):
         results = []
@@ -8412,42 +8347,6 @@ class AsmPolicyFactManager(BaseManager):
             n = n + 10
         return result
 
-
-class AsmPolicyFactManagerV12(AsmPolicyFactManager):
-    def _exec_module(self):
-        results = []
-        facts = self.read_facts()
-        for item in facts:
-            attrs = item.to_return()
-            results.append(attrs)
-        results = sorted(results, key=lambda k: k['full_path'])
-        return results
-
-    def read_collection_from_device(self, skip=0):
-        uri = "/mgmt/tm/asm/policies"
-        to_expand = 'policy-builder,geolocation-enforcement,csrf-protection'
-        query = '?$top=10&$skip={0}&$expand={1}&$filter=partition+eq+{2}'.format(skip, to_expand, self.module.params['partition'])
-
-        response = self.client.get(uri + query)
-
-        if response['code'] not in [200, 201, 202]:
-            raise F5ModuleError(response['contents'])
-
-        if 'items' not in response['contents']:
-            return []
-        return response['contents']['items']
-
-
-class AsmPolicyFactManagerV13(AsmPolicyFactManager):
-    def _exec_module(self):
-        results = []
-        facts = self.read_facts()
-        for item in facts:
-            attrs = item.to_return()
-            results.append(attrs)
-        results = sorted(results, key=lambda k: k['full_path'])
-        return results
-
     def read_collection_from_device(self, skip=0):
         uri = "/mgmt/tm/asm/policies"
         to_expand = 'general,signature-settings,header-settings,cookie-settings,antivirus,' \
@@ -8458,9 +8357,7 @@ class AsmPolicyFactManagerV13(AsmPolicyFactManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        return response['contents']['items']
+        return response['contents'].get('items', [])
 
 
 class AsmServerTechnologyFactParameters(BaseParameters):
@@ -8491,21 +8388,12 @@ class AsmServerTechnologyFactManager(BaseManager):
         results = []
         if 'asm' not in self.provisioned_modules:
             return results
-        if self.version_is_less_than_13():
-            return results
         facts = self.read_facts()
         for item in facts:
             attrs = item.to_return()
             results.append(attrs)
         results = sorted(results, key=lambda k: k['server_technology_name'])
         return results
-
-    def version_is_less_than_13(self):
-        version = tmos_version(self.client)
-        if Version(version) < Version('13.0.0'):
-            return True
-        else:
-            return False
 
     def read_facts(self):
         results = []
@@ -8522,10 +8410,7 @@ class AsmServerTechnologyFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class AsmSignatureSetsFactParameters(BaseParameters):
@@ -8568,9 +8453,6 @@ class AsmSignatureSetsFactParameters(BaseParameters):
     @property
     def default_learn(self):
         return flatten_boolean(self._values['default_learn'])
-
-
-# TODO: add the following: filter, systems, signatureReferences
 
 
 class AsmSignatureSetsFactManager(BaseManager):
@@ -8622,10 +8504,7 @@ class AsmSignatureSetsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return None
-
-        return response['contents']['items']
+        return response['contents'].get('items', [])
 
 
 class ClientSslProfilesParameters(BaseParameters):
@@ -8946,10 +8825,7 @@ class ClientSslProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class CFEParameters(BaseParameters):
@@ -8970,12 +8846,12 @@ class CFEFactManager(BaseManager):
 
     def exec_module(self):
         facts = self._exec_module()
-        result = dict(cfe_config=facts)
+        result = dict(cfe_config=facts if facts else [])
         return result
 
     def _exec_module(self):
         if 'cfe' not in self.installed_packages:
-            return []
+            return None
         facts = self.read_facts()
         return facts
 
@@ -8984,15 +8860,14 @@ class CFEFactManager(BaseManager):
         return collection
 
     def read_collection_from_device(self):
-        result = dict()
         uri = "/mgmt/shared/cloud-failover/declare"
         response = self.client.get(uri)
 
         if response['code'] not in [200, 201]:
             raise F5ModuleError(response['contents'])
 
-        result['declaration'] = response['contents']['declaration']
-        return result
+        if response['contents'].get('message'):
+            return [dict(declaration=response['contents']['declaration'])]
 
 
 class DeviceGroupsParameters(BaseParameters):
@@ -9108,10 +8983,7 @@ class DeviceGroupsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class DevicesParameters(BaseParameters):
@@ -9295,12 +9167,12 @@ class DOFactManager(BaseManager):
 
     def exec_module(self):
         facts = self._exec_module()
-        result = dict(do_config=facts)
+        result = dict(do_config=facts if facts else [])
         return result
 
     def _exec_module(self):
         if 'do' not in self.installed_packages:
-            return []
+            return None
         facts = self.read_facts()
         return facts
 
@@ -9309,18 +9181,14 @@ class DOFactManager(BaseManager):
         return collection
 
     def read_collection_from_device(self):
-        result = dict()
         uri = "/mgmt/shared/declarative-onboarding/inspect"
         response = self.client.get(uri)
 
         if response['code'] not in [200, 201]:
             raise F5ModuleError(response['contents'])
 
-        if not response['contents']:
-            result['declaration'] = []
-        else:
-            result['declaration'] = response['contents'][0]['declaration']
-        return result
+        if response['contents'][0].get('declaration'):
+            return [dict(declaration=response['contents'][0]['declaration'])]
 
 
 class ExternalMonitorsParameters(BaseParameters):
@@ -9422,10 +9290,8 @@ class ExternalMonitorsFactManager(BaseManager):
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+
+        return response['contents'].get('items', [])
 
 
 class FastHttpProfilesParameters(BaseParameters):
@@ -9576,10 +9442,7 @@ class FastHttpProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class FastL4ProfilesParameters(BaseParameters):
@@ -9908,10 +9771,7 @@ class FastL4ProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GatewayIcmpMonitorsParameters(BaseParameters):
@@ -10013,10 +9873,7 @@ class GatewayIcmpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmXPoolsParameters(BaseParameters):
@@ -10258,10 +10115,7 @@ class GtmAPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmAaaaPoolsFactManager(BaseManager):
@@ -10314,10 +10168,7 @@ class GtmAaaaPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmCnamePoolsFactManager(BaseManager):
@@ -10370,10 +10221,7 @@ class GtmCnamePoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmMxPoolsFactManager(BaseManager):
@@ -10426,10 +10274,7 @@ class GtmMxPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmNaptrPoolsFactManager(BaseManager):
@@ -10482,10 +10327,7 @@ class GtmNaptrPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmSrvPoolsFactManager(BaseManager):
@@ -10538,10 +10380,7 @@ class GtmSrvPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmServersParameters(BaseParameters):
@@ -10619,11 +10458,12 @@ class GtmServersParameters(BaseParameters):
         uri = "{0}/stats".format(url)
         response = self.client.get(uri)
 
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
         result = parseStats(response['contents'])
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
+        if result:
+            return result.get('stats', {})
 
     def _process_vs_stats(self, link):
         result = dict()
@@ -10840,10 +10680,7 @@ class GtmServersFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmXWideIpsParameters(BaseParameters):
@@ -10970,10 +10807,7 @@ class GtmAWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmAaaaWideIpsFactManager(BaseManager):
@@ -11026,10 +10860,7 @@ class GtmAaaaWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmCnameWideIpsFactManager(BaseManager):
@@ -11082,10 +10913,7 @@ class GtmCnameWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmMxWideIpsFactManager(BaseManager):
@@ -11194,10 +11022,7 @@ class GtmNaptrWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmSrvWideIpsFactManager(BaseManager):
@@ -11250,10 +11075,7 @@ class GtmSrvWideIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class GtmTopologyRegionParameters(BaseParameters):
@@ -11345,10 +11167,7 @@ class GtmTopologyRegionFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class HttpMonitorsParameters(BaseParameters):
@@ -11464,8 +11283,7 @@ class HttpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class HttpsMonitorsParameters(BaseParameters):
@@ -11583,8 +11401,7 @@ class HttpsMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class HttpProfilesParameters(BaseParameters):
@@ -11943,10 +11760,7 @@ class IappServicesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class IapplxPackagesParameters(BaseParameters):
@@ -12001,9 +11815,7 @@ class IapplxPackagesFactManager(BaseManager):
 
         status = self.wait_for_task(response['contents']['id'])
         if status == 'FINISHED':
-            uri = "/mgmt/shared/iapp/package-management-tasks/{0}".format(
-                response['contents']['id']
-            )
+            uri = f"/mgmt/shared/iapp/package-management-tasks/{response['contents']['id']}"
             response = self.client.get(uri)
             if response['code'] not in [200, 201, 202]:
                 raise F5ModuleError(response['contents'])
@@ -12012,14 +11824,10 @@ class IapplxPackagesFactManager(BaseManager):
             raise F5ModuleError(
                 "An error occurred querying iAppLX packages."
             )
-        result = response['contents']['queryResponse']
-        return result
+        return response['contents']['queryResponse']
 
     def wait_for_task(self, task_id):
-        uri = "/mgmt/shared/iapp/package-management-tasks/{0}".format(
-            task_id
-        )
-        response = None
+        uri = f"/mgmt/shared/iapp/package-management-tasks/{task_id}"
         for x in range(0, 60):
             response = self.client.get(uri)
 
@@ -12029,7 +11837,6 @@ class IapplxPackagesFactManager(BaseManager):
             if response['contents']['status'] in ['FINISHED', 'FAILED']:
                 return response['contents']['status']
             time.sleep(1)
-        return response['contents']['status']
 
 
 class IcmpMonitorsParameters(BaseParameters):
@@ -12131,10 +11938,7 @@ class IcmpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class InterfacesParameters(BaseParameters):
@@ -12187,15 +11991,13 @@ class InterfacesParameters(BaseParameters):
     def sflow_poll_interval_global(self):
         if self._values['sflow'] is None:
             return None
-        if 'pollIntervalGlobal' in self._values['sflow']:
-            return self._values['sflow']['pollIntervalGlobal']
+        return self._values['sflow'].get('pollIntervalGlobal')
 
     @property
     def sflow_poll_interval(self):
         if self._values['sflow'] is None:
             return None
-        if 'pollInterval' in self._values['sflow']:
-            return self._values['sflow']['pollInterval']
+        return self._values['sflow'].get('pollInterval')
 
     @property
     def mac_address(self):
@@ -12255,10 +12057,7 @@ class InterfacesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class InternalDataGroupsParameters(BaseParameters):
@@ -12322,10 +12121,7 @@ class InternalDataGroupsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class IrulesParameters(BaseParameters):
@@ -12425,16 +12221,11 @@ class IrulesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class LicenseParameters(BaseParameters):
-    api_map = {
-
-    }
+    api_map = {}
 
     returnables = [
         'license_start_date',
@@ -12793,8 +12584,9 @@ class LtmPoolsParameters(BaseParameters):
         """
         if self._values['metadata'] is None:
             return None
-        result = dict([(k['name'], k['value']) for k in self._values['metadata']])
-        return result
+        result = dict([(k['name'], k['value']) for k in self._values['metadata'] if k.get('value')])
+        if result:
+            return result
 
     @property
     def members(self):
@@ -12927,10 +12719,7 @@ class LtmPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
     def read_member_from_device(self, full_path):
         uri = "/mgmt/tm/ltm/pool/{0}/members".format(
@@ -12941,10 +12730,7 @@ class LtmPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
     def read_stats_from_device(self, full_path):
         uri = "/mgmt/tm/ltm/pool/{0}/stats".format(
@@ -12956,10 +12742,8 @@ class LtmPoolsFactManager(BaseManager):
             raise F5ModuleError(response['contents'])
 
         result = parseStats(response['contents'])
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
+        if result:
+            return result.get('stats', {})
 
 
 class LtmPolicyParameters(BaseParameters):
@@ -13081,10 +12865,7 @@ class LtmPolicyFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class NodesParameters(BaseParameters):
@@ -13186,26 +12967,38 @@ class NodesParameters(BaseParameters):
 
     @property
     def monitor_status(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['monitorStatus']
 
     @property
     def session_status(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['sessionStatus']
 
     @property
     def availability_status(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['status']['availabilityState']
 
     @property
     def enabled_status(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['status']['enabledState']
 
     @property
     def status_reason(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['status']['statusReason']
 
     @property
     def monitor_rule(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['monitorRule']
 
 
@@ -13259,10 +13052,7 @@ class NodesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
     def read_stats_from_device(self, full_path):
         uri = "/mgmt/tm/ltm/node/{0}/stats".format(
@@ -13274,10 +13064,8 @@ class NodesFactManager(BaseManager):
             raise F5ModuleError(response['contents'])
 
         result = parseStats(response['contents'])
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
+        if result:
+            return result.get('stats', {})
 
 
 class OneConnectProfilesParameters(BaseParameters):
@@ -13377,10 +13165,7 @@ class OneConnectProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class PartitionParameters(BaseParameters):
@@ -13432,10 +13217,7 @@ class PartitionFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class ProvisionInfoParameters(BaseParameters):
@@ -13491,10 +13273,7 @@ class ProvisionInfoFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class RouteDomainParameters(BaseParameters):
@@ -13587,10 +13366,7 @@ class RouteDomainFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SelfIpsParameters(BaseParameters):
@@ -13705,10 +13481,7 @@ class SelfIpsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class ServerSslProfilesParameters(BaseParameters):
@@ -14018,10 +13791,7 @@ class ServerSslProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SoftwareVolumesParameters(BaseParameters):
@@ -14045,15 +13815,15 @@ class SoftwareVolumesParameters(BaseParameters):
 
     @property
     def install_volume(self):
-        if self._values['media'] is None:
+        if not self._values['media']:
             return None
-        return self._values['media'].get('name', None)
+        return self._values['media'][0].get('name')
 
     @property
     def default_boot_location(self):
-        if self._values['media'] is None:
+        if not self._values['media']:
             return None
-        return flatten_boolean(self._values['media'].get('defaultBootLocation', None))
+        return flatten_boolean(self._values['media'][0].get('defaultBootLocation'))
 
     @property
     def active(self):
@@ -14097,10 +13867,7 @@ class SoftwareVolumesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SoftwareHotfixesParameters(BaseParameters):
@@ -14156,10 +13923,7 @@ class SoftwareHotfixesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SoftwareImagesParameters(BaseParameters):
@@ -14274,10 +14038,7 @@ class SoftwareImagesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SslCertificatesParameters(BaseParameters):
@@ -14379,10 +14140,7 @@ class SslCertificatesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SslKeysParameters(BaseParameters):
@@ -14461,10 +14219,7 @@ class SslKeysFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SystemDbParameters(BaseParameters):
@@ -14620,10 +14375,7 @@ class SystemDbFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class SystemInfoParameters(BaseParameters):
@@ -15048,12 +14800,12 @@ class TSFactManager(BaseManager):
 
     def exec_module(self):
         facts = self._exec_module()
-        result = dict(ts_config=facts)
+        result = dict(ts_config=facts if facts else [])
         return result
 
     def _exec_module(self):
         if 'ts' not in self.installed_packages:
-            return []
+            return None
         facts = self.read_facts()
         return facts
 
@@ -15062,17 +14814,14 @@ class TSFactManager(BaseManager):
         return collection
 
     def read_collection_from_device(self):
-        result = dict()
         uri = "/mgmt/shared/telemetry/declare"
         response = self.client.get(uri)
 
-        if 'code' in response and response['code'] not in [200, 201]:
+        if response['code'] not in [200, 201]:
             raise F5ModuleError(response['contents'])
 
-        if 'message' not in response:
-            return []
-        result['declaration'] = response['contents']['declaration']
-        return result
+        if response['contents'].get('message'):
+            return [dict(declaration=response['contents']['declaration'])]
 
 
 class TcpMonitorsParameters(BaseParameters):
@@ -15181,10 +14930,7 @@ class TcpMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class TcpHalfOpenMonitorsParameters(BaseParameters):
@@ -15273,10 +15019,7 @@ class TcpHalfOpenMonitorsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class TcpProfilesParameters(BaseParameters):
@@ -15702,10 +15445,7 @@ class TcpProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class TrafficGroupsParameters(BaseParameters):
@@ -15728,7 +15468,8 @@ class TrafficGroupsParameters(BaseParameters):
         'ha_load_factor',
         'ha_order',
         'is_floating',
-        'mac_masquerade_address'
+        'mac_masquerade_address',
+        'stats'
     ]
 
     @property
@@ -15812,10 +15553,7 @@ class TrafficGroupsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
     def read_stats_from_device(self, full_path):
         uri = "/mgmt/tm/cm/traffic-group/{0}/stats".format(
@@ -15827,10 +15565,8 @@ class TrafficGroupsFactManager(BaseManager):
             raise F5ModuleError(response['contents'])
 
         result = parseStats(response['contents'])
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
+        if result:
+            return result.get('stats', {})
 
 
 class TrunksParameters(BaseParameters):
@@ -15861,14 +15597,15 @@ class TrunksParameters(BaseParameters):
         'lacp_timeout',
         'interfaces',
         'distribution_hash',
-        'configured_member_count'
+        'configured_member_count',
+        'stats'
     ]
 
     @property
     def lacp_enabled(self):
-        if self._values['lacp_enabled'] is None:
+        if self._values['lacp_state'] is None:
             return None
-        elif self._values['lacp_enabled'] == 'disabled':
+        elif self._values['lacp_state'] == 'disabled':
             return 'no'
         return 'yes'
 
@@ -15882,7 +15619,9 @@ class TrunksParameters(BaseParameters):
 
     @property
     def media_status(self):
-        return self._values['stats']['status']
+        if not self._values['stats']:
+            return None
+        return self._values['stats'].get('status')
 
 
 class TrunksFactManager(BaseManager):
@@ -15934,10 +15673,7 @@ class TrunksFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
     def read_stats_from_device(self, full_path):
         uri = "/mgmt/tm/net/trunk/{0}/stats".format(
@@ -15949,10 +15685,8 @@ class TrunksFactManager(BaseManager):
             raise F5ModuleError(response['contents'])
 
         result = parseStats(response['contents'])
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
+        if result:
+            return result.get('stats', {})
 
 
 class UCSParameters(BaseParameters):
@@ -16039,10 +15773,7 @@ class UCSFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class UsersParameters(BaseParameters):
@@ -16112,10 +15843,7 @@ class UsersFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class UdpProfilesParameters(BaseParameters):
@@ -16228,10 +15956,7 @@ class UdpProfilesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class VcmpGuestsParameters(BaseParameters):
@@ -16311,10 +16036,7 @@ class VcmpGuestsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class VirtualAddressesParameters(BaseParameters):
@@ -16429,10 +16151,7 @@ class VirtualAddressesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class VirtualServersParameters(BaseParameters):
@@ -16549,154 +16268,230 @@ class VirtualServersParameters(BaseParameters):
 
     @property
     def max_conn_duration(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['csMaxConnDur']
 
     @property
     def mean_conn_duration(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['csMeanConnDur']
 
     @property
     def min_conn_duration(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['csMinConnDur']
 
     @property
     def cpu_usage_ratio_last_5_min(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['fiveMinAvgUsageRatio']
 
     @property
     def cpu_usage_ratio_last_5_sec(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['fiveSecAvgUsageRatio']
 
     @property
     def cpu_usage_ratio_last_1_min(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['oneMinAvgUsageRatio']
 
     @property
     def cmp_mode(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['cmpEnableMode']
 
     @property
     def availability_status(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['status']['availabilityState']
 
     @property
     def status_reason(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['status']['statusReason']
 
     @property
     def total_requests(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['totRequests']
 
     @property
     def ephemeral_bits_in(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['bitsIn']
 
     @property
     def ephemeral_bits_out(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['bitsOut']
 
     @property
     def ephemeral_current_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['curConns']
 
     @property
     def ephemeral_evicted_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['evictedConns']
 
     @property
     def ephemeral_max_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['maxConns']
 
     @property
     def ephemeral_pkts_in(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['pktsIn']
 
     @property
     def ephemeral_pkts_out(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['pktsOut']
 
     @property
     def ephemeral_slow_killed(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['slowKilled']
 
     @property
     def ephemeral_total_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['ephemeral']['totConns']
 
     @property
     def client_side_bits_in(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['bitsIn']
 
     @property
     def client_side_bits_out(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['bitsOut']
 
     @property
     def client_side_current_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['curConns']
 
     @property
     def client_side_evicted_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['evictedConns']
 
     @property
     def client_side_max_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['maxConns']
 
     @property
     def client_side_pkts_in(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['pktsIn']
 
     @property
     def client_side_pkts_out(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['pktsOut']
 
     @property
     def client_side_slow_killed(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['slowKilled']
 
     @property
     def client_side_total_connections(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['clientside']['totConns']
 
     @property
     def total_software_accepted_syn_cookies(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['accepts']
 
     @property
     def total_hardware_accepted_syn_cookies(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['hwAccepts']
 
     @property
     def total_hardware_syn_cookies(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['hwSyncookies']
 
     @property
     def hardware_syn_cookie_instances(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['hwsyncookieInstance']
 
     @property
     def total_software_rejected_syn_cookies(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['rejects']
 
     @property
     def software_syn_cookie_instances(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['swsyncookieInstance']
 
     @property
     def current_syn_cache(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['syncacheCurr']
 
     @property
     def syn_cache_overflow(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['syncacheOver']
 
     @property
     def total_software_syn_cookies(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookie']['syncookies']
 
     @property
     def syn_cookies_status(self):
+        if not self._values['stats']:
+            return None
         return self._values['stats']['syncookieStatus']
 
     @property
@@ -17183,25 +16978,18 @@ class VirtualServersFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
     def read_stats_from_device(self, full_path):
-        uri = "/mgmt/tm/ltm/virtual/{0}/stats".format(
-            transform_name(name=full_path)
-        )
+        uri = f"/mgmt/tm/ltm/virtual/{transform_name(name=full_path)}/stats"
         response = self.client.get(uri)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
         result = parseStats(response['contents'])
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
+        if result:
+            return result.get('stats', {})
 
 
 class VlansParameters(BaseParameters):
@@ -17237,7 +17025,7 @@ class VlansParameters(BaseParameters):
         'sflow_sampling_rate_global',
         'source_check_enabled',
         'true_mac_address',
-        'tag',
+        'tag'
     ]
 
     @property
@@ -17281,13 +17069,15 @@ class VlansParameters(BaseParameters):
 
     @property
     def true_mac_address(self):
-        # Who made this field a "description"!?
-        return self._values['stats']['macTrue']
+        if not self._values['stats']:
+            return None
+        return self._values['stats'].get('macTrue')
 
     @property
     def tag(self):
-        # We can't agree on field names...SMH
-        return self._values['stats']['id']
+        if not self._values['stats']:
+            return None
+        return self._values['stats'].get('id')
 
     @property
     def failsafe_enabled(self):
@@ -17344,10 +17134,7 @@ class VlansFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
     def read_stats_from_device(self, full_path):
         uri = "/mgmt/tm/net/vlan/{0}/stats".format(
@@ -17359,10 +17146,8 @@ class VlansFactManager(BaseManager):
             raise F5ModuleError(response['contents'])
 
         result = parseStats(response['contents'])
-        try:
-            return result['stats']
-        except KeyError:
-            return {}
+        if result:
+            return result.get('stats', {})
 
 
 class ManagementRouteParameters(BaseParameters):
@@ -17429,10 +17214,7 @@ class ManagementRouteFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        result = response['contents']['items']
-        return result
+        return response['contents'].get('items', [])
 
 
 class RemoteSyslogParameters(BaseParameters):
@@ -17579,6 +17361,7 @@ class ModuleManager(object):
         }
 
     def exec_module(self):
+        start = datetime.datetime.now().isoformat()
         self.handle_all_keyword()
         self.handle_profiles_keyword()
         self.handle_monitors_keyword()
@@ -17611,6 +17394,7 @@ class ModuleManager(object):
             result['queried'] = True
         else:
             result['queried'] = False
+        send_teem(F5Client(module=self.module, client=self.connection), start)
         return result
 
     def filter_excluded_facts(self):
@@ -17947,5 +17731,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

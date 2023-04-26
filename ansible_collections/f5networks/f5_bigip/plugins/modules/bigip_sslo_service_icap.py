@@ -62,34 +62,34 @@ options:
       enable:
         description:
           - Enables or disables custom headers to be inserted to the ICAP server.
-          - If C(yes), the C(referrer), C(host), C(user_agent) and C(h_from) parameters are mandatory when creating a
+          - If C(true), the C(referrer), C(host), C(user_agent) and C(h_from) parameters are mandatory when creating a
             new service object.
-          - When creating an ICAP service, if the parameter is not provided a default of value C(no) is assumed.
+          - When creating an ICAP service, if the parameter is not provided a default of value C(false) is assumed.
         type: bool
       referrer:
         description:
           - Specifies a Referrer header to pass to the ICAP service.
-          - Required when creating a new service object with C(enable) value set to C(yes).
+          - Required when creating a new service object with the C(enable) value set to C(true).
         type: str
       host:
         description:
           - Specifies a Host header to pass to the ICAP service.
-          - Required when creating a new service object with C(enable) value set to C(yes).
+          - Required when creating a new service object with the C(enable) value set to C(true).
         type: str
       user_agent:
         description:
           - Specifies a User-Agent header to pass to the ICAP service.
-          - Required when creating a new service object with C(enable) value set to C(yes).
+          - Required when creating a new service object with the C(enable) value set to C(true).
         type: str
       h_from:
         description:
           - Specifies a From header to pass to the ICAP service.
-          - Required when creating a new service object with C(enable) value set to C(yes).
+          - Required when creating a new service object with the C(enable) value set to C(true).
         type: str
   enable_one_connect:
     description:
       - Enables or disables OneConnect optimization to the ICAP server.
-      - When creating an ICAP service, if the parameter is not provided a default value of C(yes) is assumed.
+      - When creating an ICAP service, if the parameter is not provided a default value of C(true) is assumed.
     type: bool
   request_uri:
     description:
@@ -121,16 +121,16 @@ options:
   allow_http10:
     description:
       - Enables or disables HTTP/1.0 support to ICAP.
-      - When creating an ICAP service, if the parameter is not provided a default value of C(no) is assumed.
+      - When creating an ICAP service, if the parameter is not provided a default value of C(false) is assumed.
     type: bool
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes), does not make any changes on the device and always returns C(changed=False).
+      - When C(true), does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
         C(MODIFY) on an existing service, no JSON output is generated.
     type: bool
-    default: no
+    default: false
   timeout:
     description:
       - The amount of time to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete, in seconds.
@@ -239,7 +239,7 @@ headers:
       description: Enables or disables custom headers to be inserted to the ICAP server.
       returned: changed
       type: bool
-      sample: True
+      sample: true
     referrer:
       description: The Referrer header to pass to the ICAP service.
       returned: changed
@@ -265,7 +265,7 @@ enable_one_connect:
     - Enables or disables OneConnect optimization to the ICAP server.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 request_uri:
   description:
     - The ICAP request URI.
@@ -295,7 +295,7 @@ allow_http10:
     - Enables or disables HTTP/1.0 support to ICAP.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 '''
 
 import time

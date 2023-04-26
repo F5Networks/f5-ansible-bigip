@@ -1,0 +1,15 @@
+{
+    "kind": "tm:auth:partition:partitioncollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/auth/partition?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:auth:partition:partitionstate",
+            "name": "Common",
+            "fullPath": "Common",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/auth/partition/Common?ver=16.0.0",
+            "defaultRouteDomain": 0,
+            "description": "Updated by AS3 at Wed, 12 Oct 2022 00:06:21 GMT"
+        }
+    ]
+}

@@ -1,0 +1,6 @@
+{
+    "kind": "tm:util:bash:runstate",
+    "command": "run",
+    "utilCmdArgs": "-c 'cat /proc/uptime' ",
+    "commandResult": "35193005.42 126057642.88\n"
+}

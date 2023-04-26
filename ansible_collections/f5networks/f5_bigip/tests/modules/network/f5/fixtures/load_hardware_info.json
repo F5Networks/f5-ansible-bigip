@@ -1,0 +1,240 @@
+{
+    "kind": "tm:sys:hardware:hardwarestats",
+    "selfLink": "https://localhost/mgmt/tm/sys/hardware?ver=16.0.0",
+    "entries": {
+        "https://localhost/mgmt/tm/sys/hardware/chassis-info": {
+            "nestedStats": {
+                "entries": {
+                    "https://localhost/mgmt/tm/sys/hardware/chassis-info/0": {
+                        "nestedStats": {
+                            "entries": {
+                                "maxMacCount": {
+                                    "value": 1
+                                },
+                                "regKey": {
+                                    "description": "-"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "https://localhost/mgmt/tm/sys/hardware/hardware-version": {
+            "nestedStats": {
+                "entries": {
+                    "https://localhost/mgmt/tm/sys/hardware/hardware-version/HD1": {
+                        "nestedStats": {
+                            "entries": {
+                                "model": {
+                                    "description": "Virtual disk"
+                                },
+                                "tmName": {
+                                    "description": "HD1"
+                                },
+                                "type": {
+                                    "description": "physical-disk"
+                                },
+                                "https://localhost/mgmt/tm/sys/hardware/hardwareVersion/HD1/versions": {
+                                    "nestedStats": {
+                                        "entries": {
+                                            "https://localhost/mgmt/tm/sys/hardware/hardwareVersion/HD1/versions/0": {
+                                                "nestedStats": {
+                                                    "entries": {
+                                                        "tmName": {
+                                                            "description": "SerialNumber"
+                                                        },
+                                                        "version": {
+                                                            "description": "VMware-sda"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "https://localhost/mgmt/tm/sys/hardware/hardwareVersion/HD1/versions/1": {
+                                                "nestedStats": {
+                                                    "entries": {
+                                                        "tmName": {
+                                                            "description": "Size"
+                                                        },
+                                                        "version": {
+                                                            "description": "175.00G"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "https://localhost/mgmt/tm/sys/hardware/hardwareVersion/HD1/versions/2": {
+                                                "nestedStats": {
+                                                    "entries": {
+                                                        "tmName": {
+                                                            "description": "Firmware Version"
+                                                        },
+                                                        "version": {
+                                                            "description": "2.0"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "https://localhost/mgmt/tm/sys/hardware/hardwareVersion/HD1/versions/3": {
+                                                "nestedStats": {
+                                                    "entries": {
+                                                        "tmName": {
+                                                            "description": "Media Type"
+                                                        },
+                                                        "version": {
+                                                            "description": "HDD"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "https://localhost/mgmt/tm/sys/hardware/hardware-version/cpus": {
+                        "nestedStats": {
+                            "entries": {
+                                "model": {
+                                    "description": "Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz"
+                                },
+                                "tmName": {
+                                    "description": "cpus"
+                                },
+                                "type": {
+                                    "description": "base-board"
+                                },
+                                "https://localhost/mgmt/tm/sys/hardware/hardwareVersion/cpus/versions": {
+                                    "nestedStats": {
+                                        "entries": {
+                                            "https://localhost/mgmt/tm/sys/hardware/hardwareVersion/cpus/versions/0": {
+                                                "nestedStats": {
+                                                    "entries": {
+                                                        "tmName": {
+                                                            "description": "cache size"
+                                                        },
+                                                        "version": {
+                                                            "description": "35840 KB"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "https://localhost/mgmt/tm/sys/hardware/hardwareVersion/cpus/versions/1": {
+                                                "nestedStats": {
+                                                    "entries": {
+                                                        "tmName": {
+                                                            "description": "cores"
+                                                        },
+                                                        "version": {
+                                                            "description": "4  (physical:4)"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "https://localhost/mgmt/tm/sys/hardware/hardwareVersion/cpus/versions/2": {
+                                                "nestedStats": {
+                                                    "entries": {
+                                                        "tmName": {
+                                                            "description": "cpu MHz"
+                                                        },
+                                                        "version": {
+                                                            "description": "2593.993"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "https://localhost/mgmt/tm/sys/hardware/hardwareVersion/cpus/versions/3": {
+                                                "nestedStats": {
+                                                    "entries": {
+                                                        "tmName": {
+                                                            "description": "cpu sockets"
+                                                        },
+                                                        "version": {
+                                                            "description": "4"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "https://localhost/mgmt/tm/sys/hardware/hardwareVersion/cpus/versions/4": {
+                                                "nestedStats": {
+                                                    "entries": {
+                                                        "tmName": {
+                                                            "description": "cpu stepping"
+                                                        },
+                                                        "version": {
+                                                            "description": "0"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "https://localhost/mgmt/tm/sys/hardware/platform": {
+            "nestedStats": {
+                "entries": {
+                    "https://localhost/mgmt/tm/sys/hardware/platform/0": {
+                        "nestedStats": {
+                            "entries": {
+                                "baseMac": {
+                                    "description": "fa:16:3e:7f:cf:b3"
+                                },
+                                "biosRev": {
+                                    "description": " "
+                                },
+                                "cloudName": {
+                                    "description": " "
+                                },
+                                "hypervisorName": {
+                                    "description": "VMware Virtual Platform"
+                                },
+                                "marketingName": {
+                                    "description": "BIG-IP Virtual Edition"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "https://localhost/mgmt/tm/sys/hardware/system-info": {
+            "nestedStats": {
+                "entries": {
+                    "https://localhost/mgmt/tm/sys/hardware/system-info/0": {
+                        "nestedStats": {
+                            "entries": {
+                                "bigipChassisSerialNum": {
+                                    "description": "4225b5d3-0f0c-5068-c3dad20d67a4"
+                                },
+                                "hostBoardPartRevNum": {
+                                    "description": " "
+                                },
+                                "hostBoardSerialNum": {
+                                    "description": " "
+                                },
+                                "platform": {
+                                    "description": "Z100"
+                                },
+                                "project_200LevelBomNum": {
+                                    "description": " "
+                                },
+                                "switchBoardPartRevNum": {
+                                    "description": " "
+                                },
+                                "switchBoardSerialNum": {
+                                    "description": " "
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,747 @@
+{
+    "kind": "tm:asm:policies:policycollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/asm/policies?$expand=general%2Csignature-settings%2Cheader-settings%2Ccookie-settings%2Cantivirus%2Cpolicy-builder%2Ccsrf-protection%2Ccsrf-urls&ver=16.1.3",
+    "totalItems": 2,
+    "items": [
+        {
+            "signatureRequirementReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/signature-requirements?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "plainTextProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/plain-text-profiles?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "enablePassiveMode": false,
+            "behavioralEnforcementReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/behavioral-enforcement?ver=16.1.3"
+            },
+            "dataGuardReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/data-guard?ver=16.1.3"
+            },
+            "csrf-protection": {
+                "kind": "tm:asm:policies:csrf-protection:csrf-protectionstate",
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/csrf-protection?ver=16.1.3",
+                "sslOnly": false,
+                "expirationTimeInSeconds": "600",
+                "enabled": true
+            },
+            "createdDatetime": "2023-03-20T12:00:33Z",
+            "databaseProtectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/database-protection?ver=16.1.3"
+            },
+            "antivirus": {
+                "kind": "tm:asm:policies:antivirus:policy-antivirusstate",
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/antivirus?ver=16.1.3",
+                "inspectHttpUploads": false
+            },
+            "signature-settings": {
+                "kind": "tm:asm:policies:signature-settings:signature-settingstate",
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/signature-settings?ver=16.1.3",
+                "signatureStaging": true,
+                "placeSignaturesInStaging": true,
+                "attackSignatureFalsePositiveMode": "disabled",
+                "minimumAccuracyForAutoAddedSignatures": "medium"
+            },
+            "versionLastChange": "CSRF CSRF [update]: Expiration Time In Seconds was set to 600. { audit: policy = /Common/scenario4, username = admin, client IP = 172.18.17.207 }",
+            "csrf-urls": [
+                {
+                    "requiredParameters": "ignore",
+                    "lastUpdateMicros": 1.679313814e+15,
+                    "kind": "tm:asm:policies:csrf-urls:csrf-urlstate",
+                    "selfLink": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/csrf-urls/IDzrsjLjgknPPfVh4YzIrw?ver=16.1.3",
+                    "url": "/fakebar",
+                    "method": "POST",
+                    "enforcementAction": "verify-csrf-token",
+                    "id": "IDzrsjLjgknPPfVh4YzIrw",
+                    "wildcardOrder": 2
+                },
+                {
+                    "requiredParameters": "ignore",
+                    "lastUpdateMicros": 1.679313645e+15,
+                    "kind": "tm:asm:policies:csrf-urls:csrf-urlstate",
+                    "selfLink": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/csrf-urls/l0Ckxe-7yHsXp8U5tTgbFQ?ver=16.1.3",
+                    "url": "*",
+                    "method": "POST",
+                    "enforcementAction": "verify-csrf-token",
+                    "id": "l0Ckxe-7yHsXp8U5tTgbFQ",
+                    "wildcardOrder": 1
+                }
+            ],
+            "name": "scenario4",
+            "caseInsensitive": false,
+            "sectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/sections?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "flowReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/flows?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "loginPageReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/login-pages?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "description": "Fundamental Policy",
+            "fullPath": "/Common/scenario4",
+            "policyBuilderParameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/policy-builder-parameter?ver=16.1.3"
+            },
+            "hasParent": false,
+            "threatCampaignReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/threat-campaigns?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "partition": "Common",
+            "policy-builder": {
+                "kind": "tm:asm:policies:policy-builder:policy-builderstate",
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/policy-builder?ver=16.1.3",
+                "learningMode": "disabled"
+            },
+            "managedByBewaf": false,
+            "graphqlProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/graphql-profiles?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "kind": "tm:asm:policies:policystate",
+            "virtualServers": [],
+            "policyBuilderCookieReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/policy-builder-cookie?ver=16.1.3"
+            },
+            "ipIntelligenceReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/ip-intelligence?ver=16.1.3"
+            },
+            "protocolIndependent": false,
+            "sessionAwarenessSettingsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/session-tracking?ver=16.1.3"
+            },
+            "policyBuilderUrlReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/policy-builder-url?ver=16.1.3"
+            },
+            "policyBuilderServerTechnologiesReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/policy-builder-server-technologies?ver=16.1.3"
+            },
+            "policyBuilderFiletypeReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/policy-builder-filetype?ver=16.1.3"
+            },
+            "signatureSetReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/signature-sets?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "parameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/parameters?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "applicationLanguage": "utf-8",
+            "enforcementMode": "blocking",
+            "loginEnforcementReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/login-enforcement?ver=16.1.3"
+            },
+            "openApiFileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/open-api-files?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "navigationParameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/navigation-parameters?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "gwtProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/gwt-profiles?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "webhookReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/webhooks?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "whitelistIpReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/whitelist-ips?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "historyRevisionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/history-revisions?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "responsePageReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/response-pages?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "vulnerabilityAssessmentReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/vulnerability-assessment?ver=16.1.3"
+            },
+            "serverTechnologyReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/server-technologies?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "cookieReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/cookies?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "blockingSettingReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/blocking-settings?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "hostNameReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/host-names?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "versionDeviceName": "bigip1",
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw?ver=16.1.3",
+            "threatCampaignSettingReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/threat-campaign-settings?ver=16.1.3"
+            },
+            "cookie-settings": {
+                "kind": "tm:asm:policies:cookie-settings:cookie-settingsstate",
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/cookie-settings?ver=16.1.3",
+                "maximumCookieHeaderLength": "8192"
+            },
+            "signatureReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/signatures?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "policyBuilderRedirectionProtectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/policy-builder-redirection-protection?ver=16.1.3"
+            },
+            "filetypeReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/filetypes?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "id": "-rJ0Aa2BUjq527-JBwBlVw",
+            "modifierName": "admin",
+            "manualVirtualServers": [],
+            "versionDatetime": "2023-03-20T12:04:13Z",
+            "ssrfHostReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/ssrf-hosts?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "subPath": "/Common",
+            "sessionTrackingStatusReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/session-tracking-statuses?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "active": true,
+            "auditLogReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/audit-logs?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "disallowedGeolocationReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/disallowed-geolocations?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "redirectionProtectionDomainReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/redirection-protection-domains?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "type": "security",
+            "deceptionResponsePageReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/deception-response-pages?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "websocketUrlReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/websocket-urls?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "xmlProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/xml-profiles?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "general": {
+                "enableEventCorrelation": true,
+                "maskCreditCardNumbersInRequest": true,
+                "enforcementReadinessPeriod": 0,
+                "allowedResponseCodes": [
+                    400,
+                    401,
+                    404,
+                    407,
+                    417,
+                    503
+                ],
+                "customXffHeaders": [],
+                "pathParameterHandling": "as-parameters",
+                "kind": "tm:asm:policies:general:generalstate",
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/general?ver=16.1.3",
+                "triggerAsmIruleEvent": "disabled",
+                "trustXff": false,
+                "useDynamicSessionIdInUrl": false
+            },
+            "methodReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/methods?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "vulnerabilityReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/vulnerabilities?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "redirectionProtectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/redirection-protection?ver=16.1.3"
+            },
+            "policyBuilderSessionsAndLoginsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/policy-builder-sessions-and-logins?ver=16.1.3"
+            },
+            "templateReference": {
+                "link": "https://localhost/mgmt/tm/asm/policy-templates/KGO8Jk0HA4ipQRG8Bfd_Dw?ver=16.1.3",
+                "title": "Fundamental"
+            },
+            "policyBuilderHeaderReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/policy-builder-header?ver=16.1.3"
+            },
+            "creatorName": "admin",
+            "urlReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/urls?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "headerReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/headers?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "actionItemReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/action-items?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "microserviceReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/microservices?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "xmlValidationFileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/xml-validation-files?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "lastUpdateMicros": 1.679313861e+15,
+            "jsonProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/json-profiles?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "bruteForceAttackPreventionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/brute-force-attack-preventions?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "disabledActionItemReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/disabled-action-items?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "jsonValidationFileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/json-validation-files?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "extractionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/extractions?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "characterSetReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/character-sets?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "suggestionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/suggestions?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "deceptionSettingsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/deception-settings?ver=16.1.3"
+            },
+            "isModified": false,
+            "header-settings": {
+                "kind": "tm:asm:policies:header-settings:header-settingsstate",
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/header-settings?ver=16.1.3",
+                "maximumHttpHeaderLength": "8192"
+            },
+            "sensitiveParameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/sensitive-parameters?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "versionPolicyName": "/Common/scenario4",
+            "policyBuilderCentralConfigurationReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/-rJ0Aa2BUjq527-JBwBlVw/policy-builder-central-configuration?ver=16.1.3"
+            }
+        },
+        {
+            "signatureRequirementReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/signature-requirements?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "plainTextProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/plain-text-profiles?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "enablePassiveMode": false,
+            "behavioralEnforcementReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/behavioral-enforcement?ver=16.1.3"
+            },
+            "dataGuardReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/data-guard?ver=16.1.3"
+            },
+            "csrf-protection": {
+                "kind": "tm:asm:policies:csrf-protection:csrf-protectionstate",
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/csrf-protection?ver=16.1.3",
+                "sslOnly": false,
+                "expirationTimeInSeconds": "disabled",
+                "enabled": true
+            },
+            "createdDatetime": "2023-03-20T10:37:26Z",
+            "databaseProtectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/database-protection?ver=16.1.3"
+            },
+            "antivirus": {
+                "kind": "tm:asm:policies:antivirus:policy-antivirusstate",
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/antivirus?ver=16.1.3",
+                "inspectHttpUploads": false
+            },
+            "signature-settings": {
+                "kind": "tm:asm:policies:signature-settings:signature-settingstate",
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/signature-settings?ver=16.1.3",
+                "signatureStaging": true,
+                "placeSignaturesInStaging": true,
+                "attackSignatureFalsePositiveMode": "disabled",
+                "minimumAccuracyForAutoAddedSignatures": "medium"
+            },
+            "versionLastChange": "CSRF URL POST /barbaz [add]: CSRF URL Method was set to POST.\nRequired Parameters was set to Ignore.\nEnforcement Action was set to Verify CSRF Token.\nTarget Pattern was set to /barbaz.\nWildcard Order was set to 2. { audit: policy = /Common/scenario1, username = admin, client IP = 172.18.17.207 }",
+            "csrf-urls": [
+                {
+                    "requiredParameters": "ignore",
+                    "lastUpdateMicros": 1.679313888e+15,
+                    "kind": "tm:asm:policies:csrf-urls:csrf-urlstate",
+                    "selfLink": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/csrf-urls/qflcujr1bpgNnIKg_W-c0w?ver=16.1.3",
+                    "url": "/barbaz",
+                    "method": "POST",
+                    "enforcementAction": "verify-csrf-token",
+                    "id": "qflcujr1bpgNnIKg_W-c0w",
+                    "wildcardOrder": 2
+                },
+                {
+                    "requiredParameters": "ignore",
+                    "lastUpdateMicros": 1.679308653e+15,
+                    "kind": "tm:asm:policies:csrf-urls:csrf-urlstate",
+                    "selfLink": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/csrf-urls/l0Ckxe-7yHsXp8U5tTgbFQ?ver=16.1.3",
+                    "url": "*",
+                    "method": "POST",
+                    "enforcementAction": "verify-csrf-token",
+                    "id": "l0Ckxe-7yHsXp8U5tTgbFQ",
+                    "wildcardOrder": 1
+                }
+            ],
+            "name": "scenario1",
+            "caseInsensitive": false,
+            "sectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/sections?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "flowReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/flows?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "loginPageReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/login-pages?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "description": "FCH Testing WAF Policy from RDP Template",
+            "fullPath": "/Common/scenario1",
+            "policyBuilderParameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/policy-builder-parameter?ver=16.1.3"
+            },
+            "hasParent": false,
+            "threatCampaignReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/threat-campaigns?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "partition": "Common",
+            "policy-builder": {
+                "responseStatusCodes": [
+                    "1xx",
+                    "3xx",
+                    "2xx"
+                ],
+                "learningMode": "manual",
+                "untrustedTrafficSiteChangeTracking": {
+                    "maxDaysBetweenSamples": 7,
+                    "minMinutesBetweenSamples": 20,
+                    "differentSources": 10
+                },
+                "kind": "tm:asm:policies:policy-builder:policy-builderstate",
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/policy-builder?ver=16.1.3",
+                "inactiveEntityInactivityDurationInDays": 90,
+                "learnInactiveEntities": true,
+                "enableTrustedTrafficSiteChangeTracking": true,
+                "trustedTrafficLoosen": {
+                    "maxDaysBetweenSamples": 7,
+                    "differentSources": 1,
+                    "minHoursBetweenSamples": 0
+                },
+                "trafficTighten": {
+                    "minDaysBetweenSamples": 1,
+                    "totalRequests": 15000,
+                    "maxModificationSuggestionScore": 50
+                },
+                "learnOnlyFromNonBotTraffic": true,
+                "trustedTrafficSiteChangeTracking": {
+                    "maxDaysBetweenSamples": 7,
+                    "minMinutesBetweenSamples": 0,
+                    "differentSources": 1
+                },
+                "trustAllIps": false,
+                "learnFromResponses": false,
+                "enableUntrustedTrafficSiteChangeTracking": true,
+                "untrustedTrafficLoosen": {
+                    "maxDaysBetweenSamples": 7,
+                    "minHoursBetweenSamples": 1,
+                    "differentSources": 20
+                },
+                "enableFullPolicyInspection": true
+            },
+            "managedByBewaf": false,
+            "graphqlProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/graphql-profiles?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "kind": "tm:asm:policies:policystate",
+            "virtualServers": [
+                "/Common/foo1"
+            ],
+            "policyBuilderCookieReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/policy-builder-cookie?ver=16.1.3"
+            },
+            "ipIntelligenceReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/ip-intelligence?ver=16.1.3"
+            },
+            "protocolIndependent": false,
+            "sessionAwarenessSettingsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/session-tracking?ver=16.1.3"
+            },
+            "policyBuilderUrlReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/policy-builder-url?ver=16.1.3"
+            },
+            "policyBuilderServerTechnologiesReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/policy-builder-server-technologies?ver=16.1.3"
+            },
+            "policyBuilderFiletypeReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/policy-builder-filetype?ver=16.1.3"
+            },
+            "signatureSetReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/signature-sets?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "parameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/parameters?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "applicationLanguage": "utf-8",
+            "enforcementMode": "blocking",
+            "loginEnforcementReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/login-enforcement?ver=16.1.3"
+            },
+            "openApiFileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/open-api-files?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "navigationParameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/navigation-parameters?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "gwtProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/gwt-profiles?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "webhookReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/webhooks?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "whitelistIpReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/whitelist-ips?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "historyRevisionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/history-revisions?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "responsePageReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/response-pages?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "vulnerabilityAssessmentReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/vulnerability-assessment?ver=16.1.3"
+            },
+            "serverTechnologyReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/server-technologies?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "cookieReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/cookies?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "blockingSettingReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/blocking-settings?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "hostNameReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/host-names?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "versionDeviceName": "bigip1",
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw?ver=16.1.3",
+            "threatCampaignSettingReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/threat-campaign-settings?ver=16.1.3"
+            },
+            "cookie-settings": {
+                "kind": "tm:asm:policies:cookie-settings:cookie-settingsstate",
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/cookie-settings?ver=16.1.3",
+                "maximumCookieHeaderLength": "any"
+            },
+            "signatureReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/signatures?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "policyBuilderRedirectionProtectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/policy-builder-redirection-protection?ver=16.1.3"
+            },
+            "filetypeReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/filetypes?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "id": "41UMLL7yDtzoa0000Wimzw",
+            "modifierName": "admin",
+            "manualVirtualServers": [],
+            "versionDatetime": "2023-03-20T12:04:48Z",
+            "ssrfHostReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/ssrf-hosts?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "subPath": "/Common",
+            "sessionTrackingStatusReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/session-tracking-statuses?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "active": true,
+            "auditLogReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/audit-logs?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "disallowedGeolocationReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/disallowed-geolocations?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "redirectionProtectionDomainReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/redirection-protection-domains?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "type": "security",
+            "deceptionResponsePageReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/deception-response-pages?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "websocketUrlReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/websocket-urls?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "xmlProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/xml-profiles?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "general": {
+                "enableEventCorrelation": true,
+                "maskCreditCardNumbersInRequest": true,
+                "enforcementReadinessPeriod": 7,
+                "allowedResponseCodes": [
+                    400,
+                    401,
+                    404,
+                    407,
+                    417,
+                    503
+                ],
+                "customXffHeaders": [],
+                "pathParameterHandling": "as-parameters",
+                "kind": "tm:asm:policies:general:generalstate",
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/general?ver=16.1.3",
+                "triggerAsmIruleEvent": "disabled",
+                "trustXff": false,
+                "useDynamicSessionIdInUrl": false
+            },
+            "methodReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/methods?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "vulnerabilityReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/vulnerabilities?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "redirectionProtectionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/redirection-protection?ver=16.1.3"
+            },
+            "policyBuilderSessionsAndLoginsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/policy-builder-sessions-and-logins?ver=16.1.3"
+            },
+            "templateReference": {
+                "link": "https://localhost/mgmt/tm/asm/policy-templates/EzpBNMs9gbVsF5uuiBjYDw?ver=16.1.3",
+                "title": "Rapid Deployment Policy"
+            },
+            "policyBuilderHeaderReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/policy-builder-header?ver=16.1.3"
+            },
+            "creatorName": "admin",
+            "urlReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/urls?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "headerReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/headers?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "actionItemReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/action-items?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "microserviceReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/microservices?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "xmlValidationFileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/xml-validation-files?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "lastUpdateMicros": 1.679313903e+15,
+            "jsonProfileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/json-profiles?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "bruteForceAttackPreventionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/brute-force-attack-preventions?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "disabledActionItemReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/disabled-action-items?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "jsonValidationFileReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/json-validation-files?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "extractionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/extractions?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "characterSetReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/character-sets?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "suggestionReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/suggestions?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "deceptionSettingsReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/deception-settings?ver=16.1.3"
+            },
+            "isModified": false,
+            "header-settings": {
+                "kind": "tm:asm:policies:header-settings:header-settingsstate",
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/header-settings?ver=16.1.3",
+                "maximumHttpHeaderLength": "any"
+            },
+            "sensitiveParameterReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/sensitive-parameters?ver=16.1.3",
+                "isSubCollection": true
+            },
+            "versionPolicyName": "/Common/scenario1",
+            "policyBuilderCentralConfigurationReference": {
+                "link": "https://localhost/mgmt/tm/asm/policies/41UMLL7yDtzoa0000Wimzw/policy-builder-central-configuration?ver=16.1.3"
+            }
+        }
+    ]
+}

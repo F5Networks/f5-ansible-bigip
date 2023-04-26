@@ -1,0 +1,43 @@
+{
+    "kind": "tm:auth:user:usercollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/auth/user?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:auth:user:userstate",
+            "name": "admin",
+            "fullPath": "admin",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/auth/user/admin?ver=16.0.0",
+            "description": "Admin User",
+            "encryptedPassword": "$6$uKtc3QDR$7Mycv03kGjc/TsJRKFvN86661VfDrIdYRldNNCxKhYONslwAeRxyfO9zBeF5YbqzGxePU9qiZvNy9bGGC8wk30",
+            "partitionAccess": [
+                {
+                    "name": "all-partitions",
+                    "role": "admin",
+                    "nameReference": {
+                        "link": "https://localhost/mgmt/tm/auth/partition/all-partitions?ver=16.0.0"
+                    }
+                }
+            ]
+        },
+        {
+            "kind": "tm:auth:user:userstate",
+            "name": "foobar",
+            "fullPath": "foobar",
+            "generation": 781,
+            "selfLink": "https://localhost/mgmt/tm/auth/user/foobar?ver=16.0.0",
+            "description": "foobar",
+            "encryptedPassword": "$6$4Kc2J4jU$GoHq/sg8YXdAv2JQbFYb.aYbPiM3HImIvldTyV0WY.QYvB5hLHLk2xjRFFL3dkGLs0B8ZF7jeJUvpWaqSC0521",
+            "shell": "tmsh",
+            "partitionAccess": [
+                {
+                    "name": "all-partitions",
+                    "role": "manager",
+                    "nameReference": {
+                        "link": "https://localhost/mgmt/tm/auth/partition/all-partitions?ver=16.0.0"
+                    }
+                }
+            ]
+        }
+    ]
+}

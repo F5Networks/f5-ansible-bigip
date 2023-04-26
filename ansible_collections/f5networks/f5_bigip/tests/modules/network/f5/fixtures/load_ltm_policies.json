@@ -1,0 +1,132 @@
+{
+    "kind": "tm:ltm:policy:policycollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/ltm/policy?expandSubcollections=true&ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:ltm:policy:policystate",
+            "name": "foo",
+            "partition": "Common",
+            "fullPath": "/Common/foo",
+            "generation": 5647,
+            "selfLink": "https://localhost/mgmt/tm/ltm/policy/~Common~foo?ver=16.0.0",
+            "controls": [
+                "forwarding"
+            ],
+            "description": "foo is the name",
+            "lastModified": "2023-03-08T12:06:06Z",
+            "requires": [
+                "http"
+            ],
+            "status": "published",
+            "strategy": "/Common/first-match",
+            "strategyReference": {
+                "link": "https://localhost/mgmt/tm/ltm/policy-strategy/~Common~first-match?ver=16.0.0"
+            },
+            "references": {},
+            "rulesReference": {
+                "link": "https://localhost/mgmt/tm/ltm/policy/~Common~foo/rules?ver=16.0.0",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:ltm:policy:rules:rulesstate",
+                        "name": "bar",
+                        "fullPath": "bar",
+                        "generation": 5646,
+                        "selfLink": "https://localhost/mgmt/tm/ltm/policy/~Common~foo/rules/bar?ver=16.0.0",
+                        "description": "description",
+                        "ordinal": 0,
+                        "actionsReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/policy/~Common~foo/rules/bar/actions?ver=16.0.0",
+                            "isSubcollection": true,
+                            "items": [
+                                {
+                                    "kind": "tm:ltm:policy:rules:actions:actionsstate",
+                                    "name": "0",
+                                    "fullPath": "0",
+                                    "generation": 5645,
+                                    "selfLink": "https://localhost/mgmt/tm/ltm/policy/~Common~foo/rules/bar/actions/0?ver=16.0.0",
+                                    "code": 0,
+                                    "expirySecs": 0,
+                                    "forward": true,
+                                    "length": 0,
+                                    "node": "1.1.1.1",
+                                    "offset": 0,
+                                    "port": 0,
+                                    "request": true,
+                                    "select": true,
+                                    "status": 0,
+                                    "timeout": 0,
+                                    "vlanId": 0
+                                },
+                                {
+                                    "kind": "tm:ltm:policy:rules:actions:actionsstate",
+                                    "name": "1",
+                                    "fullPath": "1",
+                                    "generation": 5645,
+                                    "selfLink": "https://localhost/mgmt/tm/ltm/policy/~Common~foo/rules/bar/actions/1?ver=16.0.0",
+                                    "code": 0,
+                                    "expirySecs": 0,
+                                    "expression": "GET",
+                                    "length": 0,
+                                    "tmName": "fooget",
+                                    "offset": 0,
+                                    "port": 0,
+                                    "request": true,
+                                    "setVariable": true,
+                                    "status": 0,
+                                    "tcl": true,
+                                    "timeout": 0,
+                                    "vlanId": 0
+                                }
+                            ]
+                        },
+                        "conditionsReference": {
+                            "link": "https://localhost/mgmt/tm/ltm/policy/~Common~foo/rules/bar/conditions?ver=16.0.0",
+                            "isSubcollection": true,
+                            "items": [
+                                {
+                                    "kind": "tm:ltm:policy:rules:conditions:conditionsstate",
+                                    "name": "0",
+                                    "fullPath": "0",
+                                    "generation": 5645,
+                                    "selfLink": "https://localhost/mgmt/tm/ltm/policy/~Common~foo/rules/bar/conditions/0?ver=16.0.0",
+                                    "all": true,
+                                    "caseInsensitive": true,
+                                    "equals": true,
+                                    "external": true,
+                                    "httpUri": true,
+                                    "index": 0,
+                                    "present": true,
+                                    "remote": true,
+                                    "request": true,
+                                    "values": [
+                                        "foo"
+                                    ]
+                                },
+                                {
+                                    "kind": "tm:ltm:policy:rules:conditions:conditionsstate",
+                                    "name": "1",
+                                    "fullPath": "1",
+                                    "generation": 5645,
+                                    "selfLink": "https://localhost/mgmt/tm/ltm/policy/~Common~foo/rules/bar/conditions/1?ver=16.0.0",
+                                    "all": true,
+                                    "caseInsensitive": true,
+                                    "equals": true,
+                                    "external": true,
+                                    "httpMethod": true,
+                                    "index": 0,
+                                    "present": true,
+                                    "remote": true,
+                                    "request": true,
+                                    "values": [
+                                        "GET"
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

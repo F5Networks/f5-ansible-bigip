@@ -39,11 +39,11 @@ options:
     suboptions:
       alarm:
         description:
-          - When set to C(yes), the system logs the request data whenever it detects an evasion technique.
+          - When set to C(true), the system logs the request data whenever it detects an evasion technique.
         type: bool
       block:
         description:
-          - When set to C(yes), the system stops requests whenever it detects an evasion technique.
+          - When set to C(true), the system stops requests whenever it detects an evasion technique.
         type: bool
   file_type:
     description:
@@ -53,11 +53,11 @@ options:
     suboptions:
       alarm:
         description:
-          - When set to C(yes), the system logs the request data whenever it detects an illegal file type.
+          - When set to C(true), the system logs the request data whenever it detects an illegal file type.
         type: bool
       block:
         description:
-          - When set to C(yes), the system stops requests whenever it detects an illegal file type.
+          - When set to C(true), the system stops requests whenever it detects an illegal file type.
         type: bool
       allowed:
         description:
@@ -81,50 +81,50 @@ options:
     suboptions:
       alarm:
         description:
-          - When set to C(yes), the system logs the request data whenever a request
+          - When set to C(true), the system logs the request data whenever a request
             fails one of the enabled HTTP protocol checks.
         type: bool
       block:
         description:
-          - When set to C(yes), the system stops requests that fail one of the enabled HTTP protocol checks.
+          - When set to C(true), the system stops requests that fail one of the enabled HTTP protocol checks.
         type: bool
       bad_host_header:
         description:
-          - When set to C(yes), the system inspects requests to see whether they contain
+          - When set to C(true), the system inspects requests to see whether they contain
             a non RFC compliant header value.
         type: bool
       bad_version:
         description:
-          - When set to C(yes), the system inspects requests to see whether they request information from a client using
+          - When set to C(true), the system inspects requests to see whether they request information from a client using
             a legal HTTP protocol version number C(0.9 or higher).
         type: bool
       body_in_get_head:
         description:
-          - When set to C(yes), the system examines requests that use the HEAD or GET methods to see whether the requests
+          - When set to C(true), the system examines requests that use the HEAD or GET methods to see whether the requests
             contain data in their bodies, which is considered illegal.
         type: bool
       chunked_with_content_length:
         description:
-          - When set to C(yes), the system examines chunked requests for a content-length header,
+          - When set to C(true), the system examines chunked requests for a content-length header,
             which is not permitted.
         type: bool
       content_length_is_positive:
         description:
-          - When set to C(yes), the system examines requests to see whether their content length value
+          - When set to C(true), the system examines requests to see whether their content length value
             is greater than zero.
         type: bool
       header_name_without_value:
         description:
-          - When set to C(yes), the system checks requests for valueless header names, which are considered illegal.
+          - When set to C(true), the system checks requests for valueless header names, which are considered illegal.
         type: bool
       high_ascii_in_headers:
         description:
-          - When set to C(yes), the system inspects request headers for ASCII characters greater than 127,
+          - When set to C(true), the system inspects request headers for ASCII characters greater than 127,
             which are not permitted.
         type: bool
       host_header_is_ip:
         description:
-          - When set to C(yes), the system verifies the request's host header value is not an IP address.
+          - When set to C(true), the system verifies the request's host header value is not an IP address.
         type: bool
       maximum_headers:
         description:
@@ -133,27 +133,27 @@ options:
         type: int
       null_in_body:
         description:
-          - When set to C(yes), the system inspects the request body to see whether it contains a Null character,
+          - When set to C(true), the system inspects the request body to see whether it contains a Null character,
             which is not allowed.
         type: bool
       null_in_headers:
         description:
-          - When set to C(yes), the system inspects request headers to see whether they contain a Null character,
+          - When set to C(true), the system inspects request headers to see whether they contain a Null character,
             which is not allowed.
         type: bool
       post_with_zero_length:
         description:
-          - When set to C(yes), the system examines POST method requests for no content-length header,
+          - When set to C(true), the system examines POST method requests for no content-length header,
             and for a content length of 0.
         type: bool
       several_content_length:
         description:
-          - When set to C(yes), the system examines each request to see whether it has more than one content-length
+          - When set to C(true), the system examines each request to see whether it has more than one content-length
             header, which is considered illegal.
         type: bool
       unparsable_content:
         description:
-          - When set to C(yes), the system examines requests for content the system cannot parse,
+          - When set to C(true), the system examines requests for content the system cannot parse,
             which is not permitted.
         type: bool
   method:
@@ -164,11 +164,11 @@ options:
     suboptions:
       alarm:
         description:
-          - When set to C(yes), the system logs the request data whenever a request uses an illegal method.
+          - When set to C(true), the system logs the request data whenever a request uses an illegal method.
         type: bool
       block:
         description:
-          - When set to C(yes), the system stops requests that use an illegal method.
+          - When set to C(true), the system stops requests that use an illegal method.
         type: bool
       allowed_methods:
         description:
@@ -183,11 +183,11 @@ options:
     suboptions:
       alarm:
         description:
-          - When set to C(yes), the system logs the request data whenever a request does not include a mandatory header.
+          - When set to C(true), the system logs the request data whenever a request does not include a mandatory header.
         type: bool
       block:
         description:
-          - When set to C(yes), the system stops requests that do not include a mandatory header.
+          - When set to C(true), the system stops requests that do not include a mandatory header.
         type: bool
       mandatory_headers:
         description:
@@ -202,11 +202,11 @@ options:
     suboptions:
       alarm:
         description:
-          - When set to C(yes), the system logs the request data whenever a request fails one of the length checks.
+          - When set to C(true), the system logs the request data whenever a request fails one of the length checks.
         type: bool
       block:
         description:
-          - When set to C(yes), the system stops requests that fail one of the length checks.
+          - When set to C(true), the system stops requests that fail one of the length checks.
         type: bool
       post_data:
         description:
@@ -376,13 +376,13 @@ evasion_techniques:
         - The system logs the request data whenever it detects an evasion technique.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     block:
       description:
         - The system stops requests whenever it detects an evasion technique.
       returned: changed
       type: bool
-      sample: no
+      sample: false
 file_type:
   description:
     - The file types the security profile considers legal and action to take if an illegal file type has been detected.
@@ -394,13 +394,13 @@ file_type:
         - The system logs the request data whenever it detects an illegal file type.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     block:
       description:
         - The system stops requests whenever it detects an illegal file type.
       returned: changed
       type: bool
-      sample: no
+      sample: false
     allowed:
       description:
         - The list of file types that are disallowed by the system.
@@ -424,63 +424,63 @@ http_protocol_checks:
         - The system logs the request data whenever it detects an HTTP protocol violation.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     block:
       description:
         - The system stops requests whenever it detects an HTTP protocol violation.
       returned: changed
       type: bool
-      sample: no
+      sample: false
     bad_host_header:
       description:
         - The system inspects requests to see whether they contain a non RFC compliant header value.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     bad_version:
       description:
         - The system inspects requests to see whether they request information from a client using
           a legal HTTP protocol version number.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     body_in_get_head:
       description:
         - The system examines requests that use the HEAD or GET methods to see whether the requests
           contain data in their bodies.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     chunked_with_content_length:
       description:
         - The system examines chunked requests for a content-length header.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     content_length_is_positive:
       description:
         - The system examines requests to see whether their content length value is greater than zero.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     header_name_without_value:
       description:
         - The system checks requests for valueless header names.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     high_ascii_in_headers:
       description:
         - The system inspects request headers for ASCII characters greater than 127.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     host_header_is_ip:
       description:
         - The system verifies the request's host header value is not an IP address.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     maximum_headers:
       description:
         - The system compares the number of headers in the requests against the number specified here.
@@ -492,31 +492,31 @@ http_protocol_checks:
         - The system inspects the request body to see whether it contains a Null character.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     null_in_headers:
       description:
         - The system inspects request headers to see whether they contain a Null character.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     post_with_zero_length:
       description:
         - The system examines POST method requests for no content-length header.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     several_content_length:
       description:
         - The system examines each request to see whether it has more than one content-length header.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     unparsable_content:
       description:
         - The system examines requests for content the system cannot parse.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
 method:
   description:
     - Specifies which HTTP methods the security profile considers legal.
@@ -528,13 +528,13 @@ method:
         - The system logs the request data whenever a request uses an illegal method.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     block:
       description:
         - The system stops requests that use an illegal method.
       returned: changed
       type: bool
-      sample: no
+      sample: false
     allowed_methods:
       description:
         - The HTTP methods considered legal by the security profile.
@@ -552,13 +552,13 @@ header:
         - The system logs the request data whenever a request does not include a mandatory header.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     block:
       description:
         - The system stops requests that do not include a mandatory header.
       returned: changed
       type: bool
-      sample: no
+      sample: false
     mandatory_headers:
       description:
         - The headers that must appear in requests to be considered legal by the security profile.
@@ -576,13 +576,13 @@ length:
         - The system logs the request data whenever a request fails one of the length checks.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     block:
       description:
         - The system stops requests that fail one of the length checks.
       returned: changed
       type: bool
-      sample: no
+      sample: false
     post_data:
       description:
         - Maximum acceptable length, in bytes, for the POST data portion of a request.

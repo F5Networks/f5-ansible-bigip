@@ -1,0 +1,1046 @@
+{
+    "kind": "tm:asm:server-technologies:server-technologycollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/asm/server-technologies?ver=16.1.3",
+    "totalItems": 73,
+    "items": [
+        {
+            "serverTechnologyDisplayName": "Jenkins",
+            "serverTechnologyName": "Jenkins",
+            "logoFileName": "jenkins.png",
+            "lastUpdateMicros": 1.545954196e+15,
+            "description": "Jenkins is an open source automation server written in Java. Jenkins helps to automate the non-human part of the software development process, with continuous integration and facilitating technical aspects of continuous delivery. It is a server-based system that runs in servlet containers such as Apache Tomcat.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/LlQzTApc4uPlpYRd86s62g?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "LlQzTApc4uPlpYRd86s62g",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "SharePoint",
+            "serverTechnologyName": "SharePoint",
+            "logoFileName": "sharepoint.png",
+            "lastUpdateMicros": 1.545949916e+15,
+            "description": "SharePoint is a web-based collaborative platform that integrates with Microsoft Office. Launched in 2001, SharePoint is primarily sold as a document management and storage system, but the product is highly configurable and usage varies substantially among organizations.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/l_AvaZO5NzKw053-AEZpSQ?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "l_AvaZO5NzKw053-AEZpSQ",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Oracle Application Server",
+            "serverTechnologyName": "Oracle Application Server",
+            "logoFileName": "oracleapplicationserver.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Oracle Internet Application Server provides a single integrated packaged solution of for middleware infrastructure including Oracle Containers for J2EE, Oracle Web Cache, Oracle HTTP Server, Oracle Forms, Oracle Reports, Oracle Portal and Oracle Discoverer.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/CxOLUX6LEF7FqliZN62WCw?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "CxOLUX6LEF7FqliZN62WCw",
+            "isLearnable": false,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Python",
+            "serverTechnologyName": "Python",
+            "logoFileName": "python.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Python is an interpreted, high-level, general-purpose programming language. Created by Guido van Rossum and first released in 1991, Python has a design philosophy that emphasizes code readability, notably using significant whitespace. It provides constructs that enable clear programming on both small and large scales.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/p_XzVCa5J0EfySMbVjghcw?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "p_XzVCa5J0EfySMbVjghcw",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Oracle Identity Manager",
+            "serverTechnologyName": "Oracle Identity Manager",
+            "logoFileName": "oracleidentitymanager.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Oracle Identity Manager (OIM) enables enterprises to manage the entire user life-cycle across all enterprise resources both within and beyond a firewall. Within Oracle Identity Management it provides a mechanism for implementing the user-management aspects of a corporate policy.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/-Zs0BB7PWpcWDb7D8O8dPw?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "-Zs0BB7PWpcWDb7D8O8dPw",
+            "isLearnable": false,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Spring Boot",
+            "serverTechnologyName": "Spring Boot",
+            "logoFileName": "springboot.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Spring Boot makes it easy to create Spring-powered, production-grade applications and services with absolute minimum fuss. It takes an opinionated view of the Spring platform so that new and existing users can quickly get to the bits they need.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/0rhKe7jSEaB_1uy_TbnUJg?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "0rhKe7jSEaB_1uy_TbnUJg",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "CouchDB",
+            "serverTechnologyName": "CouchDB",
+            "logoFileName": "couchdb.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Apache CouchDB is open source database software that focuses on ease of use and having a scalable architecture.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/3qiwwBrDyPIthUI9GH7D0g?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "3qiwwBrDyPIthUI9GH7D0g",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "SQLite",
+            "serverTechnologyName": "SQLite",
+            "logoFileName": "sqlite.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "SQLite is a relational database management system contained in a C programming library. In contrast to many other database management systems, SQLite is not a client-server database engine. Rather, it is embedded into the end program.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/SXdXqcWy7Bfe1lYXC1HHiA?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "SXdXqcWy7Bfe1lYXC1HHiA",
+            "isLearnable": false,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Handlebars",
+            "serverTechnologyName": "Handlebars",
+            "logoFileName": "handlebars.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Handlebars provides the power necessary to let you build semantic templates effectively with no frustration.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/_713hJwKoowHkwJpH5cxzg?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "_713hJwKoowHkwJpH5cxzg",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Mustache",
+            "serverTechnologyName": "Mustache",
+            "logoFileName": "mustache.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Mustache is a simple web template system.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/8o5opH5tv3rvuyfQy27ZWQ?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "8o5opH5tv3rvuyfQy27ZWQ",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Prototype",
+            "serverTechnologyName": "Prototype",
+            "logoFileName": "prototype.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Prototype takes the complexity out of client-side web programming. Built to solve real-world problems, it adds useful extensions to the browser scripting environment and provides elegant APIs around the clumsy interfaces of Ajax and the Document Object Model.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/TKipXty0WokKLvpMEs08YQ?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "TKipXty0WokKLvpMEs08YQ",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Zend",
+            "serverTechnologyName": "Zend",
+            "logoFileName": "zend.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Zend Server is a complete and certified PHP distribution stack fully maintained and supported by Zend Technologies. It ships with an updated set of advanced value-add features designed to optimize productivity, performance, scalability and reliability.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/7ZiBNzsUdD2AiT8V7bVnXg?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "7ZiBNzsUdD2AiT8V7bVnXg",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Redis",
+            "serverTechnologyName": "Redis",
+            "logoFileName": "redis.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Redis is an open-source in-memory data structure project implementing a distributed, in-memory key-value database with optional durability. Redis supports different kinds of abstract data structures, such as strings, lists, maps, sets, sorted sets, hyperloglogs, bitmaps, streams and spatial indexes.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/4RFEZ0WhgluGL4cnrmO85A?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "4RFEZ0WhgluGL4cnrmO85A",
+            "isLearnable": false,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Underscore.js",
+            "serverTechnologyName": "Underscore.js",
+            "logoFileName": "underscorejs.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Underscore.js is a JavaScript library which provides utility functions for common programming tasks. It is comparable to features provided by Prototype.js and the Ruby language, but opts for a functional programming design instead of extending object prototypes",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/jq5wOYrzYAu0AHQHlWQRUA?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "jq5wOYrzYAu0AHQHlWQRUA",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Ember.js",
+            "serverTechnologyName": "Ember.js",
+            "logoFileName": "emberjs.png",
+            "lastUpdateMicros": 1.545867572e+15,
+            "description": "Ember.js is an open-source JavaScript web framework, based on the Model-view-viewmodel pattern. It allows developers to create scalable single-page web applications by incorporating common idioms and best practices into the framework.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/QARgcB4qdOLWUEz8QY_ykA?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "QARgcB4qdOLWUEz8QY_ykA",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "ZURB Foundation",
+            "serverTechnologyName": "ZURB Foundation",
+            "logoFileName": "zurbfoundation.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Foundation is a responsive front-end framework. Foundation provides a responsive grid and HTML and CSS UI components, templates, and code snippets, including typography, forms, buttons, navigation and other interface elements, as well as optional functionality provided by JavaScript extensions. Foundation is maintained by ZURB and is an open source project.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/yXZ8z751MNKJwOvEduuy_A?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "yXZ8z751MNKJwOvEduuy_A",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "ef.js",
+            "serverTechnologyName": "ef.js",
+            "logoFileName": "efjs.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "ef.js is an elegant HTML template engine & basic framework.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/B_Wdt55X5XTJN4fZH1uobQ?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "B_Wdt55X5XTJN4fZH1uobQ",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Vue.js",
+            "serverTechnologyName": "Vue.js",
+            "logoFileName": "vuejs.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Vue.js is an open-source JavaScript framework for building user interfaces and single-page applications.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/dfruTdxq9ffGzkDzP7jaUA?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "dfruTdxq9ffGzkDzP7jaUA",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "UIKit",
+            "serverTechnologyName": "UIKit",
+            "logoFileName": "uikit.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "UIkit is a lightweight and modular front-end framework for developing fast and powerful web interfaces.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/nP7RJOy-ZVryWEJzN5xq9A?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "nP7RJOy-ZVryWEJzN5xq9A",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "TYPO3 CMS",
+            "serverTechnologyName": "TYPO3 CMS",
+            "logoFileName": "typo3cms.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "TYPO3 is a free and open-source web content management system written in PHP. It is released under the GNU General Public License. It can run on several web servers, such as Apache or IIS, on top of many operating systems, among them Linux, Microsoft Windows, FreeBSD, macOS and OS/2.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/LMpv54c8vABfbIxJeBu5Lw?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "LMpv54c8vABfbIxJeBu5Lw",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "RequireJS",
+            "serverTechnologyName": "RequireJS",
+            "logoFileName": "requirejs.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "RequireJS is a JavaScript library and file loader which manages the dependencies between JavaScript files and in modular programming. It also helps to improve the speed and quality of the code.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/p5p-e07LljpjYHu2RXsWmw?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "p5p-e07LljpjYHu2RXsWmw",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "React",
+            "serverTechnologyName": "React",
+            "logoFileName": "react.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "React is a JavaScript library for building user interfaces. It is maintained by Facebook and a community of individual developers and companies. React can be used as a base in the development of single-page or mobile applications.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/UM4tpjvqamGOdXj6UGkAQA?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "UM4tpjvqamGOdXj6UGkAQA",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "MooTools",
+            "serverTechnologyName": "MooTools",
+            "logoFileName": "mootools.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "MooTools is a lightweight, object-oriented JavaScript framework. It is released under the free, open-source MIT License.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/va6G6-UO5RYJL32Vj1RG7A?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "va6G6-UO5RYJL32Vj1RG7A",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Laravel",
+            "serverTechnologyName": "Laravel",
+            "logoFileName": "laravel.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Laravel is a free, open-source PHP web framework, created by Taylor Otwell and intended for the development of web applications following the model-view-controller architectural pattern and based on Symfony.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/pclbhikeopn8vmRFjtEnAg?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "pclbhikeopn8vmRFjtEnAg",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "GraphQL",
+            "serverTechnologyName": "GraphQL",
+            "logoFileName": "graphql.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "GraphQL is an open-source data query and manipulation language for APIs, and a runtime for fulfilling queries with existing data. GraphQL was developed internally by Facebook in 2012 before being publicly released in 2015.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/Uk3j0q3kVEF29gcCs2-_3w?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "Uk3j0q3kVEF29gcCs2-_3w",
+            "isLearnable": false,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Google Web Toolkit",
+            "serverTechnologyName": "Google Web Toolkit",
+            "logoFileName": "googlewebtoolkit.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Google Web Toolkit, or GWT Web Toolkit, is an open-source set of tools that allows web developers to create and maintain complex JavaScript front-end applications in Java. Other than a few native libraries, everything is Java source that can be built on any supported platform with the included GWT Ant build files.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/8Vv9hE0BSheoQrBy1WS1jQ?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "8Vv9hE0BSheoQrBy1WS1jQ",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Express.js",
+            "serverTechnologyName": "Express.js",
+            "logoFileName": "expressjs.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Express.js, or simply Express, is a web application framework for Node.js, released as free and open-source software under the MIT License. It is designed for building web applications and APIs. It has been called the de facto standard server framework for Node.js.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/UdxgkeSdNYmLwCQJgul1uA?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "UdxgkeSdNYmLwCQJgul1uA",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "CodeIgniter",
+            "serverTechnologyName": "CodeIgniter",
+            "logoFileName": "codeigniter.png",
+            "lastUpdateMicros": 1.545857794e+15,
+            "description": "CodeIgniter is an open-source software rapid development web framework, for use in building dynamic web sites with PHP.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/jdmcY8TWLxknhDIt9vucfg?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "jdmcY8TWLxknhDIt9vucfg",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Backbone.js",
+            "serverTechnologyName": "Backbone.js",
+            "logoFileName": "backbonejs.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "Backbone.js is a JavaScript library with a RESTful JSON interface and is based on the Model-view-presenter application design paradigm. Backbone is known for being lightweight, as its only hard dependency is on one JavaScript library, Underscore.js, plus jQuery for use of the full library.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/_WDnh-M5Q4gtCQXPkCarEA?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "_WDnh-M5Q4gtCQXPkCarEA",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "AngularJS",
+            "serverTechnologyName": "AngularJS",
+            "logoFileName": "angularjs.png",
+            "lastUpdateMicros": 1.545942e+15,
+            "description": "AngularJS is a JavaScript-based open-source front-end web application framework mainly maintained by Google and by a community of individuals and corporations to address many of the challenges encountered in developing single-page applications.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/USn59IEHV_bwz3NWdesFQQ?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "USn59IEHV_bwz3NWdesFQQ",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "JavaScript",
+            "serverTechnologyName": "JavaScript",
+            "logoFileName": "javascript.png",
+            "lastUpdateMicros": 1.545596767e+15,
+            "description": "JavaScript, often abbreviated as JS, is a high-level, interpreted programming language that conforms to the ECMAScript specification. It is a language which is also characterized as dynamic, weakly typed, prototype-based and multi-paradigm.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/aGFVr3WmCg9unYDB9-3T6Q?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "aGFVr3WmCg9unYDB9-3T6Q",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Nginx",
+            "serverTechnologyName": "Nginx",
+            "logoFileName": "nginx.png",
+            "lastUpdateMicros": 1.542932599e+15,
+            "description": "Nginx is a web server which can also be used as a reverse proxy, load balancer, mail proxy and HTTP cache.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/YuC1s1DJ49LBmqgB2UQrqQ?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "YuC1s1DJ49LBmqgB2UQrqQ",
+            "isLearnable": true,
+            "hasDeceptionResponses": true
+        },
+        {
+            "serverTechnologyDisplayName": "Jetty",
+            "serverTechnologyName": "Jetty",
+            "logoFileName": "jetty.png",
+            "lastUpdateMicros": 1.505447209e+15,
+            "description": "Jetty is a Java HTTP (Web) server and Java Servlet container",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/ld0ufhUPLooEw1p4yxWz5Q?ver=16.1.3",
+            "serverTechnologyReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/9ySigIBMpBbYU4r8FNAt4g?ver=16.1.3",
+                    "serverTechnologyName": "Java Servlets/JSP"
+                }
+            ],
+            "id": "ld0ufhUPLooEw1p4yxWz5Q",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Joomla",
+            "serverTechnologyName": "Joomla",
+            "logoFileName": "joomla.png",
+            "lastUpdateMicros": 1.545949916e+15,
+            "description": "Joomla is a free and open-source content management system (CMS) for publishing web content.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/V6yRhl5QZPIxz2IJiCI1kA?ver=16.1.3",
+            "serverTechnologyReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/L-w5IwSlwjrBONoihH-bfA?ver=16.1.3",
+                    "serverTechnologyName": "PHP"
+                }
+            ],
+            "id": "V6yRhl5QZPIxz2IJiCI1kA",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "JavaServer Faces (JSF)",
+            "serverTechnologyName": "JavaServer Faces (JSF)",
+            "logoFileName": "jsf.png",
+            "lastUpdateMicros": 1.493943572e+15,
+            "description": "JavaServer Faces (JSF) is a Java specification for building component-based user interfaces for web applications.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/FjKflJ16bfZmeseE2h2Diw?ver=16.1.3",
+            "serverTechnologyReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/9ySigIBMpBbYU4r8FNAt4g?ver=16.1.3",
+                    "serverTechnologyName": "Java Servlets/JSP"
+                }
+            ],
+            "id": "FjKflJ16bfZmeseE2h2Diw",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Ruby",
+            "serverTechnologyName": "Ruby",
+            "logoFileName": "ruby.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "Ruby is a dynamic, reflective, object-oriented, general-purpose programming language.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/mRbR_Fn-IswEai_hYVvHZA?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "mRbR_Fn-IswEai_hYVvHZA",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "MongoDB",
+            "serverTechnologyName": "MongoDB",
+            "logoFileName": "mongodb.png",
+            "lastUpdateMicros": 1.567038383e+15,
+            "description": "MongoDB is a free and open-source cross-platform document-oriented database program.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/IG43GK8JL9HRL4DK53HMrA?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "IG43GK8JL9HRL4DK53HMrA",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Django",
+            "serverTechnologyName": "Django",
+            "logoFileName": "django.png",
+            "lastUpdateMicros": 1.567038383e+15,
+            "description": "Django is a free and open-source web framework, written in Python, which follows the model-view-template (MVT) architectural pattern.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/7w-TyD43SHamHaDU0W82qw?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "7w-TyD43SHamHaDU0W82qw",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Node.js",
+            "serverTechnologyName": "Node.js",
+            "logoFileName": "nodejs.png",
+            "lastUpdateMicros": 1.567038383e+15,
+            "description": "Node.js is an open-source, cross-platform JavaScript runtime environment for developing a diverse variety of tools and applications.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/OygZ3Uwk7aL68gUu70SVUQ?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "OygZ3Uwk7aL68gUu70SVUQ",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Citrix",
+            "serverTechnologyName": "Citrix",
+            "logoFileName": "citrix.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "Citrix Systems, Inc. is an American multinational software company that provides server, application and desktop virtualization, networking, software as a service (SaaS), and cloud computing technologies.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/RCWWgL0BACE0mU2F0CNxDA?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "RCWWgL0BACE0mU2F0CNxDA",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "JBoss",
+            "serverTechnologyName": "JBoss",
+            "logoFileName": "jboss.png",
+            "lastUpdateMicros": 1.493943572e+15,
+            "description": "The JBoss Enterprise Application Platform (or JBoss EAP) is a subscription-based/open-source Java EE-based application server runtime platform used for building, deploying, and hosting highly-transactional Java applications and services.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/c0X3BF5GaBOBEsEA8lUXpA?ver=16.1.3",
+            "serverTechnologyReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/9ySigIBMpBbYU4r8FNAt4g?ver=16.1.3",
+                    "serverTechnologyName": "Java Servlets/JSP"
+                }
+            ],
+            "id": "c0X3BF5GaBOBEsEA8lUXpA",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Elasticsearch",
+            "serverTechnologyName": "Elasticsearch",
+            "logoFileName": "elasticsearch.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "Elasticsearch is a search engine based on Lucene.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/ReI6FpZSqvlc6A2oRPPfDQ?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "ReI6FpZSqvlc6A2oRPPfDQ",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Apache Struts",
+            "serverTechnologyName": "Apache Struts",
+            "logoFileName": "struts.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "Apache Struts is an open-source web application framework for developing Java EE web applications.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/RiO3AKmN07calpgliwar1Q?ver=16.1.3",
+            "serverTechnologyReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/9ySigIBMpBbYU4r8FNAt4g?ver=16.1.3",
+                    "serverTechnologyName": "Java Servlets/JSP"
+                }
+            ],
+            "id": "RiO3AKmN07calpgliwar1Q",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "XML",
+            "serverTechnologyName": "XML",
+            "logoFileName": "xml.png",
+            "lastUpdateMicros": 1.476919661e+15,
+            "description": "Extensible Markup Language (XML) is a markup language that defines a set of rules for encoding documents in a format that is both human-readable and machine-readable.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/NQG7CT02OBC2cQWbnP7T-A?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "NQG7CT02OBC2cQWbnP7T-A",
+            "isLearnable": false,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "PostgreSQL",
+            "serverTechnologyName": "PostgreSQL",
+            "logoFileName": "postgresql.png",
+            "lastUpdateMicros": 1.545857794e+15,
+            "description": "PostgreSQL, often simply Postgres, is an object-relational database (ORDBMS) - i.e. a RDBMS, with additional (optional use) \"object\" features - with an emphasis on extensibility and standards-compliance.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/OZvR7lhyReysbzm-qpmIbw?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "OZvR7lhyReysbzm-qpmIbw",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "IBM DB2",
+            "serverTechnologyName": "IBM DB2",
+            "logoFileName": "db2.png",
+            "lastUpdateMicros": 1.493593565e+15,
+            "description": "IBM DB2 contains database server products developed by IBM.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/b6JINXNRQkUC0IpWpAKj8Q?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "b6JINXNRQkUC0IpWpAKj8Q",
+            "isLearnable": false,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Sybase/ASE",
+            "serverTechnologyName": "Sybase/ASE",
+            "logoFileName": "ase.png",
+            "lastUpdateMicros": 1.476919661e+15,
+            "description": "SAP ASE (Adaptive Server Enterprise), originally known as Sybase SQL Server, and also commonly known as Sybase DB or ASE, is a relational model database server product for businesses developed by Sybase Corporation which became part of SAP AG.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/eOX1TJSkciBQh06peUi4Fg?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "eOX1TJSkciBQh06peUi4Fg",
+            "isLearnable": false,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "CGI",
+            "serverTechnologyName": "CGI",
+            "logoFileName": "cgi.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "Common Gateway Interface (CGI) offers a standard protocol for web servers to interface with executable programs running on a server that generate web pages dynamically.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/fXPui00yBxGdUZrbepHLOw?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "fXPui00yBxGdUZrbepHLOw",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Proxy Servers",
+            "serverTechnologyName": "Proxy Servers",
+            "logoFileName": "proxy.png",
+            "lastUpdateMicros": 1.476919661e+15,
+            "description": "A proxy server is a server (a computer system or an application) that acts as an intermediary for requests from clients seeking resources from other servers.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/egVbk0jmikliTwuaOvGwUA?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "egVbk0jmikliTwuaOvGwUA",
+            "isLearnable": false,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "SSI (Server Side Includes)",
+            "serverTechnologyName": "SSI (Server Side Includes)",
+            "logoFileName": "ssi.png",
+            "lastUpdateMicros": 1.476919661e+15,
+            "description": "Server Side Includes (SSI) is a simple interpreted server-side scripting language used almost exclusively for the Web.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/f0vdhlzme6E85dxIL0H6kQ?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "f0vdhlzme6E85dxIL0H6kQ",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Cisco",
+            "serverTechnologyName": "Cisco",
+            "logoFileName": "cisco.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "Cisco Systems, Inc. is an American multinational corporation technology company headquartered in San Jose, California, that designs, manufactures and sells networking equipment worldwide.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/ex0Rhbg1gU3ng0g_aG6YJQ?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "ex0Rhbg1gU3ng0g_aG6YJQ",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Novell",
+            "serverTechnologyName": "Novell",
+            "logoFileName": "novell.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "Novell Directory Services (NDS) is a popular software product for managing access to computer resources and keeping track of the users of a network, such as a company's intranet, from a single point of administration.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/6LZV4bc0C7TJiqWayNzYIA?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "6LZV4bc0C7TJiqWayNzYIA",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Macromedia JRun",
+            "serverTechnologyName": "Macromedia JRun",
+            "logoFileName": "jrun.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "JRun is a J2EE application server, originally developed in 1997 as a Java Servlet engine by Live Software and subsequently purchased by Allaire, who brought out the first J2EE compliant version.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/7bHb_3RNMg-u7i3hMHoA_g?ver=16.1.3",
+            "serverTechnologyReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/9ySigIBMpBbYU4r8FNAt4g?ver=16.1.3",
+                    "serverTechnologyName": "Java Servlets/JSP"
+                }
+            ],
+            "id": "7bHb_3RNMg-u7i3hMHoA_g",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "BEA Systems WebLogic Server",
+            "serverTechnologyName": "BEA Systems WebLogic Server",
+            "logoFileName": "weblogic.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "Oracle WebLogic Server is a Java EE application server currently developed by Oracle Corporation.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/HYVY0r2rs_6ONA7_qkFUsg?ver=16.1.3",
+            "serverTechnologyReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/9ySigIBMpBbYU4r8FNAt4g?ver=16.1.3",
+                    "serverTechnologyName": "Java Servlets/JSP"
+                }
+            ],
+            "id": "HYVY0r2rs_6ONA7_qkFUsg",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Lotus Domino",
+            "serverTechnologyName": "Lotus Domino",
+            "logoFileName": "domino.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "IBM Notes and IBM Domino are the client and server, respectively, of a collaborative client-server software platform sold by IBM.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/0oxHqTlcuvxxEfNHqhmm6A?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "0oxHqTlcuvxxEfNHqhmm6A",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "MySQL",
+            "serverTechnologyName": "MySQL",
+            "logoFileName": "mysql.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "MySQL is an open-source relational database management system (RDBMS).",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/YqAEuVlGu5dUGvpHHcynOg?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "YqAEuVlGu5dUGvpHHcynOg",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Oracle",
+            "serverTechnologyName": "Oracle",
+            "logoFileName": "oracle.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "Oracle Database (commonly referred to as Oracle RDBMS or simply as Oracle) is an object-relational database management system produced and marketed by Oracle Corporation.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/MBYu14tsEPcxQR8vxEDCTw?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "MBYu14tsEPcxQR8vxEDCTw",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Microsoft SQL Server",
+            "serverTechnologyName": "Microsoft SQL Server",
+            "logoFileName": "sql.png",
+            "lastUpdateMicros": 1.476919661e+15,
+            "description": "Microsoft SQL Server is a relational database management system developed by Microsoft.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/eImOUvy9xTNyBKOE8kVtTw?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "eImOUvy9xTNyBKOE8kVtTw",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "PHP",
+            "serverTechnologyName": "PHP",
+            "logoFileName": "php.png",
+            "lastUpdateMicros": 1.567038383e+15,
+            "description": "PHP is a server-side scripting language designed primarily for web development but is also used as a general-purpose programming language.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/L-w5IwSlwjrBONoihH-bfA?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "L-w5IwSlwjrBONoihH-bfA",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Outlook Web Access",
+            "serverTechnologyName": "Outlook Web Access",
+            "logoFileName": "owa.png",
+            "lastUpdateMicros": 1.476919661e+15,
+            "description": "Outlook on the web (previously called Exchange Web Connect, Outlook Web Access, and Outlook Web App in Office 365 and Exchange Server 2013) is a personal information manager web app from Microsoft.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/B0znRO7by8PGnXiaiP_Ezw?ver=16.1.3",
+            "serverTechnologyReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/ng2oQ44eOKHDD0t2znO43Q?ver=16.1.3",
+                    "serverTechnologyName": "ASP.NET"
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/XaWs9GG077fnbshhBlshJg?ver=16.1.3",
+                    "serverTechnologyName": "IIS"
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/u3n5asv_VE3tVBRGycfIlA?ver=16.1.3",
+                    "serverTechnologyName": "Microsoft Windows"
+                }
+            ],
+            "id": "B0znRO7by8PGnXiaiP_Ezw",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Apache/NCSA HTTP Server",
+            "serverTechnologyName": "Apache/NCSA HTTP Server",
+            "logoFileName": "apache.png",
+            "lastUpdateMicros": 1.476919661e+15,
+            "description": "The Apache HTTP Server, colloquially called Apache, is the world's most used web server software.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/KEtRPm0thOz8nAgANYZdmg?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "KEtRPm0thOz8nAgANYZdmg",
+            "isLearnable": true,
+            "hasDeceptionResponses": true
+        },
+        {
+            "serverTechnologyDisplayName": "Apache Tomcat",
+            "serverTechnologyName": "Apache Tomcat",
+            "logoFileName": "tomcat.png",
+            "lastUpdateMicros": 1.476919661e+15,
+            "description": "Apache Tomcat, often referred to as Tomcat, is an open-source Java Servlet Container developed by the Apache Software Foundation (ASF).",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/rmJS-0tJyICXEV_B5PrXCQ?ver=16.1.3",
+            "serverTechnologyReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/9ySigIBMpBbYU4r8FNAt4g?ver=16.1.3",
+                    "serverTechnologyName": "Java Servlets/JSP"
+                }
+            ],
+            "id": "rmJS-0tJyICXEV_B5PrXCQ",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "WordPress",
+            "serverTechnologyName": "WordPress",
+            "logoFileName": "wordpress.png",
+            "lastUpdateMicros": 1.476919661e+15,
+            "description": "WordPress is a free and open-source content management system (CMS) based on PHP and MySQL.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/_eMWhoF_5QKQJVhtUbNYYQ?ver=16.1.3",
+            "serverTechnologyReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/NQG7CT02OBC2cQWbnP7T-A?ver=16.1.3",
+                    "serverTechnologyName": "XML"
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/L-w5IwSlwjrBONoihH-bfA?ver=16.1.3",
+                    "serverTechnologyName": "PHP"
+                }
+            ],
+            "id": "_eMWhoF_5QKQJVhtUbNYYQ",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Macromedia ColdFusion",
+            "serverTechnologyName": "Macromedia ColdFusion",
+            "logoFileName": "coldfusion.png",
+            "lastUpdateMicros": 1.476919661e+15,
+            "description": "Adobe ColdFusion is a commercial rapid web application development platform created by JJ Allaire in 1995.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/_FHKZxJ3tAtlNiOnwYOSyg?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "_FHKZxJ3tAtlNiOnwYOSyg",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Unix/Linux",
+            "serverTechnologyName": "Unix/Linux",
+            "logoFileName": "linux.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "Unix is a family of multitasking, multiuser computer operating systems that derive from the original AT&T Unix, developed in the 1970s at the Bell Labs research center by Ken Thompson, Dennis Ritchie, and others.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/MopukXz2VIUMRzQCwe9Jgw?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "MopukXz2VIUMRzQCwe9Jgw",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Microsoft Windows",
+            "serverTechnologyName": "Microsoft Windows",
+            "logoFileName": "windows.png",
+            "lastUpdateMicros": 1.476919661e+15,
+            "description": "Microsoft Windows (or simply Windows) is a metafamily of graphical operating systems developed, marketed, and sold by Microsoft.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/u3n5asv_VE3tVBRGycfIlA?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "u3n5asv_VE3tVBRGycfIlA",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "ASP.NET",
+            "serverTechnologyName": "ASP.NET",
+            "logoFileName": "dotnet.png",
+            "lastUpdateMicros": 1.567038383e+15,
+            "description": "ASP.NET is an open-source server-side web application framework designed for web development to produce dynamic web pages.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/ng2oQ44eOKHDD0t2znO43Q?ver=16.1.3",
+            "serverTechnologyReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/XaWs9GG077fnbshhBlshJg?ver=16.1.3",
+                    "serverTechnologyName": "IIS"
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/u3n5asv_VE3tVBRGycfIlA?ver=16.1.3",
+                    "serverTechnologyName": "Microsoft Windows"
+                }
+            ],
+            "id": "ng2oQ44eOKHDD0t2znO43Q",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Front Page Server Extensions (FPSE)",
+            "serverTechnologyName": "Front Page Server Extensions (FPSE)",
+            "logoFileName": "fpse.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "FrontPage Server Extensions are a software technology that allows Microsoft FrontPage clients to communicate with web servers, and provide additional functionality intended for websites.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/dNgh3dMxuTm4e6vG6dcQyw?ver=16.1.3",
+            "serverTechnologyReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/u3n5asv_VE3tVBRGycfIlA?ver=16.1.3",
+                    "serverTechnologyName": "Microsoft Windows"
+                }
+            ],
+            "id": "dNgh3dMxuTm4e6vG6dcQyw",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "IIS",
+            "serverTechnologyName": "IIS",
+            "logoFileName": "iis.png",
+            "lastUpdateMicros": 1.476919661e+15,
+            "description": "Internet Information Services (IIS, formerly Internet Information Server) is an extensible web server created by Microsoft for use with Windows NT family.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/XaWs9GG077fnbshhBlshJg?ver=16.1.3",
+            "serverTechnologyReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/u3n5asv_VE3tVBRGycfIlA?ver=16.1.3",
+                    "serverTechnologyName": "Microsoft Windows"
+                }
+            ],
+            "id": "XaWs9GG077fnbshhBlshJg",
+            "isLearnable": true,
+            "hasDeceptionResponses": true
+        },
+        {
+            "serverTechnologyDisplayName": "WebDAV",
+            "serverTechnologyName": "WebDAV",
+            "logoFileName": "webdav.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "Web Distributed Authoring and Versioning (WebDAV) is an extension of the Hypertext Transfer Protocol (HTTP) that allows clients to perform remote Web content authoring operations.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/CXbO7TkPJkkjeWcK10CfXg?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "CXbO7TkPJkkjeWcK10CfXg",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "ASP",
+            "serverTechnologyName": "ASP",
+            "logoFileName": "asp.png",
+            "lastUpdateMicros": 1.476919661e+15,
+            "description": "Active Server Pages (ASP), later known as Classic ASP or ASP Classic, is Microsoft's first server-side script engine for dynamically generated web pages.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/n7aDPIx20jil1wE3uiiM2g?ver=16.1.3",
+            "serverTechnologyReferences": [
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/XaWs9GG077fnbshhBlshJg?ver=16.1.3",
+                    "serverTechnologyName": "IIS"
+                },
+                {
+                    "link": "https://localhost/mgmt/tm/asm/server-technologies/u3n5asv_VE3tVBRGycfIlA?ver=16.1.3",
+                    "serverTechnologyName": "Microsoft Windows"
+                }
+            ],
+            "id": "n7aDPIx20jil1wE3uiiM2g",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "Java Servlets/JSP",
+            "serverTechnologyName": "Java Servlets/JSP",
+            "logoFileName": "java.png",
+            "lastUpdateMicros": 1.518646437e+15,
+            "description": "A Java servlet is a Java program that extends the capabilities of a server.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/9ySigIBMpBbYU4r8FNAt4g?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "9ySigIBMpBbYU4r8FNAt4g",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        },
+        {
+            "serverTechnologyDisplayName": "jQuery",
+            "serverTechnologyName": "jQuery",
+            "logoFileName": "jquery.png",
+            "lastUpdateMicros": 1.567038383e+15,
+            "description": "jQuery is a cross-platform JavaScript library designed to simplify the client-side scripting of HTML.",
+            "kind": "tm:asm:server-technologies:server-technologystate",
+            "selfLink": "https://localhost/mgmt/tm/asm/server-technologies/9ZC0_aLDC-KN08jDyvXHew?ver=16.1.3",
+            "serverTechnologyReferences": [],
+            "id": "9ZC0_aLDC-KN08jDyvXHew",
+            "isLearnable": true,
+            "hasDeceptionResponses": false
+        }
+    ]
+}

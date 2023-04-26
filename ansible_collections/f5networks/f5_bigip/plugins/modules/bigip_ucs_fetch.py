@@ -25,17 +25,17 @@ options:
       - Create a backup file including the timestamp information so you can
         get the original file back if you somehow clobbered it incorrectly.
     type: bool
-    default: no
+    default: false
   create_on_missing:
     description:
       - Creates the UCS based on the value of C(src) if the file does not already
         exist on the remote system.
     type: bool
-    default: yes
+    default: true
   dest:
     description:
       - A directory to save the UCS file into.
-      - This option is mandatory when C(only_create_file) is set to C(no).
+      - This option is mandatory when C(only_create_file) is set to C(false).
     type: path
   encryption_password:
     description:
@@ -45,20 +45,20 @@ options:
     description:
       - Make the module fail if the UCS file on the remote system is missing.
     type: bool
-    default: no
+    default: false
   force:
     description:
-      - If C(no), the file will only be transferred if the destination does not
+      - If C(false), the file will only be transferred if the destination does not
         exist.
     type: bool
-    default: yes
+    default: true
   src:
     description:
       - The name of the UCS file to create on the remote server for downloading.
       - If not given the name will be randomly generated when creating UCS file on device.
       - The parameter is required when C(task_id) is defined otherwise file download will fail.
       - The file is retrieved or created in /var/local/ucs/.
-      - This option is mandatory when C(only_create_file) is set to C(yes).
+      - This option is mandatory when C(only_create_file) is set to C(true).
     type: str
   task_id:
     description:
@@ -76,13 +76,13 @@ options:
     default: 150
   only_create_file:
     description:
-      - If C(yes), the file is created on the device and not downloaded. If the UCS archive exists on the device,
+      - If C(true), the file is created on the device and not downloaded. If the UCS archive exists on the device,
         no change is made and the file is not downloaded.
       - To recreate UCS files left on the device, remove them with the  C(bigip_ucs) module before running this
-        module with C(only_create_file) set to C(yes).
+        module with C(only_create_file) set to C(true).
       - Parameter mutually exclusive with C(task_id).
     type: bool
-    default: no
+    default: false
     version_added: "1.12.0"
 notes:
   - BIG-IP provides no way to get a checksum of the UCS files on the system

@@ -20,7 +20,7 @@ options:
     description:
       - The name of the FAST template set to create or remove.
       - When C(present) the name must correspond to the basename of the uploaded zip file without the file extension.
-      - Parameter is optional when C(state) is C(present), the name will be derived from the basename of the uploaded
+      - Parameter is optional when C(state) is C(present), the name is derived from the basename of the uploaded
         zip file.
       - Parameter is mandatory when C(state) is C(absent), and disregarded when C(state) is C(purge).
     type: str
@@ -32,8 +32,8 @@ options:
     type: path
   force:
     description:
-      - When set to C(yes) any existing template with the same name will be overwritten by the new import.
-    default: no
+      - When set to C(true), any existing template with the same name is overwritten by the new import.
+    default: false
     type: bool
   state:
     description:

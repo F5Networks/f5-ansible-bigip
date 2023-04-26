@@ -1,0 +1,99 @@
+{
+    "kind": "tm:sys:license:licensestats",
+    "selfLink": "https://localhost/mgmt/tm/sys/license?ver=16.0.0",
+    "entries": {
+        "https://localhost/mgmt/tm/sys/license/0": {
+            "nestedStats": {
+                "entries": {
+                    "dailyRenewNotifPeriod": {
+                        "description": "5"
+                    },
+                    "licenseEndDate": {
+                        "description": "2023/04/06"
+                    },
+                    "licenseStartDate": {
+                        "description": "2022/03/27"
+                    },
+                    "licensedOnDate": {
+                        "description": "2023/01/16"
+                    },
+                    "licensedVersion": {
+                        "description": "16.0.0"
+                    },
+                    "maxPermittedVersion": {
+                        "description": "18.*.*"
+                    },
+                    "minPermittedVersion": {
+                        "description": "5.*.*"
+                    },
+                    "platformId": {
+                        "description": "Z100"
+                    },
+                    "registrationKey": {
+                        "description": "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXXX"
+                    },
+                    "serviceCheckDate": {
+                        "description": "2023/03/07"
+                    },
+                    "https://localhost/mgmt/tm/sys/license/0/active-modules": {
+                        "nestedStats": {
+                            "entries": {
+                                "https://localhost/mgmt/tm/sys/license/0/active-modules/%22ASM%20to%20AWF%20Upgrade,%20VE-1G%22": {
+                                    "nestedStats": {
+                                        "entries": {
+                                            "key": {
+                                                "description": "XXXXXX-XXXXXX"
+                                            }
+                                        }
+                                    }
+                                },
+                                "https://localhost/mgmt/tm/sys/license/0/active-modules/%22Advanced%20Firewall%20Manager,%20VE-1G%22": {
+                                    "nestedStats": {
+                                        "entries": {
+                                            "featureModules": {
+                                                "description": "{ \"Routing Bundle, VE\" \"VE, Carrier Grade NAT (AFM ONLY)\" \"PSM, VE\" }"
+                                            },
+                                            "key": {
+                                                "description": "XXXXXX-XXXXXX"
+                                            }
+                                        }
+                                    }
+                                },
+                                "https://localhost/mgmt/tm/sys/license/0/active-modules/%22Advanced%20Protocols,%20VE%22": {
+                                    "nestedStats": {
+                                        "entries": {
+                                            "key": {
+                                                "description": "XXXXXX-XXXXXX"
+                                            }
+                                        }
+                                    }
+                                },
+                                "https://localhost/mgmt/tm/sys/license/0/active-modules/%22Local%20Traffic%20Manager,%20VE-1G%20(Verizon%20Only)%22": {
+                                    "nestedStats": {
+                                        "entries": {
+                                            "featureModules": {
+                                                "description": "{ \"DNS and GTM (1K QPS), VE\" \"Rate Shaping\" \"DNSSEC\" \"APM, Limited\" \"GTM Rate Fallback, 1000\" \"DNS Rate Fallback, 1000\" \"DNS Rate Limit, 1000 QPS\" \"GTM Rate, 1000\" \"Routing Bundle, VE\" \"SSL, VE\" \"Max Compression, VE\" \"VE, Carrier Grade NAT (AFM ONLY)\" \"PSM, VE\" \"Crypto Offload, VE\" \"SDN Services, VE\" \"Exclusive Version, v12.1.X - 18.X\" \"Anti-Virus Checks\" \"Base Endpoint Security Checks\" \"Firewall Checks\" \"Machine Certificate Checks\" \"Network Access\" \"Protected Workspace\" \"Secure Virtual Keyboard\" \"APM, Web Application\" \"App Tunnel\" \"Remote Desktop\" }"
+                                            },
+                                            "key": {
+                                                "description": "XXXXXX-XXXXXX"
+                                            }
+                                        }
+                                    }
+                                },
+                                "https://localhost/mgmt/tm/sys/license/0/active-modules/%22SSL%20Orchestrator,%20VE%20(25MB~200MB~1G)%22": {
+                                    "nestedStats": {
+                                        "entries": {
+                                            "key": {
+                                                "description": "XXXXXX-XXXXXX"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

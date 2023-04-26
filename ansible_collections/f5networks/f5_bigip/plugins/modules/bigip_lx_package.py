@@ -36,9 +36,9 @@ options:
       - absent
   retain_package_file:
     description:
-      - Should the install file be deleted on successful installation of the package
+      - Whether or not the install file be deleted on successful installation of the package.
     type: bool
-    default: no
+    default: false
   timeout:
     description:
       - The amount of time to wait for the installation task to complete, in seconds.

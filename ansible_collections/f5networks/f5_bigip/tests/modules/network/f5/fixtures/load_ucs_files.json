@@ -1,0 +1,26 @@
+{
+    "kind": "tm:sys:ucs:ucscollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/sys/ucs?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:sys:ucs:ucsstate",
+            "generation": 0,
+            "apiRawValues": {
+                "base_build": "0.0.12",
+                "build": "0.0.12",
+                "built": "200623183126",
+                "changelist": "3348116",
+                "edition": "Final",
+                "encrypted": "no",
+                "file_created_date": "2022-11-20T20:23:05Z",
+                "file_size": "56214358 (in bytes)",
+                "filename": "/var/local/ucs/foo.ucs",
+                "install_date": "Tue Jun 23 18:31:26 PDT 2020",
+                "job_id": "1207889",
+                "product": "BIG-IP",
+                "sequence": "16.0.0-0.0.12.0",
+                "version": "16.0.0"
+            }
+        }
+    ]
+}

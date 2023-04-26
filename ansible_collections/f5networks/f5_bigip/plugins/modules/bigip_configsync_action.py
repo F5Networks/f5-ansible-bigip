@@ -41,7 +41,7 @@ options:
       - Indicates the sync operation overwrites the configuration on
         the target.
     type: bool
-    default: no
+    default: false
 notes:
   - Requires the objectpath Python package on the host. This is as easy as
     running C(pip install objectpath).

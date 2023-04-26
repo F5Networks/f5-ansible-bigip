@@ -1,0 +1,36 @@
+{
+    "kind": "tm:gtm:pool:naptr:naptrcollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/gtm/pool/naptr?expandSubcollections=true&ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:gtm:pool:naptr:naptrstate",
+            "name": "fake_naptr_pool",
+            "partition": "Common",
+            "fullPath": "/Common/fake_naptr_pool",
+            "generation": 70319,
+            "selfLink": "https://localhost/mgmt/tm/gtm/pool/naptr/~Common~fake_naptr_pool?ver=16.0.0",
+            "alternateMode": "round-robin",
+            "dynamicRatio": "disabled",
+            "enabled": true,
+            "fallbackMode": "return-to-dns",
+            "loadBalancingMode": "global-availability",
+            "manualResume": "disabled",
+            "maxAnswersReturned": 1,
+            "qosHitRatio": 5,
+            "qosHops": 0,
+            "qosKilobytesSecond": 3,
+            "qosLcs": 30,
+            "qosPacketRate": 1,
+            "qosRtt": 50,
+            "qosTopology": 0,
+            "qosVsCapacity": 0,
+            "qosVsScore": 0,
+            "ttl": 30,
+            "verifyMemberAvailability": "enabled",
+            "membersReference": {
+                "link": "https://localhost/mgmt/tm/gtm/pool/naptr/~Common~fake_naptr_pool/members?ver=16.0.0",
+                "isSubcollection": true
+            }
+        }
+    ]
+}

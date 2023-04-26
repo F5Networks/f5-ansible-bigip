@@ -1,0 +1,45 @@
+{
+    "kind": "tm:net:trunk:trunkstats",
+    "generation": 1340,
+    "selfLink": "https://localhost/mgmt/tm/net/trunk/test_trunk/stats?ver=16.0.0",
+    "entries": {
+        "https://localhost/mgmt/tm/net/trunk/test_trunk/stats": {
+            "nestedStats": {
+                "kind": "tm:net:trunk:trunkstats",
+                "selfLink": "https://localhost/mgmt/tm/net/trunk/test_trunk/stats?ver=16.0.0",
+                "entries": {
+                    "counters.bitsIn": {
+                        "value": 0
+                    },
+                    "counters.bitsOut": {
+                        "value": 0
+                    },
+                    "counters.collisions": {
+                        "value": 0
+                    },
+                    "counters.dropsIn": {
+                        "value": 0
+                    },
+                    "counters.dropsOut": {
+                        "value": 0
+                    },
+                    "counters.errorsIn": {
+                        "value": 0
+                    },
+                    "counters.errorsOut": {
+                        "value": 0
+                    },
+                    "tmName": {
+                        "description": "test_trunk"
+                    },
+                    "operBw": {
+                        "value": 0
+                    },
+                    "status": {
+                        "description": "uninit"
+                    }
+                }
+            }
+        }
+    }
+}

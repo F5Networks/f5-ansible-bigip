@@ -5,6 +5,14 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v2.1.0
+======
+
+Minor Changes
+-------------
+
+- bigip_ssl_key_cert - added an option to prevent adding .key and .crt extensions to key and cert names respectively
+
 v2.0.0
 ======
 

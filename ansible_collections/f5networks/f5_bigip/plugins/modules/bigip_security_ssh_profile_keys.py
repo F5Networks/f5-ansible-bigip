@@ -33,7 +33,7 @@ options:
   proxy_client_private_key:
     description:
       - Proxy client authentication private key.
-      - To update this key the C(force) option must be set to C(yes).
+      - To update this key the C(force) option must be set to C(true).
     type: str
   proxy_server_public_key:
     description:
@@ -42,7 +42,7 @@ options:
   proxy_server_private_key:
     description:
       - Proxy server authentication private key.
-      - To update this key the C(force) option must be set to C(yes).
+      - To update this key the C(force) option must be set to C(true).
     type: str
   real_server_public_key:
     description:
@@ -50,10 +50,10 @@ options:
     type: str
   force:
     description:
-      - Set this option to C(yes) when updating existing private keys, as private keys are encrypted on the device
+      - Set this option to C(true) when updating existing private keys, as private keys are encrypted on the device
         there is no other way to update them while keeping the module idempotent.
     type: bool
-    default: False
+    default: false
   partition:
     description:
       - Device partition to manage resources on.

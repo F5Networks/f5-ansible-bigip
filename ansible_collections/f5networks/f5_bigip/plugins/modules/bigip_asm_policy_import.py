@@ -36,7 +36,7 @@ options:
       - parent
   retain_inheritance_settings:
     description:
-      - Indicate if an imported security type policy should retain settings when attached to parent policy.
+      - Indicates if an imported security type policy should retain settings when attached to the parent policy.
       - This parameter is available on TMOS version 13.x and later and only takes effect when the C(inline) import method
         is used.
     type: bool
@@ -109,9 +109,9 @@ options:
     type: path
   force:
     description:
-      - When set to C(yes) any existing policy with the same name will be overwritten by the new import.
+      - When set to C(true) any existing policy with the same name will be overwritten by the new import.
       - Works for both inline and file imports, if the policy does not exist this setting is ignored.
-    default: no
+    default: false
     type: bool
   partition:
     description:
@@ -164,7 +164,7 @@ retain_inheritance_settings:
   description: Indicate if an imported security type policy should retain settings when attached to the parent policy.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 parent_policy:
   description: The parent policy to which the newly imported policy should be attached as child.
   returned: changed
@@ -174,7 +174,7 @@ base64:
   description: Indicates if the imported policy string is encoded in Base64.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 encoding:
   description: The desired application language of the imported policy.
   returned: changed
@@ -199,7 +199,7 @@ force:
   description: Set when overwriting an existing policy.
   returned: changed
   type: bool
-  sample: yes
+  sample: true
 '''
 
 import os

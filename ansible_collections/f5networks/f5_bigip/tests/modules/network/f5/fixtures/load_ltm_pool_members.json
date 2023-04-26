@@ -1,0 +1,135 @@
+{
+    "kind": "tm:ltm:pool:members:memberscollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~pool1/members?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:ltm:pool:members:membersstate",
+            "name": "7.3.67.8:8080",
+            "partition": "Common",
+            "fullPath": "/Common/7.3.67.8:8080",
+            "generation": 5651,
+            "selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~pool1/members/~Common~7.3.67.8:8080?ver=16.0.0",
+            "address": "7.3.67.8",
+            "connectionLimit": 0,
+            "dynamicRatio": 1,
+            "ephemeral": "false",
+            "fqdn": {
+                "autopopulate": "disabled"
+            },
+            "inheritProfile": "disabled",
+            "logging": "disabled",
+            "monitor": "min 1 of { /Common/gateway_icmp /Common/http }",
+            "priorityGroup": 0,
+            "rateLimit": "disabled",
+            "ratio": 1,
+            "session": "monitor-enabled",
+            "state": "down",
+            "profiles": [
+                {
+                    "name": "ip4ip4",
+                    "partition": "Common",
+                    "nameReference": {
+                        "link": "https://localhost/mgmt/tm/net/tunnels/ipip/~Common~ip4ip4?ver=16.0.0"
+                    }
+                }
+            ]
+        },
+        {
+            "kind": "tm:ltm:pool:members:membersstate",
+            "name": "_auto_142.250.217.78:80",
+            "partition": "Common",
+            "fullPath": "/Common/_auto_142.250.217.78:80",
+            "generation": 5656,
+            "selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~pool1/members/~Common~_auto_142.250.217.78:80?ver=16.0.0",
+            "address": "142.250.217.78",
+            "connectionLimit": 0,
+            "dynamicRatio": 1,
+            "ephemeral": "true",
+            "fqdn": {
+                "autopopulate": "enabled",
+                "tmName": "google.com"
+            },
+            "inheritProfile": "enabled",
+            "logging": "disabled",
+            "monitor": "default",
+            "priorityGroup": 0,
+            "rateLimit": "disabled",
+            "ratio": 1,
+            "session": "monitor-enabled",
+            "state": "up"
+        },
+        {
+            "kind": "tm:ltm:pool:members:membersstate",
+            "name": "_auto_2607.f8b0.400a.80a..200e:80",
+            "partition": "Common",
+            "fullPath": "/Common/_auto_2607.f8b0.400a.80a..200e:80",
+            "generation": 5655,
+            "selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~pool1/members/~Common~_auto_2607.f8b0.400a.80a..200e:80?ver=16.0.0",
+            "address": "2607:f8b0:400a:80a::200e",
+            "connectionLimit": 0,
+            "dynamicRatio": 1,
+            "ephemeral": "true",
+            "fqdn": {
+                "autopopulate": "enabled",
+                "tmName": "google.com"
+            },
+            "inheritProfile": "enabled",
+            "logging": "disabled",
+            "monitor": "default",
+            "priorityGroup": 0,
+            "rateLimit": "disabled",
+            "ratio": 1,
+            "session": "monitor-enabled",
+            "state": "checking"
+        },
+        {
+            "kind": "tm:ltm:pool:members:membersstate",
+            "name": "foo.bar.com:8080",
+            "partition": "Common",
+            "fullPath": "/Common/foo.bar.com:8080",
+            "generation": 5650,
+            "selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~pool1/members/~Common~foo.bar.com:8080?ver=16.0.0",
+            "address": "any6",
+            "connectionLimit": 0,
+            "description": "my members",
+            "dynamicRatio": 1,
+            "ephemeral": "false",
+            "fqdn": {
+                "autopopulate": "disabled",
+                "tmName": "foo.bar.com"
+            },
+            "inheritProfile": "enabled",
+            "logging": "disabled",
+            "monitor": "/Common/http",
+            "priorityGroup": 0,
+            "rateLimit": "disabled",
+            "ratio": 1,
+            "session": "user-enabled",
+            "state": "fqdn-up-no-addr"
+        },
+        {
+            "kind": "tm:ltm:pool:members:membersstate",
+            "name": "google.com:80",
+            "partition": "Common",
+            "fullPath": "/Common/google.com:80",
+            "generation": 5652,
+            "selfLink": "https://localhost/mgmt/tm/ltm/pool/~Common~pool1/members/~Common~google.com:80?ver=16.0.0",
+            "address": "any6",
+            "connectionLimit": 0,
+            "dynamicRatio": 1,
+            "ephemeral": "false",
+            "fqdn": {
+                "autopopulate": "enabled",
+                "tmName": "google.com"
+            },
+            "inheritProfile": "enabled",
+            "logging": "disabled",
+            "monitor": "default",
+            "priorityGroup": 0,
+            "rateLimit": "disabled",
+            "ratio": 1,
+            "session": "user-enabled",
+            "state": "fqdn-up"
+        }
+    ]
+}

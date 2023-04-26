@@ -38,9 +38,9 @@ options:
     default: profile_access
   force:
     description:
-      - If C(no), the file will only be transferred if it does not exist in the the destination.
+      - If C(false), the file will only be transferred if it does not exist in the the destination.
     type: bool
-    default: yes
+    default: true
   partition:
     description:
       - Device partition which contains the APM policy or APM access profile to export.

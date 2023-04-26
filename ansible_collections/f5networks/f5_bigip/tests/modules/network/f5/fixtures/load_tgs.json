@@ -1,0 +1,54 @@
+{
+    "kind": "tm:cm:traffic-group:traffic-groupcollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/cm/traffic-group?ver=16.0.0",
+    "items": [
+        {
+            "kind": "tm:cm:traffic-group:traffic-groupstate",
+            "name": "traffic-group-1",
+            "partition": "Common",
+            "fullPath": "/Common/traffic-group-1",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/cm/traffic-group/~Common~traffic-group-1?ver=16.0.0",
+            "autoFailbackEnabled": "false",
+            "autoFailbackTime": 60,
+            "failoverMethod": "ha-order",
+            "haLoadFactor": 1,
+            "isFloating": "true",
+            "mac": "none",
+            "monitor": {},
+            "unitId": 1
+        },
+        {
+            "kind": "tm:cm:traffic-group:traffic-groupstate",
+            "name": "traffic-group-local-only",
+            "partition": "Common",
+            "fullPath": "/Common/traffic-group-local-only",
+            "generation": 1,
+            "selfLink": "https://localhost/mgmt/tm/cm/traffic-group/~Common~traffic-group-local-only?ver=16.0.0",
+            "autoFailbackEnabled": "false",
+            "autoFailbackTime": 60,
+            "failoverMethod": "ha-order",
+            "haLoadFactor": 1,
+            "isFloating": "false",
+            "mac": "none",
+            "monitor": {},
+            "unitId": 0
+        },
+        {
+            "kind": "tm:cm:traffic-group:traffic-groupstate",
+            "name": "asd",
+            "partition": "Common",
+            "fullPath": "/Common/asd",
+            "generation": 176,
+            "selfLink": "https://localhost/mgmt/tm/cm/traffic-group/~Common~asd?ver=16.0.0",
+            "autoFailbackEnabled": "false",
+            "autoFailbackTime": 60,
+            "failoverMethod": "ha-order",
+            "haLoadFactor": 1,
+            "isFloating": "true",
+            "mac": "00:00:00:00:00:02",
+            "monitor": {},
+            "unitId": 2
+        }
+    ]
+}

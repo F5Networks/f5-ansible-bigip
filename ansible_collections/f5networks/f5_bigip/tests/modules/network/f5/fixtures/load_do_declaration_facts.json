@@ -1,0 +1,288 @@
+[
+    {
+        "id": 0,
+        "selfLink": "https://localhost/mgmt/shared/declarative-onboarding/inspect",
+        "result": {
+            "class": "Result",
+            "code": 200,
+            "status": "OK",
+            "message": "",
+            "errors": []
+        },
+        "declaration": {
+            "class": "DO",
+            "declaration": {
+                "class": "Device",
+                "schemaVersion": "1.35.0",
+                "Common": {
+                    "class": "Tenant",
+                    "currentSystem": {
+                        "preserveOrigDhcpRoutes": true,
+                        "consoleInactivityTimeout": 0,
+                        "guiSecurityBanner": true,
+                        "guiSecurityBannerText": "Welcome to the BIG-IP Configuration Utility.\n\nLog in with your username and password using the fields on the left.",
+                        "hostname": "bigip.example.com",
+                        "guiAuditLog": false,
+                        "mgmtDhcpEnabled": true,
+                        "cliInactivityTimeout": 0,
+                        "tmshAuditLog": true,
+                        "autoCheck": true,
+                        "autoPhonehome": true,
+                        "mcpAuditLog": "enable",
+                        "class": "System"
+                    },
+                    "currentManagementIp": {
+                        "address": "10.144.73.155/22",
+                        "remark": "configured-by-dhcp",
+                        "class": "ManagementIp"
+                    },
+                    "currentProvision": {
+                        "afm": "nominal",
+                        "apm": "none",
+                        "asm": "nominal",
+                        "avr": "none",
+                        "cgnat": "none",
+                        "dos": "none",
+                        "fps": "none",
+                        "gtm": "none",
+                        "ilx": "nominal",
+                        "lc": "none",
+                        "ltm": "nominal",
+                        "pem": "none",
+                        "swg": "none",
+                        "urldb": "none",
+                        "class": "Provision"
+                    },
+                    "currentNTP": {
+                        "servers": [
+                            "0.pool.ntp.org",
+                            "1.pool.ntp.org",
+                            "2.pool.ntp.org"
+                        ],
+                        "timezone": "UTC",
+                        "class": "NTP"
+                    },
+                    "currentDNS": {
+                        "nameServers": [
+                            "8.8.8.8",
+                            "2001:4860:4860::8844"
+                        ],
+                        "search": [
+                            "f5.com"
+                        ],
+                        "class": "DNS"
+                    },
+                    "test_trunk": {
+                        "distributionHash": "src-dst-ipport",
+                        "lacpMode": "active",
+                        "lacpTimeout": "long",
+                        "linkSelectPolicy": "auto",
+                        "qinqEthertype": "0x8100",
+                        "lacpEnabled": false,
+                        "spanningTreeEnabled": true,
+                        "class": "Trunk"
+                    },
+                    "alice": {
+                        "cmpHash": "default",
+                        "failsafeAction": "failover-restart-tm",
+                        "failsafeTimeout": 90,
+                        "mtu": 1500,
+                        "tag": 3605,
+                        "autoLastHop": "default",
+                        "failsafeEnabled": false,
+                        "interfaces": [
+                            {
+                                "name": "1.2",
+                                "tagged": false
+                            }
+                        ],
+                        "class": "VLAN"
+                    },
+                    "foo1": {
+                        "cmpHash": "default",
+                        "failsafeAction": "failover-restart-tm",
+                        "failsafeTimeout": 90,
+                        "mtu": 1500,
+                        "tag": 123,
+                        "autoLastHop": "default",
+                        "failsafeEnabled": false,
+                        "interfaces": [
+                            {
+                                "name": "1.1",
+                                "tagged": true
+                            }
+                        ],
+                        "class": "VLAN"
+                    },
+                    "bar": {
+                        "address": "192.2.1.1/24",
+                        "trafficGroup": "traffic-group-local-only",
+                        "vlan": "foo1",
+                        "allowService": "all",
+                        "class": "SelfIp"
+                    },
+                    "foo": {
+                        "address": "192.1.1.1/24",
+                        "trafficGroup": "traffic-group-local-only",
+                        "vlan": "alice",
+                        "allowService": "default",
+                        "class": "SelfIp"
+                    },
+                    "currentConfigSync": {
+                        "configsyncIp": "none",
+                        "class": "ConfigSync"
+                    },
+                    "currentFailoverMulticast": {
+                        "interface": "none",
+                        "address": "any6",
+                        "port": 0,
+                        "class": "FailoverMulticast"
+                    },
+                    "currentMirrorIp": {
+                        "primaryIp": "any6",
+                        "secondaryIp": "any6",
+                        "class": "MirrorIp"
+                    },
+                    "default": {
+                        "mtu": 0,
+                        "network": "default",
+                        "remark": "configured-by-dhcp",
+                        "gw": "10.144.75.254",
+                        "class": "ManagementRoute"
+                    },
+                    "currentAuthentication": {
+                        "fallback": false,
+                        "enabledSourceType": "local",
+                        "remoteUsersDefaults": {
+                            "role": "no-access",
+                            "partitionAccess": "all",
+                            "terminalAccess": "disabled"
+                        },
+                        "class": "Authentication"
+                    },
+                    "rd0": {
+                        "connectionLimit": 0,
+                        "id": 0,
+                        "strict": true,
+                        "vlans": [
+                            "/Common/alice",
+                            "/Common/foo1",
+                            "/Common/http-tunnel",
+                            "/Common/socks-tunnel"
+                        ],
+                        "parent": "none",
+                        "class": "RouteDomain"
+                    },
+                    "currentSnmpTrapEvents": {
+                        "device": true,
+                        "authentication": false,
+                        "agentStartStop": true,
+                        "class": "SnmpTrapEvents"
+                    },
+                    "currentSnmpAgent": {
+                        "contact": "Customer Name <admin@customer.com>",
+                        "location": "Network Closet 1",
+                        "allowList": [
+                            "127.0.0.0/8"
+                        ],
+                        "snmpV1": true,
+                        "snmpV2c": true,
+                        "class": "SnmpAgent"
+                    },
+                    "comm-public": {
+                        "name": "public",
+                        "access": "ro",
+                        "ipv6": false,
+                        "source": "default",
+                        "oid": "none",
+                        "class": "SnmpCommunity"
+                    },
+                    "currentDagGlobals": {
+                        "icmpHash": "icmp",
+                        "roundRobinMode": "global",
+                        "ipv6PrefixLength": 128,
+                        "class": "DagGlobals"
+                    },
+                    "currentHTTPD": {
+                        "allow": [
+                            "all"
+                        ],
+                        "authPamIdleTimeout": 1200,
+                        "maxClients": 10,
+                        "sslCiphersuite": [
+                            "ECDHE-RSA-AES128-GCM-SHA256",
+                            "ECDHE-RSA-AES256-GCM-SHA384",
+                            "ECDHE-RSA-AES128-SHA",
+                            "ECDHE-RSA-AES256-SHA",
+                            "ECDHE-RSA-AES128-SHA256",
+                            "ECDHE-RSA-AES256-SHA384",
+                            "ECDHE-ECDSA-AES128-GCM-SHA256",
+                            "ECDHE-ECDSA-AES256-GCM-SHA384",
+                            "ECDHE-ECDSA-AES128-SHA",
+                            "ECDHE-ECDSA-AES256-SHA",
+                            "ECDHE-ECDSA-AES128-SHA256",
+                            "ECDHE-ECDSA-AES256-SHA384",
+                            "AES128-GCM-SHA256",
+                            "AES256-GCM-SHA384",
+                            "AES128-SHA",
+                            "AES256-SHA",
+                            "AES128-SHA256",
+                            "AES256-SHA256"
+                        ],
+                        "sslProtocol": "all -SSLv2 -SSLv3 -TLSv1",
+                        "class": "HTTPD"
+                    },
+                    "currentTrafficControl": {
+                        "acceptIpOptions": false,
+                        "acceptIpSourceRoute": false,
+                        "allowIpSourceRoute": false,
+                        "continueMatching": false,
+                        "maxIcmpRate": 100,
+                        "maxRejectRate": 250,
+                        "maxRejectRateTimeout": 30,
+                        "minPathMtu": 296,
+                        "pathMtuDiscovery": true,
+                        "portFindThresholdTimeout": 30,
+                        "portFindThresholdTrigger": 8,
+                        "portFindThresholdWarning": true,
+                        "rejectUnmatched": true,
+                        "maxPortFindLinear": 16,
+                        "maxPortFindRandom": 16,
+                        "class": "TrafficControl"
+                    },
+                    "currentSSHD": {
+                        "allow": [
+                            "ALL"
+                        ],
+                        "inactivityTimeout": 0,
+                        "class": "SSHD"
+                    },
+                    "currentDisk": {
+                        "applicationData": 26128384,
+                        "class": "Disk"
+                    },
+                    "currentManagementIpFirewall": {
+                        "remark": "none",
+                        "rules": [],
+                        "class": "ManagementIpFirewall"
+                    },
+                    "currentPasswordPolicy": {
+                        "maxLoginFailures": 0,
+                        "passwordMemory": 0,
+                        "requiredLowercase": 0,
+                        "requiredNumeric": 0,
+                        "requiredSpecial": 0,
+                        "requiredUppercase": 0,
+                        "expirationWarningDays": 7,
+                        "minLength": 6,
+                        "minDurationDays": 0,
+                        "maxDurationDays": 99999,
+                        "lockoutDurationSeconds": 0,
+                        "policyEnforcementEnabled": false,
+                        "class": "PasswordPolicy"
+                    }
+                }
+            }
+        }
+    }
+]

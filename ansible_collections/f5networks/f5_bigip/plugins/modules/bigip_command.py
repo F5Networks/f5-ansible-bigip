@@ -77,12 +77,11 @@ options:
     default: 1
   warn:
     description:
-      - Whether the module should raise warnings related to command idempotency
-        or not.
-      - Note that the F5 Ansible developers specifically leave this on to make you
-        aware that your usage of this module may be better served by official F5
+      - Whether or not the module should raise warnings related to command idempotency.
+      - Note the F5 Ansible developers specifically leave this on to make you
+        aware your usage of this module may be better served by official F5
         Ansible modules. This module should always be used as a last resort.
-    default: True
+    default: true
     type: bool
   chdir:
     description:
@@ -93,7 +92,7 @@ options:
       - Determines if C(network_cli) is to be used as a method of connection.
       - Default connection is always C(httpapi).
     type: bool
-    default: no
+    default: false
 notes:
   - When running this module in an HA environment via SSH connection and using a role other than C(admin)
     or C(root), you may see a C(Change Pending) status, even if you did not make any changes.
@@ -174,7 +173,7 @@ warn:
   description: Whether or not to raise warnings about modification commands.
   returned: changed
   type: bool
-  sample: True
+  sample: true
 '''
 
 

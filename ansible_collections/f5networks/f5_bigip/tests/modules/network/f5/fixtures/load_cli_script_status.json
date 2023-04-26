@@ -1,0 +1,12 @@
+{
+    "kind": "tm:cli:script:scriptstate",
+    "name": "__ansible_mkqkview",
+    "partition": "Common",
+    "fullPath": "/Common/__ansible_mkqkview",
+    "generation": 288,
+    "selfLink": "https://localhost/mgmt/tm/cli/script/~Common~__ansible_mkqkview?ver=17.1.0.1",
+    "apiAnonymous": "proc script::run {} {\n                    set cmd [lreplace $tmsh::argv 0 0]; eval \"exec $cmd 2> /dev/null\"\n                }\n",
+    "ignoreVerification": "false",
+    "totalSigningStatus": "not-all-signed",
+    "verificationStatus": "none"
+}

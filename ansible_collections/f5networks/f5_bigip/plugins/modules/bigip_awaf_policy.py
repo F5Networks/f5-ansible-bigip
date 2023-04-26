@@ -18,18 +18,18 @@ options:
   name:
     description:
       - The unique user-given name of the policy. Policy names cannot contain spaces or special characters.
-      - Parameter mutually exclusive with C(policy_id).
-      - Parameter is mandatory when creating a new WAF policy.
+      - This parameter is mutually exclusive with C(policy_id).
+      - This parameter is mandatory when creating a new WAF policy.
     type: str
   policy_id:
     description:
-      - The device generated id of existing WAF policy.
-      - Parameter mutually exclusive with C(name).
+      - The device generated ID of the existing WAF policy.
+      - This parameter is mutually exclusive with C(name).
     type: str
   template:
     description:
       - Specifies the name of the template used for WAF policy creation.
-      - Parameter is required when creating a new WAF policy.
+      - The parameter is required when creating a new WAF policy.
     type: str
   language:
     description:
@@ -73,26 +73,26 @@ options:
     description:
       - Specifies whether the security policy treats microservice URLs, file types, URLs, and parameters as case
         sensitive or not.
-      - When C(yes), the system stores these security policy elements in lowercase in the security policy configuration.
-      - When unspecified parameter is set to C(no) when creating a new WAF policy.
+      - When C(true), the system stores these security policy elements in lowercase in the security policy configuration.
+      - When unspecified, this parameter is set to C(false) when creating a new WAF policy.
     type: bool
   enable_passive_mode:
     description:
-      - When C(yes), the policy can be associated with a Performance L4 Virtual Server.
-      - When unspecified parameter is set to C(no) when creating a new WAF policy.
+      - When C(true), the policy can be associated with a Performance L4 Virtual Server.
+      - When unspecified, this parameter is set to C(false) when creating a new WAF policy.
     type: bool
   protocol_independent:
     description:
-      - When C(yes), the security policy differentiates between HTTP and HTTPS.
-      - When C(not), the security policy configures URLs without specifying a specific protocol.
-      - When unspecified parameter is set to C(no) when creating a new WAF policy.
+      - When C(true), the security policy differentiates between HTTP and HTTPS.
+      - When C(false), the security policy configures URLs without specifying a specific protocol.
+      - When unspecified, this parameter is set to C(false) when creating a new WAF policy.
     type: bool
   enforcement_mode:
     description:
       - Defines how the system processes a request that triggers a security policy violation.
       - When C(blocking), the traffic is blocked if it causes a violation.
       - When C(transparent), the traffic is not blocked even if a violation is triggered.
-      - When unspecified parameter is set to C(transparent) when creating a new WAF policy.
+      - When unspecified, this parameter is set to C(transparent) when creating a new WAF policy.
     type: str
     choices:
       - blocking
@@ -100,21 +100,21 @@ options:
   type:
     description:
       - The type of policy to be created.
-      - Whem C(parent), the policy can be used as a basis for similar child policies. Parent policy settings can be
+      - When C(parent), the policy can be used as a basis for similar child policies. Parent policy settings can be
         inherited to its child policies. A parent policy cannot be applied to Virtual Servers.
       - When C(security), the policy can be created from a parent policy or as a stand-alone policy.
         Changes to a security policy do not affect other security policies.
         A security policy can be applied to a virtual server.
-      - When unspecified parameter is set to C(security) when creating a new WAF policy.
+      - When unspecified, this parameter is set to C(security) when creating a new WAF policy.
     type: str
     choices:
      - parent
      - security
   server_technologies:
     description:
-      - The server technology is a server-side application, framework, web server or operating system type that is
+      - The server technology is a server-side application, framework, web server, or operating system type that is
         configured in the policy in order to adapt the policy to the checks needed for the respective technology.
-      - Parameter must be specified when creating new WAF policy.
+      - This parameter must be specified when creating new WAF policy.
       - "The valid elements that can be specified in the list are: ASP, ASP.NET, AngularJS, Apache Struts,
         Apache Tomcat, Apache/NCSA HTTP Server, BEA Systems WebLogic Server, Backbone.js, CGI, Cisco, Citrix,
         CodeIgniter, CouchDB, Django, Elasticsearch, Ember.js, Express.js, Front Page Server Extensions (FPSE),
@@ -130,7 +130,7 @@ options:
   pb_learning_mode:
     description:
       - Learning setting for Policy Builder.
-      - When unspecified parameter is set to C(manual) when creating a new WAF policy.
+      - When unspecified, this parameter is set to C(manual) when creating a new WAF policy.
     type: str
     choices:
       - automatic
@@ -149,7 +149,7 @@ options:
         required: True
       type:
         description:
-          - Defines if the value provided in C(name) is to be treated as C(explicit) or a C(wildcard).
+          - Defines whether the value provided in C(name) is to be treated as C(explicit) or a C(wildcard).
         type: str
         required: True
         choices:
@@ -169,43 +169,43 @@ options:
         required: True
   open_api_files:
     description:
-      - List of links for open api files on the policy.
+      - List of links for open API files on the policy.
     type: list
     elements: str
   policy_in_json:
     description:
       - User provided JSON for a WAF policy, normally used as a end user template for rapid policy deployments.
-      - The parameters in this module, when specified take precedence over parameters defined in C(policy_in_json), and
+      - When specified, the parameters in this module take precedence over parameters defined in C(policy_in_json), and
         will overwrite them when a new WAF policy is created.
-      - When using C(policy_in_json) to modify an existing WAF policy, the C(force) parameter must C(yes) in order
-        to apply the C(policy_in_json) in its entirety as each WAF policy contains parameters not covered by the
+      - When using C(policy_in_json) to modify an existing WAF policy, the C(force) parameter must be C(true) in order
+        to apply the C(policy_in_json) in its entirety, as each WAF policy contains parameters not covered by the
         parameters in this module, therefore there is no comparison operation run on them,
         and they might remain unchanged on the device.
     type: raw
   force:
     description:
-      - If C(yes), the C(policy_in_json) will be applied in its entirety over the existing WAF policy.
-      - When C(yes) module operations are not idempotent.
+      - If C(true), the C(policy_in_json) will be applied in its entirety over the existing WAF policy.
+      - When C(true), module operations are not idempotent.
     type: bool
-    default: no
+    default: false
   dump_json:
     description:
-      - Sets the module to output a WAF policy JSON for further consumption.
-      - When C(yes), does not make any changes on the device and always returns C(changed=False).
-      - The output provided is idempotent in nature, meaning if there are no changes to be made the output will not be
-        generated except when C(force) is set to C(yes).
-      - Parameter mutually exclusive with C(apply_policy).
+      - Sets the module to output a WAF policy in JSON for further consumption.
+      - When C(true), does not make any changes on the device and always returns C(changed=False).
+      - The output provided is idempotent in nature, meaning if there are no changes to be made, the output will not be
+        generated except when C(force) is set to C(true).
+      - This parameter is mutually exclusive with C(apply_policy).
     type: bool
-    default: no
+    default: false
   apply_policy:
     description:
-      - When C(yes) after applies WAF policy after creating or modifying.
-      - Parameter mutually exclusive with C(dump_json).
+      - When C(true), applies the WAF policy after creating or modifying.
+      - This parameter is mutually exclusive with C(dump_json).
     type: bool
-    default: no
+    default: false
   description:
     description:
-      - Specifies descriptive text that identifies WAF policy.
+      - Specifies descriptive text that identifies the WAF policy.
     type: str
   partition:
     description:
@@ -299,7 +299,7 @@ EXAMPLES = r'''
 RETURN = r'''
 policy_id:
   description:
-    - The device generated id of existing or created WAF policy.
+    - The device generated ID of the existing or created WAF policy.
   returned: changed
   type: str
   sample: "yE48MEYUzFoeevnd8UjAoQ"
@@ -311,7 +311,7 @@ json:
   sample: "\n{\n   \"policy\" : {\n      \"name\": \"foobar_awaf\",\n      \"fullPath\": \"/Common/foobar_awaf\"\n"
 description:
   description:
-    - Specifies descriptive text that identifies WAF policy.
+    - Specifies descriptive text that identifies the WAF policy.
   returned: changed
   type: str
   sample: this is a new policy
@@ -333,19 +333,19 @@ case_insensitive:
       sensitive or not.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 enable_passive_mode:
   description:
     - Specifies whether the security policy can be associated with a Performance L4 Virtual Server.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 protocol_independent:
   description:
     - Specifies whether the security policy differentiates between HTTP and HTTPS.
   returned: changed
   type: bool
-  sample: no
+  sample: false
 enforcement_mode:
   description:
     - Defines how the system processes a request that triggers a security policy violation.
@@ -384,7 +384,7 @@ allowed_file_types:
       sample: php
     type:
       description:
-        - Defines if the value provided in name is to be treated as explicit) or a wildcard.
+        - Defines whether the value provided in the name is to be treated as explicit or a wildcard.
       type: str
       returned: changed
       sample: explicit

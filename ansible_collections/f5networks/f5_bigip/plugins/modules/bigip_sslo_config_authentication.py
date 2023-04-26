@@ -100,16 +100,16 @@ options:
         description:
           - Enables or disables OCSP nonce (if not using an existing OCSP profile).
           - When creating an OCSP authentication service, if the parameter is not provided and C(existing_ocsp)
-            is not set, the default of C(True) is assumed.
+            is not set, the default of C(true) is assumed.
         type: bool
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
-      - When C(yes), does not make any changes on the device and always returns C(changed=False).
+      - When C(true), does not make any changes on the device and always returns C(changed=False).
       - The output provided is idempotent in nature, meaning if there are no changes to be made during
         C(MODIFY) on an existing service, no JSON output is generated.
     type: bool
-    default: no
+    default: false
   timeout:
     description:
       - The amount of time to wait for the C(CREATE), C(MODIFY) or C(DELETE) task to complete, in seconds.
@@ -238,7 +238,7 @@ ocsp:
     ocsp_nonce:
       description: Enables or disables nonce in the OCSP profile (if not using an existing OCSP profile).
       type: bool
-      sample: True
+      sample: true
 '''
 
 import re

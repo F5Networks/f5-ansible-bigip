@@ -492,3 +492,11 @@ releases:
       name: bigip_awaf_policy
       namespace: ''
     release_date: '2023-03-15'
+  2.1.0:
+    changes:
+      minor_changes:
+      - bigip_ssl_key_cert - added an option to prevent adding .key and .crt extensions
+        to key and cert names respectively
+    fragments:
+    - added-new-param-bigip-ssl-key-cert.yaml
+    release_date: '2023-04-26'

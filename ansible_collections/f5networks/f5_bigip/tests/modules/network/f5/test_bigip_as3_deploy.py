@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright: (c) 2020, F5 Networks Inc.
+# Copyright: (c) 2023, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -15,8 +15,6 @@ from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_as3_de
 from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_as3_deploy import (
     Parameters, ArgumentSpec, ModuleManager, ModuleParameters
 )
-
-from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_bigip.tests.compat import unittest

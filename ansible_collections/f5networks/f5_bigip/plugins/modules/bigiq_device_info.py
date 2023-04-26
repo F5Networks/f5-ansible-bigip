@@ -156,13 +156,13 @@ applications:
         - Whether enhanced analytics is enabled for the application or not.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     bad_traffic_growth:
       description:
         - Whether or not Bad Traffic Growth alerts are configured to be triggered or not.
       returned: changed
       type: bool
-      sample: no
+      sample: false
   sample: hash/dictionary of values
 managed_devices:
   description: Managed device related information.
@@ -216,19 +216,19 @@ managed_devices:
         - Whether the device is clustered or not.
       returned: changed
       type: bool
-      sample: no
+      sample: false
     is_license_expired:
       description:
         - Whether the license on the device is expired or not.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     is_virtual:
       description:
         - Whether the device is a virtual edition or not.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     machine_id:
       description:
         - Machine specific ID assigned to this device by BIG-IQ.
@@ -587,19 +587,19 @@ system_info:
         - Whether the admin password was changed from its default or not.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     is_root_password_changed:
       description:
         - Whether the root password was changed from its default or not.
       returned: changed
       type: bool
-      sample: no
+      sample: false
     is_system_setup:
       description:
         - Whether the system has been setup or not.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     package_edition:
       description:
         - Displays the software edition.
@@ -716,7 +716,7 @@ vlans:
         - Whether failsafe is enabled or not.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     failsafe_timeout:
       description:
         - Number of seconds that an active unit can run without detecting network traffic
@@ -761,7 +761,7 @@ vlans:
             - Whether the interface is tagged or not.
           returned: changed
           type: bool
-          sample: no
+          sample: false
     mtu:
       description:
         - Specific maximum transition unit (MTU) for the VLAN.
@@ -780,7 +780,7 @@ vlans:
           poll-interval setting.
       returned: changed
       type: bool
-      sample: no
+      sample: false
     sflow_sampling_rate:
       description:
         - Ratio of packets observed to the samples generated.
@@ -793,13 +793,13 @@ vlans:
           sampling-rate setting.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     source_check_enabled:
       description:
         - Specifies that only connections that have a return route in the routing table are accepted.
       returned: changed
       type: bool
-      sample: yes
+      sample: true
     true_mac_address:
       description:
         - Media access control (MAC) address for the lowest-numbered interface assigned to this VLAN.

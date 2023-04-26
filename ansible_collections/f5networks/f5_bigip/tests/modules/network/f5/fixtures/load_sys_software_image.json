@@ -1,0 +1,15 @@
+{
+    "kind": "tm:sys:software:image:imagestate",
+    "name": "BIGIP-16.1.3.2-0.0.4.iso",
+    "fullPath": "BIGIP-16.1.3.2-0.0.4.iso",
+    "generation": 72606,
+    "selfLink": "https://localhost/mgmt/tm/sys/software/image/BIGIP-16.1.3.2-0.0.4.iso?ver=16.0.0",
+    "build": "0.0.4",
+    "buildDate": "Wed Sep 14 08 12 07 PDT 2022",
+    "checksum": "b155536e421f26277412609742881f1d",
+    "fileSize": "2629 MB",
+    "lastModified": "Wed Mar 29 08:11:01 2023",
+    "product": "BIG-IP",
+    "verified": "yes",
+    "version": "16.1.3.2"
+}
