@@ -52,7 +52,7 @@ options:
   exclude:
     description:
       - Exclude various file from the QKview.
-      - "Valid elements of the list are: all, audit, secure, bash_history"
+      - "Valid elements of the list include: all, audit, secure, bash_history."
     type: list
     elements: str
   force:
