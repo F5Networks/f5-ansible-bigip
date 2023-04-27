@@ -12244,55 +12244,64 @@ class LicenseParameters(BaseParameters):
     def license_start_date(self):
         if self._values['license'] is None:
             return None
-        return self._values['license']['licenseStartDate']['description']
+        if bool(self._values['license'].get('licenseStartDate')):
+            return self._values['license']['licenseStartDate']['description']
 
     @property
     def license_end_date(self):
         if self._values['license'] is None:
             return None
-        return self._values['license']['licenseEndDate']['description']
+        if bool(self._values['license'].get('licenseEndDate')):
+            return self._values['license']['licenseEndDate']['description']
 
     @property
     def licensed_on_date(self):
         if self._values['license'] is None:
             return None
-        return self._values['license']['licensedOnDate']['description']
+        if bool(self._values['license'].get('licensedOnDate')):
+            return self._values['license']['licensedOnDate']['description']
 
     @property
     def licensed_version(self):
         if self._values['license'] is None:
             return None
-        return self._values['license']['licensedVersion']['description']
+        if bool(self._values['license'].get('licensedVersion')):
+            return self._values['license']['licensedVersion']['description']
 
     @property
     def max_permitted_version(self):
         if self._values['license'] is None:
             return None
-        return self._values['license']['maxPermittedVersion']['description']
+        if bool(self._values['license'].get('maxPermittedVersion')):
+            return self._values['license']['maxPermittedVersion']['description']
 
     @property
     def min_permitted_version(self):
         if self._values['license'] is None:
             return None
-        return self._values['license']['minPermittedVersion']['description']
+        if bool(self._values['license'].get('minPermittedVersion')):
+            return self._values['license']['minPermittedVersion']['description']
 
     @property
     def platform_id(self):
         if self._values['license'] is None:
             return None
-        return self._values['license']['platformId']['description']
+        if bool(self._values['license'].get('platformId')):
+            return self._values['license']['platformId']['description']
 
     @property
     def registration_key(self):
         if self._values['license'] is None:
             return None
-        return self._values['license']['registrationKey']['description']
+        if bool(self._values['license'].get('registrationKey')):
+            return self._values['license']['registrationKey']['description']
 
     @property
     def service_check_date(self):
         if self._values['license'] is None:
             return None
-        return self._values['license']['serviceCheckDate']['description']
+        if bool(self._values['license'].get('serviceCheckDate')):
+            return self._values['license']['serviceCheckDate']['description']
 
     @property
     def active_modules(self):
