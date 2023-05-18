@@ -37,6 +37,17 @@ options:
       - name: F5_TELEMETRY_OFF
     vars:
       - name: f5_telemetry
+  token_timeout:
+    description:
+      - The timeout value of the authentication token, in seconds.
+      - When not specified the default value set by the device C(1200) is assumed.
+    ini:
+    - section: defaults
+      key: f5_timeout
+    env:
+    - name: F5_TIMEOUT
+    vars:
+    - name: f5_timeout
 version_added: "1.0.0"
 author:
   - Wojciech Wypior <w.wypior@f5.com>
@@ -71,6 +82,7 @@ class HttpApi(HttpApiBase):
 
     def login(self, username, password):
         provider = self.get_option("bigip_provider")
+        timeout = self.get_option("token_timeout")
 
         if username and password:
             payload = {
@@ -87,6 +99,8 @@ class HttpApi(HttpApiBase):
             self.access_token = response['contents']['token'].get('token', None)
             if self.access_token:
                 self.connection._auth = {'X-F5-Auth-Token': self.access_token}
+                if timeout:
+                    self._update_timeout(self.access_token, timeout)
             else:
                 raise AnsibleConnectionFailure('Server returned invalid response during connection authentication.')
         else:
@@ -107,11 +121,21 @@ class HttpApi(HttpApiBase):
             # Other codes will be raised by underlying connection plugin.
             return exc
         if exc.code == 401:
-            if self.connection._auth is not None:
+            if self.connection._auth:
                 # only attempt to refresh token if we were connected before not when we get 401 on first attempt
                 self.connection._auth = None
+                self.login(self.connection.get_option('remote_user'), self.connection.get_option('password'))
                 return True
         return False
+
+    def _update_timeout(self, token, timeout):
+        uri = f"/mgmt/shared/authz/tokens/{token}"
+        data = {
+            "timeout": timeout
+        }
+        response = self.send_request(path=uri, method='PATCH', payload=data, headers=BASE_HEADERS)
+        if response['code'] != 200:
+            raise AnsibleConnectionFailure('Server returned invalid response when updating token timeout.')
 
     def send_request(self, **kwargs):
         url = kwargs.pop('path', '/')
