@@ -274,11 +274,10 @@ class Parameters(AnsibleF5Parameters):
     updatables = [
         'interfaces',
         'networks',
-        'devices_ips',
         'monitor',
         'service_down_action',
         'port_remap',
-        'service_subnet',
+        # 'service_subnet',
         'rules'
     ]
 
@@ -436,7 +435,7 @@ class ModuleParameters(Parameters):
     def devices_ips(self):
         if self._values['devices'] is None:
             return None
-        if not self.ip_offset:
+        if self.ip_offset is None:
             return None
         services_ip4_list = {1: 30, 2: 62, 3: 95, 4: 126, 5: 158, 6: 190, 7: 222, 8: 255}
         services_ip6_list = {1: "1e", 2: "3e", 3: "5e", 4: "7e", 5: "9e", 6: "ae", 7: "ce", 8: "ee"}
@@ -455,7 +454,7 @@ class ModuleParameters(Parameters):
 
     @property
     def service_subnet(self):
-        if not self.ip_offset:
+        if self.ip_offset is None:
             return None
         result = dict()
         ip4_offset_octet = 32 + self.ip_offset
@@ -467,7 +466,7 @@ class ModuleParameters(Parameters):
     @property
     def ip_offset(self):
         if self._values['ip_offset'] is None:
-            return None
+            return 0
         if 0 <= self._values['ip_offset'] <= 30:
             return self._values['ip_offset']
         raise F5ModuleError(
