@@ -1,0 +1,6 @@
+{
+    "kind": "tm:util:unix-ls:runstate",
+    "command": "run",
+    "utilCmdArgs": "/var/config/rest/bulk/ssl_csr_1",
+    "commandResult": "/bin/ls: cannot access /var/config/rest/bulk/ssl_csr_1: No such file or directory\n"
+}

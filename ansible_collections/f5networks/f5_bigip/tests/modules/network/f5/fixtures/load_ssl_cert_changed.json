@@ -1,0 +1,36 @@
+{
+    "kind": "tm:sys:file:ssl-cert:ssl-certstate",
+    "name": "bar.crt",
+    "partition": "Common",
+    "fullPath": "/Common/bar.crt",
+    "generation": 3766,
+    "selfLink": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~bar.crt?expandSubcollections=true&ver=16.1.3.3",
+    "certificateKeyCurveName": "none",
+    "certificateKeySize": 2048,
+    "checksum": "SHA1:5753:1e55aa75ee166a038e756b5aa4a835c4859490fe",
+    "createTime": "2023-05-29T13:51:43Z",
+    "createdBy": "admin",
+    "expirationDate": 2098025169,
+    "expirationString": "Jun 25 16:46:09 2036 GMT",
+    "fingerprint": "SHA256/76:B5:F8:D2:B7:EB:21:01:D5:B5:1F:FA:ED:58:23:CE:E0:50:B6:21:A2:A1:8E:8C:3D:C8:A6:33:0C:96:62:97",
+    "isBundle": "false",
+    "issuer": "CN=ourca.domain.local,OU=Coyote,O=ACME CA,L=New York,ST=New York,C=US",
+    "keyType": "rsa-public",
+    "lastUpdateTime": "2023-05-29T13:51:43Z",
+    "mode": 33188,
+    "revision": 1,
+    "serialNumber": "1",
+    "size": 5753,
+    "subject": "CN=cert1.domain.local,OU=Coyote,O=ACME,ST=New York,C=US",
+    "sourcePath": "file:///config/ssl/ssl.crt/bar.crt",
+    "updatedBy": "admin",
+    "version": 3,
+    "bundleCertificatesReference": {
+        "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~bar.crt/bundle-certificates?ver=16.1.3.3",
+        "isSubcollection": true
+    },
+    "certValidatorsReference": {
+        "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~bar.crt/cert-validators?ver=16.1.3.3",
+        "isSubcollection": true
+    }
+}
