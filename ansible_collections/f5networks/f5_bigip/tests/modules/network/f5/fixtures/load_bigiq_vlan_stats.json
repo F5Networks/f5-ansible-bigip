@@ -1,0 +1,93 @@
+{
+    "kind": "tm:net:vlan:vlanstats",
+    "generation": 314,
+    "selfLink": "https://localhost/mgmt/tm/net/vlan/~Common~internal/stats?ver=15.1.0.1",
+    "entries": {
+        "https://localhost/mgmt/tm/net/vlan/~Common~internal/stats": {
+            "nestedStats": {
+                "kind": "tm:net:vlan:vlanstats",
+                "selfLink": "https://localhost/mgmt/tm/net/vlan/~Common~internal/stats?ver=15.1.0.1",
+                "entries": {
+                    "cVid": {
+                        "description": " "
+                    },
+                    "id": {
+                        "value": 4094
+                    },
+                    "ifname": {
+                        "description": "internal"
+                    },
+                    "macTrue": {
+                        "description": "fa:16:3e:e0:f4:75"
+                    },
+                    "mtu": {
+                        "value": 1500
+                    },
+                    "tmName": {
+                        "description": "/Common/internal"
+                    },
+                    "https://localhost/mgmt/tm/net/vlan/~Common~internal/members/stats": {
+                        "nestedStats": {
+                            "entries": {
+                                "https://localhost/mgmt/tm/net/vlan/~Common~internal/members/1.0/stats": {
+                                    "nestedStats": {
+                                        "entries": {
+                                            "tmName": {
+                                                "description": "1.0"
+                                            },
+                                            "tagMode": {
+                                                "description": "none"
+                                            },
+                                            "tagged": {
+                                                "description": "no"
+                                            },
+                                            "https://localhost/mgmt/tm/net/vlan/~Common~internal/members/1.0/interfaces/stats": {
+                                                "nestedStats": {
+                                                    "entries": {
+                                                        "https://localhost/mgmt/tm/net/vlan/~Common~internal/members/1.0/interfaces/1.0/stats": {
+                                                            "nestedStats": {
+                                                                "entries": {
+                                                                    "counters.bitsIn": {
+                                                                        "value": 14342415544
+                                                                    },
+                                                                    "counters.bitsOut": {
+                                                                        "value": 1026123808
+                                                                    },
+                                                                    "counters.dropsAll": {
+                                                                        "value": 0
+                                                                    },
+                                                                    "counters.errorsAll": {
+                                                                        "value": 0
+                                                                    },
+                                                                    "counters.pktsIn": {
+                                                                        "value": 8789264
+                                                                    },
+                                                                    "counters.pktsOut": {
+                                                                        "value": 139526
+                                                                    },
+                                                                    "mediaActive": {
+                                                                        "description": "10000T-FD"
+                                                                    },
+                                                                    "tmName": {
+                                                                        "description": "1.0"
+                                                                    },
+                                                                    "status": {
+                                                                        "description": "up"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

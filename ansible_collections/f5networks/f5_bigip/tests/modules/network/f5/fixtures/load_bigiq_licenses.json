@@ -1,0 +1,26 @@
+{
+    "items": [
+        {
+            "id": "83880ee5-7a0d-46ff-a8f3-d59eae2e377e",
+            "kind": "cm:device:licensing:pool:regkey:licenses:regkeypoollicensestate",
+            "name": "myLicencePool",
+            "selfLink": "https://localhost/mgmt/cm/device/licensing/pool/regkey/licenses/83880ee5-7a0d-46ff-a8f3-d59eae2e377e",
+            "sortName": "Registration Key Pool",
+            "generation": 1,
+            "lastUpdateMicros": 1614152044804827
+        },
+        {
+            "id": "c7624316-88a5-4607-9572-aacc103448bc",
+            "kind": "cm:device:licensing:pool:regkey:licenses:regkeypoollicensestate",
+            "name": "GLOBAL-ENV",
+            "selfLink": "https://localhost/mgmt/cm/device/licensing/pool/regkey/licenses/c7624316-88a5-4607-9572-aacc103448bc",
+            "sortName": "Registration Key Pool",
+            "generation": 1,
+            "lastUpdateMicros": 1646048428352188
+        }
+    ],
+    "generation": 0,
+    "kind": "cm:device:licensing:pool:regkey:licenses:regkeypoollicensecollectionstate",
+    "lastUpdateMicros": 0,
+    "selfLink": "https://localhost/mgmt/cm/device/licensing/pool/regkey/licenses"
+}

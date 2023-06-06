@@ -1,0 +1,30 @@
+{
+    "kind": "tm:sys:version:versionstats",
+    "selfLink": "https://localhost/mgmt/tm/sys/version?ver=12.1.1",
+    "entries": {
+        "https://localhost/mgmt/tm/sys/version/0": {
+            "nestedStats": {
+                "entries": {
+                    "Build": {
+                        "description": "0.0.1458"
+                    },
+                    "Date": {
+                        "description": "Mon Apr  6 20:17:46 PDT 2020"
+                    },
+                    "Edition": {
+                        "description": "Final"
+                    },
+                    "Product": {
+                        "description": "BIG-IQ"
+                    },
+                    "Title": {
+                        "description": "Main Package"
+                    },
+                    "Version": {
+                        "description": "7.1.0"
+                    }
+                }
+            }
+        }
+    }
+}

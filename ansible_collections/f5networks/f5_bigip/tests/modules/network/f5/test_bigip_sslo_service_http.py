@@ -4,6 +4,7 @@
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
+
 __metaclass__ = type
 
 import json
@@ -17,7 +18,6 @@ from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_service_
 from ansible_collections.f5networks.f5_bigip.tests.compat import unittest
 from ansible_collections.f5networks.f5_bigip.tests.compat.mock import Mock, patch, MagicMock
 from ansible_collections.f5networks.f5_bigip.tests.modules.utils import set_module_args
-
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -95,7 +95,8 @@ class TestParameters(unittest.TestCase):
 
         assert p.devices == [{'ip': '198.19.96.30', 'port': 80}, {'ip': '198.19.96.31', 'port': 80}]
         assert p.devices_from == {
-            'name': 'ssloN_proxy1a_out', 'path': '/Common/proxy1a-in-vlan', 'self_ip': '198.19.96.245',
+            'name': 'ssloN_proxy1a_out', 'path': '/Common/ssloN_proxy1a_out.app/ssloN_proxy1a_out',
+            'self_ip': '198.19.96.245',
             'netmask': '255.255.255.128', 'network': '198.19.96.128', 'interface': '1.1', 'tag': 50
         }
         assert p.devices_to == {
@@ -165,7 +166,6 @@ class TestManager(unittest.TestCase):
         mm.exists = Mock(return_value=False)
 
         results = mm.exec_module()
-
         assert results['changed'] is False
         assert results['json'] == expected
 
@@ -174,8 +174,7 @@ class TestManager(unittest.TestCase):
         expected = load_fixture('sslo_http_modify_generated.json')
         set_module_args(dict(
             name='proxy1a',
-            snat='snatlist',
-            snat_list=['198.19.64.10', '198.19.64.11'],
+            devices=[dict(ip='10.10.100.100', port=3128), dict(ip='10.10.100.100', port=8080)],
             dump_json=True
         ))
 
@@ -190,7 +189,6 @@ class TestManager(unittest.TestCase):
         mm.client.get = Mock(side_effect=[exists, exists])
 
         results = mm.exec_module()
-
         assert results['changed'] is False
         assert results['json'] == expected
 

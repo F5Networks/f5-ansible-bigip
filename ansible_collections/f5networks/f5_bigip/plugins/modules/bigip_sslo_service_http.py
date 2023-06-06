@@ -109,6 +109,18 @@ options:
        - When creating an HTTP service, if the parameter is not provided a default of C(false) is
          assumed.
     type: bool
+  auto_manage:
+    description:
+       - Enables or disables Internal Service Addressing for HTTP-Proxy service.
+       - When creating an HTTP service, if the parameter is not provided a default of C(true) is
+         assumed.
+    type: bool
+  use_exist_selfip:
+    description:
+       - Enables using Existing Self-IP addresses to be used for HTTP-Proxy service.
+       - When creating an HTTP service, if the parameter is not provided a default of C(false) is
+         assumed.
+    type: bool
   monitor:
     description:
       - Specifies the monitor attached to the HTTP security device pool.
@@ -440,6 +452,8 @@ class Parameters(AnsibleF5Parameters):
         'snat_pool',
         'rules',
         'proxy_type',
+        'auto_manage',
+        'use_exist_selfip',
         'auth_offload'
     ]
 
@@ -456,6 +470,7 @@ class Parameters(AnsibleF5Parameters):
         'snat_pool',
         'rules',
         'proxy_type',
+        'auto_manage',
         'auth_offload'
     ]
 
@@ -465,12 +480,19 @@ class ApiParameters(Parameters):
     def devices_to(self):
         ipfamily = self.ip_family
         result = dict()
-        result['name'] = self._values['fromNetworkObj']['name']
-        result['path'] = self._values['fromNetworkObj']['vlan']['path']
+        result['name'] = self._values['customService']['connectionInformation']['fromBigipNetwork']['name']
+        result['path'] = self._values['customService']['connectionInformation']['fromBigipNetwork']['vlan']['path']
         result['self_ip'] = self._values['customService']['managedNetwork'][ipfamily]['toServiceSelfIp']
         result['netmask'] = self._values['customService']['managedNetwork'][ipfamily]['toServiceMask']
         result['network'] = self._values['customService']['managedNetwork'][ipfamily]['toServiceNetwork']
-        if self._values['fromNetworkObj']['vlan']['create']:
+        if self._values['fromVlanNetworkObj']['create'] and 'networkInterface' in self._values['fromVlanNetworkObj']:
+            if isinstance(self._values['fromVlanNetworkObj']['networkInterface'], list):
+                result['interface'] = self._values['fromVlanNetworkObj']['networkInterface'][0]
+            else:
+                result['interface'] = self._values['fromVlanNetworkObj']['networkInterface']
+            if int(self._values['fromVlanNetworkObj']['networkTag']) != 0:
+                result['tag'] = int(self._values['fromVlanNetworkObj']['networkTag'])
+        elif 'fromNetworkObj' in self._values and self._values['fromNetworkObj']['vlan']['create']:
             if isinstance(self._values['fromNetworkObj']['vlan']['interface'], list):
                 result['interface'] = self._values['fromNetworkObj']['vlan']['interface'][0]
             else:
@@ -478,19 +500,26 @@ class ApiParameters(Parameters):
             if int(self._values['fromNetworkObj']['vlan']['tag']) != 0:
                 result['tag'] = int(self._values['fromNetworkObj']['vlan']['tag'])
         else:
-            result['vlan'] = self._values['fromNetworkObj']['vlan']['path']
+            result['vlan'] = self._values['customService']['connectionInformation']['fromBigipNetwork']['vlan']['path']
         return result
 
     @property
     def devices_from(self):
         ipfamily = self.ip_family
         result = dict()
-        result['name'] = self._values['toNetworkObj']['name']
-        result['path'] = self._values['toNetworkObj']['vlan']['path']
+        result['name'] = self._values['customService']['connectionInformation']['toBigipNetwork']['name']
+        result['path'] = self._values['customService']['connectionInformation']['toBigipNetwork']['vlan']['path']
         result['self_ip'] = self._values['customService']['managedNetwork'][ipfamily]['fromServiceSelfIp']
         result['netmask'] = self._values['customService']['managedNetwork'][ipfamily]['fromServiceMask']
         result['network'] = self._values['customService']['managedNetwork'][ipfamily]['fromServiceNetwork']
-        if self._values['toNetworkObj']['vlan']['create']:
+        if self._values['toVlanNetworkObj']['create'] and 'networkInterface' in self._values['toVlanNetworkObj']:
+            if isinstance(self._values['toVlanNetworkObj']['networkInterface'], list):
+                result['interface'] = self._values['toVlanNetworkObj']['networkInterface'][0]
+            else:
+                result['interface'] = self._values['toVlanNetworkObj']['networkInterface']
+            if int(self._values['toVlanNetworkObj']['networkTag']) != 0:
+                result['tag'] = int(self._values['toVlanNetworkObj']['networkTag'])
+        elif 'toNetworkObj' in self._values and self._values['toNetworkObj']['vlan']['create']:
             if isinstance(self._values['toNetworkObj']['vlan']['interface'], list):
                 result['interface'] = self._values['toNetworkObj']['vlan']['interface'][0]
             else:
@@ -498,7 +527,7 @@ class ApiParameters(Parameters):
             if int(self._values['toNetworkObj']['vlan']['tag']) != 0:
                 result['tag'] = int(self._values['toNetworkObj']['vlan']['tag'])
         else:
-            result['vlan'] = self._values['toNetworkObj']['vlan']['path']
+            result['vlan'] = self._values['customService']['connectionInformation']['toBigipNetwork']['vlan']['path']
         return result
 
     @property
@@ -526,7 +555,8 @@ class ApiParameters(Parameters):
 
     @property
     def port_remap(self):
-        return int(self._values['customService']['httpPortRemapValue'])
+        if 'httpPortRemapValue' in self._values['customService']:
+            return int(self._values['customService']['httpPortRemapValue'])
 
     @property
     def snat(self):
@@ -555,7 +585,12 @@ class ApiParameters(Parameters):
 
     @property
     def auth_offload(self):
-        return self._values['customService']['serviceSpecific']['authOffload']
+        if 'authOffload' in self._values['customService']['serviceSpecific']:
+            return self._values['customService']['serviceSpecific']['authOffload']
+
+    @property
+    def auto_manage(self):
+        return self._values['customService']['isAutoManage']
 
     @property
     def from_net_id(self):
@@ -690,6 +725,27 @@ class ModuleParameters(Parameters):
     @property
     def auth_offload(self):
         result = flatten_boolean(self._values['auth_offload'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
+
+    @property
+    def auto_manage(self):
+        proxy = self._values['auto_manage']
+        if proxy is None:
+            return True
+        result = flatten_boolean(self._values['auto_manage'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
+
+    @property
+    def use_exist_selfip(self):
+        if self._values['use_exist_selfip'] is None:
+            return False
+        result = flatten_boolean(self._values['use_exist_selfip'])
         if result == 'yes':
             return True
         if result == 'no':
@@ -878,6 +934,8 @@ class Difference(object):
                 raise F5ModuleError(
                     'Self-IPs are immutable. You must delete and recreate the service to change the self-IPs.'
                 )
+            if have['name'] == "toNetwork" and (self.want.use_exist_selfip or 'vlan' in have):
+                return None
             return diff
 
     @property
@@ -890,6 +948,8 @@ class Difference(object):
                 raise F5ModuleError(
                     'Self-IPs are immutable. You must delete and recreate the service to change the self-IPs.'
                 )
+            if have['name'] == "fromNetwork" and (self.want.use_exist_selfip or 'vlan' in have):
+                return None
             return diff
 
     @property
@@ -1072,6 +1132,10 @@ class ModuleManager(object):
             params['snat_ref_id'] = self.want.snat_pool
         if self.want.auth_offload is None:
             params['auth_offload'] = False
+        if self.want.auto_manage is None:
+            params['auto_manage'] = True
+        if self.want.use_exist_selfip is None:
+            params['use_exist_selfip'] = False
         return params
 
     def add_missing_options(self, params):
@@ -1095,6 +1159,10 @@ class ModuleManager(object):
             params['proxy_type'] = self.have.proxy_type
         if self.changes.auth_offload is None:
             params['auth_offload'] = self.have.auth_offload
+        if self.changes.auto_manage is None:
+            params['auto_manage'] = self.have.auto_manage
+        if self.changes.use_exist_selfip is None:
+            params['use_exist_selfip'] = self.want.use_exist_selfip
         if self.changes.snat is None:
             params['snat'] = self.have.snat
             if self.have.snat == 'SNAT':
@@ -1104,10 +1172,13 @@ class ModuleManager(object):
             if self.have.snat == 'existingSNAT':
                 if self.changes.snat_pool is None:
                     params['snat_ref_id'] = self.have.snat_pool
+                    params['snat_pool'] = self.have.snat_pool
                 else:
                     params['snat_ref_id'] = self.changes.snat_pool
+                    params['snat_pool'] = self.changes.snat_pool
         if self.changes.snat == 'existingSNAT':
             params['snat_ref_id'] = self.changes.snat_pool
+            params['snat_pool'] = self.changes.snat_pool
         return params
 
     def add_json_metadata(self, payload):
@@ -1303,6 +1374,12 @@ class ArgumentSpec(object):
                     ip=dict(),
                     port=dict(type='int')
                 )
+            ),
+            auto_manage=dict(
+                type='bool'
+            ),
+            use_exist_selfip=dict(
+                type='bool'
             ),
             ip_family=dict(
                 choices=['ipv4', 'ipv6']

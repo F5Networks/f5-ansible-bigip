@@ -51,7 +51,7 @@ class TestF5ClientBIGIP(TestCase):
     def setUp(self):
         self.pc = PlayContext()
         self.pc.network_os = "f5networks.f5_bigip.bigip"
-        self.connection = connection_loader.get("httpapi", self.pc, "/dev/null")
+        self.connection = connection_loader.get("ansible.netcommon.httpapi", self.pc, "/dev/null")
         self.mock_send = Mock()
         self.connection.send = self.mock_send
         self.client = F5Client(client=self.connection.httpapi)
@@ -306,7 +306,7 @@ class TestF5ClientBIGIQ(TestCase):
     def setUp(self):
         self.pc = PlayContext()
         self.pc.network_os = "f5networks.f5_bigip.bigiq"
-        self.connection = connection_loader.get("httpapi", self.pc, "/dev/null")
+        self.connection = connection_loader.get("ansible.netcommon.httpapi", self.pc, "/dev/null")
         self.mock_send = Mock()
         self.connection.send = self.mock_send
         self.client = F5Client(module=Mock(), client=self.connection.httpapi)
@@ -564,7 +564,7 @@ class TestTMOSVersion(TestCase):
     def setUp(self):
         self.pc = PlayContext()
         self.pc.network_os = "f5networks.f5_bigip.bigip"
-        self.connection = connection_loader.get("httpapi", self.pc, "/dev/null")
+        self.connection = connection_loader.get("ansible.netcommon.httpapi", self.pc, "/dev/null")
         self.mock_send = Mock()
         self.connection.send = self.mock_send
         self.client = F5Client(client=self.connection.httpapi)
@@ -629,7 +629,7 @@ class TestBIGIQVersion(TestCase):
     def setUp(self):
         self.pc = PlayContext()
         self.pc.network_os = "f5networks.f5_bigip.bigiq"
-        self.connection = connection_loader.get("httpapi", self.pc, "/dev/null")
+        self.connection = connection_loader.get("ansible.netcommon.httpapi", self.pc, "/dev/null")
         self.mock_send = Mock()
         self.connection.send = self.mock_send
         self.client = F5Client(client=self.connection.httpapi)
@@ -667,7 +667,7 @@ class TestSsloVersion(TestCase):
     def setUp(self):
         self.pc = PlayContext()
         self.pc.network_os = "f5networks.f5_bigip.bigip"
-        self.connection = connection_loader.get("httpapi", self.pc, "/dev/null")
+        self.connection = connection_loader.get("ansible.netcommon.httpapi", self.pc, "/dev/null")
         self.mock_send = Mock()
         self.connection.send = self.mock_send
         self.client = F5Client(client=self.connection.httpapi)
@@ -698,7 +698,7 @@ class TestPackagesInstalled(TestCase):
     def setUp(self):
         self.pc = PlayContext()
         self.pc.network_os = "f5networks.f5_bigip.bigip"
-        self.connection = connection_loader.get("httpapi", self.pc, "/dev/null")
+        self.connection = connection_loader.get("ansible.netcommon.httpapi", self.pc, "/dev/null")
         self.mock_send = Mock()
         self.connection.send = self.mock_send
         self.client = F5Client(client=self.connection.httpapi)
@@ -743,7 +743,7 @@ class TestTransactionContextManagerAndOtherFunctions(TestCase):
     def setUp(self):
         self.pc = PlayContext()
         self.pc.network_os = "f5networks.f5_bigip.bigip"
-        self.connection = connection_loader.get("httpapi", self.pc, "/dev/null")
+        self.connection = connection_loader.get("ansible.netcommon.httpapi", self.pc, "/dev/null")
         self.mock_send = Mock()
         self.connection.send = self.mock_send
         self.client = F5Client(client=self.connection.httpapi)

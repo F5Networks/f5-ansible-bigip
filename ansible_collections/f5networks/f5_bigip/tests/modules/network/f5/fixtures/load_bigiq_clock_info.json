@@ -1,0 +1,15 @@
+{
+    "kind": "tm:sys:clock:clockstats",
+    "selfLink": "https://localhost/mgmt/tm/sys/clock?ver=12.1.1",
+    "entries": {
+        "https://localhost/mgmt/tm/sys/clock/0": {
+            "nestedStats": {
+                "entries": {
+                    "fullDate": {
+                        "description": "2023-05-31T09:20:20Z"
+                    }
+                }
+            }
+        }
+    }
+}

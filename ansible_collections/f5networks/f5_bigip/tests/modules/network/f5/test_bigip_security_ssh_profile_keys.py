@@ -13,7 +13,7 @@ from ansible.module_utils.basic import AnsibleModule
 
 from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_security_ssh_profile_keys
 from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_security_ssh_profile_keys import (
-    ModuleParameters, ApiParameters, ArgumentSpec, ModuleManager
+    ArgumentSpec, ModuleManager
 )
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 

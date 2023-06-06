@@ -27,7 +27,7 @@ PLATFORM = {
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
-TEEM_ENDPOINT = 'product.apis.f5.com',
+TEEM_ENDPOINT = 'product.apis.f5.com'
 TEEM_KEY = 'mmhJU2sCd63BznXAXDh4kxLIyfIMm3Ar'
 TEEM_TIMEOUT = 10
 TEEM_VERIFY = False

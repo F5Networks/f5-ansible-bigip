@@ -38,7 +38,6 @@ options:
       - Maximum file size of the QKview file, in bytes. By default, no max
         file size is specified.
     type: int
-    default: 0
   complete_information:
     description:
       - Include complete (all applicable) information in the QKview.
@@ -133,12 +132,6 @@ from ansible.module_utils.basic import (
     AnsibleModule, missing_required_lib
 )
 from ansible.module_utils.connection import Connection
-
-try:
-    import urlparse
-except ImportError:
-    import urllib.parse as urlparse
-
 
 from ..module_utils.client import (
     F5Client, tmos_version, send_teem

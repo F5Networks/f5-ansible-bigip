@@ -67,7 +67,7 @@ class TestParameters(unittest.TestCase):
         ]
 
         with self.assertRaises(F5ModuleError) as err:
-            p.uuid
+            p.uuid()
 
         self.assertIn('service not available', err.exception.args[0])
 
@@ -82,7 +82,7 @@ class TestParameters(unittest.TestCase):
     def test_api_parameters_uuid(self):
         args = load_fixture('load_regkey_license_pool.json')
         p = ApiParameters(params=args)
-        self.assertEqual(p.uuid, args['id'])
+        self.assertEqual(p.uuid, "452f8628-1e56-4b4d-946c-0e68f5780aa1")
 
 
 class TestManager(unittest.TestCase):

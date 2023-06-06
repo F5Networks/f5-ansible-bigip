@@ -46,7 +46,7 @@ class TestBigIPHttpapi(TestCase):
     def setUp(self):
         self.pc = PlayContext()
         self.pc.network_os = "f5networks.f5_bigip.bigiq"
-        self.connection = connection_loader.get("httpapi", self.pc, "/dev/null")
+        self.connection = connection_loader.get("ansible.netcommon.httpapi", self.pc, "/dev/null")
         self.mock_send = MagicMock()
         self.connection.send = self.mock_send
 

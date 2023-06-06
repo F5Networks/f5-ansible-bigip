@@ -1,0 +1,156 @@
+{
+    "items": [
+        {
+            "kind": "shared:resolver:device-groups:restdeviceresolverdevicestate",
+            "uuid": "8134a50a-47e0-4168-af1a-780fa178f1c9",
+            "build": "0.0.4",
+            "slots": [
+                {
+                    "build": "0.0.4",
+                    "volume": "HD1.1",
+                    "product": "BIG-IP",
+                    "version": "15.1.3",
+                    "isActive": true
+                }
+            ],
+            "state": "ACTIVE",
+            "address": "10.145.67.40",
+            "edition": "Final",
+            "product": "BIG-IP",
+            "version": "15.1.3",
+            "hostname": "ecosysbigipv151.com",
+            "selfLink": "https://localhost/mgmt/shared/resolver/device-groups/cm-bigip-allBigIpDevices/devices/8134a50a-47e0-4168-af1a-780fa178f1c9",
+            "deviceUri": "https://10.145.67.40:443",
+            "groupName": "cm-bigip-allBigIpDevices",
+            "httpsPort": 443,
+            "isVirtual": true,
+            "machineId": "8134a50a-47e0-4168-af1a-780fa178f1c9",
+            "generation": 39957,
+            "properties": {
+                "discoveryStatus": "FAILED",
+                "shared:resolver:device-groups:discoverer": "ab835cc4-efeb-4099-8912-efc7238dfdf2"
+            },
+            "isClustered": false,
+            "mcpDeviceName": "/Common/ecosysbigipv151.com",
+            "isLicenseExpired": false,
+            "lastUpdateMicros": 1637185507203982,
+            "managementAddress": "127.0.0.1",
+            "restFrameworkVersion": "15.1.3-0.0.4"
+        },
+        {
+            "kind": "shared:resolver:device-groups:restdeviceresolverdevicestate",
+            "uuid": "8955e70a-334f-4d9c-8b82-13fe988445cf",
+            "build": "0.0.11",
+            "slots": [
+                {
+                    "build": "0.0.11",
+                    "volume": "HD1.1",
+                    "product": "BIG-IP",
+                    "version": "15.0.1",
+                    "isActive": true
+                }
+            ],
+            "state": "ACTIVE",
+            "address": "10.144.74.183",
+            "edition": "Final",
+            "product": "BIG-IP",
+            "version": "15.0.1",
+            "hostname": "bigip1",
+            "selfLink": "https://localhost/mgmt/shared/resolver/device-groups/cm-bigip-allBigIpDevices/devices/8955e70a-334f-4d9c-8b82-13fe988445cf",
+            "deviceUri": "https://10.144.74.183:443",
+            "groupName": "cm-bigip-allBigIpDevices",
+            "httpsPort": 443,
+            "isVirtual": true,
+            "machineId": "8955e70a-334f-4d9c-8b82-13fe988445cf",
+            "generation": 9,
+            "properties": {
+                "discoveryStatus": "FAILED",
+                "shared:resolver:device-groups:discoverer": "ab835cc4-efeb-4099-8912-efc7238dfdf2"
+            },
+            "isClustered": false,
+            "mcpDeviceName": "/Common/bigip1",
+            "isLicenseExpired": false,
+            "lastUpdateMicros": 1662009959398085,
+            "managementAddress": "10.144.74.183",
+            "restFrameworkVersion": "15.0.1-0.0.11"
+        },
+        {
+            "kind": "shared:resolver:device-groups:restdeviceresolverdevicestate",
+            "uuid": "66ed9d37-6411-4583-8087-bf78c23c08c8",
+            "build": "0.0.12",
+            "slots": [
+                {
+                    "build": "0.0.12",
+                    "volume": "HD1.1",
+                    "product": "BIG-IP",
+                    "version": "15.1.0.3",
+                    "isActive": true
+                }
+            ],
+            "state": "ACTIVE",
+            "address": "10.145.73.178",
+            "edition": "Point Release 3",
+            "product": "BIG-IP",
+            "version": "15.1.0.3",
+            "hostname": "localhost",
+            "selfLink": "https://localhost/mgmt/shared/resolver/device-groups/cm-bigip-allBigIpDevices/devices/66ed9d37-6411-4583-8087-bf78c23c08c8",
+            "deviceUri": "https://10.145.73.178:443",
+            "groupName": "cm-bigip-allBigIpDevices",
+            "httpsPort": 443,
+            "isVirtual": true,
+            "machineId": "66ed9d37-6411-4583-8087-bf78c23c08c8",
+            "generation": 18300,
+            "properties": {
+                "discoveryStatus": "FAILED",
+                "shared:resolver:device-groups:discoverer": "ab835cc4-efeb-4099-8912-efc7238dfdf2"
+            },
+            "isClustered": false,
+            "mcpDeviceName": "/Common/ecosysbigip15.com",
+            "isLicenseExpired": true,
+            "lastUpdateMicros": 1637185507193779,
+            "managementAddress": "127.0.0.1",
+            "restFrameworkVersion": "error"
+        },
+        {
+            "kind": "shared:resolver:device-groups:restdeviceresolverdevicestate",
+            "uuid": "c1b09809-8d92-41ea-bad2-d453ede89157",
+            "build": "0.0.6",
+            "slots": [
+                {
+                    "build": "0.0.6",
+                    "volume": "HD1.1",
+                    "product": "BIG-IP",
+                    "version": "14.1.0.3",
+                    "isActive": true
+                }
+            ],
+            "state": "ACTIVE",
+            "address": "10.145.67.133",
+            "edition": "Point Release 3",
+            "product": "BIG-IP",
+            "version": "14.1.0.3",
+            "hostname": "ecosyshyd-bigip1.com",
+            "selfLink": "https://localhost/mgmt/shared/resolver/device-groups/cm-bigip-allBigIpDevices/devices/c1b09809-8d92-41ea-bad2-d453ede89157",
+            "deviceUri": "https://10.145.67.133:443",
+            "groupName": "cm-bigip-allBigIpDevices",
+            "httpsPort": 443,
+            "isVirtual": true,
+            "machineId": "c1b09809-8d92-41ea-bad2-d453ede89157",
+            "generation": 250686,
+            "properties": {
+                "discoveryStatus": "FAILED",
+                "shared:resolver:device-groups:discoverer": "ab835cc4-efeb-4099-8912-efc7238dfdf2"
+            },
+            "isClustered": false,
+            "mcpDeviceName": "/Common/ecosyshyd-bigip1.com",
+            "isLicenseExpired": false,
+            "lastUpdateMicros": 1685520735375751,
+            "managementAddress": "10.145.67.133",
+            "restFrameworkVersion": "14.1.0.3-0.0.6"
+        }
+    ],
+    "generation": 102120,
+    "kind": "shared:resolver:device-groups:devicegroupdevicecollectionstate",
+    "lastUpdateMicros": 1685520735384130,
+    "selfLink": "https://localhost/mgmt/shared/resolver/device-groups/cm-bigip-allBigIpDevices/devices"
+}

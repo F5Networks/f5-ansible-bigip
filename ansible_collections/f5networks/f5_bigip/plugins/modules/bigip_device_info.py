@@ -7579,21 +7579,10 @@ import datetime
 import math
 import re
 import time
-import traceback
 from collections import namedtuple
 
-try:
-    from packaging.version import Version
-except ImportError:  # pragma: no cover
-    HAS_PACKAGING = False
-    Version = None
-    PACKAGING_IMPORT_ERROR = traceback.format_exc()
-else:
-    HAS_PACKAGING = True
-    PACKAGING_IMPORT_ERROR = None
-
 from ansible.module_utils.basic import (
-    AnsibleModule, missing_required_lib, env_fallback
+    AnsibleModule, env_fallback
 )
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.six import (
@@ -17378,12 +17367,6 @@ class ModuleManager(object):
         self.handle_gtm_wide_ips_keyword()
         self.handle_packages_keyword()
         self.filter_excluded_meta_facts()
-        res = self.check_valid_gather_subset(self.want.gather_subset)
-        if res:
-            invalid = ','.join(res)
-            raise F5ModuleError(
-                "The specified 'gather_subset' options are invalid: {0}".format(invalid)
-            )
         result = self.filter_excluded_facts()
 
         managers = []
@@ -17479,26 +17462,6 @@ class ModuleManager(object):
         managers += self.want.gather_subset
         managers.remove('packages')
         self.want.update({'gather_subset': managers})
-
-    def check_valid_gather_subset(self, includes):
-        """Check that the specified subset is valid
-
-        The ``gather_subset`` parameter is specified as a "raw" field which means that
-        any Python type could technically be provided
-
-        :param includes:
-        :return:
-        """
-        keys = self.managers.keys()
-        result = []
-        for x in includes:
-            if x not in keys:
-                if x[0] == '!':
-                    if x[1:] not in keys:
-                        result.append(x)
-                else:
-                    result.append(x)
-        return result
 
     def execute_managers(self, managers):
         results = dict()
@@ -17719,12 +17682,6 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode
     )
-
-    if not HAS_PACKAGING:
-        module.fail_json(
-            msg=missing_required_lib('packaging'),
-            exception=PACKAGING_IMPORT_ERROR
-        )
 
     try:
         mm = ModuleManager(module=module, connection=Connection(module._socket_path))
