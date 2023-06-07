@@ -1,7 +1,0 @@
----
-
-bugfixes:
-  - bigip - fixed issue with httpapi plugin where expired tokens would not attempt plugin to re-authenticate
-
-minor_changes:
-  - bigip - added token_timeout option to allow specifying custom timeouts for TMOS tokens

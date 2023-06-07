@@ -1,3 +1,0 @@
----
-bugfixes:
-  - bigip_device_info - fixed flaw in code to ignore fields that do not exist in the response for license info

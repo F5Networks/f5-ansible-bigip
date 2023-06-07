@@ -1,3 +1,0 @@
----
-bugfixes:
-  - bigip_fast_application - corrected issue where pending state for deployments would cause module to error out, instead of waiting for the duration of the set timeout parameter

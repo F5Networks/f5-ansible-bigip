@@ -5,6 +5,30 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v3.0.0
+======
+
+Major Changes
+-------------
+
+- bigip_ssl_csr - removed force option, locally create csr files with the same name will no longer be overriden
+- bigiq_device_info - removed bash command run over API as the util/bash endpoint have been removed as a security risk
+- bigiq_device_info - the module is guaranteed to work on BIG-IQ version 7.1 and above
+
+Minor Changes
+-------------
+
+- bigip - added token_timeout option to allow specifying custom timeouts for TMOS tokens
+- bigip_sslo_service_http - fix for bigip_sslo_service_http cannot create a service with an existing self-ip(#63)
+- bigip_sslo_service_layer2 - make the deault value for ip_offset parameter to be 0 when creating a layer2 service
+
+Bugfixes
+--------
+
+- bigip - fixed issue with httpapi plugin where expired tokens would not attempt plugin to re-authenticate
+- bigip_device_info - fixed flaw in code to ignore fields that do not exist in the response for license info
+- bigip_fast_application - corrected issue where pending state for deployments would cause module to error out, instead of waiting for the duration of the set timeout parameter
+
 v2.1.0
 ======
 

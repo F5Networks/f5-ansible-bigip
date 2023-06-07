@@ -1,5 +1,0 @@
----
-major_changes:
-  - bigiq_device_info - removed bash command run over API as the util/bash endpoint have been removed as a security risk
-  - bigiq_device_info - the module is guaranteed to work on BIG-IQ version 7.1 and above
-  - bigip_ssl_csr - removed force option, locally create csr files with the same name will no longer be overriden

@@ -61,14 +61,14 @@ options:
     type: str
   true_names:
     description:
-      - When C(true), the module does not append C(.crt) and C(.key) extensions to the given certificate and key names.
-      - When C(false), the module appends C(.crt) and C(.key) extensions to the given certificate and key names.
+      - If C(true), then the module does not append the C(.crt) and C(.key) extensions to the given certificate and key names.
+      - If C(false), then the module appends the C(.crt) and C(.key) extensions to the given certificate and key names.
     type: bool
     default: false
     version_added: "2.1.0"
   partition:
     description:
-      - Device partition to manage resources on.
+      - Device partition on which to manage resources.
     type: str
     default: Common
 author:
