@@ -1,7 +1,7 @@
 authors:
   - Wojciech Wypior (@wojtek0806)
 dependencies:
-  ansible.netcommon: ">=2.0.0"
+  ansible.netcommon: ">=2.0.0,<5.0.0"
 description: F5 BIG-IP Declarative Collection for Ansible
 documentation: https://clouddocs.f5.com/products/orchestration/ansible/devel/f5_bigip/modules_2_0/module_index.html
 homepage: https://clouddocs.f5.com/products/orchestration/ansible/devel/
@@ -17,4 +17,4 @@ tags:
   - networking
   - bigip
   - bigiq
-version: 2.1.0
+version: 3.0.0

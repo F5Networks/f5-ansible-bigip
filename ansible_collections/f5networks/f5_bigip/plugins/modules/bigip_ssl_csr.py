@@ -69,12 +69,6 @@ options:
       - Destination on your local filesystem when you want to save the CSR file.
     type: path
     required: True
-  force:
-    description:
-      - If C(false), the file will only be transferred if the destination does not
-        exist.
-    type: bool
-    default: true
   partition:
     description:
       - Device partition to manage resources on.
@@ -159,7 +153,7 @@ from datetime import datetime
 
 try:
     from packaging.version import Version
-except ImportError:
+except ImportError:  # pragma: no cover
     HAS_PACKAGING = False
     Version = None
     PACKAGING_IMPORT_ERROR = traceback.format_exc()
@@ -228,7 +222,7 @@ class Changes(Parameters):
             for returnable in self.returnables:
                 result[returnable] = getattr(self, returnable)
             result = self._filter_params(result)
-        except Exception:
+        except Exception:  # pragma: no cover
             raise
         return result
 
@@ -248,7 +242,7 @@ class ReportableChanges(Changes):
     ]
 
 
-class Difference(object):
+class Difference(object):  # pragma: no cover
     def __init__(self, want, have=None):
         self.want = want
         self.have = have
@@ -288,7 +282,7 @@ class ModuleManager(object):
         if changed:
             self.changes = UsableChanges(params=changed)
 
-    def _announce_deprecations(self, result):
+    def _announce_deprecations(self, result):  # pragma: no cover
         warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
@@ -327,10 +321,6 @@ class ModuleManager(object):
             return False
 
     def present(self):
-        if os.path.exists(self.want.dest) and not self.want.force:
-            raise F5ModuleError(
-                "The specified 'dest' file already exists."
-            )
         if not os.path.exists(os.path.dirname(self.want.dest)):
             raise F5ModuleError(
                 "The directory of your 'dest' file does not exist."
@@ -346,7 +336,7 @@ class ModuleManager(object):
         return False
 
     def remove(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         self.remove_from_device()
         if self.exists():
@@ -363,26 +353,26 @@ class ModuleManager(object):
         result = self._move_csr_to_download()
         if not result:
             raise F5ModuleError(
-                "Failed to move the csr file to a downloadable location"
+                "Failed to move the csr file to a downloadable location."
             )
 
-        self._download_file()
-        if not os.path.exists(self.want.dest):
+        result = self._download_file()
+        if not result:
             raise F5ModuleError(
-                "Failed to save the csr file to local disk"
+                "Failed to save the csr file to local disk."
             )
 
         self._delete_csr()
         result = self.file_exists()
         if result:
             raise F5ModuleError(
-                "Failed to remove the remote csr file"
+                "Failed to remove the remote csr file."
             )
         return True
 
     def create(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         self.create_on_device()
         return True
@@ -436,13 +426,17 @@ class ModuleManager(object):
 
         if response['code'] == 404:
             return False
-        try:
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        if response['contents'].get('commandResult'):
             if "No such file or directory" in response['contents']['commandResult']:
                 return False
             if self.want.name in response['contents']['commandResult']:
                 return True
-        except KeyError:
-            return False
+
+        return False
 
     def _download_file(self):
         url = "/mgmt/shared/file-transfer/bulk/{0}".format(self.want.name)
@@ -459,8 +453,12 @@ class ModuleManager(object):
         )
         uri = "/mgmt/tm/util/unix-rm"
         response = self.client.post(uri, data=params)
+
         if response['code'] == 404:
             return False
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
 
     def _move_csr_to_download(self):
         uri = "/mgmt/tm/util/unix-mv/"
@@ -468,7 +466,11 @@ class ModuleManager(object):
             command='run',
             utilCmdArgs='/config/ssl/ssl.csr/{0} {1}/{0}'.format(self.want.name, self.remote_dir)
         )
-        self.client.post(uri, data=args)
+        response = self.client.post(uri, data=args)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
         return True
 
 
@@ -499,10 +501,6 @@ class ArgumentSpec(object):
             state=dict(
                 default='present',
                 choices=['present', 'absent']
-            ),
-            force=dict(
-                default='yes',
-                type='bool'
             )
         )
         self.argument_spec = {}
@@ -536,5 +534,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

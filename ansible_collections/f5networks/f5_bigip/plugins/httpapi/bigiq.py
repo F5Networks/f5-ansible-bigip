@@ -107,7 +107,7 @@ class HttpApi(HttpApiBase):
             # Other codes will be raised by underlying connection plugin.
             return exc
         if exc.code == 401:
-            if self.connection._auth is not None:
+            if self.connection._auth:
                 # only attempt to refresh token if we were connected before not when we get 401 on first attempt
                 self.connection._auth = None
                 self.token_refresh()

@@ -7,7 +7,6 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
 
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.compare import (
     cmp_simple_list, cmp_str_with_none, compare_dictionary, compare_complex_list,
@@ -24,7 +23,7 @@ class TestCompareFunctions(TestCase):
         res5 = cmp_simple_list(['want'], ['have'])
         res6 = cmp_simple_list(['want'], ['want'])
 
-        assert res1 == res2 == res6 is None
+        assert res1 is None and res2 is None and res6 is None
         assert res3 == []
         assert res4 == res5 == ['want']
 
@@ -33,7 +32,7 @@ class TestCompareFunctions(TestCase):
         res2 = cmp_str_with_none('', None)
         res3 = cmp_str_with_none('want', 'have')
 
-        assert res1 == res2 is None
+        assert res1 is None and res2 is None
         assert res3 == 'want'
 
     def test_compare_complex_list(self):
@@ -42,7 +41,7 @@ class TestCompareFunctions(TestCase):
         res3 = compare_complex_list([dict(baz=1, bar=2)], [dict(foo=1)])
         res4 = compare_complex_list([dict(baz=1, bar=2)], [dict(baz=1, bar=2)])
 
-        assert res1 == res2 == res4 is None
+        assert res1 is None and res2 is None and res4 is None
         assert res3 == [dict(baz=1, bar=2)]
 
     def test_compare_dictionary(self):
@@ -51,7 +50,7 @@ class TestCompareFunctions(TestCase):
         res3 = compare_dictionary(dict(baz=1, bar=2), dict(foo=1))
         res4 = compare_dictionary(dict(baz=1, bar=2), dict(baz=1, bar=2))
 
-        assert res1 == res2 == res4 is None
+        assert res1 is None and res2 is None and res4 is None
         assert res3 == dict(baz=1, bar=2)
 
     def test_nested_diff(self):
@@ -61,5 +60,5 @@ class TestCompareFunctions(TestCase):
         res4 = nested_diff(dict(foo=dict(baz=1, bar=2)), dict(foo=dict(baz=2, bar=3)), ['bar'])
         res5 = nested_diff(dict(foo=dict(baz=1, bar=2)), dict(foo=dict(baz=1, bar=3)), ['bar'])
 
-        assert res1 == res3 == res4 is True
-        assert res2 == res5 is False
+        assert res1 is True and res3 is True and res4 is True
+        assert res2 is False and res5 is False

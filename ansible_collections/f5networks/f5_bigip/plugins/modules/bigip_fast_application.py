@@ -396,9 +396,9 @@ class ModuleManager(object):
         for x in range(0, period):
             task = self._check_task_on_device(path)
             if task['code'] != 200:
-                if task['message'] != 'in progress':
+                if task['message'] not in ['in progress', 'pending']:
                     raise F5ModuleError(task['message'])
-            if task['message'] != 'in progress':
+            if task['message'] not in ['in progress', 'pending']:
                 return task
             time.sleep(interval)
         raise F5ModuleError(

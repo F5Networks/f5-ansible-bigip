@@ -87,7 +87,7 @@ class TestManager(unittest.TestCase):
         self.p1.stop()
         self.p2.stop()
         self.p3.stop()
-        self.m4.stop()
+        self.p4.stop()
         self.mock_module_helper.stop()
 
     def test_import_from_file(self, *args):

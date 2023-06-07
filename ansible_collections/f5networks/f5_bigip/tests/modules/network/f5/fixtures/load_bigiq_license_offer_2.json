@@ -1,0 +1,7 @@
+{
+    "items": [],
+    "generation": 0,
+    "kind": "cm:device:licensing:pool:regkey:licenses:item:offerings:regkeypoollicenseofferingcollectionstate",
+    "lastUpdateMicros": 0,
+    "selfLink": "https://localhost/mgmt/cm/device/licensing/pool/regkey/licenses/c7624316-88a5-4607-9572-aacc103448bc/offerings"
+}

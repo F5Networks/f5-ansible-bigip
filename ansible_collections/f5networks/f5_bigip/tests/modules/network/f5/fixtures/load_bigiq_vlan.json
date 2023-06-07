@@ -1,0 +1,54 @@
+{
+    "kind": "tm:net:vlan:vlancollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/net/vlan?expandSubcollections=true&ver=15.1.0.1",
+    "items": [
+        {
+            "kind": "tm:net:vlan:vlanstate",
+            "name": "internal",
+            "partition": "Common",
+            "fullPath": "/Common/internal",
+            "generation": 314,
+            "selfLink": "https://localhost/mgmt/tm/net/vlan/~Common~internal?ver=15.1.0.1",
+            "autoLasthop": "default",
+            "cmpHash": "default",
+            "dagRoundRobin": "disabled",
+            "dagTunnel": "outer",
+            "failsafe": "disabled",
+            "failsafeAction": "failover-restart-tm",
+            "failsafeTimeout": 90,
+            "fwdMode": "l3",
+            "hardwareSyncookie": "disabled",
+            "ifIndex": 112,
+            "learning": "enable-forward",
+            "mtu": 1500,
+            "sflow": {
+                "pollInterval": 0,
+                "pollIntervalGlobal": "yes",
+                "samplingRate": 0,
+                "samplingRateGlobal": "yes"
+            },
+            "sourceChecking": "disabled",
+            "synFloodRateLimit": 1000,
+            "syncacheThreshold": 6000,
+            "tag": 4094,
+            "interfacesReference": {
+                "link": "https://localhost/mgmt/tm/net/vlan/~Common~internal/interfaces?ver=15.1.0.1",
+                "isSubcollection": true,
+                "items": [
+                    {
+                        "kind": "tm:net:vlan:interfaces:interfacesstate",
+                        "name": "1.0",
+                        "fullPath": "1.0",
+                        "generation": 1,
+                        "selfLink": "https://localhost/mgmt/tm/net/vlan/~Common~internal/interfaces/1.0?ver=15.1.0.1",
+                        "tagMode": "none",
+                        "untagged": true,
+                        "nameReference": {
+                            "link": "https://localhost/mgmt/tm/net/interface/1.0?ver=15.1.0.1"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

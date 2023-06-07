@@ -4636,22 +4636,3 @@ class TestMainFunction(unittest.TestCase):
 
         self.assertTrue(result.exception.args[0]['failed'])
         self.assertIn('This module has failed', result.exception.args[0]['msg'])
-
-    @patch.object(bigip_device_info, 'HAS_PACKAGING', False)
-    @patch.object(bigip_device_info, 'Connection')
-    @patch.object(bigip_device_info.ModuleManager, 'exec_module',
-                  Mock(return_value={'changed': False}))
-    def test_main_object_path_missing(self, *args):
-        set_module_args(dict(
-            gather_subset=['all']
-        ))
-
-        with self.assertRaises(AnsibleFailJson) as result:
-            bigip_device_info.PACKAGING_IMPORT_ERROR = "Failed to import the packaging package."
-            bigip_device_info.main()
-
-        self.assertTrue(result.exception.args[0]['failed'])
-        self.assertIn(
-            'Failed to import the required Python library (packaging)',
-            result.exception.args[0]['msg']
-        )

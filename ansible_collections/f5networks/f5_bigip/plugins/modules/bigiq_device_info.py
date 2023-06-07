@@ -40,8 +40,7 @@ options:
       - "!system-info"
       - "!vlans"
 notes:
-  - This module is supported with all BIG-IQ versions
-  - With BIG-IQ 7.0 and later, a few metadata fields are not included/supported (for example, uptime, product_changelist, product_jobid)
+  - This module is supported with BIG-IQ version 7.x and above.
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -71,11 +70,11 @@ EXAMPLES = r'''
         gather_subset:
           - all
 
-    - name: Collect all BIG-IP information except trunks
+    - name: Collect all BIG-IQ information except vlans
       bigiq_device_info:
         gather_subset:
           - all
-          - "!trunks"
+          - "!vlans"
 '''
 
 RETURN = r'''
@@ -626,28 +625,11 @@ system_info:
         - Major product version of the running software.
       type: str
       sample: 6.0.0
-    product_built:
-      description:
-        - Unix timestamp of when the product was built.
-      type: int
-      sample: 180515152630
     product_build_date:
       description:
         - Human readable build date.
       type: str
       sample: "Tue May 15 15:26:30 PDT 2018"
-    product_changelist:
-      description:
-        - Changelist that product branches from.
-        - Not supported with BIG-IQ 7.0 and later versions
-      type: int
-      sample: 2557198
-    product_jobid:
-      description:
-        - ID of the job that built the product version.
-        - Not supported with BIG-IQ 7.0 and later versions
-      type: int
-      sample: 1012030
     chassis_serial:
       description:
         - Serial of the chassis
@@ -674,12 +656,6 @@ system_info:
       description:
         - Serial of the switch board.
       type: str
-    uptime:
-      description:
-        - Time, in seconds, since the system booted.
-        - Not supported with BIGIQ 7.0 and later versions
-      type: int
-      sample: 603202
   sample: hash/dictionary of values
 vlans:
   description: List of VLAN information.
@@ -816,23 +792,9 @@ vlans:
 '''
 import copy
 import datetime
-import math
-import re
-import traceback
 
-try:
-    from packaging.version import Version
-except ImportError:
-    HAS_PACKAGING = False
-    Version = None
-    PACKAGING_IMPORT_ERROR = traceback.format_exc()
-else:
-    HAS_PACKAGING = True
-    PACKAGING_IMPORT_ERROR = None
+from ansible.module_utils.basic import AnsibleModule
 
-from ansible.module_utils.basic import (
-    AnsibleModule, missing_required_lib
-)
 from ansible.module_utils.connection import Connection
 from ansible.module_utils.six import (
     iteritems, string_types
@@ -841,62 +803,11 @@ from ansible.module_utils.six import (
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, flatten_boolean, transform_name
 )
+from ..module_utils.urls import parseStats
+
 from ..module_utils.client import (
-    bigiq_version, F5Client, send_teem
+    F5Client, send_teem
 )
-
-
-def parseStats(entry):
-    if 'description' in entry:
-        return entry['description']
-    elif 'value' in entry:
-        return entry['value']
-    elif 'entries' in entry or 'nestedStats' in entry and 'entries' in entry['nestedStats']:
-        if 'entries' in entry:
-            entries = entry['entries']
-        else:
-            entries = entry['nestedStats']['entries']
-        result = None
-
-        for name in entries:
-            entry = entries[name]
-            if 'https://localhost' in name:
-                name = name.split('/')
-                name = name[-1]
-                if result and isinstance(result, list):
-                    result.append(parseStats(entry))
-                elif result and isinstance(result, dict):
-                    result[name] = parseStats(entry)
-                else:
-                    try:
-                        int(name)
-                        result = list()
-                        result.append(parseStats(entry))
-                    except ValueError:
-                        result = dict()
-                        result[name] = parseStats(entry)
-            else:
-                if '.' in name:
-                    names = name.split('.')
-                    key = names[0]
-                    value = names[1]
-                    if not result[key]:
-                        result[key] = {}
-                    result[key][value] = parseStats(entry)
-                else:
-                    if result and isinstance(result, list):
-                        result.append(parseStats(entry))
-                    elif result and isinstance(result, dict):
-                        result[name] = parseStats(entry)
-                    else:
-                        try:
-                            int(name)
-                            result = list()
-                            result.append(parseStats(entry))
-                        except ValueError:
-                            result = dict()
-                            result[name] = parseStats(entry)
-        return result
 
 
 class BaseManager(object):
@@ -906,13 +817,11 @@ class BaseManager(object):
         self.kwargs = kwargs
 
     def exec_module(self):
-        start = datetime.datetime.now().isoformat()
         results = []
         facts = self.read_facts()
         for item in facts:
             attrs = item.to_return()
             results.append(attrs)
-        send_teem(self.client, start)
         return results
 
 
@@ -1028,9 +937,7 @@ class ApplicationsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        return response['contents']['items']
+        return response['contents']['result'].get('items', [])
 
 
 class ManagedDevicesParameters(BaseParameters):
@@ -1143,9 +1050,7 @@ class ManagedDevicesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        return response['contents']['items']
+        return response['contents'].get('items', [])
 
 
 class PurchasedPoolLicensesParameters(BaseParameters):
@@ -1178,59 +1083,35 @@ class PurchasedPoolLicensesParameters(BaseParameters):
 
     @property
     def registration_key(self):
-        try:
-            return self._values['license_state']['registrationKey']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('registrationKey')
 
     @property
     def license_start_date_time(self):
-        try:
-            return self._values['license_state']['licenseStartDateTime']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('licenseStartDateTime')
 
     @property
     def license_end_date_time(self):
-        try:
-            return self._values['license_state']['licenseEndDateTime']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('licenseEndDateTime')
 
     @property
     def evaluation_end_date_time(self):
-        try:
-            return self._values['license_state']['evaluationEndDateTime']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('evaluationEndDateTime')
 
     @property
     def evaluation_start_date_time(self):
-        try:
-            return self._values['license_state']['evaluationStartDateTime']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('evaluationStartDateTime')
 
     @property
     def licensed_version(self):
-        try:
-            return self._values['license_state']['licensedVersion']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('licensedVersion')
 
     @property
     def licensed_date_time(self):
-        try:
-            return self._values['license_state']['licensedDateTime']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('licensedDateTime')
 
     @property
     def vendor(self):
-        try:
-            return self._values['license_state']['vendor']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('vendor')
 
 
 class PurchasedPoolLicensesFactManager(BaseManager):
@@ -1268,9 +1149,7 @@ class PurchasedPoolLicensesFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        return response['contents']['items']
+        return response['contents'].get('items', [])
 
 
 class RegkeyPoolsParameters(BaseParameters):
@@ -1310,59 +1189,35 @@ class RegkeyPoolsOfferingParameters(BaseParameters):
 
     @property
     def registration_key(self):
-        try:
-            return self._values['license_state']['registrationKey']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('registrationKey')
 
     @property
     def license_start_date_time(self):
-        try:
-            return self._values['license_state']['licenseStartDateTime']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('licenseStartDateTime')
 
     @property
     def license_end_date_time(self):
-        try:
-            return self._values['license_state']['licenseEndDateTime']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('licenseEndDateTime')
 
     @property
     def evaluation_end_date_time(self):
-        try:
-            return self._values['license_state']['evaluationEndDateTime']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('evaluationEndDateTime')
 
     @property
     def evaluation_start_date_time(self):
-        try:
-            return self._values['license_state']['evaluationStartDateTime']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('evaluationStartDateTime')
 
     @property
     def licensed_version(self):
-        try:
-            return self._values['license_state']['licensedVersion']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('licensedVersion')
 
     @property
     def licensed_date_time(self):
-        try:
-            return self._values['license_state']['licensedDateTime']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('licensedDateTime')
 
     @property
     def vendor(self):
-        try:
-            return self._values['license_state']['vendor']
-        except KeyError:
-            return None
+        return self._values['license_state'].get('vendor')
 
 
 class RegkeyPoolsFactManager(BaseManager):
@@ -1405,20 +1260,16 @@ class RegkeyPoolsFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        return response['contents']['items']
+        return response['contents'].get('items', [])
 
     def read_offerings_from_device(self, license):
-        uri = "/mgmt/cm/device/licensing/pool/regkey/licenses/{0}/offerings".format(license,)
+        uri = "/mgmt/cm/device/licensing/pool/regkey/licenses/{0}/offerings".format(license)
         response = self.client.get(uri)
 
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        return response['contents']['items']
+        return response['contents'].get('items', [])
 
 
 class SystemInfoParameters(BaseParameters):
@@ -1443,16 +1294,12 @@ class SystemInfoParameters(BaseParameters):
         'platform',
         'product_build',
         'product_build_date',
-        'product_built',
-        'product_changelist',
         'product_code',
         'product_information',
-        'product_jobid',
         'product_version',
         'switch_board_part_revision',
         'switch_board_serial',
         'time',
-        'uptime',
     ]
 
     @property
@@ -1541,27 +1388,6 @@ class SystemInfoParameters(BaseParameters):
     @property
     def product_build_date(self):
         return self._values['Date']
-
-    @property
-    def product_built(self):
-        if 'version_info' not in self._values:
-            return None
-        if 'Built' in self._values['version_info']:
-            return int(self._values['version_info']['Built'])
-
-    @property
-    def product_changelist(self):
-        if 'version_info' not in self._values:
-            return None
-        if 'Changelist' in self._values['version_info']:
-            return int(self._values['version_info']['Changelist'])
-
-    @property
-    def product_jobid(self):
-        if 'version_info' not in self._values:
-            return None
-        if 'JobID' in self._values['version_info']:
-            return int(self._values['version_info']['JobID'])
 
     @property
     def product_code(self):
@@ -1659,15 +1485,6 @@ class SystemInfoFactManager(BaseManager):
         if tmp:
             result.update(tmp)
 
-        if Version(bigiq_version(self.client)) < Version('7.0.0'):
-            tmp = self.read_uptime_info_from_device()
-            if tmp:
-                result.update(tmp)
-
-            tmp = self.read_version_file_info_from_device()
-            if tmp:
-                result.update(tmp)
-
         return result
 
     def read_system_setup_from_device(self):
@@ -1680,64 +1497,13 @@ class SystemInfoFactManager(BaseManager):
 
         return response['contents']
 
-    def read_version_file_info_from_device(self):
-        pattern = r'^(?P<key>(Product|Build|Sequence|BaseBuild|Edition|Date|Built|Changelist|JobID))\:(?P<value>.*)'
-        uri = "/mgmt/tm/util/bash"
-        args = dict(
-            command='run',
-            utilCmdArgs='-c "cat /VERSION"'
-        )
-        response = self.client.post(uri, data=args)
-
-        if response['code'] not in [200, 201, 202]:
-            raise F5ModuleError(response['contents'])
-
-        if 'commandResult' not in response['contents']:
-            return None
-
-        tmp = response['contents']['commandResult'].strip()
-        if 'No such file or directory' in tmp:
-            return None
-
-        lines = response['contents']['commandResult'].split("\n")
-        result = dict()
-        for line in lines:
-            if not line:
-                continue
-            matches = re.match(pattern, line)
-            if matches:
-                result[matches.group('key')] = matches.group('value').strip()
-
-        if result:
-            return dict(
-                version_info=result
-            )
-
-    def read_uptime_info_from_device(self):
-        uri = "/mgmt/tm/util/bash"
-        args = dict(
-            command='run',
-            utilCmdArgs='-c "cat /proc/uptime"'
-        )
-        response = self.client.post(uri, data=args)
-
-        if response['code'] not in [200, 201, 202]:
-            raise F5ModuleError(response['contents'])
-
-        if 'commandResult' not in response['contents']:
-            return None
-
-        parts = response['commandResult'].strip().split(' ')
-        return dict(
-            uptime=math.floor(float(parts[0]))
-        )
-
     def read_hardware_info_from_device(self):
         uri = "/mgmt/tm/sys/hardware"
 
         response = self.client.get(uri)
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
+
         result = parseStats(response['contents'])
         return result
 
@@ -1788,12 +1554,13 @@ class SystemInfoFactManager(BaseManager):
         uri = "/mgmt/tm/sys/clock"
 
         response = self.client.get(uri)
+
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
+
         result = parseStats(response['contents'])
-        if result is None:
-            return None
-        return result[0]
+        if result:
+            return result[0]
 
     def read_version_info_from_device(self):
         """Parses version info from the REST API
@@ -1860,12 +1627,13 @@ class SystemInfoFactManager(BaseManager):
         """
         uri = "/mgmt/tm/sys/version"
         response = self.client.get(uri)
+
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
+
         result = parseStats(response['contents'])
-        if result is None:
-            return None
-        return result[0]
+        if result:
+            return result[0]
 
 
 class VlansParameters(BaseParameters):
@@ -1925,19 +1693,19 @@ class VlansParameters(BaseParameters):
 
     @property
     def sflow_poll_interval(self):
-        return int(self._values['sflow']['pollInterval'])
+        return int(self._values['sflow'].get('pollInterval', '0'))
 
     @property
     def sflow_poll_interval_global(self):
-        return flatten_boolean(self._values['sflow']['pollIntervalGlobal'])
+        return flatten_boolean(self._values['sflow'].get('pollIntervalGlobal'))
 
     @property
     def sflow_sampling_rate(self):
-        return int(self._values['sflow']['samplingRate'])
+        return int(self._values['sflow'].get('samplingRate', '0'))
 
     @property
     def sflow_sampling_rate_global(self):
-        return flatten_boolean(self._values['sflow']['samplingRateGlobal'])
+        return flatten_boolean(self._values['sflow'].get('samplingRateGlobal'))
 
     @property
     def source_check_state(self):
@@ -1989,11 +1757,12 @@ class VlansFactManager(BaseManager):
 
     def read_stats(self, resource):
         uri = "/mgmt/tm/net/vlan/{0}/stats".format(transform_name(name=resource))
-        resp = self.client.api.get(uri)
         response = self.client.get(uri)
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
+
         result = parseStats(response['contents'])
+
         return result
 
     def read_collection_from_device(self):
@@ -2003,9 +1772,7 @@ class VlansFactManager(BaseManager):
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
 
-        if 'items' not in response['contents']:
-            return []
-        return response['contents']['items']
+        return response['contents'].get('items', [])
 
 
 class ModuleManager(object):
@@ -2024,13 +1791,9 @@ class ModuleManager(object):
         }
 
     def exec_module(self):
+        start = datetime.datetime.now().isoformat()
         self.handle_all_keyword()
-        res = self.check_valid_gather_subset(self.want.gather_subset)
-        if res:
-            invalid = ','.join(res)
-            raise F5ModuleError(
-                "The specified 'gather_subset' options are invalid: {0}".format(invalid)
-            )
+        self.filter_excluded_meta_facts()
         result = self.filter_excluded_facts()
 
         managers = []
@@ -2050,7 +1813,15 @@ class ModuleManager(object):
             result['changed'] = True
         else:
             result['changed'] = False
+        send_teem(F5Client(module=self.module, client=self.connection), start)
         return result
+
+    def filter_excluded_meta_facts(self):
+        gather_subset = set(self.want.gather_subset)
+        gather_subset -= {'!all'}
+        if '!all' in self.want.gather_subset:
+            gather_subset.clear()
+        self.want.update({'gather_subset': list(gather_subset)})
 
     def filter_excluded_facts(self):
         # Remove the excluded entries from the list of possible facts
@@ -2065,26 +1836,6 @@ class ModuleManager(object):
         managers = list(self.managers.keys()) + self.want.gather_subset
         managers.remove('all')
         self.want.update({'gather_subset': managers})
-
-    def check_valid_gather_subset(self, includes):
-        """Check that the specified subset is valid
-
-        The ``gather_subset`` parameter is specified as a "raw" field which means that
-        any Python type could technically be provided
-
-        :param includes:
-        :return:
-        """
-        keys = self.managers.keys()
-        result = []
-        for x in includes:
-            if x not in keys:
-                if x[0] == '!':
-                    if x[1:] not in keys:
-                        result.append(x)
-                else:
-                    result.append(x)
-        return result
 
     def execute_managers(self, managers):
         results = dict()
@@ -2151,12 +1902,6 @@ def main():
         supports_check_mode=spec.supports_check_mode
     )
 
-    if not HAS_PACKAGING:
-        module.fail_json(
-            msg=missing_required_lib('packaging'),
-            exception=PACKAGING_IMPORT_ERROR
-        )
-
     try:
         mm = ModuleManager(module=module, connection=Connection(module._socket_path))
         results = mm.exec_module()
@@ -2172,5 +1917,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()

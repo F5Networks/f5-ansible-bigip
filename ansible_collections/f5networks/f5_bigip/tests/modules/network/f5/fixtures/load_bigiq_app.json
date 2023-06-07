@@ -1,0 +1,31 @@
+{
+    "kind": "ap:compose:Report",
+    "lastUpdateMicros": 28582169309,
+    "result": {
+        "totalItems": 1,
+        "items": [
+            {
+                "protectionMode": "Not Protected",
+                "findings": "None",
+                "id": "155d59ce-2e7f-3402-a2f0-e42990779f7e",
+                "globalAppId": "bdbc5755-32b0-3347-9628-5edaa9405502",
+                "name": "another_one",
+                "type": "HTTP",
+                "lastActivity": 1685548628713,
+                "status": "DEPLOYED",
+                "health": "Good",
+                "activeAlerts": 0,
+                "badTraffic": 0.0,
+                "enhancedAnalytics": false,
+                "deploymentType": "SC",
+                "badTrafficGrowth": false
+            }
+        ],
+        "itemsPerPage": 10,
+        "startIndex": 0,
+        "totalPages": 1,
+        "pageIndex": 0,
+        "currentItemCount": 1
+    },
+    "requestDurationInMillis": 146
+}

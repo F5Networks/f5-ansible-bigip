@@ -61,14 +61,14 @@ options:
     type: str
   true_names:
     description:
-      - When C(true), the module does not append C(.crt) and C(.key) extensions to the given certificate and key names.
-      - When C(false), the module appends C(.crt) and C(.key) extensions to the given certificate and key names.
+      - If C(true), then the module does not append the C(.crt) and C(.key) extensions to the given certificate and key names.
+      - If C(false), then the module appends the C(.crt) and C(.key) extensions to the given certificate and key names.
     type: bool
     default: false
     version_added: "2.1.0"
   partition:
     description:
-      - Device partition to manage resources on.
+      - Device partition on which to manage resources.
     type: str
     default: Common
 author:
@@ -127,8 +127,7 @@ from ..module_utils.client import (
     F5Client, send_teem, TransactionContextManager
 )
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, transform_name, flatten_boolean,
-    fq_name, merge_two_dicts
+    F5ModuleError, AnsibleF5Parameters, transform_name, flatten_boolean, fq_name
 )
 
 
@@ -147,26 +146,29 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     returnables = [
-        'checksum',
-        'source_path',
+        'key_checksum',
+        'cert_checksum',
+        'key_source_path',
+        'cert_source_path',
         'issuer_cert',
     ]
 
     updatables = [
         'key_checksum',
         'cert_checksum',
-        'content',
+        'cert_content',
         'issuer_cert',
-        'source_path',
+        'key_source_path',
+        'cert_source_path',
     ]
 
 
 class ApiParameters(Parameters):
     @property
     def key_filename(self):
-        if self._values['name'] is None:
+        if self._values['key_name'] is None:
             return None
-        return self._values['name']
+        return self._values['key_name']
 
     @property
     def key_source_path(self):
@@ -179,9 +181,9 @@ class ApiParameters(Parameters):
 
     @property
     def cert_filename(self):
-        if self._values['name'] is None:
+        if self._values['cert_name'] is None:
             return None
-        return self._values['name']
+        return self._values['cert_name']
 
     @property
     def cert_source_path(self):
@@ -276,6 +278,8 @@ class ModuleParameters(Parameters):
 
     @property
     def key_source_path(self):
+        if self.key_filename is None:
+            return None
         result = 'file://' + os.path.join(
             self.download_path,
             self.key_filename
@@ -284,6 +288,8 @@ class ModuleParameters(Parameters):
 
     @property
     def cert_source_path(self):
+        if self.cert_filename is None:
+            return None
         result = 'file://' + os.path.join(
             self.download_path,
             self.cert_filename
@@ -291,7 +297,7 @@ class ModuleParameters(Parameters):
         return result
 
 
-class Changes(Parameters):
+class Changes(Parameters):  # pragma: no cover
     def to_return(self):
         result = {}
         try:
@@ -329,7 +335,7 @@ class Difference(object):
             attr2 = getattr(self.have, param)
             if attr1 != attr2:
                 return attr1
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             return attr1
 
     @property
@@ -351,17 +357,17 @@ class Difference(object):
 
     @property
     def cert_source_path(self):
-        if self.want.source_path is None:
+        if self.want.cert_source_path is None:
             return None
-        if self.want.source_path == self.have.source_path:
+        if self.want.cert_source_path == self.have.cert_source_path:
             if self.cert_content:
-                return self.want.source_path
-        if self.want.source_path != self.have.source_path:
-            return self.want.source_path
+                return self.want.cert_source_path
+        if self.want.cert_source_path != self.have.cert_source_path:
+            return self.want.cert_source_path
 
     @property
     def cert_content(self):
-        if self.want.cert_checksum != self.have.checksum:
+        if self.want.cert_checksum != self.have.cert_checksum:
             result = dict(
                 checksum=self.want.cert_checksum,
                 content=self.want.cert_content
@@ -404,7 +410,7 @@ class ModuleManager(object):
             return True
         return False
 
-    def _announce_deprecations(self, result):
+    def _announce_deprecations(self, result):  # pragma: no cover
         warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
@@ -452,13 +458,13 @@ class ModuleManager(object):
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         self.update_on_device()
         return True
 
     def remove(self):
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         self.remove_from_device()
         if self.exists():
@@ -467,7 +473,7 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
-        if self.module.check_mode:
+        if self.module.check_mode:  # pragma: no cover
             return True
         self.create_on_device()
         if self.want.key_filename:
@@ -492,9 +498,6 @@ class ModuleManager(object):
         return True
 
     def exists(self):
-        # Can't use TransactionContextManager here because
-        # it expects end result code to be 200 or so. 404 causes
-        # TransactionContextManager to fail.
         if self.want.key_name:
             uri = "/mgmt/tm/sys/file/ssl-key/{0}".format(transform_name(self.want.partition, self.want.key_filename))
             response = self.client.get(uri)
@@ -606,12 +609,7 @@ class ModuleManager(object):
 
                 if response['code'] not in [200, 201, 202]:
                     raise F5ModuleError(response['contents'])
-
-        # This needs to be done because of the way that BIG-IP creates certificates.
-        #
-        # The extra params (such as OCSP and issuer stuff) are not available in the
-        # payload. In a nutshell, the available resource attributes *change* after
-        # a create so that *more* are available.
+        # update remaining parameter after certificate has been uploaded and created
         if self.want.cert_name:
             params = self.want.api_params()
             if params:
@@ -653,9 +651,6 @@ class ModuleManager(object):
 
     def read_current_from_device(self):
         final_response = {}
-        # TransactionContextManager cannot be used for reading, for
-        # whatever reason
-
         if self.want.key_name:
             uri = "/mgmt/tm/sys/file/ssl-key/{0}".format(transform_name(self.want.partition, self.want.key_filename))
             response = self.client.get(uri)
@@ -663,9 +658,9 @@ class ModuleManager(object):
             if response['code'] not in [200, 201, 202]:
                 raise F5ModuleError(response['contents'])
 
-            response['key_checksum'] = response['contents']['checksum']
-            response['key_source_path'] = response['contents']['sourcePath']
-            final_response = merge_two_dicts(final_response, response)
+            final_response['key_name'] = response['contents'].get('name')
+            final_response['key_checksum'] = response['contents'].get('checksum')
+            final_response['key_source_path'] = response['contents'].get('sourcePath')
 
         if self.want.cert_name:
             uri = "/mgmt/tm/sys/file/ssl-cert/{0}".format(transform_name(self.want.partition, self.want.cert_filename))
@@ -676,9 +671,10 @@ class ModuleManager(object):
             if response['code'] not in [200, 201, 202]:
                 raise F5ModuleError(response['contents'])
 
-            response['cert_checksum'] = response['contents']['checksum']
-            response['cert_source_path'] = response['contents']['sourcePath']
-            final_response = merge_two_dicts(final_response, response)
+            final_response['cert_name'] = response['contents'].get('name')
+            final_response['cert_checksum'] = response['contents'].get('checksum')
+            final_response['cert_source_path'] = response['contents'].get('sourcePath')
+            final_response['issuer_cert'] = response['contents'].get('issuerCert')
 
         return ApiParameters(params=final_response)
 
@@ -700,7 +696,6 @@ class ArgumentSpec(object):
                 default=False
             ),
             state=dict(
-                required=False,
                 default='present',
                 choices=['absent', 'present']
             ),
@@ -729,5 +724,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()
