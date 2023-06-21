@@ -191,11 +191,11 @@ def modules_provisioned(client):
     raise F5ModuleError(response['contents'])
 
 
-def send_teem(client, start_time):
+def send_teem(client, start_time, **kwargs):
     """ Sends Teem Data if allowed."""
     if client.plugin.telemetry():
         teem = TeemClient(client, start_time)
-        teem.send()
+        teem.send(platform=kwargs.get('platform'))
     else:
         return False
 

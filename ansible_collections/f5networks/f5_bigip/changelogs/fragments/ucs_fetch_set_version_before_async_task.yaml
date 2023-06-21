@@ -1,0 +1,4 @@
+---
+
+minor_changes:
+  - bigip_ucs_fetch - made changes to fetch tmos version before starting async task to prevent blocking blocking of the module
