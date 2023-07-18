@@ -1,0 +1,4 @@
+---
+
+minor_changes:
+  - bigip_ssl_csr - Added option for Subject Alternative Name

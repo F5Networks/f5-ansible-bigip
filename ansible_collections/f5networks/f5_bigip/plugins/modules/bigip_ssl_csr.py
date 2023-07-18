@@ -25,6 +25,11 @@ options:
     description:
       - The certificate common name.
     type: str
+  subject_alternative_name:
+    description:
+      - The Subject Alternative Name of the certificate.
+    type: str
+    version_added: "3.0.0"
   key_name:
     description:
       - The SSL key to be used to generate the CSR.
@@ -115,6 +120,11 @@ common_name:
   returned: created
   type: str
   sample: csr-name
+subject_alternative_name:
+  description: The Subject Alternative Name of the certificate.
+  returned: created
+  type: str
+  sample: IP:1.2.3.4
 organization:
   description: The x509 organization to be used in creation of the certificate signing request.
   returned: created
@@ -180,6 +190,7 @@ class Parameters(AnsibleF5Parameters):
         'key': 'key_name',
         'email-address': 'email_address',
         'challenge-password': 'challenge_password',
+        'subjectAlternativeName': 'subject_alternative_name',
     }
 
     api_attributes = [
@@ -191,6 +202,7 @@ class Parameters(AnsibleF5Parameters):
         'country',
         'email-address',
         'challenge-password',
+        'subjectAlternativeName',
     ]
 
     returnables = [
@@ -202,6 +214,7 @@ class Parameters(AnsibleF5Parameters):
         'city',
         'country',
         'province',
+        'subject_alternative_name',
     ]
 
     updatables = []
@@ -482,6 +495,7 @@ class ArgumentSpec(object):
                 required=True
             ),
             common_name=dict(),
+            subject_alternative_name=dict(),
             organization=dict(),
             province=dict(),
             ou=dict(),
