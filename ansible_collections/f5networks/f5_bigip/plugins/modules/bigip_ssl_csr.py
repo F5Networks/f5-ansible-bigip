@@ -10,10 +10,10 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: bigip_ssl_csr
-short_description: Create SSL CSR files on the BIG-IP
+short_description: Create SSL CSR files on the BIG-IP.
 description:
-  - This module will create SSL CSR files on a BIG-IP. CSRs
-    require an associated SSL key to pre-exist on the BIG-IP.
+  - This module creates SSL CSR files on a BIG-IP. CSRs
+    require an associated pre-existing SSL key on the BIG-IP.
 version_added: "1.0.0"
 options:
   name:
@@ -32,58 +32,58 @@ options:
     version_added: "3.0.0"
   key_name:
     description:
-      - The SSL key to be used to generate the CSR.
+      - The SSL key used to generate the CSR.
     type: str
   challenge_password:
     description:
-      - Specifies the C(PKCS#9) challenge-password to be associated with this CSR.
+      - Specifies the C(PKCS#9) challenge-password with which to associate this CSR.
     type: str
     version_added: "1.1.0"
   city:
     description:
-      - Specifies the x509 city to be associated with this CSR.
+      - Specifies the x509 city with which to associate this CSR.
     type: str
     version_added: "1.1.0"
   country:
     description:
-      - Specifies the 2 letter x509 country code to be associated with this CSR.
+      - Specifies the 2 letter x509 country code with which to associate this CSR.
     type: str
     version_added: "1.1.0"
   email_address:
     description:
-      - Specifies the x509 email-address to be used in creation of the certificate signing request.
+      - Specifies the x509 email-address used to create the certificate signing request.
     type: str
     version_added: "1.1.0"
   organization:
     description:
-      - Specifies the x509 organization name to be associated with this CSR.
+      - Specifies the x509 organization name with which to associate this CSR.
     type: str
     version_added: "1.1.0"
   ou:
     description:
-      - Specifies the x509 organizational unit to be used in creation of the certificate signing request.
+      - Specifies the x509 organizational unit used to create the certificate signing request.
     type: str
     version_added: "1.1.0"
   province:
     description:
-      - Specifies the x509 state or province to be used in creation of the certificate signing request.
+      - Specifies the x509 state or province used to create the certificate signing request.
     type: str
     version_added: "1.1.0"
   dest:
     description:
-      - Destination on your local filesystem when you want to save the CSR file.
+      - The destination on your local filesystem to use for saving the CSR file.
     type: path
     required: True
   partition:
     description:
-      - Device partition to manage resources on.
+      - Device partition on which to manage resources.
     type: str
     default: Common
     version_added: "1.1.0"
   state:
     description:
-      - When C(present), ensures the resource exists.
-      - When C(absent), ensures the resource does not exist.
+      - When C(present), ensures that the resource exists.
+      - When C(absent), ensures that the resource does not exist.
     type: str
     choices:
       - present
@@ -126,32 +126,32 @@ subject_alternative_name:
   type: str
   sample: IP:1.2.3.4
 organization:
-  description: The x509 organization to be used in creation of the certificate signing request.
+  description: The x509 organization used to create the certificate signing request.
   returned: created
   type: str
   sample: Foobar Inc.
 ou:
-  description: The x509 organizational unit to be used in creation of the certificate signing request.
+  description: The x509 organizational unit used to create the certificate signing request.
   returned: created
   type: str
   sample: IT
 city:
-  description: The x509 city to be associated with this CSR.
+  description: The x509 city with which to associate this CSR.
   returned: created
   type: str
   sample: Seattle
 country:
-  description: The 2 letter x509 country code to be associated with this CSR.
+  description: The 2 letter x509 country code with which to associate this CSR.
   returned: created
   type: str
   sample: US
 province:
-  description: The x509 state or province to be used in creation of the certificate signing request.
+  description: The x509 state or province used to create the certificate signing request.
   returned: created
   type: str
   sample: WA
 email_address:
-  description: The x509 email-address to be used in creation of the certificate signing request.
+  description: The x509 email address used to create the certificate signing request.
   returned: created
   type: str
   sample: root@local.net
