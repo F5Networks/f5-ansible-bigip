@@ -84,6 +84,7 @@ class TestV1Manager(unittest.TestCase):
             add_file_common_args=self.spec.add_file_common_args,
         )
         mm = ModuleManager(module=module)
+        mm.client = Mock()
         mm.exists = Mock(return_value=False)
         mm.create_async_task_on_device = Mock(return_value=task_id)
         mm._start_task_on_device = Mock(return_value=True)
@@ -110,6 +111,7 @@ class TestV1Manager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
+        mm.client = Mock()
         mm.async_wait = Mock(return_value=True)
         mm._get_backup_file = Mock(return_value='/tmp/foo.backup')
         mm.download_from_device = Mock(return_value=True)

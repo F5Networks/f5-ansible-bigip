@@ -39,11 +39,11 @@ class TeemClient:
         self.in_ci = False
         self.coll_name = 'F5_BIGIP'
 
-    def prepare_request(self):
+    def prepare_request(self, **kwargs):
         self.docker = in_docker()
         dai = generate_asset_id(socket.gethostname())
         user_agent = f'{self.coll_name}/{CURRENT_COLL_VERSION}'
-        telemetry = self.build_telemetry()
+        telemetry = self.build_telemetry(platform=kwargs.get('platform'))
         url = 'https://%s/ee/v1/telemetry' % TEEM_ENDPOINT
         headers = {
             'F5-ApiKey': TEEM_KEY,
@@ -67,8 +67,8 @@ class TeemClient:
 
         return url, headers, data
 
-    def send(self):
-        url, headers, data = self.prepare_request()
+    def send(self, **kwargs):
+        url, headers, data = self.prepare_request(platform=kwargs.get('platform'))
         payload = json.dumps(data)
         try:
             response = open_url(
@@ -88,11 +88,12 @@ class TeemClient:
             return True
         return False
 
-    def build_telemetry(self):
+    def build_telemetry(self, **kwargs):
         module_name = self.f5client.module_name
         if self.coll_name.lower() in module_name:
             module_name = module_name.split('.')[2]
-        tmp, version = self.f5client.platform
+        p = kwargs.get('platform')
+        tmp, version = p if bool(p) else self.f5client.platform
         platform = PLATFORM.get(tmp, 'unknown')
         ansible_version = self.f5client.ansible_version
         python_version = sys.version.split(' ', maxsplit=1)[0]

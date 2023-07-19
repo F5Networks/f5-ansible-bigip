@@ -5,6 +5,15 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v3.1.0
+======
+
+Minor Changes
+-------------
+
+- bigip_ssl_csr - Added option for Subject Alternative Name
+- bigip_ucs_fetch - made changes to fetch tmos version before starting async task to prevent blocking blocking of the module
+
 v3.0.0
 ======
 

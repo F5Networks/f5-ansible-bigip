@@ -341,6 +341,9 @@ class ModuleManager(object):
     def exec_module(self):
         start = datetime.now().isoformat()
         result = dict()
+        platform = None
+        if self.client.plugin.telemetry():
+            platform = self.client.platform
 
         self.present()
 
@@ -348,7 +351,7 @@ class ModuleManager(object):
         changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=True))
-        send_teem(self.client, start)
+        send_teem(self.client, start, platform=platform)
         return result
 
     def present(self):
