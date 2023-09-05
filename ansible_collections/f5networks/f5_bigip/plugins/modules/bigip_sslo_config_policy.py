@@ -160,6 +160,15 @@ options:
               - Defines a port-range with using keys c(port_from) and c(port_to).
               - Should be used when c(condition_type) matches c(client_port_match) or c(server_port_match).
             type: dict
+            suboptions:
+              port_from:
+                description:
+                  - Starting port number in the port range.
+                type: str
+              port_to:
+                description:
+                  - Ending port number in the port range.
+                type: str
           condition_option_subnet:
             description:
               - Defines a list of IP subnets.
@@ -1415,10 +1424,12 @@ class ArgumentSpec(object):
                             geolocations=dict(type='list', elements='dict'),
                             condition_option_ports=dict(type='list', elements='str'),
                             condition_option_portrange=dict(
-                                port_from=dict(),
-                                port_to=dict(),
-                                type='dict'),
-                            # required_together=[('port_from', 'port_to')],
+                                type='dict',
+                                options=dict(
+                                    port_from=dict(),
+                                    port_to=dict()
+                                )
+                            ),
                             condition_option_subnet=dict(type='list', elements='str'),
                             option_tcp_protocol=dict(type='list', elements='str'),
                             option_udp_protocol=dict(type='list', elements='str'),

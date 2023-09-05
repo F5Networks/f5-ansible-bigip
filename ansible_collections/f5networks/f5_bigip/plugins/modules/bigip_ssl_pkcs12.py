@@ -51,6 +51,7 @@ options:
       - present
       - absent
     default: present
+extends_documentation_fragment: ansible.builtin.files
 author:
   - Wojciech Wypior (@wojtek0806)
 '''

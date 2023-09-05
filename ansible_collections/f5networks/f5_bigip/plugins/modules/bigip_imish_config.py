@@ -19,7 +19,7 @@ options:
   route_domain:
     description:
       - Route domain on which to manage the BGP configuration.
-    type: str
+    type: int
     default: 0
   lines:
     description:
@@ -211,6 +211,7 @@ options:
     version_added: "1.2.0"
 notes:
   - Abbreviated commands are NOT idempotent
+extends_documentation_fragment: ansible.builtin.files
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -710,7 +711,10 @@ class ArgumentSpec(object):
             dir_path=dict(type='path')
         )
         argument_spec = dict(
-            route_domain=dict(default=0),
+            route_domain=dict(
+                type='int',
+                default=0
+            ),
             src=dict(type='path'),
             lines=dict(
                 type='list',

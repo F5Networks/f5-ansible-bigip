@@ -404,7 +404,7 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            regkey_pool=dict(required=True),
+            regkey_pool=dict(required=True, no_log=True),
             license_key=dict(required=True, no_log=True),
             addon_keys=dict(type='list', elements='str', no_log=True),
             description=dict(),

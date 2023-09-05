@@ -95,6 +95,7 @@ notes:
     https://clouddocs.f5.com/products/orchestration/ansible/devel/usage/module-usage-with-tower.html
   - Some longer running tasks might cause the REST interface on BIG-IP to time out, to avoid this adjust the timers as
     per this KB article https://support.f5.com/csp/article/K94602685
+extends_documentation_fragment: ansible.builtin.files
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
