@@ -96,6 +96,8 @@ class TestParameters(unittest.TestCase):
         self.assertEqual(p.key_name, 'key1')
         self.assertEqual(p.key_filename, 'key1')
         self.assertEqual(p.issuer_cert, '/Common/bazbar')
+        self.assertEqual(p.key_source_path, 'file:///var/config/rest/downloads/key1_key')
+        self.assertEqual(p.cert_source_path, 'file:///var/config/rest/downloads/cert1_cert')
 
     def test_module_parameters_default_endings(self):
         args = dict(
@@ -113,6 +115,8 @@ class TestParameters(unittest.TestCase):
         self.assertEqual(p.key_name, 'key1.key')
         self.assertEqual(p.key_filename, 'key1.key')
         self.assertEqual(p.issuer_cert, '/Common/bazbar.crt')
+        self.assertEqual(p.key_source_path, 'file:///var/config/rest/downloads/key1.key')
+        self.assertEqual(p.cert_source_path, 'file:///var/config/rest/downloads/cert1.crt')
 
     def test_module_issuer_cert_key(self):
         args = dict(
@@ -190,6 +194,84 @@ class TestModuleManager(unittest.TestCase):
 
         self.assertTrue(results['changed'])
         self.assertTrue(results['issuer_cert'] == '/Common/bar_issuer.crt')
+        self.assertTrue(mm.client.put.called)
+        self.assertTrue(mm.client.patch.called)
+        self.assertTrue(mm.client.post.call_count == 5)
+
+    def test_import_key_source_path_and_cert_source_path_true_name_true(self, *args):
+        set_module_args(dict(
+            key_name='bar_key',
+            key_content=load_fixture('create_insecure_key1'),
+            cert_name='bar',
+            cert_content=load_fixture('create_insecure_cert1'),
+            issuer_cert='bar_issuer',
+            state='present',
+            true_names=True
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.client.plugin.upload_file = Mock()
+        mm.client.post.side_effect = [
+            dict(code=200, contents=dict(transId='1234567')),
+            dict(code=200, contents={}),
+            dict(code=200, contents={}),
+            dict(code=200, contents={}),
+            dict(code=200, contents={})
+        ]
+        mm.client.patch.return_value = dict(code=200, contents={})
+        mm.client.put.return_value = dict(code=200, contents={})
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertTrue(results['key_source_path'] == 'file:///var/config/rest/downloads/bar_key_key')
+        self.assertTrue(results['cert_source_path'] == 'file:///var/config/rest/downloads/bar_cert')
+        self.assertTrue(mm.client.put.called)
+        self.assertTrue(mm.client.patch.called)
+        self.assertTrue(mm.client.post.call_count == 5)
+
+    def test_import_key_source_path_and_cert_source_path_true_name_false(self, *args):
+        set_module_args(dict(
+            key_name='bar_key',
+            key_content=load_fixture('create_insecure_key1'),
+            cert_name='bar',
+            cert_content=load_fixture('create_insecure_cert1'),
+            issuer_cert='bar_issuer',
+            state='present',
+            true_names=False
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.client.plugin.upload_file = Mock()
+        mm.client.post.side_effect = [
+            dict(code=200, contents=dict(transId='1234567')),
+            dict(code=200, contents={}),
+            dict(code=200, contents={}),
+            dict(code=200, contents={}),
+            dict(code=200, contents={})
+        ]
+        mm.client.patch.return_value = dict(code=200, contents={})
+        mm.client.put.return_value = dict(code=200, contents={})
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertTrue(results['key_source_path'] == 'file:///var/config/rest/downloads/bar_key.key')
+        self.assertTrue(results['cert_source_path'] == 'file:///var/config/rest/downloads/bar.crt')
         self.assertTrue(mm.client.put.called)
         self.assertTrue(mm.client.patch.called)
         self.assertTrue(mm.client.post.call_count == 5)
