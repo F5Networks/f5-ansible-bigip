@@ -39,7 +39,7 @@ options:
     type: str
   tenant:
     description:
-      - An AS3 tenant you wish to remove.
+      - An AS3 tenant you want to remove.
       - Parameter required when C(state) is absent, it is otherwise ignored.
     type: str
   timeout:
@@ -70,7 +70,7 @@ EXAMPLES = r'''
   connection: httpapi
 
   vars:
-    ansible_host: "lb.mydomain.com"
+    ansible_host: "cm.mydomain.com"
     ansible_user: "admin"
     ansible_httpapi_password: "secret"
     ansible_network_os: f5networks.f5_bigip.bigiq
