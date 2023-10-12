@@ -5,6 +5,14 @@ F5Networks F5_BIGIP Collection Release Notes
 .. contents:: Topics
 
 
+v3.2.1
+======
+
+Bugfixes
+--------
+
+- bigip_ssl_key_cert - fixed flaw in code to make module work with same key and cert name when true_names set to true
+
 v3.1.1
 ======
 

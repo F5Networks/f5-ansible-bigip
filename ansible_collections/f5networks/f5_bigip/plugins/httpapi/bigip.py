@@ -8,7 +8,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-httpapi: bigip
+name: bigip
 short_description: HttpApi Plugin for BIG-IP devices
 description:
   - This HttpApi plugin provides methods to connect to BIG-IP
@@ -50,7 +50,7 @@ options:
     - name: f5_timeout
 version_added: "1.0.0"
 author:
-  - Wojciech Wypior <w.wypior@f5.com>
+  - Wojciech Wypior (@wojtek0806)
 """
 import os
 
