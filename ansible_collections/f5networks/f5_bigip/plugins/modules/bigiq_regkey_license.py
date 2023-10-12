@@ -68,7 +68,7 @@ EXAMPLES = r'''
   connection: httpapi
 
   vars:
-    ansible_host: "lb.mydomain.com"
+    ansible_host: "cm.mydomain.com"
     ansible_user: "admin"
     ansible_httpapi_password: "secret"
     ansible_network_os: f5networks.f5_bigip.bigiq
@@ -404,7 +404,7 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            regkey_pool=dict(required=True),
+            regkey_pool=dict(required=True, no_log=True),
             license_key=dict(required=True, no_log=True),
             addon_keys=dict(type='list', elements='str', no_log=True),
             description=dict(),

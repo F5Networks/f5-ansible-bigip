@@ -53,7 +53,7 @@ EXAMPLES = r'''
   connection: httpapi
 
   vars:
-    ansible_host: "lb.mydomain.com"
+    ansible_host: "cm.mydomain.com"
     ansible_user: "admin"
     ansible_httpapi_password: "secret"
     ansible_network_os: f5networks.f5_bigip.bigiq

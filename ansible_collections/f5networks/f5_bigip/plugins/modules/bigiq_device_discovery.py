@@ -176,7 +176,7 @@ EXAMPLES = r'''
       - shared_security
     provider:
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
       user: admin
   delegate_to: localhost
 
@@ -189,7 +189,7 @@ EXAMPLES = r'''
     conflict_policy: use_bigip
     provider:
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
       user: admin
   delegate_to: localhost
 
@@ -204,7 +204,7 @@ EXAMPLES = r'''
     force: yes
     provider:
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
       user: admin
   delegate_to: localhost
 
@@ -214,7 +214,7 @@ EXAMPLES = r'''
     state: absent
     provider:
       password: secret
-      server: lb.mydomain.com
+      server: cm.mydomain.com
       user: admin
   delegate_to: localhost
 '''

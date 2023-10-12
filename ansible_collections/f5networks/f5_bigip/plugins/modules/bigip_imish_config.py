@@ -19,7 +19,7 @@ options:
   route_domain:
     description:
       - Route domain on which to manage the BGP configuration.
-    type: str
+    type: int
     default: 0
   lines:
     description:
@@ -35,7 +35,7 @@ options:
   parents:
     description:
       - The ordered set of parents that uniquely identify the section or hierarchy
-        the commands should be checked against.
+        against which to compare the commands.
       - If the C(parents) argument is omitted, the commands are checked against
         the set of top level or global commands.
     type: list
@@ -171,11 +171,11 @@ options:
   intended_config:
     description:
       - The C(intended_config) provides the master configuration
-        the node should conform to and is used to check the final
-        running-config against.
-      - This argument will not modify any settings on the remote device and
-        is strictly used to check the compliance of the current device's
-        configuration against.
+        to which the node should conform and is used to compare against the final
+        running-config.
+      - This argument will not change any settings on the remote device. Only use
+        this argument to compare against the compliance of the current device's
+        configuration.
       - When specifying this argument, the task should also modify the
         C(diff_against) value and set it to I(intended).
     type: str
@@ -187,7 +187,7 @@ options:
     suboptions:
       filename:
         description:
-          - The filename to be used to store the backup configuration. If the filename
+          - Name of the file you will use for storing the backup configuration. If the filename
             is not given, it will be generated based on the hostname, current time and date
             in the format defined by <hostname>_config.<current-date>@<current-time>
         type: str
@@ -211,6 +211,7 @@ options:
     version_added: "1.2.0"
 notes:
   - Abbreviated commands are NOT idempotent
+extends_documentation_fragment: ansible.builtin.files
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -710,7 +711,10 @@ class ArgumentSpec(object):
             dir_path=dict(type='path')
         )
         argument_spec = dict(
-            route_domain=dict(default=0),
+            route_domain=dict(
+                type='int',
+                default=0
+            ),
             src=dict(type='path'),
             lines=dict(
                 type='list',

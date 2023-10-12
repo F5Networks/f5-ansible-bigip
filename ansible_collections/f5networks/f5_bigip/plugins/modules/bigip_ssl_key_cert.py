@@ -280,20 +280,26 @@ class ModuleParameters(Parameters):
     def key_source_path(self):
         if self.key_filename is None:
             return None
+        true_name = flatten_boolean(self.true_names)
         result = 'file://' + os.path.join(
             self.download_path,
             self.key_filename
         )
+        if true_name == 'yes':
+            result = result + "_key"
         return result
 
     @property
     def cert_source_path(self):
         if self.cert_filename is None:
             return None
+        true_name = flatten_boolean(self.true_names)
         result = 'file://' + os.path.join(
             self.download_path,
             self.cert_filename
         )
+        if true_name == 'yes':
+            result = result + "_cert"
         return result
 
 
@@ -477,9 +483,9 @@ class ModuleManager(object):
             return True
         self.create_on_device()
         if self.want.key_filename:
-            self.remove_uploaded_file_from_device(self.want.key_filename)
+            self.remove_uploaded_file_from_device(os.path.basename(self.want.key_source_path))
         if self.want.cert_filename:
-            self.remove_uploaded_file_from_device(self.want.cert_filename)
+            self.remove_uploaded_file_from_device(os.path.basename(self.want.cert_source_path))
         return True
 
     def remove_uploaded_file_from_device(self, name):
@@ -598,10 +604,10 @@ class ModuleManager(object):
         links_and_params = self._prepare_links_for_create(params)
 
         if self.want.key_name:
-            self.upload_file_to_device(self.want.key_content, self.want.key_filename)
+            self.upload_file_to_device(self.want.key_content, os.path.basename(self.want.key_source_path))
 
         if self.want.cert_name:
-            self.upload_file_to_device(self.want.cert_content, self.want.cert_filename)
+            self.upload_file_to_device(self.want.cert_content, os.path.basename(self.want.cert_source_path))
 
         with TransactionContextManager(self.client) as transact:
             for link in links_and_params:
@@ -627,10 +633,10 @@ class ModuleManager(object):
         params = self.changes.api_params()
 
         if self.want.key_name:
-            self.upload_file_to_device(self.want.key_content, self.want.key_filename)
+            self.upload_file_to_device(self.want.key_content, os.path.basename(self.want.key_source_path))
 
         if self.want.cert_name:
-            self.upload_file_to_device(self.want.cert_content, self.want.cert_filename)
+            self.upload_file_to_device(self.want.cert_content, os.path.basename(self.want.cert_source_path))
 
         links_and_params = self._prepare_links_for_update(params)
         with TransactionContextManager(self.client) as transact:
@@ -684,7 +690,9 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             key_name=dict(),
-            key_content=dict(),
+            key_content=dict(
+                no_log=True
+            ),
             passphrase=dict(
                 no_log=True
             ),

@@ -13,7 +13,7 @@ DOCUMENTATION = r'''
 module: bigip_sslo_config_policy
 short_description: Manage an SSL Orchestrator security policy
 description:
-  - Manage an SSL Orchestrator security policy
+  - Use to manage an SSL Orchestrator security policy.
 version_added: "1.7.0"
 options:
   name:
@@ -34,7 +34,7 @@ options:
     description:
       - Specifies the settings for the default C(All Traffic) security policy rule.
       - When creating a new policy, the rule is created with default values.
-      - "When modifying existing policy, all values should be defined or they are replaced by defaults (see below)."
+      - "When modifying existing policy, all values should be defined or they are replaced by default values (see below)."
     type: dict
     suboptions:
       allow_block:
@@ -82,7 +82,7 @@ options:
              type: int
       pool_name:
         description:
-          - Defines an existing pool name for the proxy connection. It should be specified with a partition.
+          - Defines an existing pool name for the proxy connection. Specify with a partition.
           - Mutually exclusive with C(pool_members).
         type: str
       username:
@@ -140,30 +140,39 @@ options:
           condition_option_category:
             description:
               - A list of URL categories (ex. "Financial and Data Services").
-              - Should be used when c(condition_type) matches c(category_lookup_all) or c(category_lookup_sni).
+              - Use when c(condition_type) matches c(category_lookup_all) or c(category_lookup_sni).
             type: list
             elements: str
           geolocations:
             description:
               - A list of 'type' and 'value' keys, where type can be 'countryCode', 'countryName', 'continent', or 'state'.
-              - Should be used when c(condition_type) matches c(client_ip_geolocation) or c(server_ip_geolocation).
+              - Use when c(condition_type) matches c(client_ip_geolocation) or c(server_ip_geolocation).
             type: list
             elements: dict
           condition_option_ports:
             description:
               - Defines a list of ports.
-              - Should be used when c(condition_type) matches c(client_port_match) or c(server_port_match).
+              - Use when c(condition_type) matches c(client_port_match) or c(server_port_match).
             type: list
             elements: str
           condition_option_portrange:
             description:
               - Defines a port-range with using keys c(port_from) and c(port_to).
-              - Should be used when c(condition_type) matches c(client_port_match) or c(server_port_match).
+              - Use when c(condition_type) matches c(client_port_match) or c(server_port_match).
             type: dict
+            suboptions:
+              port_from:
+                description:
+                  - Starting port number in the port range.
+                type: str
+              port_to:
+                description:
+                  - Ending port number in the port range.
+                type: str
           condition_option_subnet:
             description:
               - Defines a list of IP subnets.
-              - Should be used when c(condition_type) matches c(client_ip_subnet_match) or c(server_ip_subnet_match).
+              - Use when c(condition_type) matches c(client_ip_subnet_match) or c(server_ip_subnet_match).
             type: list
             elements: str
           option_tcp_protocol:
@@ -173,12 +182,12 @@ options:
             elements: str
           option_udp_protocol:
             description:
-              - Defines a list of UDP protocols to be used with C(udp_l7_protocol_lookup).
+              - Defines a list of UDP protocols you want used with C(udp_l7_protocol_lookup).
             type: list
             elements: str
       policy_action:
         description:
-          - Defines the policy action to be applied for this rule.
+          - Defines the policy action applied for this rule.
         type: str
         choices:
           - allow
@@ -199,8 +208,8 @@ options:
     description:
       - Sets the module to output a JSON blob for further consumption.
       - When C(true) does not make any changes on the device and always returns C(changed=False).
-      - The output provided is idempotent in nature, meaning if there are no changes to be made during
-        C(MODIFY) on an existing service, no JSON output will be generated.
+      - The output provided is idempotent in nature, meaning if there are no changes made during
+        C(MODIFY) on an existing service, no JSON output is generated.
     type: bool
     default: false
   timeout:
@@ -1415,10 +1424,12 @@ class ArgumentSpec(object):
                             geolocations=dict(type='list', elements='dict'),
                             condition_option_ports=dict(type='list', elements='str'),
                             condition_option_portrange=dict(
-                                port_from=dict(),
-                                port_to=dict(),
-                                type='dict'),
-                            # required_together=[('port_from', 'port_to')],
+                                type='dict',
+                                options=dict(
+                                    port_from=dict(),
+                                    port_to=dict()
+                                )
+                            ),
                             condition_option_subnet=dict(type='list', elements='str'),
                             option_tcp_protocol=dict(type='list', elements='str'),
                             option_udp_protocol=dict(type='list', elements='str'),

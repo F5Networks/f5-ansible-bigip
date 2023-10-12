@@ -34,12 +34,12 @@ options:
     default: true
   dest:
     description:
-      - A directory to save the UCS file into.
+      - A directory into which the UCS file is saved.
       - This option is mandatory when C(only_create_file) is set to C(false).
     type: path
   encryption_password:
     description:
-      - Password to use to encrypt the UCS file if desired.
+      - Password used to encrypt the UCS file, if desired.
     type: str
   fail_on_missing:
     description:
@@ -55,9 +55,9 @@ options:
   src:
     description:
       - The name of the UCS file to create on the remote server for downloading.
-      - If not given the name will be randomly generated when creating UCS file on device.
+      - If not given the name will be randomly generated when creating UCS file on the device.
       - The parameter is required when C(task_id) is defined otherwise file download will fail.
-      - The file is retrieved or created in /var/local/ucs/.
+      - The file is retrieved or created in the /var/local/ucs/ directory.
       - This option is mandatory when C(only_create_file) is set to C(true).
     type: str
   task_id:
@@ -65,7 +65,7 @@ options:
       - The ID of the async task as returned by the system in a previous module run.
       - Used to query the status of the task on the device, useful with longer running operations that require
         restarting services.
-      - Parameter mutually exclusive with C(only_create_file).
+      - Parameter is mutually exclusive with C(only_create_file).
     type: str
   timeout:
     description:
@@ -80,10 +80,11 @@ options:
         no change is made and the file is not downloaded.
       - To recreate UCS files left on the device, remove them with the  C(bigip_ucs) module before running this
         module with C(only_create_file) set to C(true).
-      - Parameter mutually exclusive with C(task_id).
+      - Parameter is mutually exclusive with C(task_id).
     type: bool
     default: false
     version_added: "1.12.0"
+extends_documentation_fragment: ansible.builtin.files
 notes:
   - BIG-IP provides no way to get a checksum of the UCS files on the system
     via any interface except, perhaps, logging in directly to the box (which
@@ -148,59 +149,59 @@ EXAMPLES = r'''
 
 RETURN = r'''
 checksum:
-  description: The SHA1 checksum of the downloaded file
+  description: The SHA1 checksum of the downloaded file.
   returned: success or changed
   type: str
   sample: 7b46bbe4f8ebfee64761b5313855618f64c64109
 dest:
-  description: Location on the ansible host that the UCS was saved to
+  description: Location on the ansible host to which the UCS was saved.
   returned: success
   type: str
   sample: /path/to/file.txt
 src:
   description:
     - Name of the UCS file on the remote BIG-IP to download. If not
-      specified, then this will be a randomly generated filename
+      specified, then the filename is randomly generated.
   returned: changed
   type: str
   sample: cs_backup.ucs
 backup_file:
-  description: Name of backup file created
+  description: Name of backup file created.
   returned: changed and if backup=yes
   type: str
   sample: /path/to/file.txt.2015-02-12@22:09~
 gid:
-  description: Group id of the UCS file, after execution
+  description: Group ID of the UCS file, after execution.
   returned: success
   type: int
   sample: 100
 group:
-  description: Group of the UCS file, after execution
+  description: Group of the UCS file, after execution.
   returned: success
   type: str
   sample: httpd
 owner:
-  description: Owner of the UCS file, after execution
+  description: Owner of the UCS file, after execution.
   returned: success
   type: str
   sample: httpd
 uid:
-  description: Owner id of the UCS file, after execution
+  description: Owner ID of the UCS file, after execution.
   returned: success
   type: int
   sample: 100
 md5sum:
-  description: The MD5 checksum of the downloaded file
+  description: The MD5 checksum of the downloaded file.
   returned: changed or success
   type: str
   sample: 96cacab4c259c4598727d7cf2ceb3b45
 mode:
-  description: Permissions of the target UCS, after execution
+  description: Permissions of the target UCS, after execution.
   returned: success
   type: str
   sample: 0644
 size:
-  description: Size of the target UCS, after execution
+  description: Size of the target UCS, after execution.
   returned: success
   type: int
   sample: 1220
