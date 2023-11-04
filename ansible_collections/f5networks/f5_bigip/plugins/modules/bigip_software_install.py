@@ -70,55 +70,42 @@ author:
   - Wojciech Wypior (@wojtek0806)
 '''
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Ensure an existing image is activated in specified volume
+  bigip_software_install:
+    image: BIGIP-13.0.0.0.0.1645.iso
+    volume: HD1.2
+  register: task
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Check for installation progress
+  bigip_software_install:
+    volume_uri: "{{task.volume_uri}}"
+    timeout: 900
+  register: result
 
-  tasks:
-    - name: Ensure an existing image is activated in specified volume
-      bigip_software_install:
-        image: BIGIP-13.0.0.0.0.1645.iso
-        volume: HD1.2
-      register: task
+- name: Wait for 6 minutes if device is restarting services
+  pause:
+    minutes: 6
+  when:
+    - result.message == "Device is restarting services, unable to check software installation status."
 
-    - name: Check for installation progress
-      bigip_software_install:
-        volume_uri: "{{task.volume_uri}}"
-        timeout: 900
-      register: result
+- name: Check for installation progress, after reboot
+  bigip_software_install:
+    volume_uri: "{{task.volume_uri}}"
+    timeout: 900
+  when:
+    - result.message == "Device is restarting services, unable to check software installation status."
 
-    - name: Wait for 6 minutes if device is restarting services
-      pause:
-        minutes: 6
-      when:
-        - result.message == "Device is restarting services, unable to check software installation status."
+- name: Ensure an existing image is activated in specified volume - Idempotent check
+  bigip_software_install:
+    image: BIGIP-13.0.0.0.0.1645.iso
+    volume: HD1.2
+  register: result
 
-    - name: Check for installation progress, after reboot
-      bigip_software_install:
-        volume_uri: "{{task.volume_uri}}"
-        timeout: 900
-      when:
-        - result.message == "Device is restarting services, unable to check software installation status."
-
-    - name: Ensure an existing image is activated in specified volume - Idempotent check
-      bigip_software_install:
-        image: BIGIP-13.0.0.0.0.1645.iso
-        volume: HD1.2
-      register: result
-
-    - name: Assert Ensure an existing image is activated in specified volume - Idempotent check
-      assert:
-        that:
-          - result is not changed
-          - result is success
+- name: Assert Ensure an existing image is activated in specified volume - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
 '''
 
 RETURN = r'''

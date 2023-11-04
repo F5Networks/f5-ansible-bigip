@@ -233,61 +233,47 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
-
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
-
-  tasks:
-    - name: SSLO config policy
-      bigip_sslo_config_policy:
-        name: "testpolicy"
-        server_cert_check: true
-        proxy_connect:
-          username: "testuser"
-          password: ""
-          pool_members:
-            - ip: "192.168.30.10"
-              port: 100
-        policy_rules:
-          - name: "testrule"
-            match_type: "match_any"
-            policy_action: "reject"
-            conditions:
-              - condition_type: "category_lookup_all"
-                condition_option_category:
-                  - "Financial Data and Services"
-                  - "General Email"
-              - condition_type: "client_port_match"
-                condition_option_ports:
-                  - "80"
-                  - "90"
-              - condition_type: "client_ip_geolocation"
-                geolocations:
-                  - type: "countryCode"
-                    value: "US"
-                  - type: "countryCode"
-                    value: "UK"
-          - name: "testrule2"
-            match_type: "match_all"
-            policy_action: "reject"
-            conditions:
-              - condition_type: "category_lookup_all"
-                condition_option_category:
-                  - "Financial Data and Services"
-                  - "General Email"
-              - condition_type: "client_port_match"
-                condition_option_ports:
-                  - "80"
-                  - "90"
-      delegate_to: localhost
+- name: SSLO config policy
+  bigip_sslo_config_policy:
+    name: "testpolicy"
+    server_cert_check: true
+    proxy_connect:
+      username: "testuser"
+      password: ""
+      pool_members:
+        - ip: "192.168.30.10"
+          port: 100
+    policy_rules:
+      - name: "testrule"
+        match_type: "match_any"
+        policy_action: "reject"
+        conditions:
+          - condition_type: "category_lookup_all"
+            condition_option_category:
+              - "Financial Data and Services"
+              - "General Email"
+          - condition_type: "client_port_match"
+            condition_option_ports:
+              - "80"
+              - "90"
+          - condition_type: "client_ip_geolocation"
+            geolocations:
+              - type: "countryCode"
+                value: "US"
+              - type: "countryCode"
+                value: "UK"
+      - name: "testrule2"
+        match_type: "match_all"
+        policy_action: "reject"
+        conditions:
+          - condition_type: "category_lookup_all"
+            condition_option_category:
+              - "Financial Data and Services"
+              - "General Email"
+          - condition_type: "client_port_match"
+            condition_option_ports:
+              - "80"
+              - "90"
 '''
 
 RETURN = r'''

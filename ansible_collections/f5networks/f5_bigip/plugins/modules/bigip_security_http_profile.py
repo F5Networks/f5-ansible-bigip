@@ -284,72 +284,59 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create an HTTP security profile
+  bigip_security_http_profile:
+    name: test_http_profile
+    description: 'this is a test profile'
+    evasion_techniques:
+      alarm: 'no'
+      block: 'yes'
+    file_type:
+      block: 'yes'
+      allowed:
+        - 'zip'
+        - 'js'
+        - 'json'
+    http_protocol_checks:
+      bad_host_header: 'yes'
+      bad_version: 'yes'
+      body_in_get_head: 'no'
+      high_ascii_in_headers: 'no'
+    method:
+      allowed_methods:
+        - 'GET'
+        - 'POST'
+        - 'PATCH'
+    header:
+      mandatory_headers:
+        - 'authorization'
+    length:
+      post_data: 0
+      request: 2048
+      uri: 512
+    response:
+      type: 'redirect'
+      url: 'https://you-are-banned.net'
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Modify an HTTP security profile
+  bigip_security_http_profile:
+    name: test_http_profile
+    file_type:
+      disallowed:
+        - 'zip'
+        - 'js'
+        - 'json'
+    method:
+      allowed_methods:
+        - 'GET'
+        - 'POST'
+        - 'PATCH'
+        - 'DELETE'
 
-  tasks:
-    - name: Create an HTTP security profile
-      bigip_security_http_profile:
-        name: test_http_profile
-        description: 'this is a test profile'
-        evasion_techniques:
-          alarm: 'no'
-          block: 'yes'
-        file_type:
-          block: 'yes'
-          allowed:
-            - 'zip'
-            - 'js'
-            - 'json'
-        http_protocol_checks:
-          bad_host_header: 'yes'
-          bad_version: 'yes'
-          body_in_get_head: 'no'
-          high_ascii_in_headers: 'no'
-        method:
-          allowed_methods:
-            - 'GET'
-            - 'POST'
-            - 'PATCH'
-        header:
-          mandatory_headers:
-            - 'authorization'
-        length:
-          post_data: 0
-          request: 2048
-          uri: 512
-        response:
-          type: 'redirect'
-          url: 'https://you-are-banned.net'
-
-    - name: Modify an HTTP security profile
-      bigip_security_http_profile:
-        name: test_http_profile
-        file_type:
-          disallowed:
-            - 'zip'
-            - 'js'
-            - 'json'
-        method:
-          allowed_methods:
-            - 'GET'
-            - 'POST'
-            - 'PATCH'
-            - 'DELETE'
-
-    - name: Delete an HTTP security profile
-      bigip_security_http_profile:
-        name: test_http_profile
-        state: absent
+- name: Delete an HTTP security profile
+  bigip_security_http_profile:
+    name: test_http_profile
+    state: absent
 '''
 
 RETURN = r'''

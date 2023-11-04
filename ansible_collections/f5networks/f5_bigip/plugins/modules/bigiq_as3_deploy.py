@@ -64,23 +64,10 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
-
-  vars:
-    ansible_host: "cm.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigiq
-    ansible_httpapi_use_ssl: yes
-
-  tasks:
-    - name: Declaration with 2 Tenants - AS3
-      bigiq_as3_deploy:
-        content: "{{ lookup('file', 'two_tenants.json') }}"
-        service_type: "as3"
+- name: Declaration with 2 Tenants - AS3
+  bigiq_as3_deploy:
+    content: "{{ lookup('file', 'two_tenants.json') }}"
+    service_type: "as3"
 '''
 
 RETURN = r'''

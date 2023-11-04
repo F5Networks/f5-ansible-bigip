@@ -61,39 +61,26 @@ author:
 
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: SSLO dns resolver (forwarding nameservers)
+  bigip_sslo_config_resolver:
+    fwd_name_servers:
+      - "10.1.20.1"
+      - "10.1.20.2"
+      - "fd66:2735:1533:46c1:68c8:0:0:7110"
+      - "fd66:2735:1533:46c1:68c8:0:0:7111"
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
-
-  tasks:
-    - name: SSLO dns resolver (forwarding nameservers)
-      bigip_sslo_config_resolver:
-        fwd_name_servers:
+- name: SSLO dns resolver (forwarding zones)
+  bigip_sslo_config_resolver:
+    fwd_zones:
+      - zone: "."
+        servers:
           - "10.1.20.1"
-          - "10.1.20.2"
-          - "fd66:2735:1533:46c1:68c8:0:0:7110"
-          - "fd66:2735:1533:46c1:68c8:0:0:7111"
-
-    - name: SSLO dns resolver (forwarding zones)
-      bigip_sslo_config_resolver:
-        fwd_zones:
-          - zone: "."
-            servers:
-              - "10.1.20.1"
-              - "10.1.20.5"
-          - zone: "foo."
-            servers:
-              - "8.8.8.8"
-              - "8.8.4.4"
-              - "fd66:2735:1533:46c1:68c8:0:0:7113"
+          - "10.1.20.5"
+      - zone: "foo."
+        servers:
+          - "8.8.8.8"
+          - "8.8.4.4"
+          - "fd66:2735:1533:46c1:68c8:0:0:7113"
 '''
 
 RETURN = r'''

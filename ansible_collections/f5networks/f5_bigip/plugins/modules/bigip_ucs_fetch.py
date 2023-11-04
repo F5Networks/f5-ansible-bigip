@@ -101,50 +101,37 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create a new UCS
+  bigip_ucs_fetch:
+    dest: /tmp/cs_backup.ucs
+  register: task
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Check for task completion and download created UCS
+  bigip_ucs_fetch:
+    dest: /tmp/cs_backup.ucs
+    src: "{{ task.src }}"
+    task_id: "{{ task.task_id }}"
+    timeout: 300
 
-  tasks:
-    - name: Create a new UCS
-      bigip_ucs_fetch:
-        dest: /tmp/cs_backup.ucs
-      register: task
+- name: Download an existing UCS
+  bigip_ucs_fetch:
+    src: cs_backup.ucs
+    dest: /tmp/cs_backup.ucs
 
-    - name: Check for task completion and download created UCS
-      bigip_ucs_fetch:
-        dest: /tmp/cs_backup.ucs
-        src: "{{ task.src }}"
-        task_id: "{{ task.task_id }}"
-        timeout: 300
+- name: Only create new UCS, no download
+  bigip_ucs_fetch:
+    src: cs_backup.ucs
+    only_create_file: true
 
-    - name: Download an existing UCS
-      bigip_ucs_fetch:
-        src: cs_backup.ucs
-        dest: /tmp/cs_backup.ucs
+- name: Recreate UCS file left on device - remove file first
+  bigip_ucs:
+    ucs: cs_backup.ucs
+    state: absent
 
-    - name: Only create new UCS, no download
-      bigip_ucs_fetch:
-        src: cs_backup.ucs
-        only_create_file: yes
-
-    - name: Recreate UCS file left on device - remove file first
-      bigip_ucs:
-        ucs: cs_backup.ucs
-        state: absent
-
-    - name: Recreate UCS file left on device - create new file
-      bigip_ucs_fetch:
-        src: cs_backup.ucs
-        only_create_file: yes
+- name: Recreate UCS file left on device - create new file
+  bigip_ucs_fetch:
+    src: cs_backup.ucs
+    only_create_file: true
 '''
 
 RETURN = r'''

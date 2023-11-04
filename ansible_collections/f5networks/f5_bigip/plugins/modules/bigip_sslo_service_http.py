@@ -210,54 +210,41 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create a HTTP service
+  bigip_sslo_service_http:
+    name: "proxy1a"
+    devices_to:
+      vlan: "/Common/proxy1a-in-vlan"
+      self_ip: "198.19.96.7"
+      netmask: "255.255.255.128"
+    devices_from:
+      interface: "1.1"
+      tag: 50
+      self_ip: "198.19.96.245"
+      netmask: "255.255.255.128"
+    devices:
+      - ip: "198.19.96.30"
+      - ip: "198.19.96.31"
+    snat: snatpool
+    snat_pool: "/Common/proxy1a-snatpool"
+    proxy_type: "transparent"
+    auth_offload: true
+    ip_family: "ipv4"
+    service_down_action: "reset"
+    port_remap: 8080
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Modify a HTTP service
+  bigip_sslo_service_http:
+    name: "proxy1a"
+    snat: "snatlist"
+    snat_list:
+      - "198.19.64.10"
+      - "198.19.64.11"
 
-  tasks:
-    - name: Create a HTTP service
-      bigip_sslo_service_http:
-        name: "proxy1a"
-        devices_to:
-            vlan: "/Common/proxy1a-in-vlan"
-            self_ip: "198.19.96.7"
-            netmask: "255.255.255.128"
-        devices_from:
-            interface: "1.1"
-            tag: 50
-            self_ip: "198.19.96.245"
-            netmask: "255.255.255.128"
-        devices:
-          - ip: "198.19.96.30"
-          - ip: "198.19.96.31"
-        snat: snatpool
-        snat_pool: "/Common/proxy1a-snatpool"
-        proxy_type: "transparent"
-        auth_offload: true
-        ip_family: "ipv4"
-        service_down_action: "reset"
-        port_remap: 8080
-
-    - name: Modify a HTTP service
-      bigip_sslo_service_http:
-        name: "proxy1a"
-        snat: "snatlist"
-        snat_list:
-          - "198.19.64.10"
-          - "198.19.64.11"
-
-    - name: Delete SSLO HTTP service
-      bigip_sslo_service_http:
-        name: "proxy1a"
-        state: "absent"
+- name: Delete SSLO HTTP service
+  bigip_sslo_service_http:
+    name: "proxy1a"
+    state: "absent"
 '''
 
 RETURN = r'''

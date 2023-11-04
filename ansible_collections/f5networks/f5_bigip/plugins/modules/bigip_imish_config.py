@@ -217,64 +217,51 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Configure top level configuration and save it
+  bigip_imish_config:
+    lines: bfd slow-timer 2000
+    save_when: modified
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Diff the running-config against a provided config
+  bigip_imish_config:
+    diff_against: intended
+    intended_config: "{{ lookup('file', 'master.cfg') }}"
 
-  tasks:
-    - name: Configure top level configuration and save it
-      bigip_imish_config:
-        lines: bfd slow-timer 2000
-        save_when: modified
+- name: Add config to a parent block
+  bigip_imish_config:
+    lines:
+      - bgp graceful-restart restart-time 120
+      - redistribute kernel route-map rhi
+      - neighbor 10.10.10.11 remote-as 65000
+      - neighbor 10.10.10.11 fall-over bfd
+      - neighbor 10.10.10.11 remote-as 65000
+      - neighbor 10.10.10.11 fall-over bfd
+    parents: router bgp 64664
+    match: exact
 
-    - name: Diff the running-config against a provided config
-      bigip_imish_config:
-        diff_against: intended
-        intended_config: "{{ lookup('file', 'master.cfg') }}"
+- name: Remove an existing acl before writing it
+  bigip_imish_config:
+    lines:
+      - access-list 10 permit 20.20.20.20
+      - access-list 10 permit 20.20.20.21
+      - access-list 10 deny any
+    before: no access-list 10
 
-    - name: Add config to a parent block
-      bigip_imish_config:
-        lines:
-          - bgp graceful-restart restart-time 120
-          - redistribute kernel route-map rhi
-          - neighbor 10.10.10.11 remote-as 65000
-          - neighbor 10.10.10.11 fall-over bfd
-          - neighbor 10.10.10.11 remote-as 65000
-          - neighbor 10.10.10.11 fall-over bfd
-        parents: router bgp 64664
-        match: exact
+- name: For idempotency, use full-form commands
+  bigip_imish_config:
+    lines:
+      # - desc My interface
+      - description My Interface
+    # parents: int ANYCAST-P2P-2
+    parents: interface ANYCAST-P2P-2
 
-    - name: Remove an existing acl before writing it
-      bigip_imish_config:
-        lines:
-          - access-list 10 permit 20.20.20.20
-          - access-list 10 permit 20.20.20.21
-          - access-list 10 deny any
-        before: no access-list 10
-
-    - name: For idempotency, use full-form commands
-      bigip_imish_config:
-        lines:
-          # - desc My interface
-          - description My Interface
-        # parents: int ANYCAST-P2P-2
-        parents: interface ANYCAST-P2P-2
-
-    - name: Configurable backup path
-      bigip_imish_config:
-        lines: bfd slow-timer 2000
-        backup: yes
-        backup_options:
-          filename: backup.cfg
-          dir_path: /home/user
+- name: Configurable backup path
+  bigip_imish_config:
+    lines: bfd slow-timer 2000
+    backup: true
+    backup_options:
+      filename: backup.cfg
+      dir_path: /home/user
 '''
 
 RETURN = r'''

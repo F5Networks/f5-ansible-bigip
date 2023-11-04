@@ -207,35 +207,22 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Collect BIG-IP information
+  bigip_device_info:
+    gather_subset:
+      - interfaces
+      - vlans
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Collect all BIG-IP information
+  bigip_device_info:
+    gather_subset:
+      - all
 
-  tasks:
-    - name: Collect BIG-IP information
-      bigip_device_info:
-        gather_subset:
-          - interfaces
-          - vlans
-
-    - name: Collect all BIG-IP information
-      bigip_device_info:
-        gather_subset:
-          - all
-
-    - name: Collect all BIG-IP information except trunks
-      bigip_device_info:
-        gather_subset:
-          - all
-          - "!trunks"
+- name: Collect all BIG-IP information except trunks
+  bigip_device_info:
+    gather_subset:
+      - all
+      - "!trunks"
 '''
 
 RETURN = r'''

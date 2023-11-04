@@ -67,55 +67,42 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Start complex declaration with restart
+  bigip_do_deploy:
+    content: "{{ lookup('file', 'do_provision_restart.json') }}"
+  register: task
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Check for task that will reboot
+  bigip_do_deploy:
+    task_id: "{{ task.task_id }}"
+  register: result
 
-  tasks:
-    - name: Start complex declaration with restart
-      bigip_do_deploy:
-        content: "{{ lookup('file', 'do_provision_restart.json') }}"
-      register: task
+- name: Wait for 4 minutes if device is restarting services
+  pause:
+    minutes: 4
+  when:
+    - result.message == "Device is restarting services, unable to check task status."
 
-    - name: Check for task that will reboot
-      bigip_do_deploy:
-        task_id: "{{ task.task_id }}"
-      register: result
+- name: Check for task again after restart
+  bigip_do_deploy:
+    task_id: "{{ task.task_id }}"
+  register: repeat
+  when:
+    - result.message == "Device is restarting services, unable to check task status."
 
-    - name: Wait for 4 minutes if device is restarting services
-      pause:
-        minutes: 4
-      when:
-        - result.message == "Device is restarting services, unable to check task status."
+- name: Dry run DO declaration
+  bigip_do_deploy:
+    content: "{{ lookup('file', 'do_provision.json') }}"
+    dry_run: 'yes'
+  register: result
 
-    - name: Check for task again after restart
-      bigip_do_deploy:
-        task_id: "{{ task.task_id }}"
-      register: repeat
-      when:
-        - result.message == "Device is restarting services, unable to check task status."
-
-    - name: Dry run DO declaration
-      bigip_do_deploy:
-        content: "{{ lookup('file', 'do_provision.json') }}"
-        dry_run: 'yes'
-      register: result
-
-    - name: Assert Dry run DO declaration
-      assert:
-        that:
-          - result is not changed
-          - result is success
-          - result.message is search("Dry run completed successfully")
-          - result.diff | length > 0
+- name: Assert Dry run DO declaration
+  assert:
+    that:
+      - result is not changed
+      - result is success
+      - result.message is search("Dry run completed successfully")
+      - result.diff | length > 0
 '''
 
 RETURN = r'''

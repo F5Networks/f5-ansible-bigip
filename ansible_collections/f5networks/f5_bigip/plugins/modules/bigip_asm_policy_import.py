@@ -124,34 +124,21 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Import ASM policy
+  bigip_asm_policy_import:
+    name: new_asm_policy
+    file: /root/asm_policy.xml
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Import ASM policy inline
+  bigip_asm_policy_import:
+    name: foo-policy4
+    inline: <xml>content</xml>
 
-  tasks:
-    - name: Import ASM policy
-      bigip_asm_policy_import:
-        name: new_asm_policy
-        file: /root/asm_policy.xml
-
-    - name: Import ASM policy inline
-      bigip_asm_policy_import:
-        name: foo-policy4
-        inline: <xml>content</xml>
-
-    - name: Override existing ASM policy
-      bigip_asm_policy_import:
-        name: new_asm_policy
-        source: /root/asm_policy_new.xml
-        force: yes
+- name: Override existing ASM policy
+  bigip_asm_policy_import:
+    name: new_asm_policy
+    source: /root/asm_policy_new.xml
+    force: true
 '''
 
 RETURN = r'''

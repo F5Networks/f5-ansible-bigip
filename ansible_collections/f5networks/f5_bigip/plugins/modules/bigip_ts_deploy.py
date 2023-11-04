@@ -54,27 +54,14 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Declaration with 2 Tenants - AS3
+  bigip_ts_deploy:
+    content: "{{ lookup('file', 'ts_declaration.json') }}"
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
-
-  tasks:
-    - name: Declaration with 2 Tenants - AS3
-      bigip_ts_deploy:
-        content: "{{ lookup('file', 'ts_declaration.json') }}"
-
-    - name: Upload declaration - force yes
-      bigip_ts_deploy:
-        content: "{{ lookup('file', 'ts_declaration.json') }}"
-        force: yes
+- name: Upload declaration - force yes
+  bigip_ts_deploy:
+    content: "{{ lookup('file', 'ts_declaration.json') }}"
+    force: true
 '''
 
 RETURN = r'''

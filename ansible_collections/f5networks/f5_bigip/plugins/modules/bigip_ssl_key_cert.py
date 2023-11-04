@@ -77,35 +77,22 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Import both key and cert
+  bigip_ssl_key_cert:
+    key_content: "{{ lookup('file', 'key.pem') }}"
+    key_name: cert1
+    cert_content: "{{ lookup('file', 'cert.pem') }}"
+    cert_name: cert1
+    state: present
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
-
-  tasks:
-    - name: Import both key and cert
-      bigip_ssl_key_cert:
-        key_content: "{{ lookup('file', 'key.pem') }}"
-        key_name: cert1
-        cert_content: "{{ lookup('file', 'cert.pem') }}"
-        cert_name: cert1
-        state: present
-
-    - name: Import cert and key without appending .crt and .key extensions
-      bigip_ssl_key_cert:
-        key_content: "{{ lookup('file', 'key.pem') }}"
-        key_name: key1
-        cert_content: "{{ lookup('file', 'cert.pem') }}"
-        cert_name: cert1
-        true_names: yes
-        state: present
+- name: Import cert and key without appending .crt and .key extensions
+  bigip_ssl_key_cert:
+    key_content: "{{ lookup('file', 'key.pem') }}"
+    key_name: key1
+    cert_content: "{{ lookup('file', 'cert.pem') }}"
+    cert_name: cert1
+    true_names: true
+    state: present
 '''
 
 RETURN = r'''

@@ -914,102 +914,88 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create a security log profile
+  bigip_security_log_profile:
+    name: "test_log_profile"
+    description: "this is a log profile test"
+    auto_discovery: "local-db-publisher"
+    dos_protection:
+      application: "local-db-publisher"
+      network: "local-db-publisher"
+    protocol_inspection:
+      log_packet: "yes"
+      publisher: "local-db-publisher"
+    packet_filter:
+      rate: 300
+      publisher: "local-db-publisher"
+    bot_defense:
+      publisher: "local-db-publisher"
+      log_alarm: "yes"
+      log_browser: "yes"
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Modify a security log profile
+  bigip_security_log_profile:
+    name: "test_log_profile"
+    packet_filter:
+      rate: 100
+    bot_defense:
+      log_alarm: "no"
 
-  tasks:
-    - name: Create a security log profile
-      bigip_security_log_profile:
-        name: "test_log_profile"
-        description: "this is a log profile test"
-        auto_discovery: "local-db-publisher"
-        dos_protection:
-          application: "local-db-publisher"
-          network: "local-db-publisher"
-        protocol_inspection:
-          log_packet: "yes"
-          publisher: "local-db-publisher"
-        packet_filter:
-          rate: 300
-          publisher: "local-db-publisher"
-        bot_defense:
-          publisher: "local-db-publisher"
-          log_alarm: "yes"
-          log_browser: "yes"
+- name: Delete a security log profile
+  bigip_security_log_profile:
+    name: "test_log_profile"
+    state: absent
 
-    - name: Modify a security log profile
-      bigip_security_log_profile:
-        name: "test_log_profile"
-        packet_filter:
-          rate: 100
-        bot_defense:
-          log_alarm: "no"
+- name: Create a security log profile with network security
+  bigip_security_log_profile:
+    name: "test_log_profile"
+    description: "this is a log profile test"
+    auto_discovery: "local-db-publisher"
+    dos_protection:
+      application: "local-db-publisher"
+      network: "local-db-publisher"
+    protocol_inspection:
+      log_packet: "yes"
+      publisher: "local-db-publisher"
+    packet_filter:
+      rate: 300
+      publisher: "local-db-publisher"
+    bot_defense:
+      publisher: "local-db-publisher"
+      log_alarm: "yes"
+      log_browser: "yes"
+    network_security:
+      publisher: "local-db-publisher"
+      log_acl_match_accept: "yes"
+      log_acl_match_drop: "yes"
+      rate_limit_acl_match_accept: "1000"
+      rate_limit_acl_match_drop: "indefinite"
+      storage_format:
+        type: "field-list"
+        delimiter: "-"
+        fields:
+          - "acl_policy_name"
+          - "acl_rule_name"
+          - "date_time"
+          - "action"
+          - "src_ip"
 
-    - name: Delete a security log profile
-      bigip_security_log_profile:
-        name: "test_log_profile"
-        state: absent
-
-    - name: Create a security log profile with network security
-      bigip_security_log_profile:
-        name: "test_log_profile"
-        description: "this is a log profile test"
-        auto_discovery: "local-db-publisher"
-        dos_protection:
-          application: "local-db-publisher"
-          network: "local-db-publisher"
-        protocol_inspection:
-          log_packet: "yes"
-          publisher: "local-db-publisher"
-        packet_filter:
-          rate: 300
-          publisher: "local-db-publisher"
-        bot_defense:
-          publisher: "local-db-publisher"
-          log_alarm: "yes"
-          log_browser: "yes"
-        network_security:
-          publisher: "local-db-publisher"
-          log_acl_match_accept: "yes"
-          log_acl_match_drop: "yes"
-          rate_limit_acl_match_accept: "1000"
-          rate_limit_acl_match_drop: "indefinite"
-          storage_format:
-            type: "field-list"
-            delimiter: "-"
-            fields:
-              - "acl_policy_name"
-              - "acl_rule_name"
-              - "date_time"
-              - "action"
-              - "src_ip"
-
-    - name: Modify a security log profile sip security
-      bigip_security_log_profile:
-        name: "test_log_profile"
-        packet_filter:
-          rate: 100
-        sip_security:
-          log_sip_drop: "yes"
-          log_sip_server_errors: "yes"
-          storage_format:
-            type: "field-list"
-            delimiter: ";"
-            fields:
-              - "date_time"
-              - "dest_ip"
-              - "sip_callee"
-              - "sip_caller"
-
+- name: Modify a security log profile sip security
+  bigip_security_log_profile:
+    name: "test_log_profile"
+    packet_filter:
+      rate: 100
+    sip_security:
+      log_sip_drop: "yes"
+      log_sip_server_errors: "yes"
+      storage_format:
+        type: "field-list"
+        delimiter: ";"
+        fields:
+          - "date_time"
+          - "dest_ip"
+          - "sip_callee"
+          - "sip_caller"
 '''
 
 RETURN = r'''

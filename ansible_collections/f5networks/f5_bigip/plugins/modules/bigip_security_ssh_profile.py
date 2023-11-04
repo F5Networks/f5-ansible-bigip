@@ -366,56 +366,43 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create an SSH proxy profile
+  bigip_security_ssh_profile:
+    name: test_profile
+    default_action:
+      name: default_rule
+      shell:
+        control: disallow
+        log: true
+      sub_system:
+        control: disallow
+        log: true
+      agent:
+        control: terminate
+        log: true
+      other:
+        control: terminate
+        log: true
+    lang_env_tolerance: common
+    description: "this is a new profile"
+    timeout: 180
+    state: present
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Modify an SSH proxy profile
+  bigip_security_ssh_profile:
+    name: test_profile
+    default_action:
+      name: default_rule
+      shell:
+        control: allow
+        log: false
+    timeout: 200
+    state: present
 
-  tasks:
-    - name: Create an SSH proxy profile
-      bigip_security_ssh_profile:
-        name: test_profile
-        default_action:
-          name: default_rule
-          shell:
-            control: disallow
-            log: True
-          sub_system:
-            control: disallow
-            log: True
-          agent:
-            control: terminate
-            log: True
-          other:
-            control: terminate
-            log: True
-        lang_env_tolerance: common
-        description: "this is a new profile"
-        timeout: 180
-        state: present
-
-    - name: Modify an SSH proxy profile
-      bigip_security_ssh_profile:
-        name: test_profile
-        default_action:
-          name: default_rule
-          shell:
-            control: allow
-            log: False
-        timeout: 200
-        state: present
-
-    - name: Remove ssh proxy profile
-      bigip_security_ssh_profile:
-        name: test_profile
-        state: absent
+- name: Remove ssh proxy profile
+  bigip_security_ssh_profile:
+    name: test_profile
+    state: absent
 '''
 
 RETURN = r'''

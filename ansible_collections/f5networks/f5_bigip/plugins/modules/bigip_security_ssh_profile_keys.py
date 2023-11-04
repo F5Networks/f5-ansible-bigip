@@ -73,42 +73,29 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Add SSH keys to ssh proxy security profile
+  bigip_security_ssh_profile_keys:
+    name: auth1
+    profile_name: ssh_test
+    proxy_client_private_key: "XXXXXXXXXXXXXXXXXX"
+    proxy_client_public_key: "YYYYYYYYYYYYYYYYYYY"
+    proxy_server_public_key: "CCCCCCCCCCCCCCCCCCC"
+    proxy_server_private_key: "BBBBBBBBBBBBBBBBBB"
+    real_server_public_key: "AAAAAAAAAAAAAAAAAAAA"
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Modify SSH private keys on ssh proxy security profile - force on
+  bigip_security_ssh_profile_keys:
+    name: auth1
+    profile_name: ssh_test
+    proxy_client_private_key: "XXXXXXXXXXXXXXXXXX"
+    proxy_server_private_key: "BBBBBBBBBBBBBBBBBB"
+    force: true
 
-  tasks:
-    - name: Add SSH keys to ssh proxy security profile
-      bigip_security_ssh_profile_keys:
-        name: auth1
-        profile_name: ssh_test
-        proxy_client_private_key: "XXXXXXXXXXXXXXXXXX"
-        proxy_client_public_key: "YYYYYYYYYYYYYYYYYYY"
-        proxy_server_public_key: "CCCCCCCCCCCCCCCCCCC"
-        proxy_server_private_key: "BBBBBBBBBBBBBBBBBB"
-        real_server_public_key: "AAAAAAAAAAAAAAAAAAAA"
-
-    - name: Modify SSH private keys on ssh proxy security profile - force on
-      bigip_security_ssh_profile_keys:
-        name: auth1
-        profile_name: ssh_test
-        proxy_client_private_key: "XXXXXXXXXXXXXXXXXX"
-        proxy_server_private_key: "BBBBBBBBBBBBBBBBBB"
-        force: yes
-
-    - name: Remove SSH keys from ssh proxy security profile
-      bigip_security_ssh_profile_keys:
-        name: auth1
-        profile_name: ssh_test
-        state: absent
+- name: Remove SSH keys from ssh proxy security profile
+  bigip_security_ssh_profile_keys:
+    name: auth1
+    profile_name: ssh_test
+    state: absent
 '''
 
 RETURN = r'''

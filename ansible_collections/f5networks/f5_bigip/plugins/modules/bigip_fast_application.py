@@ -72,41 +72,28 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create FAST application
+  bigip_fast_application:
+    template: "examples/simple_http"
+    content: "{{ lookup('file', 'simple_http.json') }}"
+    state: "create"
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Update existing FAST application
+  bigip_fast_application:
+    tenant: "sample_tenant"
+    application: "sample_app"
+    content: "{{ lookup('file', 'simple_http_update.json') }}"
+    state: "present"
 
-  tasks:
-    - name: Create FAST application
-      bigip_fast_application:
-        template: "examples/simple_http"
-        content: "{{ lookup('file', 'simple_http.json') }}"
-        state: "create"
+- name: Remove existing FAST application
+  bigip_fast_application:
+    tenant: "sample_tenant"
+    application: "sample_app"
+    state: "absent"
 
-    - name: Update existing FAST application
-      bigip_fast_application:
-        tenant: "sample_tenant"
-        application: "sample_app"
-        content: "{{ lookup('file', 'simple_http_update.json') }}"
-        state: "present"
-
-    - name: Remove existing FAST application
-      bigip_fast_application:
-        tenant: "sample_tenant"
-        application: "sample_app"
-        state: "absent"
-
-    - name: Remove all existing FAST applications on device
-      bigip_fast_application:
-        state: "purge"
+- name: Remove all existing FAST applications on device
+  bigip_fast_application:
+    state: "purge"
 '''
 
 RETURN = r'''

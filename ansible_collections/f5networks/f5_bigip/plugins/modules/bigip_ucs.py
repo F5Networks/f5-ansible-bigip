@@ -121,80 +121,67 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Upload UCS
+  bigip_ucs:
+    ucs: /root/bigip.localhost.localdomain.ucs
+    state: present
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Install (upload, install) UCS - start task
+  bigip_ucs:
+    ucs: /root/bigip.localhost.localdomain.ucs
+    state: installed
+    register: task
 
-  tasks:
-    - name: Upload UCS
-      bigip_ucs:
-        ucs: /root/bigip.localhost.localdomain.ucs
-        state: present
+- name: Install (upload, install) UCS - check task
+  bigip_ucs:
+    ucs: "{{ task.ucs }}"
+    task_id: "{{ task.task_id }}"
+    timeout: 300
 
-    - name: Install (upload, install) UCS - start task
-      bigip_ucs:
-        ucs: /root/bigip.localhost.localdomain.ucs
-        state: installed
-        register: task
+- name: Install (upload, install) UCS without installing the license portion - start task
+  bigip_ucs:
+    ucs: /root/bigip.localhost.localdomain.ucs
+    no_license: true
+    state: installed
+    register: task
 
-    - name: Install (upload, install) UCS - check task
-      bigip_ucs:
-        ucs: "{{ task.ucs }}"
-        task_id: "{{ task.task_id }}"
-        timeout: 300
+- name: Install (upload, install) UCS without installing the license portion - check task
+  bigip_ucs:
+    ucs: "{{ task.ucs }}"
+    task_id: "{{ task.task_id }}"
+    timeout: 300
 
-    - name: Install (upload, install) UCS without installing the license portion - start task
-      bigip_ucs:
-        ucs: /root/bigip.localhost.localdomain.ucs
-        no_license: yes
-        state: installed
-        register: task
+- name: Install (upload, install) UCS except the license, and bypassing the platform check - start task
+  bigip_ucs:
+    ucs: /root/bigip.localhost.localdomain.ucs
+    no_license: true
+    no_platform_check: true
+    state: installed
+    register: task
 
-    - name: Install (upload, install) UCS without installing the license portion - check task
-      bigip_ucs:
-        ucs: "{{ task.ucs }}"
-        task_id: "{{ task.task_id }}"
-        timeout: 300
+- name: Install (upload, install) UCS except the license, and bypassing the platform check - check task
+  bigip_ucs:
+    ucs: "{{ task.ucs }}"
+    task_id: "{{ task.task_id }}"
+    timeout: 300
 
-    - name: Install (upload, install) UCS except the license, and bypassing the platform check - start task
-      bigip_ucs:
-        ucs: /root/bigip.localhost.localdomain.ucs
-        no_license: yes
-        no_platform_check: yes
-        state: installed
-        register: task
+- name: Install (upload, install) UCS using a passphrase necessary to load the UCS - start task
+  bigip_ucs:
+    ucs: /root/bigip.localhost.localdomain.ucs
+    passphrase: MyPassphrase1234
+    state: installed
+    register: task
 
-    - name: Install (upload, install) UCS except the license, and bypassing the platform check - check task
-      bigip_ucs:
-        ucs: "{{ task.ucs }}"
-        task_id: "{{ task.task_id }}"
-        timeout: 300
+- name: Install (upload, install) UCS using a passphrase necessary to load the UCS - check task
+  bigip_ucs:
+    ucs: "{{ task.ucs }}"
+    task_id: "{{ task.task_id }}"
+    timeout: 300
 
-    - name: Install (upload, install) UCS using a passphrase necessary to load the UCS - start task
-      bigip_ucs:
-        ucs: /root/bigip.localhost.localdomain.ucs
-        passphrase: MyPassphrase1234
-        state: installed
-        register: task
-
-    - name: Install (upload, install) UCS using a passphrase necessary to load the UCS - check task
-      bigip_ucs:
-        ucs: "{{ task.ucs }}"
-        task_id: "{{ task.task_id }}"
-        timeout: 300
-
-    - name: Remove uploaded UCS file
-      bigip_ucs:
-        ucs: bigip.localhost.localdomain.ucs
-        state: absent
+- name: Remove uploaded UCS file
+  bigip_ucs:
+    ucs: bigip.localhost.localdomain.ucs
+    state: absent
 '''
 
 RETURN = r'''
