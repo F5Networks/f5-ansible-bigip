@@ -1,0 +1,2 @@
+# This file contains ignores rule violations for ansible-lint
+ansible_collections/f5networks/f5_bigip/changelogs/changelog.yaml yaml[indentation]

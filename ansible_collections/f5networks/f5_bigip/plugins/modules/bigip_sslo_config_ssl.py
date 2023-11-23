@@ -232,56 +232,43 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create an SSLO SSL config with reverse proxy - output json only
+  bigip_sslo_config_ssl:
+    name: "reverse_foo"
+    client_settings:
+      proxy_type: "reverse"
+      cert: "/Common/sslo_test.crt"
+      key: "/Common/sslo_test.key"
+    dump_json: true
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Create an SSLO SSL config with forward proxy
+  bigip_sslo_config_ssl:
+    name: "forward_foo"
+    client_settings:
+      proxy_type: "forward"
+      cipher_type: "group"
+      cipher_group: "/Common/f5-default"
+      ca_cert: "/Common/default.crt"
+      ca_key: "/Common/default.key"
+      alpn: true
+    server_settings:
+      cipher_type: "group"
+      cipher_group: "/Common/f5-default"
+    bypass_handshake_failure: true
+    timeout: 400
 
-  tasks:
-    - name: Create an SSLO SSL config with reverse proxy - output json only
-      bigip_sslo_config_ssl:
-        name: "reverse_foo"
-        client_settings:
-          proxy_type: "reverse"
-          cert: "/Common/sslo_test.crt"
-          key: "/Common/sslo_test.key"
-        dump_json: yes
+- name: Modify an SSLO SSL config with forward proxy
+  bigip_sslo_config_ssl:
+    name: "forward_foo"
+    client_settings:
+      proxy_type: "forward"
+      ca_cert: "/Common/sslo_test.crt"
+      ca_key: "/Common/sslo_test.key"
 
-    - name: Create an SSLO SSL config with forward proxy
-      bigip_sslo_config_ssl:
-        name: "forward_foo"
-        client_settings:
-          proxy_type: "forward"
-          cipher_type: "group"
-          cipher_group: "/Common/f5-default"
-          ca_cert: "/Common/default.crt"
-          ca_key: "/Common/default.key"
-          alpn: yes
-        server_settings:
-          cipher_type: "group"
-          cipher_group: "/Common/f5-default"
-        bypass_handshake_failure: yes
-        timeout: 400
-
-    - name: Modify an SSLO SSL config with forward proxy
-      bigip_sslo_config_ssl:
-        name: "forward_foo"
-        client_settings:
-          proxy_type: "forward"
-          ca_cert: "/Common/sslo_test.crt"
-          ca_key: "/Common/sslo_test.key"
-
-    - name: Delete an SSLO SSL config
-      bigip_sslo_config_ssl:
-        name: "forward_foo"
-        state: absent
+- name: Delete an SSLO SSL config
+  bigip_sslo_config_ssl:
+    name: "forward_foo"
+    state: absent
 '''
 
 RETURN = r'''

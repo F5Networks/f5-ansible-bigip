@@ -130,46 +130,33 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create SSLO L2 service
+  bigip_sslo_service_layer2:
+    name: "layer2a"
+    devices:
+      - name: "FEYE1"
+        ratio: 1
+        interface_in: "1.1"
+        tag_in: 100
+        interface_out: "1.1"
+        tag_out: 101
+    ip_offset: 1
+    port_remap: 8283
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Modify SSLO L2 service
+  bigip_sslo_service_layer2:
+    name: "layer2a"
+    devices:
+      - name: "FEYE1"
+        ratio: 1
+        vlan_in: "/Common/L2service_vlan_in"
+        interface_out: "1.1"
+        tag_out: 101
 
-  tasks:
-    - name: Create SSLO L2 service
-      bigip_sslo_service_layer2:
-        name: "layer2a"
-        devices:
-          - name: "FEYE1"
-            ratio: 1
-            interface_in: "1.1"
-            tag_in: 100
-            interface_out: "1.1"
-            tag_out: 101
-        ip_offset: 1
-        port_remap: 8283
-
-    - name: Modify SSLO L2 service
-      bigip_sslo_service_layer2:
-        name: "layer2a"
-        devices:
-          - name: "FEYE1"
-            ratio: 1
-            vlan_in: "/Common/L2service_vlan_in"
-            interface_out: "1.1"
-            tag_out: 101
-
-    - name: Delete SSLO L2 service
-      bigip_sslo_service_layer2:
-        name: "layer2a"
-        state: "absent"
+- name: Delete SSLO L2 service
+  bigip_sslo_service_layer2:
+    name: "layer2a"
+    state: "absent"
 '''
 
 RETURN = r'''

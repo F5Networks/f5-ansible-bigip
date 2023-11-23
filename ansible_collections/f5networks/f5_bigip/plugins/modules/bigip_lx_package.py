@@ -59,41 +59,28 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Install AS3
+  bigip_lx_package:
+    package: f5-appsvcs-3.5.0-3.noarch.rpm
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Install AS3 with custom timeout
+  bigip_lx_package:
+    package: f5-appsvcs-3.5.0-3.noarch.rpm
+    timeout: 100
 
-  tasks:
-    - name: Install AS3
-      bigip_lx_package:
-        package: f5-appsvcs-3.5.0-3.noarch.rpm
+- name: Add an LX package stored in a role
+  bigip_lx_package:
+    package: "{{ roles_path }}/files/MyApp-0.1.0-0001.noarch.rpm'"
 
-    - name: Install AS3 with custom timeout
-      bigip_lx_package:
-        package: f5-appsvcs-3.5.0-3.noarch.rpm
-        timeout: 100
+- name: Remove an LX package
+  bigip_lx_package:
+    package: MyApp-0.1.0-0001.noarch.rpm
+    state: absent
 
-    - name: Add an LX package stored in a role
-      bigip_lx_package:
-        package: "{{ roles_path }}/files/MyApp-0.1.0-0001.noarch.rpm'"
-
-    - name: Remove an LX package
-      bigip_lx_package:
-        package: MyApp-0.1.0-0001.noarch.rpm
-        state: absent
-
-    - name: Install AS3 and don't delete package file
-      bigip_lx_package:
-        package: f5-appsvcs-3.5.0-3.noarch.rpm
-        retain_package_file: yes
+- name: Install AS3 and don't delete package file
+  bigip_lx_package:
+    package: f5-appsvcs-3.5.0-3.noarch.rpm
+    retain_package_file: true
 '''
 
 RETURN = r'''

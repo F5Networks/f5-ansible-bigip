@@ -178,67 +178,55 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: SSLO LAYER 3 service using exist vlan
+  bigip_sslo_service_layer3:
+    name: "layer3_test2"
+    devices_to:
+      vlan: "/Common/testvlan_in"
+      self_ip: "198.19.64.7"
+      netmask: "255.255.255.128"
+    devices_from:
+      vlan: "/Common/testvlan_out"
+      self_ip: "198.19.64.245"
+      netmask: "255.255.255.128"
+    devices:
+      - ip: "198.19.64.30"
+      - ip: "198.19.64.31"
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: SSLO LAYER 3 service using interface and to create Vlan and service
+  bigip_sslo_service_layer3:
+    name: "layer3a"
+    devices_to:
+      interface: "1.1"
+      tag: 40
+      self_ip: "198.19.64.7"
+      netmask: "255.255.255.128"
+    devices_from:
+      interface: "1.1"
+      tag: 50
+      self_ip: "198.19.64.245"
+      netmask: "255.255.255.128"
+    devices:
+      - ip: "198.19.64.30"
+      - ip: "198.19.64.31"
 
-  tasks:
-    - name: SSLO LAYER 3 service using exist vlan
-      bigip_sslo_service_layer3:
-        name: "layer3_test2"
-        devices_to:
-          vlan: "/Common/testvlan_in"
-          self_ip: "198.19.64.7"
-          netmask: "255.255.255.128"
-        devices_from:
-          vlan: "/Common/testvlan_out"
-          self_ip: "198.19.64.245"
-          netmask: "255.255.255.128"
-        devices:
-          - ip: "198.19.64.30"
-          - ip: "198.19.64.31"
-    - name: SSLO LAYER 3 service using interface and to create Vlan and service
-      bigip_sslo_service_layer3:
-        name: "layer3a"
-        devices_to:
-          interface: "1.1"
-          tag: 40
-          self_ip: "198.19.64.7"
-          netmask: "255.255.255.128"
-        devices_from:
-          interface: "1.1"
-          tag: 50
-          self_ip: "198.19.64.245"
-          netmask: "255.255.255.128"
-        devices:
-          - ip: "198.19.64.30"
-          - ip: "198.19.64.31"
-    - name: SSLO LAYER 3 service
-      bigip_sslo_service_layer3:
-        provider: "{{ provider }}"
-        name: "layer3a"
-        devices_to:
-            vlan: "/Common/layer3-in-vlan"
-            selfip: "198.19.64.7"
-            netmask: "255.255.255.128"
-        devices_from:
-            interface: "1.3"
-            tag: 50
-            selfip: "198.19.64.245"
-            netmask: "255.255.255.128"
-        devices:
-          - ip: "198.19.64.30"
-          - ip: "198.19.64.31"
-        snat: automap
-      delegate_to: localhost
+- name: SSLO LAYER 3 service
+  bigip_sslo_service_layer3:
+    provider: "{{ provider }}"
+    name: "layer3a"
+    devices_to:
+      vlan: "/Common/layer3-in-vlan"
+      selfip: "198.19.64.7"
+      netmask: "255.255.255.128"
+    devices_from:
+      interface: "1.3"
+      tag: 50
+      selfip: "198.19.64.245"
+      netmask: "255.255.255.128"
+    devices:
+      - ip: "198.19.64.30"
+      - ip: "198.19.64.31"
+    snat: automap
 '''
 
 RETURN = r'''

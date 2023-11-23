@@ -1,0 +1,42 @@
+name: Collection Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Collection
+        uses: artis3n/ansible_galaxy_collection@v2
+        with:
+          collection_dir: 'ansible_collections/f5networks/${{ vars.COLNAME }}'
+          api_key: "${{ secrets.GALAXY_API_KEY }}"
+          publish: false
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "f5networks-${{ vars.COLNAME }}-${{ github.ref_name }}.tar.gz"
+          tag: "${{ github.ref_name }}"
+          name: "Declarative Collection Release ${{ github.ref_name }}"
+          omitBody: true
+          token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Publish Collection
+        uses: artis3n/ansible_galaxy_collection@v2
+        with:
+          collection_dir: 'ansible_collections/f5networks/${{ vars.COLNAME }}'
+          api_key: "${{ secrets.GALAXY_API_KEY }}"
+          build: false
+
+      - uses: neonidian/teams-notify-build-status@v3
+        with:
+          webhookUrl: ${{ secrets.RELEASE_TEAMS_WEBHOOK }}
+          message: "Collection ${{ vars.COLNAME }} version: ${{ github.ref_name }} released."

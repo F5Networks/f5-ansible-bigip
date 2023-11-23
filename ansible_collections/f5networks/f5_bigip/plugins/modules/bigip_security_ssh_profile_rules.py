@@ -372,59 +372,46 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create ssh profile rule
+  bigip_security_ssh_profile_rules:
+    name: test_rule_1
+    users:
+      - test_user_1
+      - test_user_2
+    profile_name: test_ssh
+    action:
+      name: test_action
+      shell:
+        control: allow
+        log: true
+      forward_x11:
+        control: terminate
+        log: true
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Modify ssh profile rule, add action
+  bigip_security_ssh_profile_rules:
+    name: test_rule_1
+    users:
+      - test_user_1
+      - test_user_2
+    profile_name: test_ssh
+    action:
+      name: test_action
+      shell:
+        control: allow
+        log: true
+      forward_x11:
+        control: terminate
+        log: true
+      other:
+        control: terminate
+        log: true
 
-  tasks:
-    - name: Create ssh profile rule
-      bigip_security_ssh_profile_rules:
-        name: test_rule_1
-        users:
-          - test_user_1
-          - test_user_2
-        profile_name: test_ssh
-        action:
-          name: test_action
-          shell:
-            control: allow
-            log: yes
-          forward_x11:
-            control: terminate
-            log: yes
-
-    - name: Modify ssh profile rule, add action
-      bigip_security_ssh_profile_rules:
-        name: test_rule_1
-        users:
-          - test_user_1
-          - test_user_2
-        profile_name: test_ssh
-        action:
-          name: test_action
-          shell:
-            control: allow
-            log: yes
-          forward_x11:
-            control: terminate
-            log: yes
-          other:
-            control: terminate
-            log: yes
-
-    - name: Delete ssh profile rule
-      bigip_security_ssh_profile_rules:
-        name: test_rule_1
-        profile_name: test_ssh
-        state: absent
+- name: Delete ssh profile rule
+  bigip_security_ssh_profile_rules:
+    name: test_rule_1
+    profile_name: test_ssh
+    state: absent
 '''
 
 RETURN = r'''

@@ -363,35 +363,22 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create SSLO Topology
+  bigip_sslo_topology:
+    name: "l3_topo_out"
+    topology_type: "outbound_l3"
+    dest: "192.168.1.4%0/32"
+    port: 8080
+    ip_family: "ipv4"
+    ssl_settings: "foobar"
+    vlans:
+      - "/Common/fake1"
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
-
-  tasks:
-    - name: Create SSLO Topology
-      bigip_sslo_topology:
-        name: "l3_topo_out"
-        topology_type: "outbound_l3"
-        dest: "192.168.1.4%0/32"
-        port: 8080
-        ip_family: "ipv4"
-        ssl_settings: "foobar"
-        vlans:
-          - "/Common/fake1"
-
-    - name: Delete SSLO Topology
-      bigip_sslo_topology:
-        name: "l3_topo_out"
-        topology_type: "outbound_l3"
-        state: "absent"
+- name: Delete SSLO Topology
+  bigip_sslo_topology:
+    name: "l3_topo_out"
+    topology_type: "outbound_l3"
+    state: "absent"
 '''
 
 RETURN = r'''

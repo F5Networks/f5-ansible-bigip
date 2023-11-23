@@ -57,27 +57,14 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Declaration with 2 Tenants - AS3
+  bigip_as3_deploy:
+    content: "{{ lookup('file', 'two_tenants.json') }}"
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
-
-  tasks:
-    - name: Declaration with 2 Tenants - AS3
-      bigip_as3_deploy:
-        content: "{{ lookup('file', 'two_tenants.json') }}"
-
-    - name: Remove one tenant - AS3
-      bigip_as3_deploy:
-        tenant: "Sample_01"
-        state: absent
+- name: Remove one tenant - AS3
+  bigip_as3_deploy:
+    tenant: "Sample_01"
+    state: absent
 '''
 
 RETURN = r'''

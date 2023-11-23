@@ -55,36 +55,23 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Export APM access profile
+  bigip_apm_policy_fetch:
+    name: foobar
+    file: export_foo
+    dest: /root/download
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Export APM access policy
+  bigip_apm_policy_fetch:
+    name: foobar
+    file: export_foo
+    dest: /root/download
+    type: access_policy
 
-  tasks:
-    - name: Export APM access profile
-      bigip_apm_policy_fetch:
-        name: foobar
-        file: export_foo
-        dest: /root/download
-
-    - name: Export APM access policy
-      bigip_apm_policy_fetch:
-        name: foobar
-        file: export_foo
-        dest: /root/download
-        type: access_policy
-
-    - name: Export APM access profile, autogenerate name
-      bigip_apm_policy_fetch:
-        name: foobar
-        dest: /root/download
+- name: Export APM access profile, autogenerate name
+  bigip_apm_policy_fetch:
+    name: foobar
+    dest: /root/download
 '''
 
 RETURN = r'''

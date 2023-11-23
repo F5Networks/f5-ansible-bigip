@@ -46,29 +46,16 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Add a utility license to the system
+  bigiq_utility_license:
+    license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+    accept_eula: true
+    state: present
 
-  vars:
-    ansible_host: "cm.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigiq
-    ansible_httpapi_use_ssl: yes
-
-  tasks:
-    - name: Add a utility license to the system
-      bigiq_utility_license:
-        license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
-        accept_eula: yes
-        state: present
-
-    - name: Remove a utility license from the system
-      bigiq_utility_license:
-        license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
-        state: absent
+- name: Remove a utility license from the system
+  bigiq_utility_license:
+    license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+    state: absent
 '''
 
 RETURN = r'''

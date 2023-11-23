@@ -131,58 +131,45 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create an SSLO authentication service
+  bigip_sslo_config_authentication:
+    name: "example_service"
+    ocsp:
+      fqdn: "foo.example.com"
+      dest: "192.168.1.1/32"
+      source: "10.10.10.0/24"
+      ssl_profile: "example_sslo"
+      vlans:
+        - "/Common/vlan1"
+        - "/Common/vlan2"
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Modify an SSLO authentication service
+  bigip_sslo_config_authentication:
+    name: "example_service"
+    ocsp:
+      ssl_profile: "example_sslo"
+      vlans:
+        - "/Common/client-vlan"
+        - "/Common/dlp-vlan"
+      source: "0.0.0.0%0/0"
 
-  tasks:
-    - name: Create an SSLO authentication service
-      bigip_sslo_config_authentication:
-        name: "example_service"
-        ocsp:
-          fqdn: "foo.example.com"
-          dest: "192.168.1.1/32"
-          source: "10.10.10.0/24"
-          ssl_profile: "example_sslo"
-          vlans:
-            - "/Common/vlan1"
-            - "/Common/vlan2"
+- name: Create an SSLO authentication service - output json only
+  bigip_sslo_config_authentication:
+    name: "example_service"
+    ocsp:
+      fqdn: "foo.example.com"
+      dest: "192.168.1.1/32"
+      source: "10.10.10.0/24"
+      ssl_profile: "example_sslo"
+      vlans:
+        - "/Common/vlan1"
+        - "/Common/vlan2"
+    dump_json: true
 
-    - name: Modify an SSLO authentication service
-      bigip_sslo_config_authentication:
-        name: "example_service"
-        ocsp:
-          ssl_profile: "example_sslo"
-          vlans:
-            - "/Common/client-vlan"
-            - "/Common/dlp-vlan"
-          source: "0.0.0.0%0/0"
-
-    - name: Create an SSLO authentication service - output json only
-      bigip_sslo_config_authentication:
-        name: "example_service"
-        ocsp:
-          fqdn: "foo.example.com"
-          dest: "192.168.1.1/32"
-          source: "10.10.10.0/24"
-          ssl_profile: "example_sslo"
-          vlans:
-            - "/Common/vlan1"
-            - "/Common/vlan2"
-        dump_json: yes
-
-    - name: Delete an SSLO authentication service
-      bigip_sslo_config_authentication:
-        name: "example_service"
-        state: absent
+- name: Delete an SSLO authentication service
+  bigip_sslo_config_authentication:
+    name: "example_service"
+    state: absent
 '''
 
 RETURN = r'''

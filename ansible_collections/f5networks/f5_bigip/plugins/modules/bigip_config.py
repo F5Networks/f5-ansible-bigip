@@ -66,67 +66,54 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Save the running configuration of the BIG-IP
+  bigip_config:
+    save: true
+  register: task
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Check for task completion
+  bigip_config:
+    task_id: "{{ task.task_id }}"
+    timeout: 150
 
-  tasks:
-    - name: Save the running configuration of the BIG-IP
-      bigip_config:
-        save: yes
-      register: task
+- name: Reset the BIG-IP configuration, for example, to RMA the device
+  bigip_config:
+    reset: true
+  register: task
 
-    - name: Check for task completion
-      bigip_config:
-        task_id: "{{ task.task_id }}"
-        timeout: 150
+- name: Change connection password after config was reset
+  set_fact:
+    ansible_httpapi_password: "default"
 
-    - name: Reset the BIG-IP configuration, for example, to RMA the device
-      bigip_config:
-        reset: yes
-      register: task
+- name: Check for reset task completion
+  bigip_config:
+    task_id: "{{ task.task_id }}"
+    timeout: 150
 
-    - name: Change connection password after config was reset
-      set_fact:
-        ansible_httpapi_password: "default"
+- name: Save the running configuration of the BIG-IP after reset
+  bigip_config:
+    save: true
+  register: task
 
-    - name: Check for reset task completion
-      bigip_config:
-        task_id: "{{ task.task_id }}"
-        timeout: 150
+- name: Check for save config task completion after reset
+  bigip_config:
+    task_id: "{{ task.task_id }}"
+    timeout: 150
 
-    - name: Save the running configuration of the BIG-IP after reset
-      bigip_config:
-        save: yes
-      register: task
+- name: Load an SCF configuration
+  bigip_config:
+    merge_content: "{{ role_path }}/files/config.scf') }}"
+  register: task
 
-    - name: Check for save config task completion after reset
-      bigip_config:
-        task_id: "{{ task.task_id }}"
-        timeout: 150
+- name: Check for merge config task completion
+  bigip_config:
+    task_id: "{{ task.task_id }}"
+    timeout: 150
 
-    - name: Load an SCF configuration
-      bigip_config:
-        merge_content: "{{ role_path }}/files/config.scf') }}"
-      register: task
-
-    - name: Check for merge config task completion
-      bigip_config:
-        task_id: "{{ task.task_id }}"
-        timeout: 150
-
-    - name: Verify an SCF configuration merge validity
-      bigip_config:
-        merge_content: "{{ role_path }}/files/config.scf') }}"
-        validate: true
+- name: Verify an SCF configuration merge validity
+  bigip_config:
+    merge_content: "{{ role_path }}/files/config.scf') }}"
+    validate: true
 '''
 
 RETURN = r'''

@@ -59,41 +59,28 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Import APM profile
+  bigip_apm_policy_import:
+    name: new_apm_profile
+    source: /root/apm_profile.tar.gz
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Import APM policy
+  bigip_apm_policy_import:
+    name: new_apm_policy
+    source: /root/apm_policy.tar.gz
+    type: access_policy
 
-  tasks:
-    - name: Import APM profile
-      bigip_apm_policy_import:
-        name: new_apm_profile
-        source: /root/apm_profile.tar.gz
+- name: Override existing APM policy
+  bigip_asm_policy:
+    name: new_apm_policy
+    source: /root/apm_policy.tar.gz
+    force: true
 
-    - name: Import APM policy
-      bigip_apm_policy_import:
-        name: new_apm_policy
-        source: /root/apm_policy.tar.gz
-        type: access_policy
-
-    - name: Override existing APM policy
-      bigip_asm_policy:
-        name: new_apm_policy
-        source: /root/apm_policy.tar.gz
-        force: yes
-
-    - name: Import APM profile without re-using existing configuration objects
-      bigip_apm_policy_import:
-        name: new_apm_profile
-        source: /root/apm_profile.tar.gz
-        reuse_objects: false
+- name: Import APM profile without re-using existing configuration objects
+  bigip_apm_policy_import:
+    name: new_apm_profile
+    source: /root/apm_profile.tar.gz
+    reuse_objects: false
 '''
 
 RETURN = r'''

@@ -102,55 +102,41 @@ author:
 '''
 
 EXAMPLES = r'''
+- name: Run show version on remote devices
+  bigip_command:
+    commands: show sys version
 
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Run show version and check to see if output contains BIG-IP
+  bigip_command:
+    commands: show sys version
+    wait_for: result[0] contains BIG-IP
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Run multiple commands on remote nodes
+  bigip_command:
+    commands:
+      - show sys version
+      - list ltm virtual
 
-  tasks:
-    - name: Run show version on remote devices
-      bigip_command:
-        commands: show sys version
+- name: Run multiple commands and evaluate the output
+  bigip_command:
+    commands:
+      - show sys version
+      - list ltm virtual
+    wait_for:
+      - result[0] contains BIG-IP
+      - result[1] contains my-vs
 
-    - name: Run show version and check to see if output contains BIG-IP
-      bigip_command:
-        commands: show sys version
-        wait_for: result[0] contains BIG-IP
+- name: Tmsh prefixes will automatically be handled
+  bigip_command:
+    commands:
+      - show sys version
+      - tmsh list ltm virtual
 
-    - name: Run multiple commands on remote nodes
-      bigip_command:
-        commands:
-          - show sys version
-          - list ltm virtual
-
-    - name: Run multiple commands and evaluate the output
-      bigip_command:
-        commands:
-          - show sys version
-          - list ltm virtual
-        wait_for:
-          - result[0] contains BIG-IP
-          - result[1] contains my-vs
-
-    - name: Tmsh prefixes will automatically be handled
-      bigip_command:
-        commands:
-          - show sys version
-          - tmsh list ltm virtual
-
-    - name: Delete all LTM nodes in Partition1, assuming no dependencies exist
-      bigip_command:
-        commands:
-          - delete ltm node all
-        chdir: Partition1
+- name: Delete all LTM nodes in Partition1, assuming no dependencies exist
+  bigip_command:
+    commands:
+      - delete ltm node all
+    chdir: Partition1
 '''
 
 RETURN = r'''

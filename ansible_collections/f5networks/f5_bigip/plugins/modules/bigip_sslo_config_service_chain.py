@@ -83,42 +83,29 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create SSLO service chain
+  bigip_sslo_config_service_chain:
+    name: "demo_chain_1"
+    services:
+      - service_name: "icap1"
+        type: "icap"
+        ip_family: "ipv4"
+      - service_name: "layer3a"
+        type: "L3"
+        ip_family: "ipv4"
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Modify SSLO service chain
+  bigip_sslo_config_service_chain:
+    name: "demo_chain_1"
+    services:
+      - service_name: "icap1"
+        type: "icap"
+        ip_family: "ipv4"
 
-  tasks:
-    - name: Create SSLO service chain
-      bigip_sslo_config_service_chain:
-        name: "demo_chain_1"
-        services:
-          - service_name: "icap1"
-            type: "icap"
-            ip_family: "ipv4"
-          - service_name: "layer3a"
-            type: "L3"
-            ip_family: "ipv4"
-
-    - name: Modify SSLO service chain
-      bigip_sslo_config_service_chain:
-        name: "demo_chain_1"
-        services:
-          - service_name: "icap1"
-            type: "icap"
-            ip_family: "ipv4"
-
-    - name: Delete SSLO service chain
-      bigip_sslo_config_service_chain:
-        name: "demo_chain_1"
-        state: absent
+- name: Delete SSLO service chain
+  bigip_sslo_config_service_chain:
+    name: "demo_chain_1"
+    state: absent
 '''
 
 RETURN = r'''

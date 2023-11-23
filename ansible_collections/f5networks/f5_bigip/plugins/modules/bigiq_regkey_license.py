@@ -62,39 +62,26 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Add a registration key license to a pool
+  bigiq_regkey_license:
+    regkey_pool: foo-pool
+    license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+    accept_eula: true
 
-  vars:
-    ansible_host: "cm.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigiq
-    ansible_httpapi_use_ssl: yes
+- name: Add a registration key license with addon keys to a pool
+  bigiq_regkey_license:
+    regkey_pool: foo-pool
+    license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+    addon_keys:
+      - YYYY-YYY-YYY
+      - ZZZZ-ZZZ-ZZZ
+    accept_eula: true
 
-  tasks:
-    - name: Add a registration key license to a pool
-      bigiq_regkey_license:
-        regkey_pool: foo-pool
-        license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
-        accept_eula: yes
-
-    - name: Add a registration key license with addon keys to a pool
-      bigiq_regkey_license:
-        regkey_pool: foo-pool
-        license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
-        addon_keys:
-          - YYYY-YYY-YYY
-          - ZZZZ-ZZZ-ZZZ
-        accept_eula: yes
-
-    - name: Remove a registration key license from a pool
-      bigiq_regkey_license:
-        regkey_pool: foo-pool
-        license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
-        state: absent
+- name: Remove a registration key license from a pool
+  bigiq_regkey_license:
+    regkey_pool: foo-pool
+    license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+    state: absent
 '''
 
 RETURN = r'''

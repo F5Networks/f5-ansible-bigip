@@ -77,44 +77,31 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Register an unmanaged device
+  bigiq_regkey_license_assignment:
+    pool: my-regkey-pool
+    key: XXXX-XXXX-XXXX-XXXX-XXXX
+    device: 1.1.1.1
+    managed: false
+    device_username: admin
+    device_password: secret
+    state: present
 
-  vars:
-    ansible_host: "cm.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigiq
-    ansible_httpapi_use_ssl: yes
+- name: Register a managed device, by name
+  bigiq_regkey_license_assignment:
+    pool: my-regkey-pool
+    key: XXXX-XXXX-XXXX-XXXX-XXXX
+    device: bigi1.foo.com
+    managed: true
+    state: present
 
-  tasks:
-    - name: Register an unmanaged device
-      bigiq_regkey_license_assignment:
-        pool: my-regkey-pool
-        key: XXXX-XXXX-XXXX-XXXX-XXXX
-        device: 1.1.1.1
-        managed: no
-        device_username: admin
-        device_password: secret
-        state: present
-
-    - name: Register a managed device, by name
-      bigiq_regkey_license_assignment:
-        pool: my-regkey-pool
-        key: XXXX-XXXX-XXXX-XXXX-XXXX
-        device: bigi1.foo.com
-        managed: yes
-        state: present
-
-    - name: Register a managed device, by UUID
-      bigiq_regkey_license_assignment:
-        pool: my-regkey-pool
-        key: XXXX-XXXX-XXXX-XXXX-XXXX
-        device: 7141a063-7cf8-423f-9829-9d40599fa3e0
-        managed: yes
-        state: present
+- name: Register a managed device, by UUID
+  bigiq_regkey_license_assignment:
+    pool: my-regkey-pool
+    key: XXXX-XXXX-XXXX-XXXX-XXXX
+    device: 7141a063-7cf8-423f-9829-9d40599fa3e0
+    managed: true
+    state: present
 '''
 
 RETURN = r'''

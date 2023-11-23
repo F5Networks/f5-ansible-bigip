@@ -57,35 +57,22 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Install PKCS12 cert and key
+  bigip_ssl_pkcs12:
+    source: /root/baz.p12
+    state: present
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Install PKCS12 cert and key - force
+  bigip_ssl_pkcs12:
+    name: foo
+    source: /root/baz.p12
+    state: present
+    force: true
 
-  tasks:
-    - name: Install PKCS12 cert and key
-      bigip_ssl_pkcs12:
-        source: /root/baz.p12
-        state: present
-
-    - name: Install PKCS12 cert and key - force
-      bigip_ssl_pkcs12:
-        name: foo
-        source: /root/baz.p12
-        state: present
-        force: yes
-
-    - name: Remove PKCS12 cert and key
-      bigip_ssl_pkcs12:
-        name: foo
-        state: absent
+- name: Remove PKCS12 cert and key
+  bigip_ssl_pkcs12:
+    name: foo
+    state: absent
 '''
 
 RETURN = r'''

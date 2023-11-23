@@ -178,7 +178,6 @@ EXAMPLES = r'''
       password: secret
       server: cm.mydomain.com
       user: admin
-  delegate_to: localhost
 
 - name: Discover a new device and import config, use non- default conflict policy.
   bigiq_device_discovery:
@@ -191,7 +190,6 @@ EXAMPLES = r'''
       password: secret
       server: cm.mydomain.com
       user: admin
-  delegate_to: localhost
 
 - name: Force full device rediscovery
   bigiq_device_discovery:
@@ -201,12 +199,11 @@ EXAMPLES = r'''
       - afm
       - dns
       - shared_security
-    force: yes
+    force: true
     provider:
       password: secret
       server: cm.mydomain.com
       user: admin
-  delegate_to: localhost
 
 - name: Remove discovered device and its config
   bigiq_device_discovery:
@@ -216,7 +213,6 @@ EXAMPLES = r'''
       password: secret
       server: cm.mydomain.com
       user: admin
-  delegate_to: localhost
 '''
 
 RETURN = r'''

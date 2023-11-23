@@ -105,40 +105,27 @@ notes:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create SSLO SWG service with defaults
+  bigip_sslo_service_swg:
+    name: "swg2"
+    swg_policy: "/Common/test-swg"
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Modify SSLO SWG service
+  bigip_sslo_service_swg:
+    name: "swg2"
+    profile_scope: "named"
+    named_scope: "SSLO"
+    access_profile: "/Common/test-access"
+    log_settings:
+      - "/Common/default-log-setting1"
+      - "/Common/default-log-setting2"
+    rules:
+      - "/Common/test-rule"
 
-  tasks:
-    - name: Create SSLO SWG service with defaults
-      bigip_sslo_service_swg:
-        name: "swg2"
-        swg_policy: "/Common/test-swg"
-
-    - name: Modify SSLO SWG service
-      bigip_sslo_service_swg:
-        name: "swg2"
-        profile_scope: "named"
-        named_scope: "SSLO"
-        access_profile: "/Common/test-access"
-        log_settings:
-          - "/Common/default-log-setting1"
-          - "/Common/default-log-setting2"
-        rules:
-          - "/Common/test-rule"
-
-    - name: Delete SSLO SWG service
-      bigip_sslo_service_swg:
-        name: "swg2"
-        state: "absent"
+- name: Delete SSLO SWG service
+  bigip_sslo_service_swg:
+    name: "swg2"
+    state: "absent"
 '''
 
 RETURN = r'''

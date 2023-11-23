@@ -83,38 +83,27 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: SSLO TAP service with interface
+  bigip_sslo_service_tap:
+    name: "tap_test_interface"
+    devices:
+      interface: "1.1"
+      tag: 400
+    mac_address: "xx:xx:xx:xx:xx:xx"
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Create TAP service VLAN
+  bigip_vlan:
+    name: TAPservice_vlan
+    tagged_interface: 1.7
 
-  tasks:
-    - name: SSLO TAP service with interface
-      bigip_sslo_service_tap:
-        name: "tap_test_interface"
-        devices:
-          interface: "1.1"
-          tag: 400
-        mac_address: "xx:xx:xx:xx:xx:xx"
-    - name: create TAP service VLAN
-      bigip_vlan:
-        name: TAPservice_vlan
-        tagged_interface: 1.7
-    - name: SSLO TAP service with vlan
-      bigip_sslo_service_tap:
-        name: "tap_test_vlan"
-        devices:
-          vlan: "/Common/TAPservice_vlan"
-        mac_address: "xx:xx:xx:xx:xx:xx"
-        port_remap: 8081
-        state: "absent"
+- name: SSLO TAP service with vlan
+  bigip_sslo_service_tap:
+    name: "tap_test_vlan"
+    devices:
+      vlan: "/Common/TAPservice_vlan"
+    mac_address: "xx:xx:xx:xx:xx:xx"
+    port_remap: 8081
+    state: "absent"
 '''
 
 RETURN = r'''

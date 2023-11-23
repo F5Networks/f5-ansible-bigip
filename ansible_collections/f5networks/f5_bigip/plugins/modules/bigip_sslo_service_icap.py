@@ -152,52 +152,39 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create SSLO ICAP service
+  bigip_sslo_service_icap:
+    name: "icap1"
+    ip_family: "ipv4"
+    devices:
+      - ip: "1.1.1.1"
+        port: 1344
+      - ip: "2.2.2.2"
+        port: 1348
+    headers:
+      enable: true
+      h_from: "foo_from"
+      host: "foo_host"
+      user_agent: "foo_ua"
+      referrer: "foo_referrer"
+    enable_one_connect: false
+    preview_length: 2048
+    service_down_action: "drop"
+    allow_http10: true
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Modify SSLO ICAP service
+  bigip_sslo_service_icap:
+    name: "icap1"
+    request_uri: "/avscan"
+    response_uri: "/avscan"
+    preview_length: 1024
+    headers:
+      enable: false
 
-  tasks:
-    - name: Create SSLO ICAP service
-      bigip_sslo_service_icap:
-        name: "icap1"
-        ip_family: "ipv4"
-        devices:
-          - ip: "1.1.1.1"
-            port: 1344
-          - ip: "2.2.2.2"
-            port: 1348
-        headers:
-          enable: yes
-          h_from: "foo_from"
-          host: "foo_host"
-          user_agent: "foo_ua"
-          referrer: "foo_referrer"
-        enable_one_connect: no
-        preview_length: 2048
-        service_down_action: "drop"
-        allow_http10: yes
-
-    - name: Modify SSLO ICAP service
-      bigip_sslo_service_icap:
-        name: "icap1"
-        request_uri: "/avscan"
-        response_uri: "/avscan"
-        preview_length: 1024
-        headers:
-          enable: no
-
-    - name: Delete SSLO ICAP service
-      bigip_sslo_service_icap:
-        name: "icap1"
-        state: "absent"
+- name: Delete SSLO ICAP service
+  bigip_sslo_service_icap:
+    name: "icap1"
+    state: "absent"
 '''
 
 RETURN = r'''

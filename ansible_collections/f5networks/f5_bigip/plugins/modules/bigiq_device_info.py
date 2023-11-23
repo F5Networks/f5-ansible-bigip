@@ -46,35 +46,22 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Collect BIG-IQ information
+  bigiq_device_info:
+    gather_subset:
+      - system-info
+      - vlans
 
-  vars:
-    ansible_host: "cm.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigiq
-    ansible_httpapi_use_ssl: yes
+- name: Collect all BIG-IQ information
+  bigiq_device_info:
+    gather_subset:
+      - all
 
-  tasks:
-    - name: Collect BIG-IQ information
-      bigiq_device_info:
-        gather_subset:
-          - system-info
-          - vlans
-
-    - name: Collect all BIG-IQ information
-      bigiq_device_info:
-        gather_subset:
-          - all
-
-    - name: Collect all BIG-IQ information except vlans
-      bigiq_device_info:
-        gather_subset:
-          - all
-          - "!vlans"
+- name: Collect all BIG-IQ information except vlans
+  bigiq_device_info:
+    gather_subset:
+      - all
+      - "!vlans"
 '''
 
 RETURN = r'''

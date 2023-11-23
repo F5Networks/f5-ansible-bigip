@@ -39,24 +39,10 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
-
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
-
-  tasks:
-    - name: CFE Declaration
-      bigip_cfe_deploy:
-        content: "{{ lookup('file', 'cfe_declaration.json') }}"
-        service_type: "as3"
-
+- name: CFE Declaration
+  bigip_cfe_deploy:
+    content: "{{ lookup('file', 'cfe_declaration.json') }}"
+    service_type: "as3"
 '''
 
 RETURN = r'''

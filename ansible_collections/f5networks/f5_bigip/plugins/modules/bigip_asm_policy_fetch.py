@@ -65,50 +65,37 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Export policy in binary format
+  bigip_asm_policy_fetch:
+    name: foobar
+    file: export_foo
+    dest: /root/download
+    binary: true
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Export policy inline base64 encoded format
+  bigip_asm_policy_fetch:
+    name: foobar
+    inline: true
+    base64: true
 
-  tasks:
-    - name: Export policy in binary format
-      bigip_asm_policy_fetch:
-        name: foobar
-        file: export_foo
-        dest: /root/download
-        binary: yes
+- name: Export policy in XML format
+  bigip_asm_policy_fetch:
+    name: foobar
+    file: export_foo
+    dest: /root/download
 
-    - name: Export policy inline base64 encoded format
-      bigip_asm_policy_fetch:
-        name: foobar
-        inline: yes
-        base64: yes
+- name: Export compact policy in XML format
+  bigip_asm_policy_fetch:
+    name: foobar
+    file: export_foo.xml
+    dest: /root/download/
+    compact: true
 
-    - name: Export policy in XML format
-      bigip_asm_policy_fetch:
-        name: foobar
-        file: export_foo
-        dest: /root/download
-
-    - name: Export compact policy in XML format
-      bigip_asm_policy_fetch:
-        name: foobar
-        file: export_foo.xml
-        dest: /root/download/
-        compact: yes
-
-    - name: Export policy in binary format, autogenerate name
-      bigip_asm_policy_fetch:
-        name: foobar
-        dest: /root/download/
-        binary: yes
+- name: Export policy in binary format, autogenerate name
+  bigip_asm_policy_fetch:
+    name: foobar
+    dest: /root/download/
+    binary: true
 '''
 
 RETURN = r'''

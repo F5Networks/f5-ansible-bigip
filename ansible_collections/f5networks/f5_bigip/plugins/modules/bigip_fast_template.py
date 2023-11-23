@@ -51,39 +51,26 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Upload and create FAST template set
+  bigip_fast_template:
+    name: new_template_set
+    source: /root/new_template_set.zip
+    state: "present"
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Upload and create FAST template set, name not given - force overwrite
+  bigip_fast_template:
+    source: /root/new_template_set.zip
+    state: "present"
+    force: true
 
-  tasks:
-    - name: Upload and create FAST template set
-      bigip_fast_template:
-        name: new_template_set
-        source: /root/new_template_set.zip
-        state: "present"
+- name: Remove existing FAST template set
+  bigip_fast_template:
+    name: new_template_set
+    state: "absent"
 
-    - name: Upload and create FAST template set, name not given - force overwrite
-      bigip_fast_template:
-        source: /root/new_template_set.zip
-        state: "present"
-        force: yes
-
-    - name: Remove existing FAST template set
-      bigip_fast_template:
-        name: new_template_set
-        state: "absent"
-
-    - name: Remove all existing FAST template sets
-      bigip_fast_template:
-        state: "purge"
+- name: Remove all existing FAST template sets
+  bigip_fast_template:
+    state: "purge"
 '''
 
 RETURN = r'''

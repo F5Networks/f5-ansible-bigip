@@ -226,74 +226,61 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Create aWAF policy with json template
+  bigip_awaf_policy:
+    name: "foobar_awaf"
+    policy_in_json: "{{ lookup('file', 'awaf_big_policy.json') }}"
+    server_technologies:
+      - "Apache Tomcat"
+    apply_policy: "yes"
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Create aWAF policy without json
+  bigip_awaf_policy:
+    name: "custom_awaf"
+    server_technologies:
+      - "AngularJS"
+      - "Apache Struts"
+      - "Apache Tomcat"
+    template: "POLICY_TEMPLATE_RAPID_DEPLOYMENT"
+    pb_learning_mode: "disabled"
+    allowed_file_types:
+      - name: "js"
+        type: "explicit"
+      - name: "jpg"
+        type: "explicit"
+    disallowed_file_types:
+      - name: "php"
+    apply_policy: "yes"
 
-  tasks:
-    - name: Create aWAF policy with json template
-      bigip_awaf_policy:
-        name: "foobar_awaf"
-        policy_in_json: "{{ lookup('file', 'awaf_big_policy.json') }}"
-        server_technologies:
-          - "Apache Tomcat"
-        apply_policy: "yes"
+- name: Modify aWAF policy using policy_id
+  bigip_awaf_policy:
+    policy_id: "{{ policy_id }}"
+    language: "utf-8"
+    pb_learning_mode: "manual"
+    apply_policy: 'yes'
 
-    - name: Create aWAF policy without json
-      bigip_awaf_policy:
-        name: "custom_awaf"
-        server_technologies:
-          - "AngularJS"
-          - "Apache Struts"
-          - "Apache Tomcat"
-        template: "POLICY_TEMPLATE_RAPID_DEPLOYMENT"
-        pb_learning_mode: "disabled"
-        allowed_file_types:
-          - name: "js"
-            type: "explicit"
-          - name: "jpg"
-            type: "explicit"
-        disallowed_file_types:
-          - name: "php"
-        apply_policy: "yes"
+- name: Overwrite existing aWAF policy with json template
+  bigip_awaf_policy:
+    name: "foobar_awaf"
+    policy_in_json: "{{ lookup('file', 'awaf_new_policy.json') }}"
+    server_technologies:
+      - "AngularJS"
+    allowed_file_types:
+      - name: "php"
+        type: "explicit"
+      - name: "jpg"
+        type: "explicit"
+      - name: "js"
+        type: "explicit"
+    disallowed_file_types:
+      - name: "*"
+    apply_policy: "yes"
+    force: "yes"
 
-    - name: Modify aWAF policy using policy_id
-      bigip_awaf_policy:
-        policy_id: "{{ policy_id }}"
-        language: "utf-8"
-        pb_learning_mode: "manual"
-        apply_policy: 'yes'
-
-    - name: Overwrite existing aWAF policy with json template
-      bigip_awaf_policy:
-        name: "foobar_awaf"
-        policy_in_json: "{{ lookup('file', 'awaf_new_policy.json') }}"
-        server_technologies:
-          - "AngularJS"
-        allowed_file_types:
-          - name: "php"
-            type: "explicit"
-          - name: "jpg"
-            type: "explicit"
-          - name: "js"
-            type: "explicit"
-        disallowed_file_types:
-          - name: "*"
-        apply_policy: "yes"
-        force: "yes"
-
-    - name: Remove aWAF policies
-      bigip_awaf_policy:
-        name: "foobar_awaf"
-        state: absent
+- name: Remove aWAF policies
+  bigip_awaf_policy:
+    name: "foobar_awaf"
+    state: absent
 '''
 
 RETURN = r'''

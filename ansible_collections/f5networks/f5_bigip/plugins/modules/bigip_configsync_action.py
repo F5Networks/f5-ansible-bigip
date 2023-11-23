@@ -50,33 +50,20 @@ author:
 '''
 
 EXAMPLES = r'''
-- hosts: all
-  collections:
-    - f5networks.f5_bigip
-  connection: httpapi
+- name: Sync configuration from device to group
+  bigip_configsync_action:
+    device_group: foo-group
+    sync_device_to_group: true
 
-  vars:
-    ansible_host: "lb.mydomain.com"
-    ansible_user: "admin"
-    ansible_httpapi_password: "secret"
-    ansible_network_os: f5networks.f5_bigip.bigip
-    ansible_httpapi_use_ssl: yes
+- name: Sync configuration from most recent device to the current host
+  bigip_configsync_action:
+    device_group: foo-group
+    sync_group_to_device: true
 
-  tasks:
-    - name: Sync configuration from device to group
-      bigip_configsync_action:
-        device_group: foo-group
-        sync_device_to_group: yes
-
-    - name: Sync configuration from most recent device to the current host
-      bigip_configsync_action:
-        device_group: foo-group
-        sync_group_to_device: yes
-
-    - name: Perform an initial sync of a device to a new device group
-      bigip_configsync_action:
-        device_group: new-device-group
-        sync_device_to_group: yes
+- name: Perform an initial sync of a device to a new device group
+  bigip_configsync_action:
+    device_group: new-device-group
+    sync_device_to_group: true
 '''
 
 RETURN = r'''
