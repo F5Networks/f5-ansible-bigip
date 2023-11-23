@@ -552,3 +552,5 @@ releases:
     fragments:
     - true-names-bigfixes.yaml
     release_date: '2023-10-12'
+  3.2.2:
+    release_date: '2023-11-23'
