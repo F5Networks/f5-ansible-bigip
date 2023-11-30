@@ -92,6 +92,15 @@ options:
         description:
           - The port for this service.
         type: int
+  auto_manage:
+    description:
+      - Specifies whether to provide a set of unique, non-overlapping, non-routable
+        IP addresses to be used by the security service.
+    type: bool
+  use_exist_selfip:
+    description:
+        - Specifies whether to use existing self-IPs.
+    type: bool
   ip_family:
     description:
       - Specifies the IP family used for attached L3 inline security devices.
@@ -99,6 +108,10 @@ options:
     choices:
       - ipv4
       - ipv6
+  vendor_info:
+    description:
+      - Specifies the vendor-specific L3 service used. The default is C(Generic Inline Layer 3).
+    type: str
   monitor:
     description:
       - Specifies the monitor attached to the L3 Inline security device pool.
@@ -361,7 +374,6 @@ else:
     HAS_PACKAGING = True
     PACKAGING_IMPORT_ERROR = None
 
-
 try:
     from netaddr import IPAddress
 except ImportError:
@@ -374,6 +386,9 @@ else:
 
 from ansible.module_utils.basic import (
     AnsibleModule, missing_required_lib
+)
+from ..module_utils.common import (
+    F5ModuleError, AnsibleF5Parameters, process_json, flatten_boolean
 )
 from ansible.module_utils.connection import Connection
 
@@ -406,7 +421,9 @@ class Parameters(AnsibleF5Parameters):
         'snat',
         'snat_list',
         'snat_pool',
+        'vendor_info',
         'rules',
+        'auto_manage'
     ]
     returnables = [
         'devices_to',
@@ -419,6 +436,9 @@ class Parameters(AnsibleF5Parameters):
         'snat',
         'snat_list',
         'snat_pool',
+        'auto_manage',
+        'use_exist_selfip',
+        'vendor_info',
         'rules'
     ]
 
@@ -428,34 +448,54 @@ class ApiParameters(Parameters):
     def devices_to(self):
         ipfamily = self.ip_family
         result = dict()
-        result['name'] = self._values['fromNetworkObj']['name']
-        result['path'] = self._values['fromNetworkObj']['vlan']['path']
+        result['name'] = self._values['customService']['connectionInformation']['fromBigipNetwork']['name']
+        result['path'] = self._values['customService']['connectionInformation']['fromBigipNetwork']['vlan']['path']
         result['self_ip'] = self._values['customService']['managedNetwork'][ipfamily]['toServiceSelfIp']
         result['netmask'] = self._values['customService']['managedNetwork'][ipfamily]['toServiceMask']
         result['network'] = self._values['customService']['managedNetwork'][ipfamily]['toServiceNetwork']
-        if self._values['fromNetworkObj']['vlan']['create']:
-            result['interface'] = self._values['fromNetworkObj']['vlan']['interface'][0]
+        if self._values['fromVlanNetworkObj']['create'] and 'networkInterface' in self._values['fromVlanNetworkObj']:
+            if isinstance(self._values['fromVlanNetworkObj']['networkInterface'], list):
+                result['interface'] = self._values['fromVlanNetworkObj']['networkInterface'][0]
+            else:
+                result['interface'] = self._values['fromVlanNetworkObj']['networkInterface']
+            if int(self._values['fromVlanNetworkObj']['networkTag']) != 0:
+                result['tag'] = int(self._values['fromVlanNetworkObj']['networkTag'])
+        elif 'fromNetworkObj' in self._values and self._values['fromNetworkObj']['vlan']['create']:
+            if isinstance(self._values['fromNetworkObj']['vlan']['interface'], list):
+                result['interface'] = self._values['fromNetworkObj']['vlan']['interface'][0]
+            else:
+                result['interface'] = self._values['fromNetworkObj']['vlan']['interface']
             if int(self._values['fromNetworkObj']['vlan']['tag']) != 0:
                 result['tag'] = int(self._values['fromNetworkObj']['vlan']['tag'])
         else:
-            result['vlan'] = self._values['fromNetworkObj']['vlan']['path']
+            result['vlan'] = self._values['customService']['connectionInformation']['fromBigipNetwork']['vlan']['path']
         return result
 
     @property
     def devices_from(self):
         ipfamily = self.ip_family
         result = dict()
-        result['name'] = self._values['toNetworkObj']['name']
-        result['path'] = self._values['toNetworkObj']['vlan']['path']
+        result['name'] = self._values['customService']['connectionInformation']['toBigipNetwork']['name']
+        result['path'] = self._values['customService']['connectionInformation']['toBigipNetwork']['vlan']['path']
         result['self_ip'] = self._values['customService']['managedNetwork'][ipfamily]['fromServiceSelfIp']
         result['netmask'] = self._values['customService']['managedNetwork'][ipfamily]['fromServiceMask']
         result['network'] = self._values['customService']['managedNetwork'][ipfamily]['fromServiceNetwork']
-        if self._values['toNetworkObj']['vlan']['create']:
-            result['interface'] = self._values['toNetworkObj']['vlan']['interface'][0]
+        if self._values['toVlanNetworkObj']['create'] and 'networkInterface' in self._values['toVlanNetworkObj']:
+            if isinstance(self._values['toVlanNetworkObj']['networkInterface'], list):
+                result['interface'] = self._values['toVlanNetworkObj']['networkInterface'][0]
+            else:
+                result['interface'] = self._values['toVlanNetworkObj']['networkInterface']
+            if int(self._values['toVlanNetworkObj']['networkTag']) != 0:
+                result['tag'] = int(self._values['toVlanNetworkObj']['networkTag'])
+        elif 'toNetworkObj' in self._values and self._values['toNetworkObj']['vlan']['create']:
+            if isinstance(self._values['toNetworkObj']['vlan']['interface'], list):
+                result['interface'] = self._values['toNetworkObj']['vlan']['interface'][0]
+            else:
+                result['interface'] = self._values['toNetworkObj']['vlan']['interface']
             if int(self._values['toNetworkObj']['vlan']['tag']) != 0:
                 result['tag'] = int(self._values['toNetworkObj']['vlan']['tag'])
         else:
-            result['vlan'] = self._values['toNetworkObj']['vlan']['path']
+            result['vlan'] = self._values['customService']['connectionInformation']['toBigipNetwork']['vlan']['path']
         return result
 
     @property
@@ -483,11 +523,16 @@ class ApiParameters(Parameters):
 
     @property
     def port_remap(self):
-        return int(self._values['customService']['httpPortRemapValue'])
+        if 'httpPortRemapValue' in self._values['customService']:
+            return int(self._values['customService']['httpPortRemapValue'])
 
     @property
     def snat(self):
         return self._values['customService']['snatConfiguration']['clientSnat']
+
+    @property
+    def vendor_info(self):
+        return self._values['vendorInfo']['name']
 
     @property
     def snat_list(self):
@@ -507,13 +552,17 @@ class ApiParameters(Parameters):
         return self._values['iRuleList']
 
     @property
-    def to_net_id(self):
+    def auto_manage(self):
+        return self._values['customService']['isAutoManage']
+
+    @property
+    def from_net_id(self):
         block_id = self._values['customService']['connectionInformation']['fromBigipNetwork']['networkBlockId']
         if block_id:
             return block_id
 
     @property
-    def from_net_id(self):
+    def to_net_id(self):
         block_id = self._values['customService']['connectionInformation']['toBigipNetwork']['networkBlockId']
         if block_id:
             return block_id
@@ -565,12 +614,11 @@ class ModuleParameters(Parameters):
         if devices is None:
             return None
         result = dict()
+        result['name'] = f"ssloN_{self._values['name']}_in"
         if 'vlan' in devices.keys() and devices['vlan']:
-            result['name'] = f"to{self._values['name']}_in"
             result['path'] = devices['vlan']
             result['vlan'] = devices['vlan']
         else:
-            result['name'] = f"ssloN_{self._values['name']}_in"
             result['path'] = f"/Common/ssloN_{self._values['name']}_in.app/ssloN_{self._values['name']}_in"
             result['interface'] = devices['interface']
         if 'tag' in devices.keys() and devices['tag']:
@@ -586,12 +634,11 @@ class ModuleParameters(Parameters):
         if devices is None:
             return None
         result = dict()
+        result['name'] = f"ssloN_{self._values['name']}_out"
         if 'vlan' in devices.keys() and devices['vlan']:
-            result['name'] = f"from{self._values['name']}_out"
             result['path'] = devices['vlan']
             result['vlan'] = devices['vlan']
         else:
-            result['name'] = f"ssloN_{self._values['name']}_out"
             result['path'] = f"/Common/ssloN_{self._values['name']}_out.app/ssloN_{self._values['name']}_out"
             result['interface'] = devices['interface']
         if 'tag' in devices.keys() and devices['tag']:
@@ -634,6 +681,33 @@ class ModuleParameters(Parameters):
             element['value'] = rule
             result.append(element)
         return result
+
+    @property
+    def auto_manage(self):
+        auto_manage = self._values['auto_manage']
+        if auto_manage is None:
+            return False
+        result = flatten_boolean(self._values['auto_manage'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
+
+    @property
+    def use_exist_selfip(self):
+        if self._values['use_exist_selfip'] is None:
+            return False
+        result = flatten_boolean(self._values['use_exist_selfip'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
+
+    @property
+    def vendor_info(self):
+        if self._values['vendor_info'] is None:
+            return "Generic Inline Layer 3"
+        return self._values['vendor_info']
 
     @property
     def snat_list(self):
@@ -776,6 +850,8 @@ class Difference(object):
                 raise F5ModuleError(
                     'Self-IPs are immutable. You must delete and recreate the service to change the self-IPs.'
                 )
+            if have['name'] == "toNetwork" and (self.want.use_exist_selfip or 'vlan' in have):
+                return None
             return diff
 
     @property
@@ -788,6 +864,8 @@ class Difference(object):
                 raise F5ModuleError(
                     'Self-IPs are immutable. You must delete and recreate the service to change the self-IPs.'
                 )
+            if have['name'] == "fromNetwork" and (self.want.use_exist_selfip or 'vlan' in have):
+                return None
             return diff
 
     @property
@@ -930,6 +1008,11 @@ class ModuleManager(object):
                 "Creating SSLO Inline L3 service requires 'devices_to', 'devices_from' and 'devices'"
                 " parameters to be specified."
             )
+        if self.want.snat == 'existingSNAT' and self.want.snat_pool is None:
+            raise F5ModuleError(
+                "Creating SSLO Inline L3 service service requires 'snat_pool' parameters to be specified, if 'snat' is set to "
+                "'snatpool'"
+            )
 
     def remove(self):
         if self.module.check_mode:
@@ -954,6 +1037,10 @@ class ModuleManager(object):
             params['ip_family'] = 'ipv4'
         if self.want.snat == 'existingSNAT':
             params['snat_ref_id'] = self.want.snat_pool
+        if self.want.auto_manage is None:
+            params['auto_manage'] = False
+        if self.want.use_exist_selfip is None:
+            params['use_exist_selfip'] = False
         return params
 
     def add_missing_options(self, params):
@@ -971,6 +1058,12 @@ class ModuleManager(object):
             params['service_down_action'] = self.have.service_down_action
         if self.changes.port_remap is None:
             params['port_remap'] = self.have.port_remap
+        if self.changes.vendor_info is None:
+            params['vendor_info'] = self.have.vendor_info
+        if self.changes.auto_manage is None:
+            params['auto_manage'] = self.have.auto_manage
+        if self.changes.use_exist_selfip is None:
+            params['use_exist_selfip'] = self.want.use_exist_selfip
         if self.changes.rules is None:
             params['rules'] = self.have.rules
         if self.changes.snat is None:
@@ -982,10 +1075,13 @@ class ModuleManager(object):
             if self.have.snat == 'existingSNAT':
                 if self.changes.snat_pool is None:
                     params['snat_ref_id'] = self.have.snat_pool
+                    params['snat_pool'] = self.have.snat_pool
                 else:
                     params['snat_ref_id'] = self.changes.snat_pool
+                    params['snat_pool'] = self.changes.snat_pool
         if self.changes.snat == 'existingSNAT':
             params['snat_ref_id'] = self.changes.snat_pool
+            params['snat_pool'] = self.changes.snat_pool
         return params
 
     def add_json_metadata(self, payload=None):
@@ -1184,6 +1280,10 @@ class ArgumentSpec(object):
             ip_family=dict(
                 choices=['ipv4', 'ipv6']
             ),
+            auto_manage=dict(
+                type='bool'
+            ),
+            use_exist_selfip=dict(type='bool'),
             monitor=dict(),
             service_down_action=dict(
                 choices=['ignore', 'reset', 'drop']
@@ -1199,6 +1299,7 @@ class ArgumentSpec(object):
                 elements='str'
             ),
             snat_pool=dict(),
+            vendor_info=dict(),
             rules=dict(
                 type='list',
                 elements='str'

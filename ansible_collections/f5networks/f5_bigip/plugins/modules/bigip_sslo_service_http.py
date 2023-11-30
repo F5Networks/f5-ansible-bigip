@@ -131,6 +131,10 @@ options:
     description:
       - Defines the port to remap decrypted traffic to.
     type: int
+  vendor_info:
+    description:
+      - Specifies the vendor-specific HTTP service used. The default is C(Generic HTTP Service).
+    type: str
   snat:
     description:
       - Defines if and how a SNAT configuration is deployed.
@@ -205,6 +209,7 @@ options:
       - absent
     default: present
 author:
+  - Ravinder Reddy (@chinthalapalli)
   - Wojciech Wypior (@wojtek0806)
   - Kevin Stewart (@kevingstewart)
 '''
@@ -240,6 +245,30 @@ EXAMPLES = r'''
     snat_list:
       - "198.19.64.10"
       - "198.19.64.11"
+
+- name: Create a HTTP service using exist selfips and exist vlans
+  bigip_sslo_service_http:
+    name: "testhttptc02"
+    proxy_type: "explicit"
+    use_exist_selfip: true
+    auto_manage: false
+    devices_to:
+      vlan: "/Common/test-vlan"
+      self_ip: "100.19.101.17"
+      netmask: "255.255.255.240"
+    devices_from:
+      vlan: "/Common/test-vlan2"
+      self_ip: "100.19.101.18"
+      netmask: "255.255.255.0"
+    devices:
+      - ip: "100.19.101.11"
+        port: 3128
+    snat: snatpool
+    snat_pool: "/Common/proxy1a-snatpool"
+    auth_offload: true
+    ip_family: "ipv4"
+    service_down_action: "reset"
+    port_remap: 8082
 
 - name: Delete SSLO HTTP service
   bigip_sslo_service_http:
@@ -437,6 +466,7 @@ class Parameters(AnsibleF5Parameters):
         'snat',
         'snat_list',
         'snat_pool',
+        'vendor_info',
         'rules',
         'proxy_type',
         'auto_manage',
@@ -455,6 +485,7 @@ class Parameters(AnsibleF5Parameters):
         'snat',
         'snat_list',
         'snat_pool',
+        'vendor_info',
         'rules',
         'proxy_type',
         'auto_manage',
@@ -561,6 +592,10 @@ class ApiParameters(Parameters):
     def snat_pool(self):
         if self.snat == 'existingSNAT':
             return self._values['customService']['snatConfiguration']['snat']['referredObj']
+
+    @property
+    def vendor_info(self):
+        return self._values['vendorInfo']['name']
 
     @property
     def rules(self):
@@ -708,6 +743,12 @@ class ModuleParameters(Parameters):
             return 'Explicit'
         elif proxy == 'transparent':
             return 'Transparent'
+
+    @property
+    def vendor_info(self):
+        if self._values['vendor_info'] is None:
+            return "Generic HTTP Service"
+        return self._values['vendor_info']
 
     @property
     def auth_offload(self):
@@ -1103,6 +1144,11 @@ class ModuleManager(object):
                 "Creating SSLO HTTP service requires 'devices_to', 'devices_from' and 'devices'"
                 " parameters to be specified."
             )
+        if self.want.snat == 'existingSNAT' and self.want.snat_pool is None:
+            raise F5ModuleError(
+                "Creating SSLO HTTP service requires 'snat_pool' parameters to be specified, if 'snat' is set to "
+                "'snatpool'"
+            )
 
     def add_create_values(self, params):
         if self.want.proxy_type is None:
@@ -1142,6 +1188,8 @@ class ModuleManager(object):
             params['port_remap'] = self.have.port_remap
         if self.changes.rules is None:
             params['rules'] = self.have.rules
+        if self.changes.vendor_info is None:
+            params['vendor_info'] = self.have.vendor_info
         if self.changes.proxy_type is None:
             params['proxy_type'] = self.have.proxy_type
         if self.changes.auth_offload is None:
@@ -1386,6 +1434,7 @@ class ArgumentSpec(object):
                 elements='str'
             ),
             snat_pool=dict(),
+            vendor_info=dict(),
             rules=dict(
                 type='list',
                 elements='str'

@@ -5,6 +5,7 @@
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 DOCUMENTATION = r'''
@@ -552,12 +553,12 @@ class ModuleParameters(Parameters):
                      'Google Web Toolkit', 'GraphQL', 'Handlebars', 'IBM DB2', 'IIS', 'JBoss', 'Java Servlets/JSP',
                      'JavaScript', 'JavaServer Faces (JSF)', 'Jenkins', 'Jetty', 'Joomla', 'Laravel', 'Lotus Domino',
                      'Macromedia ColdFusion', 'Macromedia JRun', 'Microsoft SQL Server', 'Microsoft Windows', 'MongoDB',
-                     'MooTools', 'Mustache', 'MySQL', 'Nginx', 'Node.js', 'Novell', 'Oracle',
-                     'Oracle Application Server', 'Oracle Identity Manager', 'Outlook Web Access', 'PHP', 'PostgreSQL',
-                     'Prototype', 'Proxy Servers', 'Python', 'React', 'Redis', 'RequireJS', 'Ruby', 'SQLite',
-                     'SSI (Server Side Includes)', 'SharePoint', 'Spring Boot', 'Sybase/ASE', 'TYPO3 CMS', 'UIKit',
-                     'Underscore.js', 'Unix/Linux', 'Vue.js', 'WebDAV', 'WordPress', 'XML', 'ZURB Foundation', 'Zend',
-                     'ef.js', 'jQuery']
+                     'MooTools', 'Mustache', 'MySQL', 'Nginx', 'Node.js', 'Novell', 'Oracle', 'Nginx', 'Neo4J',
+                     'Svelte', 'Oracle Application Server', 'Oracle Identity Manager', 'Outlook Web Access', 'PHP',
+                     'PostgreSQL', 'Prototype', 'Proxy Servers', 'Python', 'React', 'Redis', 'RequireJS', 'Ruby',
+                     'SQLite', 'SSI (Server Side Includes)', 'SharePoint', 'Spring Boot', 'Sybase/ASE', 'TYPO3 CMS',
+                     'UIKit', 'Underscore.js', 'Unix/Linux', 'Vue.js', 'WebDAV', 'WordPress', 'XML', 'ZURB Foundation',
+                     'Zend', 'ef.js', 'jQuery']
         if server not in tech_list:
             raise F5ModuleError(f'Invalid entry for server technology: {server}, should be one of {tech_list}')
         return server

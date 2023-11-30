@@ -683,7 +683,7 @@ class ModuleManager(object):
 
     def check_sslo_version(self):
         self.version = sslo_version(self.client)
-        if Version(self.version) > Version('9.9') or \
+        if Version(self.version) > Version('12.0') or \
                 Version(self.version) < Version('9.0'):
             raise F5ModuleError("Unsupported SSL Orchestrator version, requires a version between '9.0' and '9.9'")
         return True

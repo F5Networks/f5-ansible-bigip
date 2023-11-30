@@ -51,7 +51,7 @@ CICD_ENV = {
 }
 
 min_sslo_version = '7.5'
-max_sslo_version = '10.0'
+max_sslo_version = '12.0'
 
 resolver_logging_config = {
     "logLevel": 0,
