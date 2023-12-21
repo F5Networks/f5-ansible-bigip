@@ -120,8 +120,8 @@ create_modify = """
                    "cipherGroup": "{{ params.server_cipher_group }}"
                 },
                 "caBundle": "{{ params.server_ca_bundle }}",
-                "expiredCertificates": {{ params.block_expired | tojson }},
-                "untrustedCertificates": {{ params.block_untrusted | tojson }},
+                "expiredCertificates": {% if params.block_expired == "drop" %}true{% else %}false{% endif %},
+                "untrustedCertificates": {% if params.block_untrusted == "drop" %}true{% else %}false{% endif %},
                 "ocsp": "{{ params.ocsp }}",
                 "crl": "{{ params.crl }}",
                 "enabledSSLProcessingOptions": {% if params.server_ssl_options is defined %}

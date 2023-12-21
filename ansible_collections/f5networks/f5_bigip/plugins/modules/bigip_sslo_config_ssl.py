@@ -651,13 +651,27 @@ class ApiParameters(Parameters):
     def block_expired(self):
         if self._values['serverSettings'] is None:
             return None
-        return self._values['serverSettings'].get('expiredCertificates', None)
+        val = self._values['serverSettings'].get('expiredCertificates', None)
+        bool_val = flatten_boolean(val)
+        if not bool_val:
+            return val
+        elif bool_val == 'yes':
+            return 'drop'
+        elif bool_val == 'no':
+            return 'ignore'
 
     @property
     def block_untrusted(self):
         if self._values['serverSettings'] is None:
             return None
-        return self._values['serverSettings'].get('untrustedCertificates', None)
+        val = self._values['serverSettings'].get('untrustedCertificates', None)
+        bool_val = flatten_boolean(val)
+        if not bool_val:
+            return val
+        elif bool_val == 'yes':
+            return 'drop'
+        elif bool_val == 'no':
+            return 'ignore'
 
     @property
     def server_ocsp(self):
