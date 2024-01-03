@@ -71,14 +71,14 @@ class HttpApi(HttpApiBase):
         provider = self.get_option("bigiq_provider")
 
         if username and password:
-            payload = {
+            data = {
                 'username': username,
                 'password': password,
             }
             if provider and provider != 'local':
                 login_ref = self._get_login_ref(provider)
-                payload.update(login_ref)
-            response = self.send_request(path=LOGIN, method='POST', data=payload, headers=BASE_HEADERS)
+                data.update(login_ref)
+            response = self.send_request(path=LOGIN, method='POST', payload=data, headers=BASE_HEADERS)
         else:
             raise AnsibleConnectionFailure('Username and password are required for login.')
 

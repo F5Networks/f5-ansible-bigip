@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - bigiq_as3_deploy - fixed flaw in code to make module work
