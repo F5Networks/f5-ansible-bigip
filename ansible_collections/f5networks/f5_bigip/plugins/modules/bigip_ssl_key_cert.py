@@ -550,6 +550,8 @@ class ModuleManager(object):
             )
             key_params_dict = params_dict.copy()
             key_params_dict['sourcePath'] = self.want.key_source_path
+            if self.want.passphrase:
+                key_params_dict['passphrase'] = self.want.passphrase
             links_and_params.append({'link': key_link, 'params': key_params_dict})
 
         if self.want.cert_name:
@@ -572,6 +574,8 @@ class ModuleManager(object):
             key_params_dict = params_dict.copy()
             key_params_dict['name'] = self.want.key_filename
             key_params_dict['sourcePath'] = self.want.key_source_path
+            if self.want.passphrase:
+                key_params_dict['passphrase'] = self.want.passphrase
             links_and_params.append({'link': key_link, 'params': key_params_dict})
 
         if self.want.cert_name:
