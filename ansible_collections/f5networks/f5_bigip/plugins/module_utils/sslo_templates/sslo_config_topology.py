@@ -25,7 +25,8 @@ create_modify = """
                "previousVersion": {{ params.sslo_version }},
                "partition": "Common",
                "strictness": false,
-               "userCreated": false,
+               "userCreated": {% if params.topology == 'topology_l3_outbound' and
+               (params.port > 0 or params.tcp_settings_client != '/Common/f5-tcp-lan') %}true{% else %}false{% endif %},
                "description": "",
                "deployedNetwork": {% if params.dep_net is defined %}"{{ params.dep_net }}"{% else %}""{% endif %},
                "ipFamily": "{{ params.ip_family }}",

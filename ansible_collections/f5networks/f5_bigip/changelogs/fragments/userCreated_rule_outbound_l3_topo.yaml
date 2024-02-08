@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - bigip_sslo_config_topology - set interception rule to custom when topology is outbound_l3 and port is provided.
