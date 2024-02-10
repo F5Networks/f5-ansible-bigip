@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - bigip_sslo_config_policy - fixed issue - cant reference security policy.

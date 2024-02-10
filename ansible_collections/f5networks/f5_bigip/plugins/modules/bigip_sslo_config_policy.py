@@ -30,6 +30,7 @@ options:
     choices:
       - outbound
       - inbound
+    default: outbound
   default_rule:
     description:
       - Specifies the settings for the default C(All Traffic) security policy rule.
@@ -556,18 +557,18 @@ class ApiParameters(Parameters):
         # return self._values['rules']
         rules = list()
         for rule in self._values['rules']:
-            if 'All Traffic' != rule['name']:
-                new_dict = dict()
-                for key, value in rule.items():
-                    if str(key) == 'phase':
-                        continue
-                    elif str(key) == 'injectServerCertMacro':
-                        continue
-                    elif str(key) == 'injectCategorizationMacro':
-                        continue
-                    else:
-                        new_dict[key] = value
-                rules.append(new_dict)
+            # if 'All Traffic' != rule['name']:
+            new_dict = dict()
+            for key, value in rule.items():
+                if str(key) == 'phase':
+                    continue
+                elif str(key) == 'injectServerCertMacro':
+                    continue
+                elif str(key) == 'injectCategorizationMacro':
+                    continue
+                else:
+                    new_dict[key] = value
+            rules.append(new_dict)
         return rules
 
     @property
@@ -958,7 +959,15 @@ class Difference(object):
     def policy_rules(self):
         if (len(self.want.policy_rules) == 0) and (len(self.have.policy_rules) == 0):
             return None
-        diff = compare_complex_list(self.want.policy_rules, self.have.policy_rules)
+        want_rules_list = [rule['name'] for rule in self.want.policy_rules]
+        if ("All Traffic" not in want_rules_list):
+            have = self.have.policy_rules.copy()
+            have = [rule for rule in have if rule.get('name') != 'All Traffic']
+            diff = compare_complex_list(self.want.policy_rules, have)
+        else:
+            diff = compare_complex_list(self.want.policy_rules, self.have.policy_rules)
+        if diff is None:
+            return None
         l1 = sorted(self.have.policy_rules, key=lambda i: i['name'])
         l2 = sorted(diff, key=lambda i: i['name'])
         port1 = list()
@@ -967,16 +976,18 @@ class Difference(object):
             return None
         if l1 != l2:
             for rule in l1:
-                for cond in rule['conditions']:
-                    if cond['type'] in port_map:
-                        for port in cond['options']['port']:
-                            if port['valueType'] != 'range' and port['valueType'] != 'dataGroup':
-                                port1.append(port['port'])
+                if rule['name'] != 'All Traffic':
+                    for cond in rule['conditions']:
+                        if cond['type'] in port_map:
+                            for port in cond['options']['port']:
+                                if port['valueType'] != 'range' and port['valueType'] != 'dataGroup':
+                                    port1.append(port['port'])
             for rule in l2:
-                for cond in rule['conditions']:
-                    if cond['type'] in port_map:
-                        for port in cond['options']['port']:
-                            port2.append(port)
+                if rule['name'] != 'All Traffic':
+                    for cond in rule['conditions']:
+                        if cond['type'] in port_map:
+                            for port in cond['options']['port']:
+                                port2.append(port)
             if len(port1) > 0 and len(port2) > 0 and port1 == port2:
                 return None
             return diff
@@ -1158,11 +1169,9 @@ class ModuleManager(object):
     def add_sslo_9x_support(self, params):
         for rule in params['policy_rules']:
             if 'conditions' in rule:
-                tmpcondi = list()
                 for conditn in rule['conditions']:
                     if conditn['type'] in port_map and 'valueType' not in conditn:
                         cla = dict()
-                        params['policy_rules'].remove(rule)
                         cla["port"] = []
                         for port in conditn['options']['port']:
                             this_port = dict()
@@ -1185,10 +1194,6 @@ class ModuleManager(object):
                             cla["port"].append(this_port)
                         conditn['options'] = cla
                         conditn["valueType"] = "valueAndDatagroup"
-                        tmpcondi.append(conditn)
-                        rule['conditions'] = tmpcondi
-                        params['policy_rules'].append(rule)
-                        return params
         return params
 
     def disable_proxy_connect(self):
@@ -1219,6 +1224,8 @@ class ModuleManager(object):
             params['policy_rules'] = self.have.policy_rules
         if self.changes.pools is None:
             params['pools'] = self.have.pools
+        if self.changes.pools == {} and self.changes.proxy_connect is None:
+            params['proxy_connect'] = self.disable_proxy_connect()
         if self.changes.server_cert_check is None:
             params['server_cert_check'] = self.have.server_cert_check
         params = self.add_default_rule_values_for_create(params)
@@ -1369,9 +1376,12 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            name=dict(required=True),
+            name=dict(
+                required=True,
+            ),
             policy_consumer=dict(
                 choices=['outbound', 'inbound'],
+                default="outbound"
             ),
             default_rule=dict(
                 type='dict',

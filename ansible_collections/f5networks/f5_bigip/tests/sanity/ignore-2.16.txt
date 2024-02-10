@@ -1,0 +1,2 @@
+plugins/action/bigip.py action-plugin-docs # undocumented action plugin to fix, existed before sanity test was added
+plugins/action/bigiq.py action-plugin-docs # undocumented action plugin to fix, existed before sanity test was added

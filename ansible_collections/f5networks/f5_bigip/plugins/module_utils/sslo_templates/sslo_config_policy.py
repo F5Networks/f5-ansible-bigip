@@ -49,7 +49,7 @@ create_modify = """
           "value": {
                 "version": {{ params.sslo_version }},
                 "partition": "Common",
-                "strictness": false,
+                "strictness": true,
                 "operationType": "{{ params.operation }}",
                 "deploymentName": "{{ params.deployment_name }}",
                 "deploymentType": "SECURITY_POLICY"{% if params.dep_ref is defined %},

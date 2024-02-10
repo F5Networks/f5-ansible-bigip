@@ -9,10 +9,10 @@ uploading security policies, uploading crts/keys, gathering info, etc.
 
 ## Requirements
 
- - ansible >= 2.13
+ - ansible >= 2.14
 
 ## Python Version
-Deprecated support for Python 3.8 and below F5 recommends to move to Python 3.9 and above.
+Collection supported on Python 3.9 and above.
 
 ## Collections Daily Build
 
