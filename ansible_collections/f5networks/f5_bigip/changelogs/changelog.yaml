@@ -554,3 +554,31 @@ releases:
     release_date: '2023-10-12'
   3.2.2:
     release_date: '2023-11-23'
+  3.3.0:
+    changes:
+      bugfixes:
+      - bigip_awaf_policy - fixed a bug that didn't let the user create a policy in
+        a partition other than Common.
+      - bigip_ssl_key_cert - fixed an issue where the passphrase was not being properly
+        send to the BIG-IP.
+      - bigip_sslo_config_policy - fixed issue - cant reference security policy.
+      - bigip_sslo_config_policy - resolved SSLO Security Policy modification issue.
+      - bigip_sslo_config_topology - set interception rule to custom when topology
+        is outbound_l3 and port is provided.
+      - bigip_sslo_service_layer2 - fixed issue - missing vendor_info field.
+      - bigiq_as3_deploy - fixed flaw in code to make module work
+      minor_changes:
+      - bigip_sslo_config_policy - updated documentation for policy_consumer.
+      - bigip_sslo_config_ssl - added the options to specify passphrases for private
+        key and ca private key
+    fragments:
+    - awaf_policy_bugfix.yaml
+    - document-updated-for-policy-consumer.yaml
+    - fix-bigip_sslo_service_layer2-missing vendor_info-field.yaml
+    - fix-cant-reference-security policy.yaml
+    - fix-modify-SSLO-Security-Policy.yaml
+    - fix-ssl-key-cert-passphrase-bug.yaml
+    - key_passphrase_sslo_ssl_config.yaml
+    - multiple_values_for_data_bugfixes.yml
+    - userCreated_rule_outbound_l3_topo.yaml
+    release_date: '2024-02-13'

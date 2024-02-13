@@ -1,9 +1,28 @@
-============================================
-F5Networks F5_BIGIP Collection Release Notes
-============================================
+=============================================
+F5Networks F5\_BIGIP Collection Release Notes
+=============================================
 
 .. contents:: Topics
 
+v3.3.0
+======
+
+Minor Changes
+-------------
+
+- bigip_sslo_config_policy - updated documentation for policy_consumer.
+- bigip_sslo_config_ssl - added the options to specify passphrases for private key and ca private key
+
+Bugfixes
+--------
+
+- bigip_awaf_policy - fixed a bug that didn't let the user create a policy in a partition other than Common.
+- bigip_ssl_key_cert - fixed an issue where the passphrase was not being properly send to the BIG-IP.
+- bigip_sslo_config_policy - fixed issue - cant reference security policy.
+- bigip_sslo_config_policy - resolved SSLO Security Policy modification issue.
+- bigip_sslo_config_topology - set interception rule to custom when topology is outbound_l3 and port is provided.
+- bigip_sslo_service_layer2 - fixed issue - missing vendor_info field.
+- bigiq_as3_deploy - fixed flaw in code to make module work
 
 v3.2.2
 ======

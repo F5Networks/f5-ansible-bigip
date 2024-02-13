@@ -1,3 +1,0 @@
----
-minor_changes:
-    - bigip_sslo_config_ssl - added the options to specify passphrases for private key and ca private key

@@ -1,3 +1,0 @@
----
-bugfixes:
-  - bigip_awaf_policy - fixed a bug that didn't let the user create a policy in a partition other than Common.

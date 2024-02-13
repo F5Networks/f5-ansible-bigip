@@ -1,3 +1,0 @@
----
-bugfixes:
-  - bigip_ssl_key_cert - fixed an issue where the passphrase was not being properly send to the BIG-IP.

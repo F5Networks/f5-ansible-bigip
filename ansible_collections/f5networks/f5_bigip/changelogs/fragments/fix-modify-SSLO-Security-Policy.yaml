@@ -1,3 +1,0 @@
----
-bugfixes:
-  - bigip_sslo_config_policy - resolved SSLO Security Policy modification issue.
