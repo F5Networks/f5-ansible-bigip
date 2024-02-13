@@ -2,7 +2,7 @@ create_modify = """
 {
    "policy" : {
       "name": "{{ params.name }}",
-      "fullPath": "{{ params.fullpath }}",
+      "fullPath": "{{ params.fullPath }}",
       "applicationLanguage": "{{ params.language }}",
       "caseInsensitive": {{ params.case_insensitive | tojson }},{% if params.description is defined %}
       "description": "{{ params.description }}",{% endif %}

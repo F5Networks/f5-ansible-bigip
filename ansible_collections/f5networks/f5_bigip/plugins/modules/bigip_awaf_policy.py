@@ -991,10 +991,20 @@ class ModuleManager(object):
                     return True
         return False
 
+    def upload_file_to_device(self, content, name):
+        uri = "/mgmt/tm/asm/file-transfer/uploads"
+        try:
+            self.client.plugin.upload_file(url=uri, src=content, dest=name, true_path=False)
+        except Exception as e:
+            raise F5ModuleError(
+                "Failed to upload the file to the device."
+            )
+
     def create_on_device(self):
         content = self.generate_policy_json()
         if self.want.dump_json:
             return False, content
+        self.upload_file_to_device(content, f"{self.want.name}.json")
         task = self.import_policy(content)
         result = self.wait_for_task(task)
         self.policy_id = Path(urlparse(result['policyReference']['link']).path).name
@@ -1004,16 +1014,18 @@ class ModuleManager(object):
         content = self.generate_policy_json(update=True)
         if self.want.dump_json:
             return False, content
+        self.upload_file_to_device(content, f"{self.want.name}.json")
         task = self.import_policy(content, update=True)
         result = self.wait_for_task(task)
         self.policy_id = Path(urlparse(result['policyReference']['link']).path).name
         return True, None
 
     def import_policy(self, content, update=False):
+        policy_full_path = fq_name(self.want.partition, self.want.name) if not update else self.have.full_path
         params = dict(
-            format='json',
-            file=content,
-            policy=dict(fullPath=fq_name(self.want.partition, self.want.name) if not update else self.have.full_path)
+            filename=f'{self.want.name}.json',
+            fullPath=policy_full_path,
+            policy=dict(fullPath=policy_full_path if not update else self.have.full_path)
         )
         if update:
             params.update(dict(policyReference={'link': f"https://localhost/mgmt/tm/asm/policies/{self.policy_id}"}))
@@ -1028,8 +1040,9 @@ class ModuleManager(object):
 
     def apply_policy(self, update=False):
         params = dict(policy=dict(
-            fullPath=fq_name(self.want.partition, self.want.name) if not update else self.have.full_path)
-        )
+            fullPath=fq_name(self.want.partition, self.want.name) if not update else self.have.full_path,
+            policyReference={'link': f"https://localhost/mgmt/tm/asm/policies/{self.policy_id}"}
+        ))
         if update:
             params.update(dict(policyReference={'link': f"https://localhost/mgmt/tm/asm/policies/{self.policy_id}"}))
 
