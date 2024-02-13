@@ -79,6 +79,20 @@ options:
           - Defines the private key applied in the client side settings.
           - This parameter is required together with C(cert).
         type: str
+      key_passphrase:
+        description:
+          - Defines the passphrase for the private key in the client side settings.
+        type: str
+        version_added: "3.3.0"
+      update_key_passphrase:
+        description:
+          - Defines whether to update the passphrase for the private key in the client side settings.
+          - Default values is C(no).
+          - It must be set to C(yes) when wanting to update the passphrase or when trying to add
+            a passphrase to a private key that does not have one in an existing ssl config.
+        type: bool
+        default: false
+        version_added: "3.3.0"
       chain:
         description:
           - Defines the certificate keychain in the client side settings.
@@ -103,6 +117,20 @@ options:
             is ignored.
           - This parameter is required together with C(ca_key).
         type: str
+      ca_key_passphrase:
+        description:
+          - Defines the passphrase for the CA private key in the client side settings.
+        type: str
+        version_added: "3.3.0"
+      update_ca_key_passphrase:
+        description:
+          - Defines whether to update the passphrase for the CA private key in the client side settings.
+          - Default values is C(no).
+          - It must be set to C(yes) when wanting to update the passphrase or when trying to add
+            a passphrase to a CA private key that does not have one in an existing ssl config.
+        type: bool
+        default: false
+        version_added: "3.3.0"
       ca_chain:
         description:
           - Defines the CA certificate keychain in the client side settings.
@@ -380,6 +408,7 @@ bypass_client_cert_failure:
   sample: true
 '''
 
+from random import randint
 import time
 import traceback
 
@@ -424,9 +453,11 @@ class Parameters(AnsibleF5Parameters):
         'client_cipher_group',
         'client_cert',
         'client_key',
+        'client_key_passphrase',
         'client_chain',
         'client_ca_cert',
         'client_ca_key',
+        'client_ca_key_passphrase',
         'client_ca_chain',
         'alpn',
         'client_log_publisher',
@@ -454,9 +485,11 @@ class Parameters(AnsibleF5Parameters):
         'client_cipher_group',
         'client_cert',
         'client_key',
+        'client_key_passphrase',
         'client_chain',
         'client_ca_cert',
         'client_ca_key',
+        'client_ca_key_passphrase',
         'client_ca_chain',
         'alpn',
         'client_log_publisher',
@@ -618,13 +651,27 @@ class ApiParameters(Parameters):
     def block_expired(self):
         if self._values['serverSettings'] is None:
             return None
-        return self._values['serverSettings'].get('expiredCertificates', None)
+        val = self._values['serverSettings'].get('expiredCertificates', None)
+        bool_val = flatten_boolean(val)
+        if not bool_val:
+            return val
+        elif bool_val == 'yes':
+            return 'drop'
+        elif bool_val == 'no':
+            return 'ignore'
 
     @property
     def block_untrusted(self):
         if self._values['serverSettings'] is None:
             return None
-        return self._values['serverSettings'].get('untrustedCertificates', None)
+        val = self._values['serverSettings'].get('untrustedCertificates', None)
+        bool_val = flatten_boolean(val)
+        if not bool_val:
+            return val
+        elif bool_val == 'yes':
+            return 'drop'
+        elif bool_val == 'no':
+            return 'ignore'
 
     @property
     def server_ocsp(self):
@@ -723,6 +770,18 @@ class ModuleParameters(Parameters):
         return self._values['client_settings'].get('key', None)
 
     @property
+    def client_key_passphrase(self):
+        if self._values['client_settings'] is None:
+            return ""
+        return self._values['client_settings'].get('key_passphrase', '')
+
+    @property
+    def update_key_passphrase(self):
+        if self._values['client_settings'] is None:
+            return None
+        return self._values['client_settings'].get('update_key_passphrase')
+
+    @property
     def client_chain(self):
         if self._values['client_settings'] is None:
             return None
@@ -739,6 +798,18 @@ class ModuleParameters(Parameters):
         if self._values['client_settings'] is None:
             return None
         return self._values['client_settings'].get('ca_key', None)
+
+    @property
+    def client_ca_key_passphrase(self):
+        if self._values['client_settings'] is None:
+            return None
+        return self._values['client_settings'].get('ca_key_passphrase', '')
+
+    @property
+    def update_ca_key_passphrase(self):
+        if self._values['client_settings'] is None:
+            return None
+        return self._values['client_settings'].get('update_ca_key_passphrase')
 
     @property
     def client_ca_chain(self):
@@ -979,6 +1050,18 @@ class Difference(object):
     def proxy_type(self):
         if self.want.proxy_type != self.have.proxy_type:
             raise F5ModuleError("The 'proxy_type' parameter cannot be changed after SSL object has been created.")
+
+    @property
+    def client_key_passphrase(self):
+        if flatten_boolean(self.want.update_key_passphrase) == 'yes':
+            return self.want.client_key_passphrase
+        return None
+
+    @property
+    def client_ca_key_passphrase(self):
+        if flatten_boolean(self.want.update_ca_key_passphrase) == 'yes':
+            return self.want.client_ca_key_passphrase
+        return None
 
 
 class ModuleManager(object):
@@ -1239,6 +1322,23 @@ class ModuleManager(object):
         payload['proxy_type'] = self.want.proxy_type
         return payload
 
+    def add_passphrases(self, payload):
+        if payload.get('client_key_passphrase') is not None:
+            passphrase = payload['client_key_passphrase']
+            if Version(self.version) < Version('9.3'):
+                payload['client_key_passphrase'] = ''.join([str(ord(i)).rjust(3, '0') for i in passphrase])
+            else:
+                payload['key_pfId'] = 'T_' + str(int(time.time() * 1000) * randint(0, 1000))
+
+        if payload.get('client_ca_key_passphrase') is not None:
+            passphrase = payload['client_ca_key_passphrase']
+            if Version(self.version) < Version('9.3'):
+                payload['client_ca_key_passphrase'] = ''.join([str(ord(i)).rjust(3, '0') for i in passphrase])
+            else:
+                payload['ca_key_pfId'] = 'T_' + str(int(time.time() * 1000) * randint(0, 1000))
+
+        return payload
+
     def exists(self):
         uri = "/mgmt/shared/iapp/blocks/"
         query = f"?$filter=name+eq+'{self.want.name}'"
@@ -1260,6 +1360,7 @@ class ModuleManager(object):
         payload = self.changes.to_return()
         self.check_version_specific_parameters()
         data = self.add_create_defaults(self.add_json_metadata(payload))
+        data = self.add_passphrases(data)
 
         output = process_json(data, create_modify)
 
@@ -1279,6 +1380,7 @@ class ModuleManager(object):
         payload = self.changes.to_return()
         self.check_version_specific_parameters()
         data = self.add_missing_options(self.add_json_metadata(payload))
+        data = self.add_passphrases(data)
 
         output = process_json(data, create_modify)
 
@@ -1382,9 +1484,19 @@ class ArgumentSpec(object):
                     cipher_group=dict(),
                     cert=dict(),
                     key=dict(no_log=True),
+                    key_passphrase=dict(no_log=True),
+                    update_key_passphrase=dict(
+                        type='bool',
+                        default='no'
+                    ),
                     chain=dict(),
                     ca_cert=dict(),
                     ca_key=dict(no_log=True),
+                    ca_key_passphrase=dict(no_log=True),
+                    update_ca_key_passphrase=dict(
+                        type='bool',
+                        default='no'
+                    ),
                     ca_chain=dict(),
                     alpn=dict(type='bool'),
                     log_publisher=dict(),

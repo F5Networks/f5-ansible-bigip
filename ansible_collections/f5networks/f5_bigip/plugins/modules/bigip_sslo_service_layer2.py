@@ -124,6 +124,12 @@ options:
       - present
       - absent
     default: present
+  vendor_info:
+    description:
+      - Specifies the vendor-specific L2 service used. The default is C(Generic Inline Layer 2).
+    type: str
+    version_added: "3.3.0"
+
 author:
   - Wojciech Wypior (@wojtek0806)
   - Kevin Stewart (@kevingstewart)
@@ -255,7 +261,8 @@ class Parameters(AnsibleF5Parameters):
         'service_down_action',
         'port_remap',
         'service_subnet',
-        'rules'
+        'rules',
+        'vendor_info'
     ]
 
     updatables = [
@@ -265,7 +272,8 @@ class Parameters(AnsibleF5Parameters):
         'service_down_action',
         'port_remap',
         # 'service_subnet',
-        'rules'
+        'rules',
+        'vendor_info'
     ]
 
 
@@ -360,6 +368,10 @@ class ApiParameters(Parameters):
     @property
     def rules(self):
         return self._values['customService']['iRuleList']
+
+    @property
+    def vendor_info(self):
+        return self._values['vendorInfo']['name']
 
 
 class ModuleParameters(Parameters):
@@ -787,6 +799,8 @@ class ModuleManager(object):
             payload['monitor'] = '/Common/gateway_icmp'
         if self.want.service_down_action is None:
             payload['service_down_action'] = 'ignore'
+        if self.want.vendor_info is None:
+            payload['vendor_info'] = 'Generic Inline Layer 2'
         return payload
 
     def add_missing_options(self, payload):
@@ -806,6 +820,8 @@ class ModuleManager(object):
             payload['service_subnet'] = self.have.service_subnet
         if self.changes.rules is None:
             payload['rules'] = self.have.rules
+        if self.changes.vendor_info is None:
+            payload['vendor_info'] = self.have.vendor_info
         return payload
 
     def exists(self):
@@ -997,7 +1013,8 @@ class ArgumentSpec(object):
             dump_json=dict(
                 type='bool',
                 default='no'
-            )
+            ),
+            vendor_info=dict()
         )
         self.argument_spec = {}
         self.argument_spec.update(argument_spec)

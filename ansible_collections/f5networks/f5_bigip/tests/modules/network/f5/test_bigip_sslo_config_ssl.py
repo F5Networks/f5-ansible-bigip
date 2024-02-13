@@ -128,6 +128,31 @@ class TestParameters(unittest.TestCase):
         assert p.bypass_handshake_failure is True
         assert p.bypass_client_cert_failure is False
 
+    def test_api_param_block_expired_untrusted(self):
+        args = load_fixture('return_sslo_config_ssl_params.json')
+
+        p = ApiParameters(params=args)
+        self.assertEqual(p.block_expired, 'drop')
+        self.assertEqual(p.block_untrusted, 'drop')
+
+        args['serverSettings']['expiredCertificates'] = 'ignore'
+        args['serverSettings']['untrustedCertificates'] = 'ignore'
+        p = ApiParameters(params=args)
+        self.assertEqual(p.block_expired, 'ignore')
+        self.assertEqual(p.block_untrusted, 'ignore')
+
+        args['serverSettings']['expiredCertificates'] = False
+        args['serverSettings']['untrustedCertificates'] = False
+        p = ApiParameters(params=args)
+        self.assertEqual(p.block_expired, 'ignore')
+        self.assertEqual(p.block_untrusted, 'ignore')
+
+        args['serverSettings']['expiredCertificates'] = True
+        args['serverSettings']['untrustedCertificates'] = True
+        p = ApiParameters(params=args)
+        self.assertEqual(p.block_expired, 'drop')
+        self.assertEqual(p.block_untrusted, 'drop')
+
 
 class TestManager(unittest.TestCase):
     def setUp(self):

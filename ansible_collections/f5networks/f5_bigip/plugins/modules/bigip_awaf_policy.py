@@ -5,6 +5,7 @@
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 DOCUMENTATION = r'''
@@ -552,12 +553,12 @@ class ModuleParameters(Parameters):
                      'Google Web Toolkit', 'GraphQL', 'Handlebars', 'IBM DB2', 'IIS', 'JBoss', 'Java Servlets/JSP',
                      'JavaScript', 'JavaServer Faces (JSF)', 'Jenkins', 'Jetty', 'Joomla', 'Laravel', 'Lotus Domino',
                      'Macromedia ColdFusion', 'Macromedia JRun', 'Microsoft SQL Server', 'Microsoft Windows', 'MongoDB',
-                     'MooTools', 'Mustache', 'MySQL', 'Nginx', 'Node.js', 'Novell', 'Oracle',
-                     'Oracle Application Server', 'Oracle Identity Manager', 'Outlook Web Access', 'PHP', 'PostgreSQL',
-                     'Prototype', 'Proxy Servers', 'Python', 'React', 'Redis', 'RequireJS', 'Ruby', 'SQLite',
-                     'SSI (Server Side Includes)', 'SharePoint', 'Spring Boot', 'Sybase/ASE', 'TYPO3 CMS', 'UIKit',
-                     'Underscore.js', 'Unix/Linux', 'Vue.js', 'WebDAV', 'WordPress', 'XML', 'ZURB Foundation', 'Zend',
-                     'ef.js', 'jQuery']
+                     'MooTools', 'Mustache', 'MySQL', 'Nginx', 'Node.js', 'Novell', 'Oracle', 'Nginx', 'Neo4J',
+                     'Svelte', 'Oracle Application Server', 'Oracle Identity Manager', 'Outlook Web Access', 'PHP',
+                     'PostgreSQL', 'Prototype', 'Proxy Servers', 'Python', 'React', 'Redis', 'RequireJS', 'Ruby',
+                     'SQLite', 'SSI (Server Side Includes)', 'SharePoint', 'Spring Boot', 'Sybase/ASE', 'TYPO3 CMS',
+                     'UIKit', 'Underscore.js', 'Unix/Linux', 'Vue.js', 'WebDAV', 'WordPress', 'XML', 'ZURB Foundation',
+                     'Zend', 'ef.js', 'jQuery']
         if server not in tech_list:
             raise F5ModuleError(f'Invalid entry for server technology: {server}, should be one of {tech_list}')
         return server
@@ -990,10 +991,20 @@ class ModuleManager(object):
                     return True
         return False
 
+    def upload_file_to_device(self, content, name):
+        uri = "/mgmt/tm/asm/file-transfer/uploads"
+        try:
+            self.client.plugin.upload_file(url=uri, src=content, dest=name, true_path=False)
+        except Exception as e:
+            raise F5ModuleError(
+                "Failed to upload the file to the device."
+            )
+
     def create_on_device(self):
         content = self.generate_policy_json()
         if self.want.dump_json:
             return False, content
+        self.upload_file_to_device(content, f"{self.want.name}.json")
         task = self.import_policy(content)
         result = self.wait_for_task(task)
         self.policy_id = Path(urlparse(result['policyReference']['link']).path).name
@@ -1003,16 +1014,18 @@ class ModuleManager(object):
         content = self.generate_policy_json(update=True)
         if self.want.dump_json:
             return False, content
+        self.upload_file_to_device(content, f"{self.want.name}.json")
         task = self.import_policy(content, update=True)
         result = self.wait_for_task(task)
         self.policy_id = Path(urlparse(result['policyReference']['link']).path).name
         return True, None
 
     def import_policy(self, content, update=False):
+        policy_full_path = fq_name(self.want.partition, self.want.name) if not update else self.have.full_path
         params = dict(
-            format='json',
-            file=content,
-            policy=dict(fullPath=fq_name(self.want.partition, self.want.name) if not update else self.have.full_path)
+            filename=f'{self.want.name}.json',
+            fullPath=policy_full_path,
+            policy=dict(fullPath=policy_full_path if not update else self.have.full_path)
         )
         if update:
             params.update(dict(policyReference={'link': f"https://localhost/mgmt/tm/asm/policies/{self.policy_id}"}))
@@ -1027,8 +1040,9 @@ class ModuleManager(object):
 
     def apply_policy(self, update=False):
         params = dict(policy=dict(
-            fullPath=fq_name(self.want.partition, self.want.name) if not update else self.have.full_path)
-        )
+            fullPath=fq_name(self.want.partition, self.want.name) if not update else self.have.full_path,
+            policyReference={'link': f"https://localhost/mgmt/tm/asm/policies/{self.policy_id}"}
+        ))
         if update:
             params.update(dict(policyReference={'link': f"https://localhost/mgmt/tm/asm/policies/{self.policy_id}"}))
 

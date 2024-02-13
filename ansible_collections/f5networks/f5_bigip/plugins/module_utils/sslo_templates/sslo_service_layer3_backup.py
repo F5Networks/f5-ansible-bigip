@@ -15,19 +15,19 @@ delete = """
             }
         },
         {
-            "id": "f5-ssl-orchestrator-network",
-            "type": "JSON",
-            "value": []
+                "id": "f5-ssl-orchestrator-network",
+                "type": "JSON",
+                "value": []
         },
         {
             "id": "f5-ssl-orchestrator-service",
             "type": "JSON",
             "value": {
-                "existingBlockId": "{{ params.block_id }}",
-                "name": "{{ params.deployment_name }}",
-                "partition": "Common",
-                "previousVersion": {{ params.sslo_version }},
-                "version": {{ params.sslo_version }}
+                    "partition": "Common",
+                    "name": "{{ params.deployment_name }}",
+                    "previousVersion": {{ params.sslo_version }},
+                    "version": {{ params.sslo_version }},
+                    "existingBlockId": "{{ params.block_id }}"
             }
         }
     ],
@@ -58,31 +58,30 @@ create_modify = """
        {
           "id":"f5-ssl-orchestrator-network",
           "type":"JSON",
-          "value": {% if params.use_exist_selfip %}[]{% else %}[{%  if params.devices_to is defined and params.devices_to.vlan is not defined -%}
+          "value": [{%  if params.devices_to is defined  and 'interface' in params.devices_to %}
             {
                 "name": "{{ params.devices_to.name }}",
                 "partition": "Common",
                 "strictness": false,
+                "create": true,
                 "vlan":{
                     "name": "{{ params.devices_to.name }}",
                     "path": "{{ params.devices_to.path }}",
-                    "create": {% if params.devices_to.interface is defined %}true{% else %}false{% endif %},
+                    "create": true,
                     "modify": false,
                     "networkError": false,
-                    "interface":{% if 'interface' in params.devices_to %}["{{ params.devices_to.interface }}"]
-                    {% else %}[]{% endif %},
-                    "networkInterface": {% if 'interface' in params.devices_to -%}
-                    "{{ params.devices_to.interface }}"{% else %}""{% endif %},
-                    "tag": {% if 'interface' in params.devices_to and 'tag' in params.devices_to -%}
-                    {{ params.devices_to.tag }}{% else %}0{% endif %},
-                    "networkTag": {% if 'interface' in params.devices_to and 'tag' in params.devices_to -%}
-                    {{ params.devices_to.tag }}{% else %}0{% endif %}
+                    "interface":[
+                        "{{ params.devices_to.interface }}"
+                    ],{% if params.devices_to.tag is defined %}
+                    "tag": {{ params.devices_to.tag }},
+                    "networkTag": {{ params.devices_to.tag }},{% endif %}
+                    "networkInterface": "{{ params.devices_to.interface }}"
                 },
                 "selfIpConfig":{
-                    "create": {% if params.devices_to.interface is defined %}true{% else %}false{% endif %},
+                    "create": true,
                     "modify": false,
-                    "selfIp": "{{ params.devices_to.self_ip }}",
-                    "netmask": "{{ params.devices_to.netmask }}",
+                    "selfIp": "",
+                    "netmask": "",
                     "floating": false,
                     "HAstaticIpMap": []
                 },
@@ -91,32 +90,31 @@ create_modify = """
                     "create": false
                 },
                 "existingBlockId": ""
-             }{% if params.devices_from is defined and params.devices_to.vlan is not defined -%},{% endif %}{% endif %}
-             {% if params.devices_from is defined and params.devices_to.vlan is not defined -%}
+             }{% if params.devices_from is defined  and 'interface' in params.devices_from %},{% endif %}{% endif %}
+             {% if params.devices_from is defined  and 'interface' in params.devices_from %}
                 {
                     "name": "{{ params.devices_from.name }}",
                     "partition": "Common",
                     "strictness": false,
+                    "create": true,
                     "vlan":{
                         "name": "{{ params.devices_from.name }}",
                         "path": "{{ params.devices_from.path }}",
-                        "create": {% if params.devices_from.interface is defined %}true{% else %}false{% endif %},
+                        "create": true,
                         "modify": false,
                         "networkError": false,
-                        "interface":{% if 'interface' in params.devices_from %}["{{ params.devices_from.interface }}"]
-                        {% else %}[]{% endif %},
-                        "networkInterface": {% if 'interface' in params.devices_from -%}
-                        "{{ params.devices_from.interface }}"{% else %}""{% endif %},
-                        "tag": {% if 'interface' in params.devices_from and 'tag' in params.devices_from -%}
-                        {{ params.devices_from.tag }}{% else %}0{% endif %},
-                        "networkTag": {% if 'interface' in params.devices_from and 'tag' in params.devices_from -%}
-                        {{ params.devices_from.tag }}{% else %}0{% endif %}
+                        "interface":[
+                            "{{ params.devices_from.interface }}"
+                        ],{% if params.devices_from.tag is defined %}
+                        "tag": {{ params.devices_from.tag }},
+                        "networkTag": {{ params.devices_from.tag }},{% endif %}
+                        "networkInterface": "{{ params.devices_from.interface }}"
                 },
                 "selfIpConfig":{
-                    "create": {% if params.devices_from.interface is defined %}true{% else %}false{% endif %},
+                    "create": true,
                     "modify": false,
-                    "selfIp": "{{ params.devices_from.self_ip }}",
-                    "netmask": "{{ params.devices_from.netmask }}",
+                    "selfIp": "",
+                    "netmask": "",
                     "floating": false,
                     "HAstaticIpMap": []
                 },
@@ -126,7 +124,7 @@ create_modify = """
                 },
                 "existingBlockId":""
              }{% endif %}
-          ]{% endif %}
+          ]
        },
        {
           "id":"f5-ssl-orchestrator-service",
@@ -134,21 +132,18 @@ create_modify = """
           "value":{
              "customService":{
                 "name": "{{ params.deployment_name }}",
-                "serviceType": "http-proxy",
+                "serviceType": "L3",
                 "serviceSpecific":{
-                    "name": "{{ params.deployment_name }}",
-                    "proxyType": "{{ params.proxy_type }}",
-                    "authOffload": {{ params.auth_offload | tojson }}
+                    "name": "{{ params.deployment_name }}"
                 },
                 "connectionInformation":{
                     "fromBigipNetwork":{
-                        "name": {% if params.use_exist_selfip or params.devices_to.vlan is defined %}"toNetwork"{% else %}
-                        "{{ params.devices_to.name }}"{% endif %},
+                        "name": "{{ params.devices_to.name }}",
                         "vlan":{
                             "path": "{{ params.devices_to.path }}",
-                            "create": {% if params.devices_to.interface is defined %}true{% else %}false{% endif %},
+                            "create": {% if 'vlan' in params.devices_to %}false{% else %}true{% endif %},
+                            "selectedValue": {% if 'vlan' in params.devices_to %}"{{ params.devices_to.path }}"{% else %}""{% endif %},
                             "modify": false,
-                            "selectedValue": "{{ params.devices_to.path }}",
                             "networkVlanValue": ""
                         },
                         "routeDomain":{
@@ -156,12 +151,10 @@ create_modify = """
                             "create": false
                         },
                         "selfIpConfig":{
-                            "create": {% if params.devices_to.interface is defined %}true{% else %}
-                            {% if params.use_exist_selfip or (params.devices_to.vlan is defined and params.auto_manage) %}false
-                            {% else %}true{% endif %}{% endif %},
+                            "create": true,
                             "modify": false,
                             "autoValue": {% if params.ip_family == 'ipv6' %}"2001:0200:0:0300::7/120"
-                            {% else %}"198.19.96.7/25"{% endif %},
+                            {% else %}"198.19.64.7/25"{% endif %},
                             "selectedValue": {% if params.ip_family == 'ipv6' %}"2001:0200:0:0300::7/120"
                             {% else %}""{% endif %},
                             "selfIp": "{{ params.devices_to.self_ip }}",
@@ -173,13 +166,12 @@ create_modify = """
                       {% else %}""{% endif %}
                     },
                     "toBigipNetwork":{
-                        "name": {% if params.use_exist_selfip or params.devices_from.vlan is defined %}"fromNetwork"
-                        {% else %}"{{ params.devices_from.name }}"{% endif %},
+                        "name": "{{ params.devices_from.name }}",
                         "vlan":{
                             "path": "{{ params.devices_from.path }}",
-                            "create": {% if params.devices_from.interface is defined %}true{% else %}false{% endif %},
+                            "create": {% if 'vlan' in params.devices_from %}false{% else %}true{% endif %},
                             "modify": false,
-                            "selectedValue": "{{ params.devices_from.path }}",
+                            "selectedValue": {% if 'vlan' in params.devices_from %}"{{ params.devices_from.path }}"{% else %}""{% endif %},
                             "networkVlanValue": ""
                         },
                         "routeDomain":{
@@ -187,12 +179,10 @@ create_modify = """
                             "create": false
                         },
                         "selfIpConfig":{
-                            "create": {% if params.devices_from.interface is defined %}true{% else %}
-                            {% if params.use_exist_selfip or (params.devices_from.vlan is defined and params.auto_manage) %}false
-                            {% else %}true{% endif %}{% endif %},
+                            "create": true,
                             "modify": false,
                             "autoValue": {% if params.ip_family == 'ipv6' %}"2001:0200:0:0300::107/120"
-                            {% else %}"198.19.96.245/25"{% endif %},
+                            {% else %}"198.19.64.245/25"{% endif %},
                             "selectedValue": {% if params.ip_family == 'ipv6' %}"2001:0200:0:0300::107/120"
                             {% else %}""{% endif %},
                             "selfIp": "{{ params.devices_from.self_ip }}",
@@ -207,11 +197,11 @@ create_modify = """
                 "snatConfiguration":{
                    "clientSnat": "{{ params.snat }}",
                    "snat":{
-                      "referredObj": {% if params.snat_ref_id is defined -%}"{{ params.snat_ref_id }}"
+                      "referredObj": {% if params.snat_ref_id is defined %}"{{ params.snat_ref_id }}"
                       {% else %}""{% endif %},
-                      "ipv4SnatAddresses": {% if params.ip_family == 'ipv4' and params.snat_list is defined -%}
+                      "ipv4SnatAddresses": {% if params.ip_family == 'ipv4' and params.snat_list is defined %}
                       {{ params.snat_list | tojson }}{% else %}[]{% endif %},
-                      "ipv6SnatAddresses": {% if params.ip_family == 'ipv6' and params.snat_list is defined -%}
+                      "ipv6SnatAddresses": {% if params.ip_family == 'ipv6' and params.snat_list is defined %}
                       {{ params.snat_list | tojson }}{% else %}[]{% endif %}
                    }
                 },
@@ -221,20 +211,20 @@ create_modify = """
                       "fromSystem": "{{ params.monitor }}"
                    }
                 },
-                "initialIpFamily": "{{ params.ip_family }}",
+                "initialIpFamily": "ipv4",
                 "ipFamily": "{{ params.ip_family }}",
-                "isAutoManage": {{ params.auto_manage | tojson }},
+                "isAutoManage": true,
                 "portRemap": {% if params.port_remap is defined %}true{% else %}false{% endif %},
-                "httpPortRemapValue": {% if params.port_remap is defined -%}{{ params.port_remap }},{% else %}80,
-                {% endif %}
+                "httpPortRemapValue": {% if params.port_remap is defined %}{{ params.port_remap }}
+                {% else %}80{% endif %},
                 "serviceDownAction": "{{ params.service_down_action }}",
                 "iRuleList": {% if params.rules is defined %}{{ params.rules | tojson }}{% else %}[]{% endif %},
                 "managedNetwork":{
-                    "serviceType": "http-proxy",
-                    "ipFamily": "{{ params.ip_family }}",
-                    "isAutoManage": false,{% if params.ip_family == 'ipv4' %}
-                    "ipv4": {
-                        "serviceType": "http-proxy",
+                    "serviceType": "L3",
+                    "ipFamily": "ipv4",
+                    "isAutoManage": true,
+                    "ipv4": {% if params.ip_family == 'ipv4' %}{
+                        "serviceType": "L3",
                         "ipFamily": "{{ params.ip_family }}",
                         "serviceSubnet": "{{ params.devices_to.network }}",
                         "serviceIndex": 0,
@@ -245,9 +235,9 @@ create_modify = """
                         "fromServiceNetwork": "{{ params.devices_from.network }}",
                         "fromServiceMask": "{{ params.devices_from.netmask }}",
                         "fromServiceSelfIp": "{{ params.devices_from.self_ip }}"
-                    }{% endif %},{% if params.ip_family == 'ipv6' %}
-                   "ipv6": {
-                        "serviceType": "http-proxy",
+                    }{% else %}{}{% endif %},
+                   "ipv6": {% if params.ip_family == 'ipv6' %}{
+                        "serviceType": "L3",
                         "ipFamily": "{{ params.ip_family }}",
                         "serviceSubnet": "{{ params.devices_to.network }}",
                         "serviceIndex": 0,
@@ -258,77 +248,75 @@ create_modify = """
                         "fromServiceNetwork": "{{ params.devices_from.network }}",
                         "fromServiceMask": "{{ params.devices_from.netmask }}",
                         "fromServiceSelfIp": "{{ params.devices_from.self_ip }}"
-                    },{% endif %}
+                    }{% else %}{}{% endif %},
                    "operation":"RESERVEANDCOMMIT"
                 }
              },
              "fromVlanNetworkObj":{
-                "create": {% if params.devices_to.interface is defined %}false{% else %}{% if params.use_exist_selfip or params.devices_to.vlan is defined %}
-                false{% else %}true{% endif %}{% endif %},
+                "create": true,
                 "modify": false,
                 "networkError": false
+             },
+             "fromNetworkObj":{
+                "name": "{{ params.devices_to.name }}",
+                "create": true,
+                "partition": "Common",
+                "strictness": false,
+                "vlan":{
+                    "create": {% if 'vlan' in params.devices_to %}false{% else %}true{% endif %},
+                    "modify": false,
+                    "name": "{{ params.devices_to.name }}",
+                    "path": "{{ params.devices_to.path }}",
+                    "networkError": false,
+                    "interface": {% if 'interface' in params.devices_to %}["{{ params.devices_to.interface }}"]
+                    {% else %}[]{% endif %},
+                    "tag": {% if 'interface' in params.devices_to and 'tag' in params.devices_to %}
+                    {{ params.devices_to.tag }}{% else %}0{% endif %},
+                    "networkInterface": {% if 'interface' in params.devices_to %}
+                    "{{ params.devices_to.interface }}"{% else %}""{% endif %},
+                    "networkTag": {% if 'interface' in params.devices_to and 'tag' in params.devices_to %}
+                    {{ params.devices_to.tag }}{% else %}0{% endif %}
+                },
+                "selfIpConfig":{
+                    "create": true,
+                    "modify": false,
+                    "selfIp": "{{ params.devices_to.self_ip }}",
+                    "netmask": "{{ params.devices_to.netmask }}",
+                    "floating": false,
+                    "HAstaticIpMap": []
+                },
+                "routeDomain":{
+                    "id": 0,
+                    "create": false
+                }
              },
              "toVlanNetworkObj":{
-                "create": {% if params.devices_from.interface is defined %}false{% else %}
-                {% if params.use_exist_selfip or params.devices_from.vlan is defined %}false{% else %}true{% endif %}{% endif %},
+                "create": true,
                 "modify": false,
                 "networkError": false
-             },{% if not params.use_exist_selfip and (params.devices_from.interface is defined or params.devices_to.interface is defined) %}
-             "fromNetworkObj":{
-                "name": "{{ params.devices_to.name }}",
-                "partition": "Common",
-                "strictness": false,
-                "vlan":{
-                    "create": {% if params.devices_to.interface is defined %}true{% else %}false{% endif %},
-                    "modify": false,
-                    "name": "{{ params.devices_to.name }}",
-                    "path": "{{ params.devices_to.path }}",
-                    "networkError": false,
-                    "interface": {% if 'interface' in params.devices_to %}"{{ params.devices_to.interface }}"
-                    {% else %}[]{% endif %},
-                    "tag": {% if 'interface' in params.devices_to and 'tag' in params.devices_to -%}
-                    {{ params.devices_to.tag }}{% else %}0{% endif %},
-                    "networkInterface": {% if 'interface' in params.devices_to -%}
-                    "{{ params.devices_to.interface }}"{% else %}""{% endif %},
-                    "networkTag": {% if 'interface' in params.devices_to and 'tag' in params.devices_to -%}
-                    {{ params.devices_to.tag }}{% else %}0{% endif %}
-                },
-                "selfIpConfig":{
-                    "create": {% if params.devices_to.interface is defined %}true{% else %}
-                    {% if params.use_exist_selfip %}false{% else %}true{% endif %}{% endif %},
-                    "modify": false,
-                    "selfIp": "{{ params.devices_to.self_ip }}",
-                    "netmask": "{{ params.devices_to.netmask }}",
-                    "floating": false,
-                    "HAstaticIpMap": []
-                },
-                "routeDomain":{
-                    "id": 0,
-                    "create": false
-                }
              },
              "toNetworkObj":{
                 "name": "{{ params.devices_from.name }}",
+                "create": {% if 'vlan' in params.devices_from %}false{% else %}true{% endif %},
                 "partition": "Common",
                 "strictness": true,
                 "vlan":{
-                    "create": {% if params.devices_from.interface is defined %}true{% else %}false{% endif %},
+                    "create": {% if 'vlan' in params.devices_from %}false{% else %}true{% endif %},
                     "modify": false,
                     "name": "{{ params.devices_from.name }}",
                     "path": "{{ params.devices_from.path }}",
                     "networkError": false,
-                    "interface": {% if 'interface' in params.devices_from -%}
-                    "{{ params.devices_from.interface }}"{% else %}[]{% endif %},
-                    "tag": {% if 'interface' in params.devices_from and 'tag' in params.devices_from -%}
+                    "interface": {% if 'interface' in params.devices_from %}
+                    ["{{ params.devices_from.interface }}"]{% else %}[]{% endif %},
+                    "tag": {% if 'interface' in params.devices_from and 'tag' in params.devices_from %}
                     {{ params.devices_from.tag }}{% else %}0{% endif %},
-                    "networkInterface": {% if 'interface' in params.devices_from -%}
+                    "networkInterface": {% if 'interface' in params.devices_from %}
                     "{{ params.devices_from.interface }}"{% else %}""{% endif %},
-                    "networkTag": {% if 'interface' in params.devices_from and 'tag' in params.devices_from -%}
+                    "networkTag": {% if 'interface' in params.devices_from and 'tag' in params.devices_from %}
                     {{ params.devices_from.tag }}{% else %}0{% endif %}
                 },
                 "selfIpConfig":{
-                    "create": {% if params.devices_from.interface is defined %}true{% else %}
-                    {% if params.use_exist_selfip %}false{% else %}true{% endif %}{% endif %},
+                    "create": true,
                     "modify": false,
                     "selfIp": "{{ params.devices_from.self_ip }}",
                     "netmask": "{{ params.devices_from.netmask }}",
@@ -339,85 +327,17 @@ create_modify = """
                     "id": 0,
                     "create": false
                 }
-             },{% else %}
-             "fromNetworkObj":{
-                "name": "{{ params.devices_to.name }}",
-                "partition": "Common",
-                "strictness": false,
-                "vlan":{
-                    "create": {% if params.devices_to.interface is defined %}true{% else %}false{% endif %},
-                    "modify": false,
-                    "name": "{{ params.devices_to.name }}",
-                    "path": "{{ params.devices_to.path }}",
-                    "networkError": false,
-                    "interface": {% if 'interface' in params.devices_to %}"{{ params.devices_to.interface }}"
-                    {% else %}[]{% endif %},
-                    "tag": {% if 'interface' in params.devices_to and 'tag' in params.devices_to -%}
-                    {{ params.devices_to.tag }}{% else %}0{% endif %},
-                    "networkInterface": {% if 'interface' in params.devices_to -%}
-                    "{{ params.devices_to.interface }}"{% else %}""{% endif %},
-                    "networkTag": {% if 'interface' in params.devices_to and 'tag' in params.devices_to -%}
-                    {{ params.devices_to.tag }}{% else %}0{% endif %}
-                },
-                "selfIpConfig":{
-                    "create": {% if params.devices_to.interface is defined %}true{% else %}
-                    {% if params.use_exist_selfip or (params.devices_to.vlan is defined and params.auto_manage) %}
-                    false{% else %}true{% endif %}{% endif %},
-                    "modify": false,
-                    "selfIp": "{{ params.devices_to.self_ip }}",
-                    "netmask": "{{ params.devices_to.netmask }}",
-                    "floating": false,
-                    "HAstaticIpMap": []
-                },
-                "routeDomain":{
-                    "id": 0,
-                    "create": false
-                }
              },
-             "toNetworkObj":{
-                "name": "{{ params.devices_from.name }}",
-                "partition": "Common",
-                "strictness": true,
-                "vlan":{
-                    "create": {% if params.devices_from.interface is defined %}true{% else %}false{% endif %},
-                    "modify": false,
-                    "name": "{{ params.devices_from.name }}",
-                    "path": "{{ params.devices_from.path }}",
-                    "networkError": false,
-                    "interface": {% if 'interface' in params.devices_from -%}
-                    "{{ params.devices_from.interface }}"{% else %}[]{% endif %},
-                    "tag": {% if 'interface' in params.devices_from and 'tag' in params.devices_from -%}
-                    {{ params.devices_from.tag }}{% else %}0{% endif %},
-                    "networkInterface": {% if 'interface' in params.devices_from -%}
-                    "{{ params.devices_from.interface }}"{% else %}""{% endif %},
-                    "networkTag": {% if 'interface' in params.devices_from and 'tag' in params.devices_from -%}
-                    {{ params.devices_from.tag }}{% else %}0{% endif %}
-                },
-                "selfIpConfig":{
-                    "create": {% if params.devices_from.interface is defined %}true{% else %}
-                    {% if params.use_exist_selfip or (params.devices_from.vlan is defined and params.auto_manage) %}false
-                    {% else %}true{% endif %}{% endif %},
-                    "modify": false,
-                    "selfIp": "{{ params.devices_from.self_ip }}",
-                    "netmask": "{{ params.devices_from.netmask }}",
-                    "floating": false,
-                    "HAstaticIpMap": []
-                },
-                "routeDomain":{
-                    "id": 0,
-                    "create": false
-                }
-             },{% endif %}
              "vendorInfo":{
-                "name": "{{ params.vendor_info }}"
+                "name":"Generic Inline Layer 3"
              },
             "name": "{{ params.deployment_name }}",
             "partition": "Common",
-            "description": "Type: HTTP",
+            "description": "Type: L3",
             "strictness": false,
             "useTemplate": false,
             "serviceTemplate": "",
-            "templateName": "HTTP Service",
+            "templateName": "Layer 3 Service",
             "previousVersion": {{ params.sslo_version }},
             "version": {{ params.sslo_version }}{% if params.block_id is defined %},
             "existingBlockId": "{{ params.block_id }}"{% endif %}

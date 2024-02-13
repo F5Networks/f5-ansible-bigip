@@ -21,7 +21,6 @@
                 "name": "ssloN_layer3a_in",
                 "partition": "Common",
                 "strictness": false,
-                "create": true,
                 "vlan":{
                     "name": "ssloN_layer3a_in",
                     "path": "/Common/ssloN_layer3a_in.app/ssloN_layer3a_in",
@@ -38,8 +37,8 @@
                 "selfIpConfig":{
                     "create": true,
                     "modify": false,
-                    "selfIp": "",
-                    "netmask": "",
+                    "selfIp": "198.19.64.7",
+                    "netmask": "255.255.255.128",
                     "floating": false,
                     "HAstaticIpMap": []
                 },
@@ -54,7 +53,6 @@
                     "name": "ssloN_layer3a_out",
                     "partition": "Common",
                     "strictness": false,
-                    "create": true,
                     "vlan":{
                         "name": "ssloN_layer3a_out",
                         "path": "/Common/ssloN_layer3a_out.app/ssloN_layer3a_out",
@@ -71,8 +69,8 @@
                 "selfIpConfig":{
                     "create": true,
                     "modify": false,
-                    "selfIp": "",
-                    "netmask": "",
+                    "selfIp": "198.19.64.245",
+                    "netmask": "255.255.255.128",
                     "floating": false,
                     "HAstaticIpMap": []
                 },
@@ -100,7 +98,7 @@
                         "vlan":{
                             "path": "/Common/ssloN_layer3a_in.app/ssloN_layer3a_in",
                             "create": true,
-                            "selectedValue": "",
+                            "selectedValue": "/Common/ssloN_layer3a_in.app/ssloN_layer3a_in",
                             "modify": false,
                             "networkVlanValue": ""
                         },
@@ -111,7 +109,7 @@
                         "selfIpConfig":{
                             "create": true,
                             "modify": false,
-                            "autoValue": "198.19.64.7/25",
+                            "autoValue": "198.19.96.245/25",
                             "selectedValue": "",
                             "selfIp": "198.19.64.7",
                             "netmask": "255.255.255.128",
@@ -126,7 +124,7 @@
                             "path": "/Common/ssloN_layer3a_out.app/ssloN_layer3a_out",
                             "create": true,
                             "modify": false,
-                            "selectedValue": "",
+                            "selectedValue": "/Common/ssloN_layer3a_out.app/ssloN_layer3a_out",
                             "networkVlanValue": ""
                         },
                         "routeDomain":{
@@ -136,7 +134,7 @@
                         "selfIpConfig":{
                             "create": true,
                             "modify": false,
-                            "autoValue": "198.19.64.245/25",
+                            "autoValue": "198.19.96.7/25",
                             "selectedValue": "",
                             "selfIp": "198.19.64.245",
                             "netmask": "255.255.255.128",
@@ -162,7 +160,7 @@
                 },
                 "initialIpFamily": "ipv4",
                 "ipFamily": "ipv4",
-                "isAutoManage": true,
+                "isAutoManage": false,
                 "portRemap": true,
                 "httpPortRemapValue": 8081
                 ,
@@ -171,7 +169,7 @@
                 "managedNetwork":{
                     "serviceType": "L3",
                     "ipFamily": "ipv4",
-                    "isAutoManage": true,
+                    "isAutoManage": false,
                     "ipv4": {
                         "serviceType": "L3",
                         "ipFamily": "ipv4",
@@ -185,34 +183,28 @@
                         "fromServiceMask": "255.255.255.128",
                         "fromServiceSelfIp": "198.19.64.245"
                     },
-                   "ipv6": {},
                    "operation":"RESERVEANDCOMMIT"
                 }
              },
              "fromVlanNetworkObj":{
-                "create": true,
+                "create": false,
                 "modify": false,
                 "networkError": false
              },
              "fromNetworkObj":{
                 "name": "ssloN_layer3a_in",
-                "create": true,
                 "partition": "Common",
-                "strictness": false,
+                "strictness": true,
                 "vlan":{
                     "create": true,
                     "modify": false,
                     "name": "ssloN_layer3a_in",
                     "path": "/Common/ssloN_layer3a_in.app/ssloN_layer3a_in",
                     "networkError": false,
-                    "interface": ["1.1"]
-                    ,
-                    "tag":
-                    40,
-                    "networkInterface":
-                    "1.1",
-                    "networkTag":
-                    40
+                    "interface": "1.1",
+                    "tag": 40,
+                    "networkInterface": "1.1",
+                    "networkTag": 40
                 },
                 "selfIpConfig":{
                     "create": true,
@@ -228,29 +220,24 @@
                 }
              },
              "toVlanNetworkObj":{
-                "create": true,
+                "create": false,
                 "modify": false,
                 "networkError": false
              },
              "toNetworkObj":{
                 "name": "ssloN_layer3a_out",
-                "create": true,
                 "partition": "Common",
-                "strictness": true,
+                "strictness": false,
                 "vlan":{
                     "create": true,
                     "modify": false,
                     "name": "ssloN_layer3a_out",
                     "path": "/Common/ssloN_layer3a_out.app/ssloN_layer3a_out",
                     "networkError": false,
-                    "interface":
-                    ["1.1"],
-                    "tag":
-                    50,
-                    "networkInterface":
-                    "1.1",
-                    "networkTag":
-                    50
+                    "interface": "1.1",
+                    "tag": 50,
+                    "networkInterface": "1.1",
+                    "networkTag": 50
                 },
                 "selfIpConfig":{
                     "create": true,

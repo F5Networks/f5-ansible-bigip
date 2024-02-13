@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
-
 from ansible.module_utils.six import iteritems
 
 
@@ -36,6 +35,17 @@ def cmp_str_with_none(want, have):
         return want
 
 
+def recursive_sort(element):
+    if isinstance(element, list):
+        return [recursive_sort(item) for item in element]
+    elif isinstance(element, tuple):
+        return tuple(recursive_sort(item) for item in element)
+    elif isinstance(element, dict):
+        return {key: recursive_sort(value) for key, value in sorted(element.items())}
+    else:
+        return element
+
+
 def compare_complex_list(want, have):
     """Performs a complex list comparison
 
@@ -57,10 +67,10 @@ def compare_complex_list(want, have):
     w = []
     h = []
     for x in want:
-        tmp = [(str(k), str(v)) for k, v in iteritems(x)]
+        tmp = [(str(k), str(recursive_sort(v))) for k, v in iteritems(x)]
         w += tmp
     for x in have:
-        tmp = [(str(k), str(v)) for k, v in iteritems(x)]
+        tmp = [(str(k), str(recursive_sort(v))) for k, v in iteritems(x)]
         h += tmp
     if set(w) == set(h):
         return None

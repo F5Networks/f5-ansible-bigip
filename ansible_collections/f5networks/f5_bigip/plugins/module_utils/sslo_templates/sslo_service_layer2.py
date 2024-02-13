@@ -131,7 +131,7 @@ create = """
                      }
                  },
                  "vendorInfo":{
-                     "name":"Generic Inline Layer 2"
+                    "name": "{{ params.vendor_info }}"
                  },
                  "modifiedNetworkObjects": [],
                  "removedNetworks": [],
@@ -343,7 +343,7 @@ modify = """
                      }
                  },
                  "vendorInfo":{
-                     "name":"Generic Inline Layer 2"
+                     "name": "{{ params.vendor_info }}"
                  },
                  "modifiedNetworkObjects": {% if params.networks is defined %}[{% for network in params.networks %}
                     {

@@ -72,8 +72,8 @@
                         "cipherGroup": "/Common/f5-default"
                     },
                     "caBundle": "/Common/ca-bundle.crt",
-                    "expiredCertificates": "drop",
-                    "untrustedCertificates": "drop",
+                    "expiredCertificates": true,
+                    "untrustedCertificates": true,
                     "ocsp": "",
                     "crl": "",
                     "enabledSSLProcessingOptions": [

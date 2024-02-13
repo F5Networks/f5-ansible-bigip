@@ -159,7 +159,9 @@ class TestParameters(unittest.TestCase):
                                                                             'General Email']},
                                                    'type': 'Category Lookup'}, {'options': {'port': ['80', '90']},
                                                                                 'type': 'Client Port Match'}],
-                                   'mode': 'edit', 'name': 'testrule2', 'operation': 'AND'}]
+                                   'mode': 'edit', 'name': 'testrule2', 'operation': 'AND'},
+                                  {'action': 'allow', 'actionOptions': {'serviceChain': '', 'ssl': ''},
+                                   'isDefault': True, 'mode': 'edit', 'name': 'All Traffic'}]
 
         assert p.proxy_connect == {
             "isProxyChainEnabled": True,

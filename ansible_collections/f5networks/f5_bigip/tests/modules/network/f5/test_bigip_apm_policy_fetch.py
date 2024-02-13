@@ -76,13 +76,13 @@ class TestParameters(unittest.TestCase):
         p = ModuleParameters(params=args)
 
         with \
-             patch.object(bigip_apm_policy_fetch.os.path, 'isdir', Mock(return_value=False)),\
+             patch.object(bigip_apm_policy_fetch.os.path, 'isdir', Mock(return_value=False)), \
              patch.object(bigip_apm_policy_fetch.os.path, 'exists', Mock(return_value=True)):
             self.assertEqual(p.fulldest, '/tmp/')
 
         with \
-             patch.object(bigip_apm_policy_fetch.os.path, 'isdir', Mock(return_value=False)),\
-             patch.object(bigip_apm_policy_fetch.os.path, 'exists', Mock(return_value=False)),\
+             patch.object(bigip_apm_policy_fetch.os.path, 'isdir', Mock(return_value=False)), \
+             patch.object(bigip_apm_policy_fetch.os.path, 'exists', Mock(return_value=False)), \
              patch.object(bigip_apm_policy_fetch.os, 'stat', Mock()), \
              patch.object(bigip_apm_policy_fetch.os, 'access', Mock(side_effect=[True, False])):
             self.assertEqual(p.fulldest, '/tmp/')
@@ -93,8 +93,8 @@ class TestParameters(unittest.TestCase):
             self.assertIn(f"Destination {os.path.dirname(p.dest)} not writable", err.exception.args[0])
 
         with \
-             patch.object(bigip_apm_policy_fetch.os.path, 'isdir', Mock(return_value=False)),\
-             patch.object(bigip_apm_policy_fetch.os.path, 'exists', Mock(return_value=False)),\
+             patch.object(bigip_apm_policy_fetch.os.path, 'isdir', Mock(return_value=False)), \
+             patch.object(bigip_apm_policy_fetch.os.path, 'exists', Mock(return_value=False)), \
              patch.object(bigip_apm_policy_fetch.os, 'stat', Mock(side_effect=[OSError('permission denied'), OSError()])):
             with self.assertRaises(F5ModuleError) as err1:
                 p.fulldest()

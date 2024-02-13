@@ -77,7 +77,12 @@ create_modify = """
                       "key": "{{ params.client_key }}",
                       "chain": {% if params.client_chain is defined %}
                       "{{ params.client_chain }}"{% else %}""{% endif %},
-                      "passphrase":"",
+                      {% if params.sslo_version >= 9.3 %}
+                      "passphrase": "{{ params.key_pfId }}",
+                      "pfId": "{{ params.key_pfId }}",
+                      {% else %}
+                      "passphrase": "{{ params.client_key_passphrase }}",
+                      {% endif %}
                       "name":"CERT_KEY_CHAIN_0"
                    }
                 ],
@@ -90,7 +95,12 @@ create_modify = """
                         "isCa": true,
                         "usage": "CA",
                         "port": "0",
-                        "passphrase": "",
+                        {% if params.sslo_version >= 9.3 %}
+                        "passphrase": "{{ params.ca_key_pfId }}",
+                        "pfId": "{{ params.ca_key_pfId }}",
+                        {% else %}
+                        "passphrase": "{{ params.client_ca_key_passphrase }}",
+                        {% endif %}
                         "certKeyChainMismatch": false,
                         "isDuplicateVal": false,
                         "name": "CA_CERT_KEY_CHAIN_0"
@@ -110,8 +120,8 @@ create_modify = """
                    "cipherGroup": "{{ params.server_cipher_group }}"
                 },
                 "caBundle": "{{ params.server_ca_bundle }}",
-                "expiredCertificates": {{ params.block_expired | tojson }},
-                "untrustedCertificates": {{ params.block_untrusted | tojson }},
+                "expiredCertificates": {% if params.block_expired == "drop" %}true{% else %}false{% endif %},
+                "untrustedCertificates": {% if params.block_untrusted == "drop" %}true{% else %}false{% endif %},
                 "ocsp": "{{ params.ocsp }}",
                 "crl": "{{ params.crl }}",
                 "enabledSSLProcessingOptions": {% if params.server_ssl_options is defined %}
@@ -132,6 +142,20 @@ create_modify = """
           "type":"JSON"
        }
     ],
+    {% if params.sslo_version >= 9.3 %}
+    "restrictedProperties": [
+      {
+         "id": "{{params.key_pfId}}",
+         "type": "STRING",
+         "value": {% if params.key_passphrase %} "{{ params.key_passphrase }}" {% else %}""{% endif %}
+      },
+      {
+         "id": "{{params.ca_key_pfId}}",
+         "type": "STRING",
+         "value": {% if params.client_ca_key_passphrase %} "{{ params.client_ca_key_passphrase }}" {% else %}""{% endif %}
+      }
+    ],
+    {% endif %}
     "configurationProcessorReference":{
        "link":"https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
     },
