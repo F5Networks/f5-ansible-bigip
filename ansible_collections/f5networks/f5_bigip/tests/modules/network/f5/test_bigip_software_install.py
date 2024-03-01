@@ -187,7 +187,7 @@ class TestManager(unittest.TestCase):
         current.client.get = Mock(side_effect=[images, hotfixes])
         mm.have = current
         mm.client.get = Mock(
-            side_effect=[volumes, volume, volumes, volume, images, hotfixes]
+            side_effect=[volumes, volume, images, hotfixes]
         )
         mm.client.post = Mock(return_value=dict(code=200, contents=dict()))
 
@@ -219,7 +219,7 @@ class TestManager(unittest.TestCase):
         current.client.get = Mock(side_effect=[images, hotfixes])
         mm.have = current
         mm.client.get = Mock(
-            side_effect=[volumes, volume, volumes, volume, images, hotfixes]
+            side_effect=[volumes, volume, images, hotfixes]
         )
         mm.client.post = Mock(return_value=dict(code=200, contents=dict()))
 
@@ -279,7 +279,7 @@ class TestManager(unittest.TestCase):
         current.client.get = Mock(return_value=images)
         mm.have = current
         mm.client.get = Mock(
-            side_effect=[volumes, volume, volumes, volume, images]
+            side_effect=[volumes, volume, images]
         )
         mm.client.post = Mock(return_value=dict(code=200, contents=dict()))
 
@@ -314,7 +314,7 @@ class TestManager(unittest.TestCase):
         current.client.get = Mock(side_effect=[images, hotfixes])
         mm.have = current
         mm.client.get = Mock(
-            side_effect=[volumes, volume, volumes, volume, images, hotfixes]
+            side_effect=[volumes, volume, images, hotfixes]
         )
         mm.client.post = Mock(return_value=dict(code=200, contents=dict()))
 

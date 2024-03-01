@@ -57,7 +57,7 @@ create_modify = """
                 {
                     "name": "{{ params.deployment_name }}",
                     "vendorInfo": {
-                        "name": "Generic ICAP Service"
+                        "name": "{{ params.vendor_info }}"
                     },
                     "customService": {
                         "name": "{{ params.deployment_name }}",

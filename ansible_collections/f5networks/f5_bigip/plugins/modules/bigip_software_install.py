@@ -392,6 +392,7 @@ class ModuleManager(object):
         self.have = ApiParameters(client=self.client)
         self.changes = UsableChanges()
         self.volume_url = None
+        self.options = list()
 
     def exec_module(self):
         start = datetime.now().isoformat()
@@ -453,6 +454,7 @@ class ModuleManager(object):
         response = self.client.get(self.volume_url)
 
         if response['code'] == 404:
+            self.options.append({'create-volume': True})
             return False
         if response['code'] not in [200, 201, 202]:
             raise F5ModuleError(response['contents'])
@@ -506,12 +508,9 @@ class ModuleManager(object):
                     "The specified block_device_image was not found on the device."
                 )
 
-        options = list()
-        if not self.volume_exists():
-            options.append({'create-volume': True})
         if self.want.state == 'activated':
-            options.append({'reboot': True})
-        self.want.update({'options': options})
+            self.options.append({'reboot': True})
+        self.want.update({'options': self.options})
         self.update_on_device()
         return True
 

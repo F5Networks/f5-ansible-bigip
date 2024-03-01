@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - bigip_sslo_service_icap - fixed issue - missing vendor_info field.

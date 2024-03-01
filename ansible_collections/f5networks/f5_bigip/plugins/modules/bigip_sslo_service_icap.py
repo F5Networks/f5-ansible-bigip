@@ -146,6 +146,12 @@ options:
       - present
       - absent
     default: present
+  vendor_info:
+    description:
+      - Specifies the vendor-specific service used. The default is C("Generic ICAP Service").
+    type: str
+    version_added: "3.4.0"
+
 author:
   - Wojciech Wypior (@wojtek0806)
   - Kevin Stewart (@kevingstewart)
@@ -337,7 +343,8 @@ class Parameters(AnsibleF5Parameters):
         'preview_length',
         'request_uri',
         'response_uri',
-        'service_down_action'
+        'service_down_action',
+        'vendor_info'
     ]
 
     updatables = [
@@ -354,7 +361,8 @@ class Parameters(AnsibleF5Parameters):
         'preview_length',
         'request_uri',
         'response_uri'
-        'service_down_action'
+        'service_down_action',
+        'vendor_info'
     ]
 
 
@@ -430,6 +438,10 @@ class ApiParameters(Parameters):
     @property
     def service_down_action(self):
         return self._values['customService']['serviceDownAction']
+
+    @property
+    def vendor_info(self):
+        return self._values['vendorInfo']['name']
 
 
 class ModuleParameters(Parameters):
@@ -550,6 +562,11 @@ class ModuleParameters(Parameters):
 
         return int(delay), divisor
 
+    @property
+    def vendor_info(self):
+        vendor_info = self._values['vendor_info']
+        return vendor_info
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -578,7 +595,8 @@ class ReportableChanges(Changes):
         'preview_length',
         'request_uri',
         'response_uri',
-        'service_down_action'
+        'service_down_action',
+        'vendor_info'
     ]
 
     @property
@@ -812,6 +830,8 @@ class ModuleManager(object):
             payload['preview_length'] = 1024
         if self.want.service_down_action is None:
             payload['service_down_action'] = 'ignore'
+        if self.want.vendor_info is None:
+            payload['vendor_info'] = 'Generic ICAP Service'
         # build header dictionary out of parameters
         if self.want.header_enable is True:
             tmp = dict()
@@ -851,6 +871,8 @@ class ModuleManager(object):
                 payload['header_config'] = self._add_header_config()
         if self.changes.header_enable is True:
             payload['header_config'] = self._add_header_config()
+        if self.changes.vendor_info is None:
+            payload['vendor_info'] = self.have.vendor_info
 
         return payload
 
@@ -1052,7 +1074,8 @@ class ArgumentSpec(object):
             dump_json=dict(
                 type='bool',
                 default='no'
-            )
+            ),
+            vendor_info=dict()
         )
         self.argument_spec = {}
         self.argument_spec.update(argument_spec)
