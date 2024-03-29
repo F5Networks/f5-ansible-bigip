@@ -151,7 +151,19 @@ options:
       - Specifies the vendor-specific service used. The default is C("Generic ICAP Service").
     type: str
     version_added: "3.4.0"
-
+  service_entry_ssl_profile:
+    description:
+      - Specify the Server SSL profile to be used for re-encrypting the traffic.
+      - The selected Server SSL profile will be attached to the service virtual server. The default value is C("").
+    type: str
+    version_added: "3.4.0"
+  cpm_policies:
+    description:
+      - Specify the ICAP Policy. The ICAP policy is defined by the Central Policy Manager (CPM) policy from BIG-IP LTM.
+      - Local traffic policies and centralized management interfaces collectively as CPM. The default value is C("").
+      - The policy mentioned should be avialable in the Big-IP.
+    type: str
+    version_added: "3.4.0"
 author:
   - Wojciech Wypior (@wojtek0806)
   - Kevin Stewart (@kevingstewart)
@@ -344,7 +356,10 @@ class Parameters(AnsibleF5Parameters):
         'request_uri',
         'response_uri',
         'service_down_action',
-        'vendor_info'
+        'vendor_info',
+        'service_entry_ssl_profile',
+        'cpm_policies'
+
     ]
 
     updatables = [
@@ -362,7 +377,9 @@ class Parameters(AnsibleF5Parameters):
         'request_uri',
         'response_uri'
         'service_down_action',
-        'vendor_info'
+        'vendor_info',
+        'service_entry_ssl_profile',
+        'cpm_policies'
     ]
 
 
@@ -442,6 +459,14 @@ class ApiParameters(Parameters):
     @property
     def vendor_info(self):
         return self._values['vendorInfo']['name']
+
+    @property
+    def service_entry_ssl_profile(self):
+        return self._values['customService']['serviceEntrySSLProfile']
+
+    @property
+    def cpm_policies(self):
+        return self._values['customService']['cpmPolicies']
 
 
 class ModuleParameters(Parameters):
@@ -567,6 +592,16 @@ class ModuleParameters(Parameters):
         vendor_info = self._values['vendor_info']
         return vendor_info
 
+    @property
+    def service_entry_ssl_profile(self):
+        service_entry_ssl_profile = self._values['service_entry_ssl_profile']
+        return service_entry_ssl_profile
+
+    @property
+    def cpm_policies(self):
+        cpm_policies = self._values['cpm_policies']
+        return cpm_policies
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -596,7 +631,9 @@ class ReportableChanges(Changes):
         'request_uri',
         'response_uri',
         'service_down_action',
-        'vendor_info'
+        'vendor_info',
+        'service_entry_ssl_profile',
+        'cpm_policies'
     ]
 
     @property
@@ -832,6 +869,10 @@ class ModuleManager(object):
             payload['service_down_action'] = 'ignore'
         if self.want.vendor_info is None:
             payload['vendor_info'] = 'Generic ICAP Service'
+        if self.want.service_entry_ssl_profile is None:
+            payload['service_entry_ssl_profile'] = ''
+        if self.want.cpm_policies is None:
+            payload['cpm_policies'] = ''
         # build header dictionary out of parameters
         if self.want.header_enable is True:
             tmp = dict()
@@ -873,6 +914,10 @@ class ModuleManager(object):
             payload['header_config'] = self._add_header_config()
         if self.changes.vendor_info is None:
             payload['vendor_info'] = self.have.vendor_info
+        if self.changes.service_entry_ssl_profile is None:
+            payload['service_entry_ssl_profile'] = self.have.service_entry_ssl_profile
+        if self.changes.cpm_policies is None:
+            payload['cpm_policies'] = self.have.cpm_policies
 
         return payload
 
@@ -1075,7 +1120,9 @@ class ArgumentSpec(object):
                 type='bool',
                 default='no'
             ),
-            vendor_info=dict()
+            vendor_info=dict(),
+            service_entry_ssl_profile=dict(),
+            cpm_policies=dict()
         )
         self.argument_spec = {}
         self.argument_spec.update(argument_spec)

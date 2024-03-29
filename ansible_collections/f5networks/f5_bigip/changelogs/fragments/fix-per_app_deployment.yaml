@@ -1,0 +1,3 @@
+---
+major_changes:
+  - bigip_as3_deploy - added per-application deployment enhancement.

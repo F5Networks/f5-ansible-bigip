@@ -26,6 +26,8 @@
                         "name": "ssloS_foobar",
                         "ipFamily": "ipv4",
                         "serviceType": "icap",
+                        "cpmPolicies": "/Common/test_icaps",
+                        "serviceEntrySSLProfile": "",
                         "loadBalancing": {
                             "devices": [{"ip": "1.1.1.1", "port": 1344}, {"ip": "2.2.2.2", "port": 1348}],
                             "monitor": {
