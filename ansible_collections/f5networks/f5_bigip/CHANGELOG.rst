@@ -4,6 +4,21 @@ F5Networks F5\_BIGIP Collection Release Notes
 
 .. contents:: Topics
 
+v3.4.0
+======
+
+Major Changes
+-------------
+
+- bigip_as3_deploy - added per-application deployment enhancement.
+
+Bugfixes
+--------
+
+- bigip_software_install - fixed a bug that didn't let the user install software on an existing volume.
+- bigip_sslo_service_icap - fixed issue - missing service_entry_ssl_profile, cpm_policies field.
+- bigip_sslo_service_icap - fixed issue - missing vendor_info field.
+
 v3.3.0
 ======
 

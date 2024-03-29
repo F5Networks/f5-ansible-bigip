@@ -1,3 +1,0 @@
----
-bugfixes:
-  - bigip_sslo_service_icap - fixed issue - missing service_entry_ssl_profile, cpm_policies field.
