@@ -128,6 +128,34 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm.upsert_on_device = Mock(return_value=True)
+        mm.check_settings = Mock(return_value=False)
+        mm.client.post.return_value = {'code': 200, 'contents': {'results': [{'message': 'change'}]}}
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertEqual(mm.want.timeout, (6, 100))
+
+    def test_upsert_tenant_per_app_declaration(self, *args):
+        declaration = load_fixture('perApplication_declaration.json')
+        set_module_args(dict(
+            content=declaration,
+            tenant='Sample_01',
+            state='present',
+            timeout=600
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.upsert_on_device = Mock(return_value=True)
+        mm.check_settings = Mock(return_value=True)
+        mm.get_tenant_list = Mock(return_value=[])
         mm.client.post.return_value = {'code': 200, 'contents': {'results': [{'message': 'change'}]}}
 
         results = mm.exec_module()
@@ -180,6 +208,7 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm.exists = Mock(return_value=False)
+        mm.check_settings = Mock(return_value=False)
         mm.client.post = Mock(return_value=dict(
             code=202, contents=load_fixture('as3_invalid_declaration_task_start.json')
         ))
@@ -212,6 +241,7 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm.exists = Mock(return_value=False)
+        mm.check_settings = Mock(return_value=False)
         mm.client.post = Mock(return_value=dict(
             code=202, contents=load_fixture('as3_multi_tenant_declare_task_start.json')
         ))
@@ -241,6 +271,7 @@ class TestManager(unittest.TestCase):
         )
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=False)
+        mm.check_settings = Mock(return_value=False)
         mm.client.post.return_value = {
             'code': 503,
             'contents': 'service not available'
@@ -265,6 +296,7 @@ class TestManager(unittest.TestCase):
         )
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=False)
+        mm.check_settings = Mock(return_value=False)
         mm.client.post.return_value = {
             'code': 200,
             'contents': {'id': 1}
@@ -289,6 +321,7 @@ class TestManager(unittest.TestCase):
         )
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=False)
+        mm.check_settings = Mock(return_value=False)
         mm._check_task_on_device = Mock(return_value={'results': {}})
         mm._get_errors_from_response = Mock(return_value=None)
         mm.client.post.return_value = {'code': 200, 'contents': {'id': 1}}
@@ -358,6 +391,7 @@ class TestManager(unittest.TestCase):
         )
         mm = ModuleManager(module=module)
         mm.resource_exists = Mock(return_value=True)
+        mm.check_settings = Mock(return_value=False)
         mm.client.delete.return_value = {'code': 200, 'contents': {'id': 1}}
         mm.wait_for_task = Mock(return_value={'results': [{'message': 'no change'}]})
 
@@ -380,6 +414,7 @@ class TestManager(unittest.TestCase):
         )
         mm = ModuleManager(module=module)
         mm.exists = Mock(return_value=True)
+        mm.check_settings = Mock(return_value=False)
         results = mm.exec_module()
 
         self.assertFalse(results['changed'])
@@ -413,6 +448,7 @@ class TestManager(unittest.TestCase):
             required_if=self.spec.required_if
         )
         mm = ModuleManager(module=module)
+        mm.check_settings = Mock(return_value=False)
         mm.client.post.return_value = {
             'code': 503,
             'contents': 'service not available'

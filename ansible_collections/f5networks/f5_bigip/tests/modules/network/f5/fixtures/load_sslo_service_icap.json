@@ -18,6 +18,8 @@
                             "name": "ssloS_foobar",
                             "ipFamily": "ipv4",
                             "serviceType": "icap",
+                            "cpmPolicies": "/Common/test_icaps_updated",
+                            "serviceEntrySSLProfile": "",
                             "loadBalancing": {
                                 "devices": [
                                     {

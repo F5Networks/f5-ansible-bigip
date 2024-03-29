@@ -34,6 +34,7 @@ options:
     type: raw
   tenant:
     description:
+      - tenant is mandatory for Per-Application Deployment
       - An AS3 tenant you want to manage.
       - A value of C(all) when C(state) is C(absent) removes all AS3 declarations from the device.
     type: str
@@ -52,14 +53,27 @@ options:
       - present
       - absent
     default: present
+notes:
+  - For Traditional Deployment should contian the Tenant information inside it.
+    Traditional Deployment dosen't depend on C(perAppDeploymentAllowed) value.
+  - For Per-Application Deployment C(perAppDeploymentAllowed) should be set to true.
+    Per-Application declaration shouldn't contain Tenant information inside it.
+    Tenant parameter is mandatory for Per-Application Deployments
+    More infotmation can be found here https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/per-app-declarations.html
 author:
   - Wojciech Wypior (@wojtek0806)
+  - Prateek Ramani (@ramani)
 '''
 
 EXAMPLES = r'''
 - name: Declaration with 2 Tenants - AS3
   bigip_as3_deploy:
     content: "{{ lookup('file', 'two_tenants.json') }}"
+
+- name: Deploying Per-App Declaration
+  bigip_as3_deploy:
+    content: "{{ lookup('file', 'per-app-dec.json') }}"
+    tenant: sample
 
 - name: Remove one tenant - AS3
   bigip_as3_deploy:
@@ -82,6 +96,8 @@ tenant:
 import time
 from datetime import datetime
 
+# import random
+# import string
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import Connection
 from ansible.module_utils.six import string_types
@@ -235,20 +251,27 @@ class ModuleManager(object):
                 "The provided 'content' could not be converted into valid json. If you "
                 "are using the 'to_nice_json' filter, please remove it."
             )
-        if declaration.get('class') == 'AS3':
-            declaration['action'] = 'dry-run'
-        else:
-            declaration = {
-                'class': 'AS3',
-                'persist': False,
-                'action': 'dry-run',
-                'declaration': declaration,
-            }
 
-        if self.want.tenant:
-            uri = "/mgmt/shared/appsvcs/declare/{0}".format(self.want.tenant)
+        perAppDeploymentAllowed = self.check_settings()
+        tenantList = self.get_tenant_list()
+
+        if perAppDeploymentAllowed and len(tenantList) == 0:
+            return False
         else:
-            uri = "/mgmt/shared/appsvcs/declare"
+            if declaration.get('class') == 'AS3':
+                declaration['action'] = 'dry-run'
+            else:
+                declaration = {
+                    'class': 'AS3',
+                    'persist': False,
+                    'action': 'dry-run',
+                    'declaration': declaration,
+                }
+
+            if self.want.tenant:
+                uri = "/mgmt/shared/appsvcs/declare/{0}".format(self.want.tenant)
+            else:
+                uri = "/mgmt/shared/appsvcs/declare"
 
         response = self.client.post(uri, data=declaration)
 
@@ -265,10 +288,25 @@ class ModuleManager(object):
 
     def upsert_on_device(self):
         delay, period = self.want.timeout
-        if self.want.tenant:
-            uri = "/mgmt/shared/appsvcs/declare/{0}?async=true".format(self.want.tenant)
+
+        perAppDeploymentAllowed = self.check_settings()
+
+        tenantList = self.get_tenant_list()
+
+        if perAppDeploymentAllowed and len(tenantList) == 0:
+            if not self.want.tenant:
+                raise F5ModuleError(
+                    "tenant parameter is mandatory for Per-Application Deployment"
+                )
+                # tenant = self.generate_random_string(10)
+            else:
+                tenant = self.want.tenant
+            uri = "/mgmt/shared/appsvcs/declare/{0}/applications?async=true".format(tenant)
         else:
-            uri = "/mgmt/shared/appsvcs/declare?async=true"
+            if self.want.tenant:
+                uri = "/mgmt/shared/appsvcs/declare/{0}?async=true".format(self.want.tenant)
+            else:
+                uri = "/mgmt/shared/appsvcs/declare?async=true"
 
         response = self.client.post(uri, data=self.want.content)
 
@@ -322,6 +360,33 @@ class ModuleManager(object):
         task = self.wait_for_task("/mgmt/shared/appsvcs/task/{0}".format(response['contents']['id']), delay, period)
         if task:
             return any(msg.get('message', None) != 'no change' for msg in task['results'])
+
+    def check_settings(self):
+        response = self.client.get("/mgmt/shared/appsvcs/settings")
+        if response['code'] not in [200, 201, 202, 204, 207]:
+            raise F5ModuleError(response['contents'])
+
+        return response['contents']['betaOptions']['perAppDeploymentAllowed']
+
+    def get_tenant_list(self):
+        tenant_list = []
+        content = self.want.content
+        if isinstance(content, dict):
+            if 'declaration' in content:
+                declaration = content['declaration']
+                if isinstance(declaration, dict):
+                    for key, value in declaration.items():
+                        if isinstance(value, dict) and value.get('class') == 'Tenant':
+                            tenant_list.append(key)
+
+        return tenant_list
+
+    # def generate_random_string(self, length):
+    #     charset = string.ascii_letters + string.digits
+    #     random_string = random.choice(string.ascii_letters)
+    #     for _ in range(length - 1):
+    #         random_string += random.choice(charset)
+    #     return random_string
 
 
 class ArgumentSpec(object):

@@ -57,11 +57,13 @@ create_modify = """
                 {
                     "name": "{{ params.deployment_name }}",
                     "vendorInfo": {
-                        "name": "Generic ICAP Service"
+                        "name": "{{ params.vendor_info }}"
                     },
                     "customService": {
                         "name": "{{ params.deployment_name }}",
                         "ipFamily": "{{ params.ip_family }}",
+                        "serviceEntrySSLProfile" : "{{ params.service_entry_ssl_profile }}",
+                        "cpmPolicies" : "{{ params.cpm_policies }}",
                         "serviceType": "icap",
                         "loadBalancing": {
                             "devices": {{ params.devices | tojson }},

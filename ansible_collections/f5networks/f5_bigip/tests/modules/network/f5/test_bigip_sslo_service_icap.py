@@ -165,6 +165,7 @@ class TestManager(unittest.TestCase):
             preview_length=2048,
             service_down_action='ignore',
             allow_http10='no',
+            cpm_policies='/Common/test_icaps',
             dump_json=True
         ))
 
@@ -304,7 +305,8 @@ class TestManager(unittest.TestCase):
             enable_one_connect='no',
             preview_length=1024,
             service_down_action='drop',
-            allow_http10='yes'
+            allow_http10='yes',
+            cpm_policies="/Common/test_icaps_updated"
         ))
 
         module = AnsibleModule(

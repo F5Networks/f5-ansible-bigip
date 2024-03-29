@@ -582,3 +582,19 @@ releases:
     - multiple_values_for_data_bugfixes.yml
     - userCreated_rule_outbound_l3_topo.yaml
     release_date: '2024-02-13'
+  3.4.0:
+    changes:
+      bugfixes:
+      - bigip_software_install - fixed a bug that didn't let the user install software
+        on an existing volume.
+      - bigip_sslo_service_icap - fixed issue - missing service_entry_ssl_profile,
+        cpm_policies field.
+      - bigip_sslo_service_icap - fixed issue - missing vendor_info field.
+      major_changes:
+      - bigip_as3_deploy - added per-application deployment enhancement.
+    fragments:
+    - fix-bigip_sslo_service_icap-missing vendor_info-field.yaml
+    - fix-bigip_sslo_service_icap-missing_fields.yaml
+    - fix-per_app_deployment.yaml
+    - software_install_bugfix.yaml
+    release_date: '2024-03-29'
