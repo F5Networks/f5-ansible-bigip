@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - bigip_security_log_profile.py - added parameters to configue application security log profile.

@@ -895,6 +895,192 @@ options:
           - "If desired log publisher is configured on a different partition to where log profile is created
             a publisher name must be specified in full_path format e.g. /Foo/my-publisher."
         type: str
+  application_security:
+    description:
+      - Configures the system to log traffic to the web application.
+    type: dict
+    suboptions:
+      config:
+        description:
+          - This section specifies the settings determining where to log traffic
+            and which traffic to log.
+        type: dict
+        suboptions:
+          local_storage:
+            description:
+              - Specifies that the system stores all traffic in the system.
+            type: str
+            choices:
+              - enabled
+              - disabled
+          guarantee_logging:
+            description:
+              - Specifies, when checked C(enabled), that the system logs all requests, even though this may slow your web application.
+              - When set to C(disabled), specifies that the system logs requests as long as it does not slow your web application.
+            type: str
+            choices:
+              - enabled
+              - disabled
+          guarantee_response_logging:
+            description:
+              - Specifies, when set to C(enabled), that the system logs all responses, even though this may slow your web application.
+              - When set to C(disabled), the system logs responses as long as it does not slow your web application.
+            type: str
+            choices:
+              - enabled
+              - disabled
+          remote_storage:
+            description:
+              - Specifies that the system stores all traffic on a remote logging server.
+            type: str
+            choices:
+              - remote
+              - none
+          protocol:
+            description:
+              - Specifies which protocol the remote server supports.
+            type: str
+          response_logging:
+            description:
+              - Specifies whether the system logs HTTP responses.
+              - When set to C(none) the system does not log HTTP responses.
+              - When set to C(illegal) the system logs only illegal HTTP responses.
+              - When set to C(all) the system logs all HTTP responses.
+            type: str
+            choices:
+              - none
+              - illegal
+              - all
+          servers:
+            description:
+              - Specifies the name of the remote logging server.
+            type: list
+            elements: raw
+            suboptions:
+              ip:
+                description:
+                  - Specifies the IP address of the remote logging server.
+                type: str
+              port:
+                description:
+                  - Specifies the port number of the remote logging server.
+                type: int
+          facility:
+            description:
+              - Specifies the facility category of the logged traffic.
+            type: str
+          storage_format:
+            description:
+              - Specifies the format in which the traffic items are logged.
+            type: dict
+            suboptions:
+              fields:
+                description:
+                  - Specifies the traffic items that the server logs.
+                type: list
+                elements: str
+              delimiter:
+                description:
+                  - Specifies the delimiter string, when C(type) is set to C(predefined).
+                type: str
+              type:
+                description:
+                  - Specifies the format type for log messages.
+                  - When set to C(predefined) the system uses a set of fields, set in a specific order, to log messages.
+                  - When set to C(user-defined) the system uses a user-defined string to log messages.
+                type: str
+                choices:
+                  - predefined
+                  - user-defined
+              user_string:
+                description:
+                  - Specifies the format the system uses to log messages is in the form of a user-defined string.
+                type: str
+          max_entry_length:
+            description:
+              - Specifies how much of the entry length the server logs.
+            type: str
+          report_anomalies:
+            description:
+              - Specifies, when set to C(enabled), that the system sends a report string to the remote system
+                when a brute force attack starts and ends.
+            type: str
+            choices:
+              - enabled
+              - disabled
+          report_challenge_failure:
+            description:
+              - Specifies, when set to C(enabled), that the system sends a report string to the remote system
+                when a challenge fails.
+              - When set to C(disabled), the system does not send a report string to the remote system log
+                when a challenge fails.
+            type: str
+            choices:
+              - enabled
+              - disabled
+      storage_filter:
+        description:
+          - This section specifies the settings for the type of requests the system or server logs.
+        type: dict
+        suboptions:
+          logic_operation:
+            description:
+              - Specifies whether requests must meet one or all criteria in the storage filter.
+              - Specifies, when set to C(or), that the requests must meet atleast one of the criterion.
+              - Specifies, when set to C(and), that the requests must meet all of the criterion.
+            type: str
+            choices:
+              - or
+              - and
+          request_type:
+            description:
+              - Specifies the type of request the system logs.
+            type: str
+          log_challenge_failure_requests:
+            description:
+              - Specifies, when set to C(enabled), that the system logs requests that fail the challenge.
+              - When set to C(disabled), the system does not log requests that fail the challenge.
+            type: str
+            choices:
+              - enabled
+              - disabled
+          protocols:
+            description:
+              - Specifies that the system logs requests using the protocols specified.
+            type: list
+            elements: str
+          resp_status_codes:
+            description:
+              - Specifies that the system logs only the requests that generate
+                specific response status codes.
+            type: list
+            elements: str
+          http_methods:
+            description:
+              - Specifies that the system logs only the requests that use the HTTP methods specified.
+            type: list
+            elements: str
+          login_result:
+            description:
+              - Specifies that the system logs only the requests that generate specific login results.
+            type: list
+            elements: str
+          search_in:
+            description:
+              - Specifies the part of the request that the system looks for the string provided
+                in the C(search_string) parameter.
+            type: str
+            choices:
+              - request
+              - uri
+              - headers
+              - post-data
+              - query-string
+          search_string:
+            description:
+              - Specifies the string that the system looks for in the part of the request specified
+                in the C(search_in) parameter.
+            type: str
   partition:
     description:
       - Device partition to manage resources on.
@@ -1898,7 +2084,8 @@ class Parameters(AnsibleF5Parameters):
         'dns_security',
         'sip_security',
         'network_security',
-        'nat'
+        'nat',
+        'application_security'
     ]
 
     returnables = [
@@ -2018,7 +2205,30 @@ class Parameters(AnsibleF5Parameters):
         'nat_errors_storage_format_type',
         'nat_errors_storage_format_delimiter',
         'nat_errors_storage_format_fields',
-        'nat_errors_storage_format_user_string'
+        'nat_errors_storage_format_user_string',
+        'app_sec_config_local_storage',
+        'app_sec_config_guarantee_logging'
+        'app_sec_config_guarantee_response_logging',
+        'app_sec_config_remote_storage',
+        'app_sec_config_response_logging',
+        'app_sec_config_protocol',
+        'app_sec_config_servers',
+        'app_sec_config_facility',
+        'app_sec_config_storage_format_fields',
+        'app_sec_config_storage_format_delimiter',
+        'app_sec_config_storage_format_type',
+        'app_sec_config_storage_format_user_string',
+        'app_sec_config_max_entry_length',
+        'app_sec_config_report_anomalies',
+        'app_sec_config_report_challenge_failure',
+        'app_sec_storage_filter_logic_operation',
+        'app_sec_storage_filter_request_type',
+        'app_sec_storage_filter_log_challenge_failure_requests',
+        'app_sec_storage_filter_protocols',
+        'app_sec_storage_filter_resp_status_codes',
+        'app_sec_storage_filter_http_methods',
+        'app_sec_storage_filter_login_result',
+        'app_sec_storage_filter_search_in_request',
     ]
 
     updatables = [
@@ -2138,7 +2348,30 @@ class Parameters(AnsibleF5Parameters):
         'nat_errors_storage_format_type',
         'nat_errors_storage_format_delimiter',
         'nat_errors_storage_format_fields',
-        'nat_errors_storage_format_user_string'
+        'nat_errors_storage_format_user_string',
+        'app_sec_config_local_storage',
+        'app_sec_config_guarantee_logging'
+        'app_sec_config_guarantee_response_logging',
+        'app_sec_config_remote_storage',
+        'app_sec_config_response_logging',
+        'app_sec_config_protocol',
+        'app_sec_config_servers',
+        'app_sec_config_facility',
+        'app_sec_config_storage_format_fields',
+        'app_sec_config_storage_format_delimiter',
+        'app_sec_config_storage_format_type',
+        'app_sec_config_storage_format_user_string',
+        'app_sec_config_max_entry_length',
+        'app_sec_config_report_anomalies',
+        'app_sec_config_report_challenge_failure',
+        'app_sec_storage_filter_logic_operation',
+        'app_sec_storage_filter_request_type',
+        'app_sec_storage_filter_log_challenge_failure_requests',
+        'app_sec_storage_filter_protocols',
+        'app_sec_storage_filter_resp_status_codes',
+        'app_sec_storage_filter_http_methods',
+        'app_sec_storage_filter_login_result',
+        'app_sec_storage_filter_search_in_request',
     ]
 
 
@@ -2844,6 +3077,206 @@ class ApiParameters(Parameters):
         if self._values['network_security'] is None:
             return False
         return True
+
+    @property
+    def app_sec_exists(self):
+        if self._values.get('application_security') is None:
+            return False
+        return True
+
+    @property
+    def app_sec_config_local_storage(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['localStorage']
+
+    @property
+    def app_sec_config_guarantee_logging(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['guaranteeLogging']
+
+    @property
+    def app_sec_config_guarantee_response_logging(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['guaranteeResponseLogging']
+
+    @property
+    def app_sec_config_remote_storage(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['remoteStorage']
+
+    @property
+    def app_sec_config_response_logging(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['responseLogging']
+
+    @property
+    def app_sec_config_protocol(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['protocol']
+
+    @property
+    def app_sec_config_servers(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['servers']
+
+    @property
+    def app_sec_config_facility(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['facility']
+
+    @property
+    def app_sec_config_storage_format_type(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['format']['type']
+
+    @property
+    def app_sec_config_storage_format_delimiter(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['format']['fieldDelimiter']
+
+    @property
+    def app_sec_config_storage_format_fields(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['format']['fields']
+
+    @property
+    def app_sec_config_storage_format_user_string(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['format'].get('userString')
+
+    @property
+    def app_sec_config_max_entry_length(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['maximumEntryLength']
+
+    @property
+    def app_sec_config_report_anomalies(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['reportAnomalies']
+
+    @property
+    def app_sec_config_report_challenge_failure(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['reportChallengeFailureMessages']
+
+    @property
+    def app_sec_storage_filter_logic_operation(self):
+        if self._values.get('application_security') is None:
+            return None
+        return self._values['application_security']['logicOperation']
+
+    @property
+    def app_sec_storage_filter_request_type(self):
+        if self._values.get('application_security') is None:
+            return None
+
+        if self._values['application_security'].get('filter') is None:
+            return None
+
+        filters = self._values['application_security']['filter']
+        for i in filters:
+            if i.get('name') == 'request-type':
+                return i['values'][0]
+
+    @property
+    def app_sec_storage_filter_log_challenge_failure_requests(self):
+        if self._values.get('application_security') is None:
+            return None
+
+        if self._values['application_security'].get('filter') is None:
+            return None
+
+        filters = self._values['application_security']['filter']
+        for i in filters:
+            if i.get('name') == 'log-challenge-failure-requests':
+                return i['values'][0]
+
+    @property
+    def app_sec_storage_filter_protocols(self):
+        if self._values.get('application_security') is None:
+            return None
+
+        if self._values['application_security'].get('filter') is None:
+            return None
+
+        filters = self._values['application_security']['filter']
+        for i in filters:
+            if i.get('name') == 'protocol':
+                return i['values']
+
+    @property
+    def app_sec_storage_filter_resp_status_codes(self):
+        if self._values.get('application_security') is None:
+            return None
+
+        if self._values['application_security'].get('filter') is None:
+            return None
+
+        filters = self._values['application_security']['filter']
+        for i in filters:
+            if i.get('name') == 'response-code':
+                return i['values']
+
+    @property
+    def app_sec_storage_filter_http_methods(self):
+        if self._values.get('application_security') is None:
+            return None
+
+        if self._values['application_security'].get('filter') is None:
+            return None
+
+        filters = self._values['application_security']['filter']
+        for i in filters:
+            if i.get('name') == 'http-method':
+                return i['values']
+
+    @property
+    def app_sec_storage_filter_login_result(self):
+        if self._values.get('application_security') is None:
+            return None
+
+        if self._values['application_security'].get('filter') is None:
+            return None
+
+        filters = self._values['application_security']['filter']
+        for i in filters:
+            if i.get('name') == 'login-result':
+                return i['values']
+
+    @property
+    def app_sec_storage_filter_search_in_request(self):
+        if self._values.get('application_security') is None:
+            return None
+
+        if self._values['application_security'].get('filter') is None:
+            return None
+
+        filters = self._values['application_security'].get('filter')
+
+        if not filters:
+            return None
+
+        for i in filters:
+            name = i.get('name')
+            if name.startswith('search-in'):
+                search_in = i.get('name')
+                search_str = i.get('values')[0]
+                return f'{search_in},{search_str}'
 
 
 class ModuleParameters(Parameters):
@@ -3802,6 +4235,235 @@ class ModuleParameters(Parameters):
         if self._values['nat']['errors'].get('storage_format'):
             return self._values['nat']['errors']['storage_format'].get('user_string')
 
+    @property
+    def app_sec_config_local_storage(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('config'):
+            return app_sec['config'].get('local_storage')
+
+    @property
+    def app_sec_config_guarantee_logging(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('config'):
+            return app_sec['config'].get('guarantee_logging')
+
+    @property
+    def app_sec_config_guarantee_response_logging(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('config'):
+            return app_sec['config'].get('guarantee_response_logging')
+
+    @property
+    def app_sec_config_remote_storage(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if not app_sec['config'].get('remote_storage'):
+            return 'none'
+
+        return app_sec['config']['remote_storage']
+
+    @property
+    def app_sec_config_response_logging(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+        if app_sec.get('config'):
+            return app_sec['config'].get('response_logging')
+
+    @property
+    def app_sec_config_protocol(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+        if app_sec.get('config'):
+            return app_sec['config'].get('protocol')
+
+    @property
+    def app_sec_config_servers(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('config'):
+            if app_sec['config'].get('servers'):
+                servers = app_sec['config'].get('servers')
+                result = [{'name': f'{i["ip"]}:{i["port"]}'} for i in servers]
+                return result
+
+    @property
+    def app_sec_config_facility(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('config'):
+            return app_sec['config'].get('facility')
+
+    @property
+    def app_sec_config_storage_format_type(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+        if app_sec.get('config'):
+            if app_sec['config'].get('storage_format'):
+                return app_sec['config']['storage_format'].get('type')
+
+    @property
+    def app_sec_config_storage_format_delimiter(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+        if app_sec.get('config'):
+            if app_sec['config'].get('storage_format'):
+                return app_sec['config']['storage_format'].get('delimiter')
+
+    @property
+    def app_sec_config_storage_format_fields(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+        if app_sec.get('config'):
+            if app_sec['config'].get('storage_format'):
+                return app_sec['config']['storage_format'].get('fields')
+
+    @property
+    def app_sec_config_storage_format_user_string(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+        if app_sec.get('config'):
+            if app_sec['config'].get('storage_format'):
+                return app_sec['config']['storage_format'].get('user_string')
+
+    @property
+    def app_sec_config_max_entry_length(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('config'):
+            return app_sec['config'].get('max_entry_length')
+
+    @property
+    def app_sec_config_report_anomalies(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('config'):
+            return app_sec['config'].get('report_anomalies')
+
+    @property
+    def app_sec_config_report_challenge_failure(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('config'):
+            return app_sec['config'].get('report_challenge_failure')
+
+    @property
+    def app_sec_storage_filter_logic_operation(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('storage_filter'):
+            return app_sec['storage_filter'].get('logic_operation')
+
+    @property
+    def app_sec_storage_filter_request_type(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('storage_filter'):
+            request_type = app_sec['storage_filter'].get('request_type')
+            if request_type:
+                return request_type
+
+    @property
+    def app_sec_storage_filter_log_challenge_failure_requests(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('storage_filter'):
+            challenge_failure = app_sec['storage_filter'].get('log_challenge_failure_requests')
+            if challenge_failure:
+                return challenge_failure
+
+    @property
+    def app_sec_storage_filter_protocols(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('storage_filter'):
+            protocols = app_sec['storage_filter'].get('protocols')
+            if protocols:
+                return protocols
+
+    @property
+    def app_sec_storage_filter_resp_status_codes(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('storage_filter'):
+            status_codes = app_sec['storage_filter'].get('resp_status_codes')
+            if status_codes:
+                return status_codes
+
+    @property
+    def app_sec_storage_filter_http_methods(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('storage_filter'):
+            methods = app_sec['storage_filter'].get('http_methods')
+            if methods:
+                return methods
+
+    @property
+    def app_sec_storage_filter_login_result(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('storage_filter'):
+            login_result = app_sec['storage_filter'].get('login_result')
+            if login_result:
+                return login_result
+
+    @property
+    def app_sec_storage_filter_search_in_request(self):
+        app_sec = self._values.get('application_security')
+        if not app_sec:
+            return None
+
+        if app_sec.get('storage_filter'):
+            search_in = app_sec['storage_filter'].get('search_in')
+            search_str = app_sec['storage_filter'].get('search_string')
+            if (search_in and not search_str) or (search_str and not search_in):
+                raise F5ModuleError(
+                    '"search_str" and "search_in" should either both be defined or neither'
+                )
+            if bool(search_str) and bool(search_str):
+                return f'search-in-{search_in},{search_str}'
+
 
 class Changes(Parameters):
     def to_return(self):  # pragma: no cover
@@ -4047,6 +4709,60 @@ class UsableChanges(Changes):
             format=tmp_format,
             rateLimit=tmp_rate
         ))
+
+    @property
+    def application_security(self):
+        params = self._values
+
+        storage_format = dict(
+            fieldDelimeter=params['app_sec_config_storage_format_delimiter'],
+            fields=params['app_sec_config_storage_format_fields'],
+            type=params['app_sec_config_storage_format_type'],
+            userDefined=params['app_sec_config_storage_format_user_string']
+        )
+
+        request_type = params.get('app_sec_storage_filter_request_type')
+        login_result = params.get('app_sec_storage_filter_login_result')
+        log_challenge_failure = params.get('app_sec_storage_filter_log_challenge_failure_requests')
+        protocols = params.get('app_sec_storage_filter_protocols')
+        resp_status_codes = params.get('app_sec_storage_filter_resp_status_codes')
+        http_methods = params.get('app_sec_storage_filter_http_methods')
+        search = params.get('app_sec_storage_filter_search_in_request')
+        search_attr = search.split(',') if search else None
+
+        filters = [
+            {'name': 'request-type', 'values': [request_type]},
+            {'name': 'log-challenge-failure-requests', 'values': [log_challenge_failure]},
+            {'name': 'login-result', 'values': login_result},
+            {'name': 'protocol', 'values': protocols},
+            {'name': 'response-code', 'values': resp_status_codes},
+            {'name': 'http-method', 'values': http_methods},
+        ]
+
+        filters = [i for i in filters
+                   if i['values'] is not None and i['values'][0] is not None]
+
+        if search_attr:
+            filters.append({'name': search_attr[0], 'values': [search_attr[1]]})
+
+        result = dict(
+            localStorage=params['app_sec_config_local_storage'],
+            guaranteeLogging=params['app_sec_config_guarantee_logging'],
+            guaranteeResponseLogging=params['app_sec_config_guarantee_response_logging'],
+            remoteStorage=params['app_sec_config_remote_storage'],
+            responseLogging=params['app_sec_config_response_logging'],
+            protocol=params['app_sec_config_protocol'],
+            servers=params['app_sec_config_servers'],
+            facility=params['app_sec_config_facility'],
+            maximumEntryLength=params['app_sec_config_max_entry_length'],
+            reportAnomalies=params['app_sec_config_report_anomalies'],
+            reportChallengeFailureMessages=params['app_sec_config_report_challenge_failure'],
+            logicOperation=params['app_sec_storage_filter_logic_operation'],
+            filter=filters if bool(filters) else None,
+            format=self._finalize_parameter(storage_format),
+        )
+
+        return self._finalize_parameter(result)
 
 
 class ReportableChanges(Changes):
@@ -4420,6 +5136,34 @@ class Difference(object):
             self.have.nat_errors_storage_format_fields, cmp_order=True
         )
 
+    @property
+    def app_sec_storage_filter_login_result(self):
+        return cmp_simple_list(
+            self.want.app_sec_storage_filter_login_result,
+            self.have.app_sec_storage_filter_login_result,
+        )
+
+    @property
+    def app_sec_storage_filter_http_methods(self):
+        return cmp_simple_list(
+            self.want.app_sec_storage_filter_http_methods,
+            self.have.app_sec_storage_filter_http_methods,
+        )
+
+    @property
+    def app_sec_storage_filter_resp_status_codes(self):
+        return cmp_simple_list(
+            self.want.app_sec_storage_filter_resp_status_codes,
+            self.have.app_sec_storage_filter_resp_status_codes,
+        )
+
+    @property
+    def app_sec_storage_filter_protocols(self):
+        return cmp_simple_list(
+            self.want.app_sec_storage_filter_protocols,
+            self.have.app_sec_storage_filter_protocols,
+        )
+
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
@@ -4551,6 +5295,9 @@ class ModuleManager(object):
                 if not params['botDefense'][0].get('localPublisher'):
                     params['botDefense'][0]['localPublisher'] = self.have.bot_publisher
                 params['botDefense'][0]['filter'] = self._add_existing_filters_if_needed()
+
+        if 'application_security' in params:
+            params['application_security']['filter'] = self._add_app_security_existing_filters()
         return params
 
     def _add_existing_filters_if_needed(self):
@@ -4588,6 +5335,48 @@ class ModuleManager(object):
         )
         return log_filter
 
+    def _add_app_security_existing_filters(self):
+        request_method = self.changes.app_sec_storage_filter_request_type
+        log_challenge = self.changes.app_sec_storage_filter_log_challenge_failure_requests
+        protocols = self.changes.app_sec_storage_filter_protocols
+        resp_status_codes = self.changes.app_sec_storage_filter_resp_status_codes
+        http_methods = self.changes.app_sec_storage_filter_http_methods
+        login_result = self.changes.app_sec_storage_filter_login_result
+        search = self.changes.app_sec_storage_filter_search_in_request
+
+        if not request_method:
+            request_method = self.have.app_sec_storage_filter_request_type
+        if not log_challenge:
+            log_challenge = self.have.app_sec_storage_filter_log_challenge_failure_requests
+        if not protocols:
+            protocols = self.have.app_sec_storage_filter_protocols
+        if not resp_status_codes:
+            resp_status_codes = self.have.app_sec_storage_filter_resp_status_codes
+        if not http_methods:
+            http_methods = self.have.app_sec_storage_filter_http_methods
+        if not login_result:
+            login_result = self.have.app_sec_storage_filter_login_result
+        if not search:
+            search = self.have.app_sec_storage_filter_search_in_request
+
+        filters = [
+            {'name': 'request-type', 'values': [request_method]},
+            {'name': 'log-challenge-failure-requests', 'values': [log_challenge]},
+            {'name': 'login-result', 'values': login_result},
+            {'name': 'protocol', 'values': protocols},
+            {'name': 'response-code', 'values': resp_status_codes},
+            {'name': 'http-method', 'values': http_methods},
+        ]
+
+        search_attrs = search.split(',') if search else None
+        if search_attrs:
+            filters.append({'name': search_attrs[0], 'values': [search_attrs[1]]})
+
+        filters = [i for i in filters
+                   if i['values'] is not None and i['values'][0] is not None]
+
+        return filters
+
     def create_on_device(self):
         params = self._add_missing_options(self.changes.api_params())
         params['name'] = self.want.name
@@ -4595,6 +5384,7 @@ class ModuleManager(object):
         dns_sec = params.pop('dns_security', None)
         sip_sec = params.pop('sip_security', None)
         net_sec = params.pop('network_security', None)
+        app_sec = params.pop('application_security', None)
 
         uri = "/mgmt/tm/security/log/profile/"
         response = self.client.post(uri, data=params)
@@ -4610,6 +5400,9 @@ class ModuleManager(object):
 
         if net_sec:
             self._create_net_security(net_sec)
+
+        if app_sec:
+            self._create_app_security(app_sec)
 
         return True
 
@@ -4649,11 +5442,25 @@ class ModuleManager(object):
 
         return True
 
+    def _create_app_security(self, params):
+        params['name'] = self.want.name
+        params['partition'] = self.want.partition
+
+        uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}/application/"
+
+        response = self.client.post(uri, data=params)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        return True
+
     def update_on_device(self):
         params = self._add_missing_options(self.changes.api_params())
         dns_sec = params.pop('dns_security', None)
         sip_sec = params.pop('sip_security', None)
         net_sec = params.pop('network_security', None)
+        app_sec = params.pop('application_security', None)
 
         if params:
             uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}"
@@ -4676,6 +5483,11 @@ class ModuleManager(object):
             self._update_net_security(net_sec)
         elif net_sec and not self.have.net_sec_exists:
             self._create_net_security(net_sec)
+
+        if app_sec and self.have.app_sec_exists:
+            self._update_app_security(app_sec)
+        elif app_sec and not self.have.app_sec_exists:
+            self._create_app_security(app_sec)
 
         return True
 
@@ -4712,6 +5524,17 @@ class ModuleManager(object):
 
         return True
 
+    def _update_app_security(self, params):
+        uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}/application/" \
+              f"{transform_name(self.want.partition, self.want.name)}"
+
+        response = self.client.patch(uri, data=params)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        return True
+
     def remove_from_device(self):
         uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}"
         response = self.client.delete(uri)
@@ -4731,6 +5554,7 @@ class ModuleManager(object):
         dns_sec = self.read_dns_security_from_device()
         sip_sec = self.read_sip_security_from_device()
         net_sec = self.read_network_security_from_device()
+        app_sec = self.read_application_security_from_device()
 
         if dns_sec:
             result.update({'dns_security': dns_sec})
@@ -4740,6 +5564,9 @@ class ModuleManager(object):
 
         if net_sec:
             result.update({'network_security': net_sec})
+
+        if app_sec:
+            result.update({'application_security': app_sec})
 
         return result
 
@@ -4771,6 +5598,19 @@ class ModuleManager(object):
 
     def read_network_security_from_device(self):
         uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}/network/" \
+              f"{transform_name(self.want.partition, self.want.name)}"
+        response = self.client.get(uri)
+
+        if response['code'] == 404:
+            return False
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        return response['contents']
+
+    def read_application_security_from_device(self):
+        uri = f"/mgmt/tm/security/log/profile/{transform_name(self.want.partition, self.want.name)}/application/" \
               f"{transform_name(self.want.partition, self.want.name)}"
         response = self.client.get(uri)
 
@@ -5130,6 +5970,106 @@ class ArgumentSpec(object):
                                     ['user_string', 'delimiter']
                                 ]
                             ),
+                        )
+                    )
+                )
+            ),
+            application_security=dict(
+                type='dict',
+                options=dict(
+                    config=dict(
+                        type='dict',
+                        options=dict(
+                            local_storage=dict(
+                                type='str',
+                                choices=['enabled', 'disabled']
+                            ),
+                            guarantee_logging=dict(
+                                type='str',
+                                choices=['enabled', 'disabled']
+                            ),
+                            guarantee_response_logging=dict(
+                                type='str',
+                                choices=['enabled', 'disabled']
+                            ),
+                            remote_storage=dict(
+                                type='str',
+                                choices=['remote', 'none']
+                            ),
+                            response_logging=dict(
+                                type='str',
+                                choices=['none', 'illegal', 'all']
+                            ),
+                            protocol=dict(),
+                            servers=dict(
+                                type='list',
+                                elements='raw',
+                                options=dict(
+                                    ip=dict(),
+                                    port=dict(type='int')
+                                )
+                            ),
+                            facility=dict(),
+                            storage_format=dict(
+                                type='dict',
+                                options=dict(
+                                    fields=dict(
+                                        type='list',
+                                        elements='str'
+                                    ),
+                                    delimiter=dict(),
+                                    type=dict(
+                                        choices=['predefined', 'user-defined']
+                                    ),
+                                    user_string=dict()
+                                ),
+                                required_if=[
+                                    ['type', 'user-defined', ['user_string']],
+                                    ['type', 'predefined', ['fields']],
+                                ],
+                                mutually_exclusive=[
+                                    ['fields', 'user_string'],
+                                    ['user_string', 'delimiter']
+                                ]
+                            ),
+                            max_entry_length=dict(),
+                            report_anomalies=dict(
+                                type='str',
+                                choices=['enabled', 'disabled']
+                            ),
+                            report_challenge_failure=dict(
+                                type='str',
+                                choices=['enabled', 'disabled']
+                            ),
+                        )
+                    ),
+                    storage_filter=dict(
+                        type='dict',
+                        options=dict(
+                            logic_operation=dict(
+                                type='str',
+                                choices=['and', 'or']
+                            ),
+                            request_type=dict(),
+                            log_challenge_failure_requests=dict(
+                                type='str',
+                                choices=['enabled', 'disabled']
+                            ),
+                            protocols=dict(type='list', elements='str'),
+                            resp_status_codes=dict(type='list', elements='str'),
+                            http_methods=dict(type='list', elements='str'),
+                            login_result=dict(type='list', elements='str'),
+                            search_in=dict(
+                                type='str',
+                                choices=[
+                                    'request',
+                                    'uri',
+                                    'headers',
+                                    'post-data',
+                                    'query-string',
+                                ]
+                            ),
+                            search_string=dict(),
                         )
                     )
                 )
