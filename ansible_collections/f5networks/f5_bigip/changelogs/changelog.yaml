@@ -598,3 +598,11 @@ releases:
     - fix-per_app_deployment.yaml
     - software_install_bugfix.yaml
     release_date: '2024-03-29'
+  3.5.0:
+    changes:
+      bugfixes:
+      - bigip_security_log_profile.py - added parameters to configue application security
+        log profile.
+    fragments:
+    - add-app-security-to-security-log-profile.yaml
+    release_date: '2024-05-09'

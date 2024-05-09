@@ -4,6 +4,14 @@ F5Networks F5\_BIGIP Collection Release Notes
 
 .. contents:: Topics
 
+v3.5.0
+======
+
+Bugfixes
+--------
+
+- bigip_security_log_profile.py - added parameters to configue application security log profile.
+
 v3.4.0
 ======
 
