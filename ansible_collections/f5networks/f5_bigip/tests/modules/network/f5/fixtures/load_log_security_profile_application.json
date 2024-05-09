@@ -1,0 +1,83 @@
+{
+    "code": 200,
+    "contents": {
+        "kind": "tm:security:log:profile:application:applicationstate",
+        "name": "test_appsec_log_profile",
+        "partition": "Common",
+        "fullPath": "/Common/test_appsec_log_profile",
+        "generation": 1596,
+        "facility": "local2",
+        "filterGuiConfigLevel": "basic",
+        "format": {
+            "fieldDelimiter": ",",
+            "fields": [
+                "blocking_exception_reason",
+                "date_time",
+                "conviction_traps"
+            ],
+            "type": "predefined"
+        },
+        "guaranteeLogging": "disabled",
+        "guaranteeResponseLogging": "disabled",
+        "guiConfigLevel": "basic",
+        "localStorage": "disabled",
+        "loggerType": "remote",
+        "logicOperation": "or",
+        "maximumEntryLength": "10k",
+        "maximumHeaderSize": "any",
+        "maximumQuerySize": "any",
+        "maximumRequestSize": "any",
+        "protocol": "tcp",
+        "remoteStorage": "remote",
+        "reportAnomalies": "enabled",
+        "reportChallengeFailureMessages": "enabled",
+        "responseLogging": "illegal",
+        "filter": [
+            {
+                "name": "http-method",
+                "values": [
+                    "UNLINK",
+                    "TRACE",
+                    "SEARCH"
+                ]
+            },
+            {
+                "name": "log-challenge-failure-requests",
+                "values": [
+                    "enabled"
+                ]
+            },
+            {
+                "name": "login-result",
+                "values": [
+                    "login-result-successful"
+                ]
+            },
+            {
+                "name": "protocol",
+                "values": [
+                    "http",
+                    "wss"
+                ]
+            },
+            {
+                "name": "request-type",
+                "values": [
+                    "all"
+                ]
+            },
+            {
+                "name": "response-code",
+                "values": [
+                    "101",
+                    "102"
+                ]
+            }
+        ],
+        "servers": [
+            {
+                "name": "11.22.33.44:443"
+            }
+        ]
+    }
+}

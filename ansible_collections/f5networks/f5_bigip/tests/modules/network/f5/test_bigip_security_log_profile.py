@@ -710,7 +710,8 @@ class TestManager(unittest.TestCase):
         mm.exists = Mock(return_value=True)
         mm.client.get = Mock(side_effect=[
             dict(code=200, contents=load_fixture('load_log_security_profile.json')),
-            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+            dict(code=404, contents={}), dict(code=404, contents={}),
+            dict(code=404, contents={}), dict(code=404, contents={}),
         ])
 
         results = mm.exec_module()
@@ -874,7 +875,8 @@ class TestManager(unittest.TestCase):
         mm.client.get = Mock(side_effect=[
             dict(code=200, contents=load_fixture('load_log_security_profile.json')),
             dict(code=200, contents=load_fixture('load_log_security_profile_dns_sec.json')),
-            dict(code=404, contents={}), dict(code=404, contents={})
+            dict(code=404, contents={}), dict(code=404, contents={}),
+            dict(code=404, contents={}), dict(code=404, contents={}),
         ])
 
         results = mm.exec_module()
@@ -1016,7 +1018,8 @@ class TestManager(unittest.TestCase):
             dict(code=200, contents=load_fixture('load_log_security_profile.json')),
             dict(code=404, contents={}),
             dict(code=200, contents=load_fixture('load_log_security_profile_sip_sec.json')),
-            dict(code=404, contents={})
+            dict(code=404, contents={}),
+            dict(code=404, contents={}),
         ])
 
         results = mm.exec_module()
@@ -1160,7 +1163,8 @@ class TestManager(unittest.TestCase):
             dict(code=200, contents=load_fixture('load_log_security_profile.json')),
             dict(code=404, contents={}),
             dict(code=404, contents={}),
-            dict(code=200, contents=load_fixture('load_log_security_profile_network.json'))
+            dict(code=200, contents=load_fixture('load_log_security_profile_network.json')),
+            dict(code=404, contents={}),
         ])
 
         results = mm.exec_module()
@@ -1358,7 +1362,8 @@ class TestManager(unittest.TestCase):
         mm.exists = Mock(return_value=True)
         mm.client.get = Mock(side_effect=[
             dict(code=200, contents=load_fixture('load_log_security_profile_with_nat.json')),
-            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+            dict(code=404, contents={}), dict(code=404, contents={}),
+            dict(code=404, contents={}), dict(code=404, contents={}),
         ])
 
         results = mm.exec_module()
@@ -1409,7 +1414,8 @@ class TestManager(unittest.TestCase):
         mm.exists = Mock(return_value=True)
         mm.client.get = Mock(side_effect=[
             dict(code=200, contents=load_fixture('load_log_security_profile.json')),
-            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+            dict(code=404, contents={}), dict(code=404, contents={}),
+            dict(code=404, contents={}), dict(code=404, contents={}),
         ])
         mm.client.patch = Mock(return_value=dict(code=200, contents={}))
 
@@ -1447,7 +1453,8 @@ class TestManager(unittest.TestCase):
         mm.exists = Mock(return_value=True)
         mm.client.get = Mock(side_effect=[dict(
             code=200, contents=load_fixture('load_log_security_profile_changed.json')),
-            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+            dict(code=404, contents={}), dict(code=404, contents={}),
+            dict(code=404, contents={}), dict(code=404, contents={}),
         ])
 
         results = mm.exec_module()
@@ -1484,7 +1491,8 @@ class TestManager(unittest.TestCase):
         mm.client.get = Mock(side_effect=[
             dict(code=200, contents=load_fixture('load_log_security_profile.json')),
             dict(code=200, contents=load_fixture('load_log_security_profile_dns_sec.json')),
-            dict(code=404, contents={}), dict(code=404, contents={})
+            dict(code=404, contents={}), dict(code=404, contents={}),
+            dict(code=404, contents={})
         ])
         mm.client.patch = Mock(return_value=dict(code=200, contents={}))
 
@@ -1528,7 +1536,8 @@ class TestManager(unittest.TestCase):
         mm.exists = Mock(return_value=True)
         mm.client.get = Mock(side_effect=[
             dict(code=200, contents=load_fixture('load_log_security_profile.json')),
-            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+            dict(code=404, contents={}), dict(code=404, contents={}),
+            dict(code=404, contents={}), dict(code=404, contents={}),
         ])
         mm.client.post = Mock(return_value=dict(code=200, contents={}))
 
@@ -1577,7 +1586,8 @@ class TestManager(unittest.TestCase):
         mm.client.get = Mock(side_effect=[
             dict(code=200, contents=load_fixture('load_log_security_profile_changed.json')),
             dict(code=200, contents=load_fixture('load_log_security_profile_dns_sec_changed.json')),
-            dict(code=404, contents={}), dict(code=404, contents={})
+            dict(code=404, contents={}), dict(code=404, contents={}),
+            dict(code=404, contents={})
         ])
 
         results = mm.exec_module()
@@ -1613,6 +1623,7 @@ class TestManager(unittest.TestCase):
             dict(code=200, contents=load_fixture('load_log_security_profile.json')),
             dict(code=404, contents={}),
             dict(code=200, contents=load_fixture('load_log_security_profile_sip_sec.json')),
+            dict(code=404, contents={}),
             dict(code=404, contents={})
         ])
         mm.client.patch = Mock(return_value=dict(code=200, contents={}))
@@ -1656,7 +1667,8 @@ class TestManager(unittest.TestCase):
         mm.exists = Mock(return_value=True)
         mm.client.get = Mock(side_effect=[
             dict(code=200, contents=load_fixture('load_log_security_profile.json')),
-            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+            dict(code=404, contents={}), dict(code=404, contents={}),
+            dict(code=404, contents={}), dict(code=404, contents={})
         ])
         mm.client.post = Mock(return_value=dict(code=200, contents={}))
 
@@ -1695,7 +1707,8 @@ class TestManager(unittest.TestCase):
             dict(code=200, contents=load_fixture('load_log_security_profile.json')),
             dict(code=404, contents={}),
             dict(code=200, contents=load_fixture('load_log_security_profile_sip_sec_changed.json')),
-            dict(code=404, contents={})
+            dict(code=404, contents={}),
+            dict(code=404, contents={}),
         ])
 
         results = mm.exec_module()
@@ -1733,7 +1746,8 @@ class TestManager(unittest.TestCase):
             dict(code=200, contents=load_fixture('load_log_security_profile.json')),
             dict(code=404, contents={}),
             dict(code=404, contents={}),
-            dict(code=200, contents=load_fixture('load_log_security_profile_network.json'))
+            dict(code=200, contents=load_fixture('load_log_security_profile_network.json')),
+            dict(code=404, contents={}),
         ])
         mm.client.patch = Mock(return_value=dict(code=200, contents={}))
 
@@ -1781,7 +1795,8 @@ class TestManager(unittest.TestCase):
         mm.exists = Mock(return_value=True)
         mm.client.get = Mock(side_effect=[
             dict(code=200, contents=load_fixture('load_log_security_profile.json')),
-            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+            dict(code=404, contents={}), dict(code=404, contents={}),
+            dict(code=404, contents={}), dict(code=404, contents={}),
         ])
         mm.client.post = Mock(return_value=dict(code=200, contents={}))
 
@@ -1823,7 +1838,8 @@ class TestManager(unittest.TestCase):
             dict(code=200, contents=load_fixture('load_log_security_profile.json')),
             dict(code=404, contents={}),
             dict(code=404, contents={}),
-            dict(code=200, contents=load_fixture('load_log_security_profile_network_changed.json'))
+            dict(code=200, contents=load_fixture('load_log_security_profile_network_changed.json')),
+            dict(code=404, contents={}),
         ])
 
         results = mm.exec_module()
@@ -1938,7 +1954,8 @@ class TestManager(unittest.TestCase):
         mm.exists = Mock(return_value=True)
         mm.client.get = Mock(side_effect=[
             dict(code=200, contents=load_fixture('load_log_security_profile_with_nat.json')),
-            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+            dict(code=404, contents={}), dict(code=404, contents={}),
+            dict(code=404, contents={}), dict(code=404, contents={}),
         ])
         mm.client.patch = Mock(return_value=dict(code=200, contents={}))
 
@@ -1994,11 +2011,193 @@ class TestManager(unittest.TestCase):
         mm.exists = Mock(return_value=True)
         mm.client.get = Mock(side_effect=[
             dict(code=200, contents=load_fixture('load_log_security_profile_with_nat_changed.json')),
-            dict(code=404, contents={}), dict(code=404, contents={}), dict(code=404, contents={})
+            dict(code=404, contents={}), dict(code=404, contents={}),
+            dict(code=404, contents={}), dict(code=404, contents={}),
         ])
 
         results = mm.exec_module()
         self.assertFalse(results['changed'])
+
+    def test_create_log_security_profile_create_application_security(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_appsec_log_profile',
+            application_security=dict(
+                config=dict(
+                    remote_storage='remote',
+                    response_logging='illegal',
+                    protocol='tcp',
+                    servers=[dict(ip='11.22.33.44', port=443)],
+                    facility='local0',
+                    storage_format=dict(
+                        delimiter=',',
+                        type='predefined',
+                        fields=['date_time', 'conviction_traps']
+                    ),
+                    max_entry_length='2k',
+                    report_anomalies='enabled',
+                    report_challenge_failure='enabled'
+                ),
+                storage_filter=dict(
+                    logic_operation='or',
+                    request_type='all',
+                    log_challenge_failure_requests='enabled',
+                    protocols=['http', 'wss'],
+                    resp_status_codes=['101', '102'],
+                    http_methods=['UNLINK', 'TRACE'],
+                    login_result=['login-result-successful'],
+                    search_in='query-string',
+                    search_string='BasicAuth'
+                )
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.client.post = Mock(return_value=dict(code=200, contents={}))
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+
+    def test_create_log_security_profile_update_application_security(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_appsec_log_profile',
+            application_security=dict(
+                config=dict(
+                    remote_storage='remote',
+                    response_logging='illegal',
+                    protocol='tcp',
+                    servers=[dict(ip='11.22.33.44', port=443)],
+                    facility='local0',
+                    storage_format=dict(
+                        delimiter=',',
+                        type='predefined',
+                        fields=['date_time', 'conviction_traps']
+                    ),
+                    max_entry_length='6k',
+                    report_anomalies='enabled',
+                    report_challenge_failure='enabled'
+                ),
+                storage_filter=dict(
+                    logic_operation='or',
+                    request_type='all',
+                    log_challenge_failure_requests='enabled',
+                    protocols=['http', 'wss'],
+                    resp_status_codes=['101', '102', '400'],
+                    http_methods=['UNLINK', 'TRACE', 'ACL'],
+                    login_result=['login-result-successful'],
+                )
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        existing = load_fixture('load_log_security_profile_application.json')
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.patch = Mock(return_value=dict(code=200, contents={}))
+
+        mm.read_dns_security_from_device = Mock(return_value=None)
+        mm.read_network_security_from_device = Mock(return_value=None)
+        mm.read_sip_security_from_device = Mock(return_value=None)
+
+        mm.client.get = Mock(return_value=existing)
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertEqual(mm.client.patch.call_count, 1)
+
+    def test_create_log_security_profile_update_application_security_no_change(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_appsec_log_profile',
+            application_security=dict(
+                config=dict(
+                    remote_storage='remote',
+                    response_logging='illegal',
+                    protocol='tcp',
+                    servers=[dict(ip='11.22.33.44', port=443)],
+                    facility='local2',
+                    storage_format=dict(
+                        delimiter=',',
+                        type='predefined',
+                        fields=[
+                            'blocking_exception_reason',
+                            'date_time',
+                            'conviction_traps'
+                        ]
+                    ),
+                    max_entry_length='10k',
+                    report_anomalies='enabled',
+                    report_challenge_failure='enabled'
+                ),
+                storage_filter=dict(
+                    logic_operation='or',
+                    request_type='all',
+                    log_challenge_failure_requests='enabled',
+                    protocols=['http', 'wss'],
+                    resp_status_codes=['101', '102'],
+                    http_methods=['UNLINK', 'TRACE', 'SEARCH'],
+                    login_result=['login-result-successful'],
+                )
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        existing = load_fixture('load_log_security_profile_application.json')
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+
+        mm.read_dns_security_from_device = Mock(return_value=None)
+        mm.read_network_security_from_device = Mock(return_value=None)
+        mm.read_sip_security_from_device = Mock(return_value=None)
+
+        mm.client.get = Mock(return_value=existing)
+
+        results = mm.exec_module()
+
+        self.assertFalse(results['changed'])
+        self.assertEqual(mm.client.patch.call_count, 0)
+
+    def test_create_log_security_profile_delete_application_security(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            name='test_appsec_log_profile',
+            state='absent'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        existing = load_fixture('load_log_security_profile_application.json')
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(side_effect=[True, False])
+        mm.client.delete = Mock(return_value=dict(code=200, contents={}))
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertEqual(mm.client.delete.call_count, 1)
 
     def test_update_log_security_profile_fails(self, *args):
         # Configure the arguments that would be sent to the Ansible module
