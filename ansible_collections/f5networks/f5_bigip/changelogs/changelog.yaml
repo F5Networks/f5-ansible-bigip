@@ -606,3 +606,5 @@ releases:
     fragments:
     - add-app-security-to-security-log-profile.yaml
     release_date: '2024-05-09'
+  3.5.1:
+    release_date: '2024-06-21'
