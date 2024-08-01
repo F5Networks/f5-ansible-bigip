@@ -58,6 +58,7 @@ notes:
     Traditional Deployment dosen't depend on C(perAppDeploymentAllowed) value.
   - For Per-Application Deployment C(perAppDeploymentAllowed) should be set to true.
     Per-Application declaration shouldn't contain Tenant information inside it.
+    Per-Application deployments is supported from AS3 versions>=3.50.0
     Tenant parameter is mandatory for Per-Application Deployments
     More infotmation can be found here https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/per-app-declarations.html
 author:
@@ -366,7 +367,12 @@ class ModuleManager(object):
         if response['code'] not in [200, 201, 202, 204, 207]:
             raise F5ModuleError(response['contents'])
 
-        return response['contents']['betaOptions']['perAppDeploymentAllowed']
+        if 'betaOptions' in response['contents']:  # for AS3 version < 3.50.0
+            return response['contents']['betaOptions']['perAppDeploymentAllowed']
+        elif 'perAppDeploymentAllowed' in response['contents']:  # for As3 version 3.50.0
+            return response['contents']['perAppDeploymentAllowed']
+        else:
+            return False
 
     def get_tenant_list(self):
         tenant_list = []

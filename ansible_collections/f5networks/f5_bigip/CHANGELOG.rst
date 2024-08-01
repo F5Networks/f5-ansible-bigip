@@ -4,6 +4,14 @@ F5Networks F5\_BIGIP Collection Release Notes
 
 .. contents:: Topics
 
+v3.6.0
+======
+
+Bugfixes
+--------
+
+- bigip_as3_deploy - Fixed PerApp Deployment for Version >= 3.5
+
 v3.5.1
 ======
 
