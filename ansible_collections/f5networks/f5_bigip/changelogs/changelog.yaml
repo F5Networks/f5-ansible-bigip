@@ -615,3 +615,5 @@ releases:
     fragments:
     - fix-per_app_deployment_changes.yaml
     release_date: '2024-08-01'
+  3.6.1:
+    release_date: '2024-08-01'
