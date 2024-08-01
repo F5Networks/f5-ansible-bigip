@@ -608,3 +608,10 @@ releases:
     release_date: '2024-05-09'
   3.5.1:
     release_date: '2024-06-21'
+  3.6.0:
+    changes:
+      bugfixes:
+      - bigip_as3_deploy - Fixed PerApp Deployment for Version >= 3.5
+    fragments:
+    - fix-per_app_deployment_changes.yaml
+    release_date: '2024-08-01'
