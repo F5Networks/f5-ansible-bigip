@@ -142,7 +142,7 @@ class HttpApi(HttpApiBase):
         body = kwargs.pop('payload', None)
         method = kwargs.pop('method', None)
         # allow for empty json to be passed as payload, useful for some endpoints
-        data = json.dumps(body) if body or body == {} else None
+        data = json.dumps(body, ensure_ascii=False) if body or body == {} else None
         try:
             self._display_request(method, url, body)
             response, response_data = self.connection.send(url, data, method=method, **kwargs)

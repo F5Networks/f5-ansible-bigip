@@ -503,6 +503,9 @@ class ApiParameters(Parameters):
         result['self_ip'] = self._values['customService']['managedNetwork'][ipfamily]['toServiceSelfIp']
         result['netmask'] = self._values['customService']['managedNetwork'][ipfamily]['toServiceMask']
         result['network'] = self._values['customService']['managedNetwork'][ipfamily]['toServiceNetwork']
+        if not self._values['customService']['isAutoManage']:
+            result['self_ip'] = self._values['customService']['connectionInformation']['fromBigipNetwork']['selfIpConfig']['selfIp'].split('/')[0]
+            result['netmask'] = self._values['customService']['connectionInformation']['fromBigipNetwork']['selfIpConfig']['netmask']
         if self._values['fromVlanNetworkObj']['create'] and 'networkInterface' in self._values['fromVlanNetworkObj']:
             if isinstance(self._values['fromVlanNetworkObj']['networkInterface'], list):
                 result['interface'] = self._values['fromVlanNetworkObj']['networkInterface'][0]
@@ -530,6 +533,9 @@ class ApiParameters(Parameters):
         result['self_ip'] = self._values['customService']['managedNetwork'][ipfamily]['fromServiceSelfIp']
         result['netmask'] = self._values['customService']['managedNetwork'][ipfamily]['fromServiceMask']
         result['network'] = self._values['customService']['managedNetwork'][ipfamily]['fromServiceNetwork']
+        if not self._values['customService']['isAutoManage']:
+            result['self_ip'] = self._values['customService']['connectionInformation']['toBigipNetwork']['selfIpConfig']['selfIp'].split('/')[0]
+            result['netmask'] = self._values['customService']['connectionInformation']['toBigipNetwork']['selfIpConfig']['netmask']
         if self._values['toVlanNetworkObj']['create'] and 'networkInterface' in self._values['toVlanNetworkObj']:
             if isinstance(self._values['toVlanNetworkObj']['networkInterface'], list):
                 result['interface'] = self._values['toVlanNetworkObj']['networkInterface'][0]
