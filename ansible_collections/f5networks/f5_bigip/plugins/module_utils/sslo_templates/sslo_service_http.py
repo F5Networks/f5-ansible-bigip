@@ -225,6 +225,8 @@ create_modify = """
                 "ipFamily": "{{ params.ip_family }}",
                 "isAutoManage": {{ params.auto_manage | tojson }},
                 "portRemap": {% if params.port_remap is defined %}true{% else %}false{% endif %},
+                "serviceEntrySSLProfile": "",
+                "serviceReturnSSLProfile": "",
                 "httpPortRemapValue": {% if params.port_remap is defined -%}{{ params.port_remap }},{% else %}80,
                 {% endif %}
                 "serviceDownAction": "{{ params.service_down_action }}",
