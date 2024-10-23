@@ -20,7 +20,7 @@ def connection_response(response, status=200, headers=None):
     if headers is None:
         headers = BASE_HEADERS
     response_mock.getheaders.return_value = headers.items()
-    response_text = json.dumps(response) if type(response) is dict else response
+    response_text = json.dumps(response) if isinstance(response, dict) else response
     response_data = BytesIO(response_text.encode() if response_text else ''.encode())
     return response_mock, response_data
 
