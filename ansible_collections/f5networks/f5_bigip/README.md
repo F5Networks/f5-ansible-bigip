@@ -109,7 +109,7 @@ being included in this project.
 [repoinstall]: https://docs.ansible.com/ansible/latest/user_guide/collections_using.html#installing-a-collection-from-a-git-repository
 [imperative_collection]: https://galaxy.ansible.com/f5networks/f5_modules
 [dailybuild]: https://f5-ansible.s3.amazonaws.com/collections/f5networks-f5_bigip-devel.tar.gz
-[License]: https://github.com/f5devcentral/f5-ansible-bigip/blob/master/COPYING
+[License]: https://www.gnu.org/licenses/gpl-3.0.txt
 [execenv]: https://docs.ansible.com/automation-controller/latest/html/userguide/execution_environments.html
 [f5execenv]: http://clouddocs.f5.com/products/orchestration/ansible/devel/usage/exec-env.html
 [F5 Contributor License Agreement]: http://clouddocs.f5.com/products/orchestration/ansible/devel/usage/contributor.html

@@ -135,7 +135,7 @@ def nested_diff(want, have, invalid):
         if k not in have:
             return True
         else:
-            if type(want[k]) is dict:
+            if isinstance(want[k], dict):
                 if nested_diff(want[k], have[k], invalid):
                     return True
             else:

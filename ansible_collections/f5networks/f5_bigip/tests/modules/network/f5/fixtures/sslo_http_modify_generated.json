@@ -110,6 +110,8 @@
                     "ipFamily": "ipv4",
                     "isAutoManage": true,
                     "portRemap": true,
+                    "serviceEntrySSLProfile": "",
+                    "serviceReturnSSLProfile": "",    
                     "httpPortRemapValue": 80,
                     "serviceDownAction": "reset",
                     "iRuleList": null,

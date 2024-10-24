@@ -218,7 +218,7 @@ class ModuleManager(object):
                 results += messages['errors']
         else:
             for message in messages['results']:
-                if 'message' in message and message['message'] in ['declaration failed', 'declaration is invalid']:
+                if any(error in message['message'].lower() for error in ['failed', 'invalid']):
                     results.append(message['message'])
                 if 'errors' in message:
                     results += message['errors']
