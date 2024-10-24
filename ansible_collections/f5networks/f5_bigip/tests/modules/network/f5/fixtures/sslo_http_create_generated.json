@@ -1,3 +1,4 @@
+
 {
     "name": "sslo_obj_SERVICE_CREATE_ssloS_proxy1a",
     "inputProperties": [
@@ -16,7 +17,39 @@
         {
             "id": "f5-ssl-orchestrator-network",
             "type": "JSON",
-            "value": []
+            "value": [
+                {
+                    "name": "ssloN_proxy1a_out",
+                    "partition": "Common",
+                    "strictness": false,
+                    "vlan": {
+                        "name": "ssloN_proxy1a_out",
+                        "path": "/Common/ssloN_proxy1a_out.app/ssloN_proxy1a_out",
+                        "create": true,
+                        "modify": false,
+                        "networkError": false,
+                        "interface": [
+                            "1.1"
+                        ],
+                        "networkInterface": "1.1",
+                        "tag": 50,
+                        "networkTag": 50
+                    },
+                    "selfIpConfig": {
+                        "create": true,
+                        "modify": false,
+                        "selfIp": "198.19.96.245",
+                        "netmask": "255.255.255.128",
+                        "floating": false,
+                        "HAstaticIpMap": []
+                    },
+                    "routeDomain": {
+                        "id": 0,
+                        "create": false
+                    },
+                    "existingBlockId": ""
+                }
+            ]
         },
         {
             "id": "f5-ssl-orchestrator-service",

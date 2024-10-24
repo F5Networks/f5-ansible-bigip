@@ -91,8 +91,8 @@ create_modify = """
                     "create": false
                 },
                 "existingBlockId": ""
-             }{% if params.devices_from is defined and params.devices_to.vlan is not defined -%},{% endif %}{% endif %}
-             {% if params.devices_from is defined and params.devices_to.vlan is not defined -%}
+             }{% if params.devices_from is defined and params.devices_from.vlan is not defined -%},{% endif %}{% endif %}
+             {% if params.devices_from is defined and params.devices_from.vlan is not defined -%}
                 {
                     "name": "{{ params.devices_from.name }}",
                     "partition": "Common",
