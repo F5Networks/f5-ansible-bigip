@@ -20,7 +20,6 @@ build_ignore:
   - tests/module_utils
   - tests/modules
   - tests/plugins
-  - tests/sanity
   - tests/utils
   - tests/*.ini
   - tests/*.py
@@ -30,4 +29,4 @@ tags:
   - networking
   - bigip
   - bigiq
-version: 3.8.1
+version: 3.8.2
