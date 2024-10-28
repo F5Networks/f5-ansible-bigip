@@ -625,3 +625,5 @@ releases:
     release_date: '2024-10-24'
   3.8.1:
     release_date: '2024-10-28'
+  3.8.2:
+    release_date: '2024-10-28'
