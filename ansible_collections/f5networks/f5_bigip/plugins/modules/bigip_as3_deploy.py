@@ -5,10 +5,11 @@
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 
-DOCUMENTATION = r'''
+DOCUMENTATION = r"""
 ---
 module: bigip_as3_deploy
 short_description: Manages AS3 declarations sent to BIG-IP
@@ -44,6 +45,41 @@ options:
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
+  controls:
+    version_added: "3.9.0"
+    description:
+      - Optional controls configuration.
+    type: dict
+    suboptions:
+      dry_run:
+        description:
+          - If C(true), the declaration is not deployed to the device.
+        type: bool
+      log_level:
+        description:
+          - If set to C(true), BIG-IP AS3 creates a detailed trace of the configuration process for the tenant
+        type: str
+        choices:
+          - emergency
+          - alert
+          - critical
+          - error
+          - warning
+          - notice
+          - info
+          - debug
+      trace:
+        description:
+          - "If C(true), the declaration is traced."
+        type: bool
+      trace_response:
+        description:
+          - If set to C(true), the response will contain the trace files
+        type: bool
+      user_agent:
+        description:
+          - User Agent information to include in TEEM report.
+        type: str
   state:
     description:
       - When C(state) is C(present), ensures the declaration is exists.
@@ -64,25 +100,42 @@ notes:
 author:
   - Wojciech Wypior (@wojtek0806)
   - Prateek Ramani (@ramani)
-'''
+"""
 
-EXAMPLES = r'''
+EXAMPLES = r"""
 - name: Declaration with 2 Tenants - AS3
   bigip_as3_deploy:
     content: "{{ lookup('file', 'two_tenants.json') }}"
+
+- name: Declaration with 2 Tenants with controls parameters - AS3
+  bigip_as3_deploy:
+    content: "{{ lookup('file', 'two_tenants.json') }}"
+    controls:
+      log_level: debug
+      trace: true
+      trace_response: true
 
 - name: Deploying Per-App Declaration
   bigip_as3_deploy:
     content: "{{ lookup('file', 'per-app-dec.json') }}"
     tenant: sample
 
+- name: Deploying Per-App Declaration with controls parameters
+  bigip_as3_deploy:
+    content: "{{ lookup('file', 'per-app-dec.json') }}"
+    tenant: sample
+    controls:
+      log_level: debug
+      trace: true
+      trace_response: true
+
 - name: Remove one tenant - AS3
   bigip_as3_deploy:
     tenant: "Sample_01"
     state: absent
-'''
+"""
 
-RETURN = r'''
+RETURN = r"""
 content:
   description: The declaration sent to the system.
   returned: changed
@@ -93,7 +146,7 @@ tenant:
   returned: changed
   type: str
   sample: foobar1
-'''
+"""
 import time
 from datetime import datetime
 
@@ -103,11 +156,13 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import Connection
 from ansible.module_utils.six import string_types
 
-from ..module_utils.client import (
-    F5Client, send_teem
-)
+from ..module_utils.client import F5Client, send_teem
 from ..module_utils.common import (
-    F5ModuleError, AnsibleF5Parameters, check_for_atc_errors, F5ATCError
+    F5ModuleError,
+    AnsibleF5Parameters,
+    check_for_atc_errors,
+    F5ATCError,
+    flatten_boolean,
 )
 
 try:
@@ -121,8 +176,8 @@ class Parameters(AnsibleF5Parameters):
     api_attributes = []
 
     returnables = [
-        'content',
-        'tenant',
+        "content",
+        "tenant",
     ]
 
 
@@ -279,13 +334,66 @@ class ModuleManager(object):
         if response['code'] not in [200, 201, 202, 204, 207]:
             raise F5ModuleError(response['contents'])
 
-        return all(msg.get('message', None) == 'no change' for msg in response['contents']['results'])
+        return all(
+            msg.get("message", None) == "no change"
+            for msg in response["contents"]["results"]
+        )
 
     def _check_task_on_device(self, path):
         response = self.client.get(path)
-        if response['code'] not in [200, 201, 202]:
-            raise F5ModuleError(response['contents'])
-        return response['contents']
+        if response["code"] not in [200, 201, 202]:
+            raise F5ModuleError(response["contents"])
+        return response["contents"]
+
+    def get_control_queries(self):
+        control_queries = ""
+
+        if self.want.controls is not None:
+            log_level = self.want.controls.get("log_level")
+            user_agent = self.want.controls.get("user_agent")
+            trace = (
+                "true"
+                if flatten_boolean(self.want.controls.get("trace")) == "yes"
+                else "false"
+            )
+            trace_response = (
+                "true"
+                if flatten_boolean(self.want.controls.get("trace_response")) == "yes"
+                else "false"
+            )
+            dry_run = (
+                "true"
+                if flatten_boolean(self.want.controls.get("dry_run")) == "yes"
+                else "false"
+            )
+
+            control_queries += (
+                f"&controls.dryRun={dry_run}" if dry_run == "true" else ""
+            )
+            control_queries += (
+                f"&controls.logLevel={log_level}" if log_level is not None else ""
+            )
+            control_queries += f"&controls.trace={trace}" if trace == "true" else ""
+            control_queries += (
+                f"&controls.traceResponse={trace_response}"
+                if trace_response == "true"
+                else ""
+            )
+            control_queries += (
+                f"&controls.userAgent={user_agent}" if user_agent is not None else ""
+            )
+
+        return control_queries
+
+    def _check_control_queries_conflict(self):
+        as3json = self.want.content
+        if as3json.get("declaration") is not None:
+            declaration = as3json["declaration"]
+            if declaration.get("controls") is not None and self.want.controls is not None:
+                raise F5ModuleError(
+                    "Controls parameters provided in both, the AS3 declaration and module parameters. "
+                    "Please provide the controls parameters in only one place."
+                )
 
     def upsert_on_device(self):
         delay, period = self.want.timeout
@@ -294,20 +402,22 @@ class ModuleManager(object):
 
         tenantList = self.get_tenant_list()
 
+        self._check_control_queries_conflict()
+
+        control_queries = self.get_control_queries()
         if perAppDeploymentAllowed and len(tenantList) == 0:
             if not self.want.tenant:
                 raise F5ModuleError(
                     "tenant parameter is mandatory for Per-Application Deployment"
                 )
-                # tenant = self.generate_random_string(10)
             else:
                 tenant = self.want.tenant
-            uri = "/mgmt/shared/appsvcs/declare/{0}/applications?async=true".format(tenant)
+            uri = f"/mgmt/shared/appsvcs/declare/{tenant}/applications?async=true{control_queries}"
         else:
             if self.want.tenant:
-                uri = "/mgmt/shared/appsvcs/declare/{0}?async=true".format(self.want.tenant)
+                uri = f"/mgmt/shared/appsvcs/declare/{self.want.tenant}?async=true{control_queries}"
             else:
-                uri = "/mgmt/shared/appsvcs/declare?async=true"
+                uri = f"/mgmt/shared/appsvcs/declare?async=true{control_queries}"
 
         response = self.client.post(uri, data=self.want.content)
 
@@ -315,8 +425,10 @@ class ModuleManager(object):
             raise F5ModuleError(response['contents'])
 
         task = self.wait_for_task("/mgmt/shared/appsvcs/task/{0}".format(response['contents']['id']), delay, period)
+        if task and all(msg.get("dryRun", None) is True for msg in task["results"]):
+            return False
         if task:
-            return any(msg.get('message', None) != 'no change' for msg in task['results'])
+            return any(msg.get("message", None) != "no change" for msg in task["results"])
 
     def wait_for_task(self, path, delay, period):
         for x in range(0, period):
@@ -401,20 +513,44 @@ class ArgumentSpec(object):
         argument_spec = dict(
             content=dict(type='raw'),
             tenant=dict(),
-            timeout=dict(
-                type='int',
-                default=300
+            controls=dict(
+                type="dict",
+                options=dict(
+                    dry_run=dict(
+                        type="bool",
+                    ),
+                    log_level=dict(
+                        type="str",
+                        choices=[
+                            "emergency",
+                            "alert",
+                            "critical",
+                            "error",
+                            "warning",
+                            "notice",
+                            "info",
+                            "debug",
+                        ],
+                    ),
+                    trace=dict(
+                        type="bool",
+                    ),
+                    trace_response=dict(
+                        type="bool",
+                    ),
+                    user_agent=dict(
+                        type="str",
+                    ),
+                ),
             ),
-            state=dict(
-                default='present',
-                choices=['present', 'absent']
-            ),
+            timeout=dict(type="int", default=300),
+            state=dict(default="present", choices=["present", "absent"]),
         )
         self.argument_spec = {}
         self.argument_spec.update(argument_spec)
         self.required_if = [
-            ['state', 'present', ['content']],
-            ['state', 'absent', ['tenant']]
+            ["state", "present", ["content"]],
+            ["state", "absent", ["tenant"]],
         ]
 
 
@@ -424,7 +560,7 @@ def main():
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        required_if=spec.required_if
+        required_if=spec.required_if,
     )
 
     try:
@@ -435,5 +571,5 @@ def main():
         module.fail_json(msg=str(ex))
 
 
-if __name__ == '__main__':  # pragma: no cover
+if __name__ == "__main__":  # pragma: no cover
     main()

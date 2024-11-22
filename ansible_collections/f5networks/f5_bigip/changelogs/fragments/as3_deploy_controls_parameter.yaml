@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - bigip_as3_deploy - added controls parameter.
