@@ -4,6 +4,14 @@ F5Networks F5\_BIGIP Collection Release Notes
 
 .. contents:: Topics
 
+v3.9.0
+======
+
+Minor Changes
+-------------
+
+- bigip_as3_deploy - added controls parameter.
+
 v3.8.2
 ======
 
