@@ -627,3 +627,10 @@ releases:
     release_date: '2024-10-28'
   3.8.2:
     release_date: '2024-10-28'
+  3.9.0:
+    changes:
+      minor_changes:
+      - bigip_as3_deploy - added controls parameter.
+    fragments:
+    - as3_deploy_controls_parameter.yaml
+    release_date: '2024-12-04'

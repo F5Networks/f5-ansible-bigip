@@ -49,6 +49,8 @@ options:
     version_added: "3.9.0"
     description:
       - Optional controls configuration.
+      - The controls options can also be specified in the as3 declaration itself.
+      - Do not specify the controls options in both the as3 declaration and the module parameters, as this will raise an error.
     type: dict
     suboptions:
       dry_run:
@@ -150,8 +152,6 @@ tenant:
 import time
 from datetime import datetime
 
-# import random
-# import string
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import Connection
 from ansible.module_utils.six import string_types
@@ -314,20 +314,19 @@ class ModuleManager(object):
         if perAppDeploymentAllowed and len(tenantList) == 0:
             return False
         else:
-            if declaration.get('class') == 'AS3':
-                declaration['action'] = 'dry-run'
-            else:
+            self._check_control_queries_conflict()
+
+            if declaration.get('class') != 'AS3':
                 declaration = {
                     'class': 'AS3',
                     'persist': False,
-                    'action': 'dry-run',
                     'declaration': declaration,
                 }
 
             if self.want.tenant:
-                uri = "/mgmt/shared/appsvcs/declare/{0}".format(self.want.tenant)
+                uri = "/mgmt/shared/appsvcs/declare/{0}?controls.dryRun=true".format(self.want.tenant)
             else:
-                uri = "/mgmt/shared/appsvcs/declare"
+                uri = "/mgmt/shared/appsvcs/declare?controls.dryRun=true"
 
         response = self.client.post(uri, data=declaration)
 
