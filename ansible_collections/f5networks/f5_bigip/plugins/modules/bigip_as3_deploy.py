@@ -99,6 +99,11 @@ notes:
     Per-Application deployments is supported from AS3 versions>=3.50.0
     Tenant parameter is mandatory for Per-Application Deployments
     More infotmation can be found here https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/per-app-declarations.html
+  - Regarding the controls parameter, in this document,
+    https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/refguide/as3-api.html#query-parameters-for-controls-objects,
+    it is mentioned that controls parameters specified in the url as query parameters will override the controls parameters specified in the declaration,
+    but due to a bug that behaviour is not seen, so it is recommended that the user should specify controls options either in the module parameters or in
+    the AS3 declaration. Note that using the controls parameter in this module uses url query parameters behind the scenes.
 author:
   - Wojciech Wypior (@wojtek0806)
   - Prateek Ramani (@ramani)
