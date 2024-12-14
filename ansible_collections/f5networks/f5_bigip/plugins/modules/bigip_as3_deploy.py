@@ -59,7 +59,7 @@ options:
         type: bool
       log_level:
         description:
-          - If set to C(true), BIG-IP AS3 creates a detailed trace of the configuration process for the tenant
+          - Controls the amount of detail in logs produced while configuring the tenant.
         type: str
         choices:
           - emergency
@@ -72,11 +72,11 @@ options:
           - debug
       trace:
         description:
-          - "If C(true), the declaration is traced."
+          - If C(true), BIG-IP AS3 creates a detailed trace of the configuration process for this Tenant for subsequent analysis.
         type: bool
       trace_response:
         description:
-          - If set to C(true), the response will contain the trace files
+          - If set to C(true), the response will contain the trace files.
         type: bool
       user_agent:
         description:
@@ -112,29 +112,239 @@ author:
 EXAMPLES = r"""
 - name: Declaration with 2 Tenants - AS3
   bigip_as3_deploy:
-    content: "{{ lookup('file', 'two_tenants.json') }}"
-
-- name: Declaration with 2 Tenants with controls parameters - AS3
-  bigip_as3_deploy:
-    content: "{{ lookup('file', 'two_tenants.json') }}"
-    controls:
-      log_level: debug
-      trace: true
-      trace_response: true
+    content: |
+      {
+        "class": "AS3",
+        "action": "deploy",
+        "persist": true,
+        "declaration": {
+          "class": "ADC",
+          "schemaVersion": "3.0.0",
+          "id": "urn:uuid:33045210-3ab8-4636-9b2a-c98d22ab915d",
+          "label": "Sample 1",
+          "remark": "Simple HTTP application with RR pool",
+          "Sample_01": {
+            "class": "Tenant",
+            "A1": {
+              "class": "Application",
+              "template": "http",
+              "serviceMain": {
+                "class": "Service_HTTP",
+                "virtualAddresses": [
+                  "10.0.1.10"
+                ],
+                "pool": "web_pool"
+              },
+              "web_pool": {
+                "class": "Pool",
+                "monitors": [
+                  "http"
+                ],
+                "members": [{
+                  "servicePort": 80,
+                  "serverAddresses": [
+                    "192.0.1.10",
+                    "192.0.1.11"
+                  ]
+                }]
+              }
+            }
+          },
+          "Sample_02": {
+            "class": "Tenant",
+            "A1": {
+              "class": "Application",
+              "template": "http",
+              "serviceMain": {
+                "class": "Service_HTTP",
+                "virtualAddresses": [
+                  "10.0.1.11"
+                ],
+                "pool": "web_pool2"
+              },
+              "web_pool2": {
+                "class": "Pool",
+                "monitors": [
+                  "http"
+                ],
+                "members": [{
+                  "servicePort": 80,
+                  "serverAddresses": [
+                    "192.0.1.12",
+                    "192.0.1.13"
+                  ]
+                }]
+              }
+            }
+          }
+        }
+      }
 
 - name: Deploying Per-App Declaration
   bigip_as3_deploy:
-    content: "{{ lookup('file', 'per-app-dec.json') }}"
+    content: |
+      {
+        "schemaVersion": "3.48.0",
+        "Application1": {
+          "class": "Application",
+          "service": {
+            "class": "Service_HTTP",
+            "virtualAddresses": [
+              "192.0.10.1"
+            ],
+            "pool": "pool"
+          },
+          "pool": {
+            "class": "Pool",
+            "members": [
+              {
+                "servicePort": 80,
+                "serverAddresses": [
+                  "192.0.10.1",
+                  "192.0.10.2"
+                ]
+              }
+            ]
+          }
+        }
+      }
     tenant: sample
 
-- name: Deploying Per-App Declaration with controls parameters
+- name: Declaration with 2 Tenants with controls parameters - AS3
   bigip_as3_deploy:
-    content: "{{ lookup('file', 'per-app-dec.json') }}"
-    tenant: sample
+    content: |
+      {
+        "class": "AS3",
+        "action": "deploy",
+        "persist": true,
+        "declaration": {
+          "class": "ADC",
+          "schemaVersion": "3.0.0",
+          "id": "urn:uuid:33045210-3ab8-4636-9b2a-c98d22ab915d",
+          "label": "Sample 1",
+          "remark": "Simple HTTP application with RR pool",
+          "Sample_01": {
+            "class": "Tenant",
+            "A1": {
+              "class": "Application",
+              "template": "http",
+              "serviceMain": {
+                "class": "Service_HTTP",
+                "virtualAddresses": [
+                  "10.0.1.10"
+                ],
+                "pool": "web_pool"
+              },
+              "web_pool": {
+                "class": "Pool",
+                "monitors": [
+                  "http"
+                ],
+                "members": [{
+                  "servicePort": 80,
+                  "serverAddresses": [
+                    "192.0.1.10",
+                    "192.0.1.11"
+                  ]
+                }]
+              }
+            }
+          },
+          "Sample_02": {
+            "class": "Tenant",
+            "A1": {
+              "class": "Application",
+              "template": "http",
+              "serviceMain": {
+                "class": "Service_HTTP",
+                "virtualAddresses": [
+                  "10.0.1.11"
+                ],
+                "pool": "web_pool2"
+              },
+              "web_pool2": {
+                "class": "Pool",
+                "monitors": [
+                  "http"
+                ],
+                "members": [{
+                  "servicePort": 80,
+                  "serverAddresses": [
+                    "192.0.1.12",
+                    "192.0.1.13"
+                  ]
+                }]
+              }
+            }
+          }
+        }
+      }
     controls:
       log_level: debug
       trace: true
       trace_response: true
+
+- name: Controls parameter in declaration as well as module parameters will result in error, NOT RECOMMENDED
+  bigip_as3_deploy:
+    controls:
+      dry_run: true
+    content: |
+      {
+        "action": "deploy",
+        "class": "AS3",
+        "declaration": {
+          "Sample_xyz": {
+            "A1": {
+              "class": "Application",
+              "serviceMain": {
+                "class": "Service_HTTP",
+                "pool": "web_pool",
+                "virtualAddresses": [
+                  "10.0.1.10"
+                ]
+              },
+              "template": "http",
+              "web_pool": {
+                "class": "Pool",
+                "members": [
+                  {
+                    "serverAddresses": [
+                      "192.0.1.10",
+                      "192.0.1.11"
+                    ],
+                    "servicePort": 80
+                  }
+                ],
+                "monitors": [
+                  "http"
+                ]
+              }
+            },
+            "class": "Tenant"
+          },
+          "class": "ADC",
+          "id": "urn:uuid:33045210-3ab8-4636-9b2a-c98d22ab915d",
+          "label": "Sample 1",
+          "remark": "Simple HTTP application with RR pool",
+          "schemaVersion": "3.0.0",
+          "controls": {
+            "class": "Controls",
+            "dryRun": false
+          }
+        },
+        "persist": true
+      }
+  ignore_errors: true
+  register: result
+
+- name: Assert expect error due to controls parameter conflict
+  assert:
+    that:
+      - result is failed
+      - >
+        "'Controls parameters provided in both, the AS3 declaration
+        and module parameters. Please provide the controls parameters
+        in only one place.' in result.msg"
 
 - name: Remove one tenant - AS3
   bigip_as3_deploy:
