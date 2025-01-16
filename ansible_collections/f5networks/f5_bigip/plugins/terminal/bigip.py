@@ -9,7 +9,6 @@ __metaclass__ = type
 import re
 
 from ansible.plugins.terminal import TerminalBase
-from ansible.errors import AnsibleConnectionFailure
 
 
 class TerminalModule(TerminalBase):
@@ -36,14 +35,10 @@ class TerminalModule(TerminalBase):
     ]
 
     def on_open_shell(self):
-        try:
-            self._exec_cli_command(b'modify cli preference display-threshold 0 pager disabled')
+        prompt = self._get_prompt()
+        if "tmos" in str(prompt):
             self._exec_cli_command(b'run /util bash -c "stty cols 1000000" 2> /dev/null')
-        except AnsibleConnectionFailure as ex:
-            output = str(ex)
-            if 'modify: command not found' in output:
-                try:
-                    self._exec_cli_command(b'tmsh modify cli preference display-threshold 0 pager disabled')
-                    self._exec_cli_command(b'stty cols 1000000 2> /dev/null')
-                except AnsibleConnectionFailure:
-                    raise AnsibleConnectionFailure('unable to set terminal parameters')
+            self._exec_cli_command(b'modify cli preference display-threshold 0 pager disabled')
+        else:
+            self._exec_cli_command(b'stty cols 1000000" 2> /dev/null')
+            self._exec_cli_command(b'tmsh modify cli preference display-threshold 0 pager disabled')
