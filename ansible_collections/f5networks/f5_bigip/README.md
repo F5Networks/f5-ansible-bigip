@@ -9,7 +9,7 @@ uploading security policies, uploading crts/keys, gathering info, etc.
 
 ## Requirements
 
- - ansible >= 2.14
+ - ansible >= 2.16
 
 ## Python Version
 Collection supported on Python 3.9 and above.
