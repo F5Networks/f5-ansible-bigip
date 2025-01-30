@@ -94,6 +94,7 @@
                     "serviceSpecific": {
                         "name": "ssloS_layer3a"
                     },
+                    "controlChannels": [],
                     "connectionInformation": {
                         "fromBigipNetwork": {
                             "name": "ssloN_layer3a_in",

@@ -93,6 +93,9 @@
                 "serviceSpecific":{
                     "name": "ssloS_layer3a"
                 },
+                "controlChannels": [],
+                "serviceEntrySSLProfile": "",
+                "serviceReturnSSLProfile": "",
                 "connectionInformation":{
                     "fromBigipNetwork":{
                         "name": "ssloN_layer3a_in",

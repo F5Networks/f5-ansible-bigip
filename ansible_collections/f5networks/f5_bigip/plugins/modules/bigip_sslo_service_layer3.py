@@ -92,6 +92,53 @@ options:
         description:
           - The port for this service.
         type: int
+  control_channels:
+    description:
+      - service control channel definition, enabling you to create service control channel pathways.
+      - service control channels allow device-initiated traffic to egress to the Internet.
+      - Control channels are introduced in SSL Orchestrator 11.1.x. please use this feature for SSL Orchestrator 11.1.x and later.
+      - When you deploy a service configuration with a service control channel, the required destination-side listener (a virtual server) is created,
+        and it is auto-bound to the destination-side VLAN of the service
+    type: list
+    elements: dict
+    version_added: "3.11.0"
+    suboptions:
+      source_ip:
+        description:
+          - Source IP and subnet mask - typically the outbound IP address of the inspection service(s)
+        type: str
+      destination_ip:
+        description:
+          - Destination IP and subnet mask - typically the discrete destination
+        type: str
+      protocol:
+        description:
+          - protocol options for the control channel - typically B(TCP) or B(UDP)
+        type: str
+      destination_port:
+        description:
+          - Destination port for the control channel
+        type: str
+      snat:
+        description:
+          - SNAT pool/SNAT settings - whether or not to apply SNAT to this outbound traffic
+        type: str
+      gateway_pool:
+        description:
+          - Gateway pool - the routed path for this outbound traffic.
+        type: str
+  service_entry_sslprofile:
+    description:
+        - Specifies the SSL profile used for the service entry.
+        - Introduced in SSL Orchestrator 11.1.x. Please use this feature for SSL Orchestrator 11.1.x and later.
+    type: str
+    version_added: "3.11.0"
+  service_return_sslprofile:
+    description:
+        - Specifies the SSL profile used for the service return.
+        - Introduced in SSL Orchestrator 11.1.x. Please use this feature for SSL Orchestrator 11.1.x and later.
+    type: str
+    version_added: "3.11.0"
   auto_manage:
     description:
       - Specifies whether to provide a set of unique, non-overlapping, non-routable
@@ -414,6 +461,9 @@ class Parameters(AnsibleF5Parameters):
         'devices_to',
         'devices_from',
         'devices',
+        'control_channels',
+        'service_entry_sslprofile',
+        'service_return_sslprofile',
         'ip_family',
         'monitor',
         'service_down_action',
@@ -429,6 +479,9 @@ class Parameters(AnsibleF5Parameters):
         'devices_to',
         'devices_from',
         'devices',
+        'control_channels',
+        'service_entry_sslprofile',
+        'service_return_sslprofile',
         'ip_family',
         'monitor',
         'service_down_action',
@@ -512,6 +565,18 @@ class ApiParameters(Parameters):
     @property
     def ip_family(self):
         return self._values['customService']['ipFamily']
+
+    @property
+    def service_entry_sslprofile(self):
+        return self._values['customService']['serviceEntrySSLProfile']
+
+    @property
+    def service_return_sslprofile(self):
+        return self._values['customService']['serviceReturnSSLProfile']
+
+    @property
+    def control_channels(self):
+        return self._values['customService']['controlChannels']
 
     @property
     def monitor(self):
@@ -663,6 +728,35 @@ class ModuleParameters(Parameters):
             result.append(tmp)
         if result:
             return result
+
+    @property
+    def control_channels(self):
+        result = list()
+        if self._values['control_channels'] is None:
+            return []
+        for control_channel in self._values['control_channels']:
+            tmp = dict()
+            tmp['sourceIP'] = control_channel['source_ip']
+            tmp['destinationIP'] = control_channel['destination_ip']
+            tmp['destinationPort'] = control_channel['destination_port']
+            tmp['gatewayPool'] = control_channel['gateway_pool']
+            tmp['protocol'] = control_channel['protocol']
+            tmp['snat'] = control_channel['snat']
+            result.append(tmp)
+        if result:
+            return result
+
+    @property
+    def service_entry_sslprofile(self):
+        if self._values['service_entry_sslprofile'] is None:
+            return ""
+        return self._values['service_entry_sslprofile']
+
+    @property
+    def service_return_sslprofile(self):
+        if self._values['service_return_sslprofile'] is None:
+            return ""
+        return self._values['service_return_sslprofile']
 
     @property
     def port_remap(self):
@@ -873,6 +967,10 @@ class Difference(object):
         return compare_complex_list(self.want.devices, self.have.devices)
 
     @property
+    def control_channels(self):
+        return compare_complex_list(self.want.control_channels, self.have.control_channels)
+
+    @property
     def rules(self):
         return compare_complex_list(self.want.rules, self.have.rules)
 
@@ -1041,6 +1139,8 @@ class ModuleManager(object):
             params['auto_manage'] = False
         if self.want.use_exist_selfip is None:
             params['use_exist_selfip'] = False
+        if self.changes.control_channels is None:
+            params['control_channels'] = []
         return params
 
     def add_missing_options(self, params):
@@ -1050,6 +1150,12 @@ class ModuleManager(object):
             params['devices_from'] = self.have.devices_from
         if self.changes.devices is None:
             params['devices'] = self.have.devices
+        if self.changes.control_channels is None:
+            params['control_channels'] = self.have.control_channels
+        if self.changes.service_entry_sslprofile is None:
+            params['service_entry_sslprofile'] = self.have.service_entry_sslprofile
+        if self.changes.service_return_sslprofile is None:
+            params['service_return_sslprofile'] = self.have.service_return_sslprofile
         if self.changes.ip_family is None:
             params['ip_family'] = self.have.ip_family
         if self.changes.monitor is None:
@@ -1277,6 +1383,20 @@ class ArgumentSpec(object):
                     port=dict(type='int')
                 )
             ),
+            control_channels=dict(
+                type='list',
+                elements='dict',
+                options=dict(
+                    source_ip=dict(),
+                    destination_ip=dict(),
+                    destination_port=dict(),
+                    protocol=dict(),
+                    gateway_pool=dict(),
+                    snat=dict()
+                )
+            ),
+            service_entry_sslprofile=dict(),
+            service_return_sslprofile=dict(),
             ip_family=dict(
                 choices=['ipv4', 'ipv6']
             ),

@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - bigip_sslo_config_policy - Fixed bug - Cannot modify SSLO Security Policy condition from UI created by bigip_sslo_config_policy module.

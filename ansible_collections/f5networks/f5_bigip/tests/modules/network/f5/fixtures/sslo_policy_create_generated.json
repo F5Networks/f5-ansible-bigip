@@ -187,6 +187,7 @@
                     "serviceSpecific": {
                         "name": "ssloS_layer3a"
                     },
+                    "controlChannels": [],
                     "serviceType": "L3",
                     "snatConfiguration": {
                         "clientSnat": "None",

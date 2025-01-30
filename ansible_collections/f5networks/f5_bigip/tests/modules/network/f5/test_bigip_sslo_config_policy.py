@@ -42,6 +42,14 @@ def load_fixture(name):
 
 
 class TestParameters(unittest.TestCase):
+    def setUp(self):
+        self.p1 = patch('time.time')
+        self.p1.start()
+        self.p1.return_value = 0
+
+    def tearDown(self):
+        self.p1.stop()
+
     def test_module_parameters(self):
         args = dict(
             name="testpolicy",
@@ -89,15 +97,14 @@ class TestParameters(unittest.TestCase):
                 ),
             ]
         )
-
         p = ModuleParameters(params=args)
-        assert p.policy_rules == [{'name': 'testrule', 'operation': 'OR', 'mode': 'edit', 'action': 'reject',
+        assert p.policy_rules == [{'index': 1, 'name': 'testrule', 'operation': 'OR', 'mode': 'edit', 'action': 'reject',
                                    'actionOptions': {'ssl': '', 'serviceChain': ''},
-                                   'conditions': [{'type': 'Category Lookup',
+                                   'conditions': [{'index': 11, 'type': 'Category Lookup',
                                                    'options': {'category': ['Financial Data and Services', 'General '
                                                                                                            'Email']}},
-                                                  {'type': 'Client Port Match', 'options': {'port': ['80', '90']}},
-                                                  {'type': 'Client IP Geolocation',
+                                                  {'index': 21, 'type': 'Client Port Match', 'options': {'port': ['80', '90']}},
+                                                  {'index': 31, 'type': 'Client IP Geolocation',
                                                    'options': {'geolocations': [
                                                        {'matchType': 'countryCode',
                                                         'value': 'US',
@@ -105,13 +112,13 @@ class TestParameters(unittest.TestCase):
                                                        {'matchType': 'countryCode',
                                                         'value': 'UK',
                                                         'valueType': 'staticValue'}]}}]},
-                                  {'name': 'testrule2', 'operation': 'AND', 'mode': 'edit', 'action': 'reject',
+                                  {'index': 41, 'name': 'testrule2', 'operation': 'AND', 'mode': 'edit', 'action': 'reject',
                                    'actionOptions': {'ssl': '', 'serviceChain': ''},
-                                   'conditions': [{'type': 'Category Lookup',
+                                   'conditions': [{'index': 51, 'type': 'Category Lookup',
                                                    'options': {
                                                        'category': ['Financial Data and Services', 'General Email']}}]},
-                                  {'name': 'All Traffic', 'action': 'block', 'mode': 'edit',
-                                   'actionOptions': {'ssl': 'intercept', 'serviceChain': 'ssloSC_foo_service'},
+                                  {'name': 'All Traffic', 'action': 'block', 'mode': 'edit', 'actionOptions': {'ssl': 'intercept',
+                                                                                                               'serviceChain': 'ssloSC_foo_service'},
                                    'isDefault': True}]
         assert p.default_rule_allow_block == 'block'
         assert p.default_rule_service_chain == 'ssloSC_foo_service'
@@ -207,7 +214,10 @@ class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
         self.p1 = patch('time.sleep')
+        self.p4 = patch('time.time')
         self.p1.start()
+        self.p4.start()
+        self.p4.return_value = 0
         self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_config_policy.F5Client')
         self.m2 = self.p2.start()
         self.m2.return_value = MagicMock()
@@ -219,6 +229,7 @@ class TestManager(unittest.TestCase):
         self.p1.stop()
         self.p2.stop()
         self.p3.stop()
+        self.p4.stop()
 
     def test_create_policy_service_object(self, *args):
         # Configure the arguments that would be sent to the Ansible module
@@ -301,21 +312,21 @@ class TestManager(unittest.TestCase):
                                                      'name': '/Common/ssloP_testpolicy.app'
                                                              '/ssloP_testpolicy_proxyChainPool'}}
 
-        assert results['policy_rules'] == [{'name': 'testrule', 'operation': 'OR', 'mode': 'edit', 'action': 'reject',
+        assert results['policy_rules'] == [{'index': 1, 'name': 'testrule', 'operation': 'OR', 'mode': 'edit', 'action': 'reject',
                                             'actionOptions': {'ssl': '', 'serviceChain': ''},
                                             'conditions':
-                                                [{'type': 'Category Lookup', 'options':
+                                                [{'index': 11, 'type': 'Category Lookup', 'options':
                                                     {'category': ['Financial Data and Services', 'General Email']}},
-                                                 {'type': 'Client Port Match', 'options': {'port': ['80', '90']}},
-                                                 {'type': 'Client IP Geolocation',
+                                                 {'index': 21, 'type': 'Client Port Match', 'options': {'port': ['80', '90']}},
+                                                 {'index': 31, 'type': 'Client IP Geolocation',
                                                   'options':
                                                       {'geolocations': [{'matchType': 'countryCode', 'value': 'US',
                                                                          'valueType': 'staticValue'},
                                                                         {'matchType': 'countryCode', 'value': 'UK',
                                                                          'valueType': 'staticValue'}]}}]},
-                                           {'name': 'testrule2', 'operation': 'AND', 'mode': 'edit', 'action': 'reject',
+                                           {'index': 41, 'name': 'testrule2', 'operation': 'AND', 'mode': 'edit', 'action': 'reject',
                                             'actionOptions': {'ssl': '', 'serviceChain': ''},
-                                            'conditions': [{'type': 'Category Lookup',
+                                            'conditions': [{'index': 51, 'type': 'Category Lookup',
                                                             'options': {
                                                                 'category': ['Financial Data and Services',
                                                                              'General Email']}}]},
@@ -382,23 +393,23 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['policy_rules'] == [{'name': 'testrule', 'operation': 'OR', 'mode': 'edit',
+        assert results['policy_rules'] == [{'index': 1, 'name': 'testrule', 'operation': 'OR', 'mode': 'edit',
                                             'action': 'reject',
                                             'actionOptions': {'ssl': '', 'serviceChain': ''},
                                             'conditions':
-                                                [{'type': 'Category Lookup', 'options':
+                                                [{'index': 11, 'type': 'Category Lookup', 'options':
                                                     {'category': ['Financial Data and Services', 'General Email']}},
-                                                 {'type': 'Client Port Match',
+                                                 {'index': 21, 'type': 'Client Port Match',
                                                   'options': {'port': ['80', '90']}},
-                                                 {'type': 'Client IP Geolocation',
+                                                 {'index': 31, 'type': 'Client IP Geolocation',
                                                   'options': {'geolocations': [
                                                       {'matchType': 'countryCode', 'value': 'US',
                                                        'valueType': 'staticValue'},
                                                       {'matchType': 'countryCode', 'value': 'UK',
                                                        'valueType': 'staticValue'}]}}]},
-                                           {'name': 'testrule2', 'operation': 'AND', 'mode': 'edit', 'action': 'reject',
+                                           {'index': 41, 'name': 'testrule2', 'operation': 'AND', 'mode': 'edit', 'action': 'reject',
                                             'actionOptions': {'ssl': '', 'serviceChain': ''},
-                                            'conditions': [{'type': 'Category Lookup',
+                                            'conditions': [{'index': 51, 'type': 'Category Lookup',
                                                             'options': {'category': ['Financial Data and Services',
                                                                                      'General Email']}}]},
                                            {'name': 'All Traffic', 'action': 'allow', 'mode': 'edit',

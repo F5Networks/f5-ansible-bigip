@@ -138,6 +138,9 @@ create_modify = """
                 "serviceSpecific":{
                     "name": "{{ params.deployment_name }}"
                 },
+                "serviceEntrySSLProfile": "{{ params.service_entry_sslprofile }}",
+                "serviceReturnSSLProfile": "{{ params.service_return_sslprofile }}",
+                "controlChannels": {{ params.control_channels | tojson }},
                 "connectionInformation":{
                     "toBigipNetwork":{
                         "name": {% if params.use_exist_selfip or params.devices_from.vlan is defined and params.auto_manage %}"fromNetwork"{% else %}

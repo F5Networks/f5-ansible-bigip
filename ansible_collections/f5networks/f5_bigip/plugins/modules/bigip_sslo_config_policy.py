@@ -720,8 +720,11 @@ class ModuleParameters(Parameters):
         if self._values['policy_rules'] is None:
             return []
         result = list()
+        init_time = int(time.time())
         for rule in self._values['policy_rules']:
             policy_rule = dict()
+            policy_rule['index'] = init_time
+            init_time = init_time + 10
             policy_rule['name'] = rule['name']
             policy_rule['operation'] = 'AND' if rule['match_type'] == 'match_all' else 'OR'
             policy_rule['mode'] = "edit"
@@ -754,6 +757,8 @@ class ModuleParameters(Parameters):
                     )
                 if cond['condition_type'] in category_list:
                     cla = dict()
+                    cla['index'] = init_time
+                    init_time = init_time + 10
                     cla['type'] = condition_type[cond['condition_type']]
                     r1 = list()
                     for opt in cond['condition_option_category']:
@@ -770,6 +775,8 @@ class ModuleParameters(Parameters):
 
                 if cond['condition_type'] in port_list:
                     cla = dict()
+                    cla['index'] = init_time
+                    init_time = init_time + 10
                     cla['type'] = condition_type[cond['condition_type']]
                     r1 = list()
                     if cond['condition_option_ports'] is not None:
@@ -794,6 +801,8 @@ class ModuleParameters(Parameters):
 
                 if cond['condition_type'] == "ssl_check":
                     cla = dict()
+                    cla['index'] = init_time
+                    init_time = init_time + 10
                     cla['type'] = condition_type[cond['condition_type']]
                     # r1 = list()
                     cla['options'] = {
@@ -803,6 +812,8 @@ class ModuleParameters(Parameters):
 
                 if cond['condition_type'] in subnet_list:
                     cla = dict()
+                    cla['index'] = init_time
+                    init_time = init_time + 10
                     cla['type'] = condition_type[cond['condition_type']]
                     r1 = list()
                     if float(self._values['sslo_version']) < 8:
@@ -828,6 +839,8 @@ class ModuleParameters(Parameters):
 
                 if cond['condition_type'] in protocol_list:
                     cla = dict()
+                    cla['index'] = init_time
+                    init_time = init_time + 10
                     condtype_list.append(cond['condition_type'])
                     if 'tcp_l7_protocol_lookup' in condtype_list and 'udp_l7_protocol_lookup' in condtype_list:
                         raise F5ModuleError("condition_types :{0} cant be specified together in single rule".format(condtype_list))
@@ -862,6 +875,8 @@ class ModuleParameters(Parameters):
 
                 if cond['condition_type'] in geolocation_list:
                     cla = dict()
+                    cla['index'] = init_time
+                    init_time = init_time + 10
                     cla['type'] = condition_type[cond['condition_type']]
                     r1 = list()
                     for opt in cond['geolocations']:

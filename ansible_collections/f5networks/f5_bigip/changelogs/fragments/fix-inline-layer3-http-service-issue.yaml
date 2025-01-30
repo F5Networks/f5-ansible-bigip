@@ -1,0 +1,4 @@
+---
+minor_changes:
+  - bigip_sslo_service_layer3 - Added support for Control channels and entry/return ssl profile
+  - bigip_sslo_service_http - Added support for Control channels and entry/return ssl profile

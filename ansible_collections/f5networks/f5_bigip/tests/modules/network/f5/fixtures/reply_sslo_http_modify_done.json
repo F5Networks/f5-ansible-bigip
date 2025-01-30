@@ -69,6 +69,7 @@
                                 "proxyType": "Transparent",
                                 "authOffload": true
                             },
+                            "controlChannels": [],
                             "connectionInformation": {
                                 "fromBigipNetwork": {
                                     "name": "ssloN_proxy1a_in",
