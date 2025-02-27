@@ -32,6 +32,9 @@ create_modify = """
                "ipFamily": "{{ params.ip_family }}",
                "ruleType": "{{ params.rule }}",
                "ruleLabel": "{{ params.rule }}",
+               "httpProfile": {% if params.topology == 'topology_l3_explicit_proxy' %}
+               "/Common/sslo_{{ params.deployment_name | replace('sslo_', '') }}.app/sslo_{{ params.deployment_name | replace('sslo_', '') }}-xp-http"
+               {% else %}""{% endif %},
                "dnsResolver": {% if params.dns_desolver is defined %}"{{ params.dns_desolver }}"{% else %}""{% endif %},
                "serviceDef": {
                    "description": "",

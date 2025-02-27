@@ -104,6 +104,7 @@
               "name": "ssloS_proxy1a",
               "portRemap": true,
               "serviceDownAction": "reset",
+              "iRuleList": [],
               "serviceSpecific": {
                 "authOffload": true,
                 "name": "ssloS_proxy1a",

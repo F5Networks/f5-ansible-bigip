@@ -30,6 +30,7 @@
                "ipFamily": "ipv4",
                "ruleType": "Outbound",
                "ruleLabel": "Outbound",
+               "httpProfile":"/Common/sslo_expl_topo.app/sslo_expl_topo-xp-http",
                "dnsResolver": "",
                "serviceDef": {
                    "description": "",

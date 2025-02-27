@@ -670,7 +670,7 @@ class ApiParameters(Parameters):
 
     @property
     def rules(self):
-        return self._values['iRuleList']
+        return self._values['customService']['iRuleList']
 
     @property
     def proxy_type(self):

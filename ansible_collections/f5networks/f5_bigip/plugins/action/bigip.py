@@ -19,6 +19,7 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
+import os
 import sys
 from ansible.module_utils._text import to_text
 from ansible.module_utils.connection import Connection
@@ -57,5 +58,30 @@ class ActionModule(ActionNetworkModule):
                 conn.send_command('exit')
                 out = conn.get_prompt()
 
+        use_proxy = task_vars["vars"]["ansible_httpapi_use_proxy"]
+        if use_proxy:
+            self.set_proxy_vars(task_vars.get("environment"))
+
         result = super(ActionModule, self).run(task_vars=task_vars)
         return result
+
+    def set_proxy_vars(self, env):
+        if not env:
+            return
+
+        proxy_vars = dict()
+
+        for i in env:
+            proxy_vars.update(i)
+
+        if 'https_proxy' in proxy_vars:
+            os.environ['https_proxy'] = proxy_vars['https_proxy']
+
+        if 'http_proxy' in proxy_vars:
+            os.environ['http_proxy'] = proxy_vars['http_proxy']
+
+        if 'HTTPS_PROXY' in proxy_vars:
+            os.environ['HTTPS_PROXY'] = proxy_vars['HTTPS_PROXY']
+
+        if 'HTTP_PROXY' in proxy_vars:
+            os.environ['HTTP_PROXY'] = proxy_vars['HTTP_PROXY']

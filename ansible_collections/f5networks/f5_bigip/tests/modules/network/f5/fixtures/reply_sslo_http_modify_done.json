@@ -158,6 +158,7 @@
                             "portRemap": true,
                             "httpPortRemapValue": 8080.0,
                             "serviceDownAction": "reset",
+                            "iRuleList": [],
                             "managedNetwork": {
                                 "serviceType": "http-proxy",
                                 "ipFamily": "ipv4",

@@ -115,7 +115,7 @@
                     "serviceReturnSSLProfile": "",    
                     "httpPortRemapValue": 80,
                     "serviceDownAction": "reset",
-                    "iRuleList": null,
+                    "iRuleList": [],
                     "managedNetwork": {
                         "serviceType": "http-proxy",
                         "ipFamily": "ipv4",

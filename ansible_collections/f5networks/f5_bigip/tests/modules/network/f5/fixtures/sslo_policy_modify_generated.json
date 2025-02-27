@@ -142,7 +142,7 @@
                         }
                     },
                     "httpPortRemapValue": 8081,
-                    "iRuleList": null,
+                    "iRuleList": [],
                     "initialIpFamily": "ipv4",
                     "ipFamily": "ipv4",
                     "isAutoManage": true,

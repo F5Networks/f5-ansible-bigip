@@ -4,6 +4,24 @@ F5Networks F5\_BIGIP Collection Release Notes
 
 .. contents:: Topics
 
+v3.11.0
+=======
+
+Minor Changes
+-------------
+
+- /action/bigip.py - Added support for proxy when specified in the playbook environment section
+- bigip_sslo_config_topology - Added support for httpProfile for L3 Explicit Proxy
+- bigip_sslo_service_http - Added support for Control channels and entry/return ssl profile
+- bigip_sslo_service_layer3 - Added support for Control channels and entry/return ssl profile
+
+Bugfixes
+--------
+
+- bigip_sslo_config_policy - Fixed bug - Cannot modify SSLO Security Policy condition from UI created by bigip_sslo_config_policy module.
+- bigip_sslo_service_layer2 - Fixed bug - Cannot Update SSLO Service with Interfaces only and Updated Doc
+- bigip_sslo_service_layer2 - Fixed bug - Cannot modify SSLO service Ratio.
+
 v3.10.1
 =======
 

@@ -30,6 +30,7 @@
                "ipFamily": "ipv4",
                "ruleType": "Inbound",
                "ruleLabel": "Inbound",
+               "httpProfile": "",
                "dnsResolver": "",
                "serviceDef": {
                    "description": "",

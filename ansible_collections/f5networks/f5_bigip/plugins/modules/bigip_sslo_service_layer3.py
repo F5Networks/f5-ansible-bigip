@@ -450,7 +450,7 @@ from ..module_utils.constants import (
 )
 from ..module_utils.compare import compare_complex_list, compare_dictionary
 from ..module_utils.sslo_templates.sslo_service_layer3 import (
-    create_modify, delete
+    create_modify, delete, modify_new
 )
 
 
@@ -614,7 +614,7 @@ class ApiParameters(Parameters):
 
     @property
     def rules(self):
-        return self._values['iRuleList']
+        return self._values['customService']['iRuleList']
 
     @property
     def auto_manage(self):
@@ -622,13 +622,13 @@ class ApiParameters(Parameters):
 
     @property
     def from_net_id(self):
-        block_id = self._values['customService']['connectionInformation']['fromBigipNetwork']['networkBlockId']
+        block_id = self._values['customService']['connectionInformation']['toBigipNetwork']['networkBlockId']
         if block_id:
             return block_id
 
     @property
     def to_net_id(self):
-        block_id = self._values['customService']['connectionInformation']['toBigipNetwork']['networkBlockId']
+        block_id = self._values['customService']['connectionInformation']['fromBigipNetwork']['networkBlockId']
         if block_id:
             return block_id
 
@@ -938,6 +938,13 @@ class Difference(object):
     def devices_to(self):
         want = self.want.devices_to
         have = self.have.devices_to
+        if 'interface' in want.keys():
+            want.pop('interface', None)
+            want.pop('tag', None)
+            want.pop('vlan', None)
+            have.pop('interface', None)
+            have.pop('tag', None)
+            have.pop('vlan', None)
         diff = compare_dictionary(want, have)
         if diff:
             if want['self_ip'] != have['self_ip'] or want['netmask'] != have['netmask']:
@@ -952,6 +959,13 @@ class Difference(object):
     def devices_from(self):
         want = self.want.devices_from
         have = self.have.devices_from
+        if 'interface' in want.keys():
+            want.pop('interface', None)
+            want.pop('tag', None)
+            want.pop('vlan', None)
+            have.pop('interface', None)
+            have.pop('tag', None)
+            have.pop('vlan', None)
         diff = compare_dictionary(want, have)
         if diff:
             if want['self_ip'] != have['self_ip'] or want['netmask'] != have['netmask']:
@@ -1245,7 +1259,7 @@ class ModuleManager(object):
         payload = self.changes.to_return()
         data = self.add_missing_options(self.add_json_metadata(payload))
 
-        output = process_json(data, create_modify)
+        output = process_json(data, modify_new)
 
         if self.want.dump_json:
             return None, output

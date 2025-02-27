@@ -84,7 +84,7 @@ We love hearing about how you're using the F5_BIGIP collection for Ansible.
 
 > **_NOTE:_** **This repository is a mirror, only issues submissions are accepted.**
 
-- Wojciech Wypior and the F5 team - solutionsfeedback@f5.com
+- Ansible collections development team at F5 - solutionsfeedback@f5.com
 
 ## Copyright
 

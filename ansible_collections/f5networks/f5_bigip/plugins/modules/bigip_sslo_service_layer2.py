@@ -129,7 +129,9 @@ options:
       - Specifies the vendor-specific L2 service used. The default is C(Generic Inline Layer 2).
     type: str
     version_added: "3.3.0"
-
+notes:
+  - From VLAN and TO VLAN Interface/Tag combinations must be unique.
+  - Either we can pass different Interfaces or same Interfaces with different Tags.
 author:
   - Wojciech Wypior (@wojtek0806)
   - Kevin Stewart (@kevingstewart)
@@ -262,7 +264,8 @@ class Parameters(AnsibleF5Parameters):
         'port_remap',
         'service_subnet',
         'rules',
-        'vendor_info'
+        'vendor_info',
+        'devices'
     ]
 
     updatables = [
@@ -273,7 +276,8 @@ class Parameters(AnsibleF5Parameters):
         'port_remap',
         # 'service_subnet',
         'rules',
-        'vendor_info'
+        'vendor_info',
+        'devices'
     ]
 
 
@@ -329,7 +333,8 @@ class ApiParameters(Parameters):
             element['name'] = network['name']
             element['path'] = network['vlan']['path']
             element['interface'] = network['vlan']['interface'][0]
-            element['tag'] = int(network['vlan']['tag'])
+            if 'vlan' in network and 'tag' in network['vlan']:
+                element['tag'] = int(network['vlan']['tag'])
             result.append(element)
         return result
 
@@ -393,14 +398,16 @@ class ModuleParameters(Parameters):
                 element['name'] = f"ssloN_{device['name']}_in"
                 element['path'] = f"/Common/ssloN_{device['name']}_in.app/ssloN_{device['name']}_in"
                 element['interface'] = device['interface_in']
-                element['tag'] = device.get('tag_in', None)
+                if device.get('tag_in', None):
+                    element['tag'] = device.get('tag_in', None)
                 result.append(element)
             if 'interface_out' in device.keys() and device['interface_out']:
                 element = dict()
                 element['name'] = f"ssloN_{device['name']}_out"
                 element['path'] = f"/Common/ssloN_{device['name']}_out.app/ssloN_{device['name']}_out"
                 element['interface'] = device['interface_out']
-                element['tag'] = device.get('tag_out', None)
+                if device.get('tag_out', None):
+                    element['tag'] = device.get('tag_out', None)
                 result.append(element)
         return result
 
@@ -415,12 +422,14 @@ class ModuleParameters(Parameters):
                 dev['from_vlan']['name'] = f"ssloN_{device['name']}_in"
                 dev['from_vlan']['path'] = f"/Common/ssloN_{device['name']}_in.app/ssloN_{device['name']}_in"
                 dev['from_vlan']['interface'] = device['interface_in']
-                dev['from_vlan']['tag'] = device.get('tag_in', None)
+                if device.get('tag_in', None):
+                    dev['from_vlan']['tag'] = device.get('tag_in', None)
             if 'interface_out' in device.keys() and device['interface_out']:
                 dev['to_vlan']['name'] = f"ssloN_{device['name']}_out"
                 dev['to_vlan']['path'] = f"/Common/ssloN_{device['name']}_out.app/ssloN_{device['name']}_out"
                 dev['to_vlan']['interface'] = device['interface_out']
-                dev['to_vlan']['tag'] = device.get('tag_out', None)
+                if device.get('tag_out', None):
+                    dev['to_vlan']['tag'] = device.get('tag_out', None)
             if 'vlan_in' in device.keys() and device['vlan_in']:
                 dev['from_vlan']['name'] = f"ssloN_{device['name']}_in"
                 dev['from_vlan']['path'] = device['vlan_in']
@@ -613,7 +622,12 @@ class Difference(object):
 
     @property
     def devices(self):
-        return compare_complex_list(self.want.devices, self.have.devices)
+        if len(self.want.devices) != len(self.have.devices_ips):
+            return self.want.devices
+        for wd, hd in zip(self.want.devices, self.have.devices_ips):
+            if wd['ratio'] != float(hd['ratio']):
+                return self.want.devices
+        return None
 
     @property
     def service_subnet(self):
@@ -659,6 +673,7 @@ class ModuleManager(object):
                     changed[k] = change
         if changed:
             changed['network_ids'] = self.have.network_ids
+            changed['devices_ips'] = self.want.devices_ips
             self.changes = UsableChanges(params=changed)
             return True
         return False
