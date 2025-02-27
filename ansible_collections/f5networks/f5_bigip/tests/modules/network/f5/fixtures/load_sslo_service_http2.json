@@ -115,6 +115,9 @@
                                 "name": "ssloS_proxy1a",
                                 "proxyType": "Transparent"
                             },
+                            "controlChannels": [],
+                            "serviceEntrySSLProfile": "",
+                            "serviceReturnSSLProfile": "",
                             "serviceType": "http-proxy",
                             "snatConfiguration": {
                                 "clientSnat": "SNAT",

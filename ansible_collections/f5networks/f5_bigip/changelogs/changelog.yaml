@@ -548,6 +548,30 @@ releases:
     release_date: '2025-01-16'
   3.10.1:
     release_date: '2025-01-20'
+  3.11.0:
+    changes:
+      bugfixes:
+      - bigip_sslo_config_policy - Fixed bug - Cannot modify SSLO Security Policy
+        condition from UI created by bigip_sslo_config_policy module.
+      - bigip_sslo_service_layer2 - Fixed bug - Cannot Update SSLO Service with Interfaces
+        only and Updated Doc
+      - bigip_sslo_service_layer2 - Fixed bug - Cannot modify SSLO service Ratio.
+      minor_changes:
+      - /action/bigip.py - Added support for proxy when specified in the playbook
+        environment section
+      - bigip_sslo_config_topology - Added support for httpProfile for L3 Explicit
+        Proxy
+      - bigip_sslo_service_http - Added support for Control channels and entry/return
+        ssl profile
+      - bigip_sslo_service_layer3 - Added support for Control channels and entry/return
+        ssl profile
+    fragments:
+    - added-httpProfile-explicit-proxt.yaml
+    - fix-inline-layer3-http-service-issue.yaml
+    - fix-update-policy-conditions-issue.yaml
+    - fix-update-sslo-service-ratio.yaml
+    - proxy-environment-support.yaml
+    release_date: '2025-02-27'
   3.2.1:
     changes:
       bugfixes:

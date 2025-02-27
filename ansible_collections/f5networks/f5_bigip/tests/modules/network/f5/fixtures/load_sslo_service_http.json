@@ -104,11 +104,15 @@
               "name": "ssloS_proxy1a",
               "portRemap": true,
               "serviceDownAction": "reset",
+              "iRuleList": [],
               "serviceSpecific": {
                 "authOffload": true,
                 "name": "ssloS_proxy1a",
                 "proxyType": "Transparent"
               },
+              "controlChannels": [],
+              "serviceEntrySSLProfile": "",
+              "serviceReturnSSLProfile": "",
               "serviceType": "http-proxy",
               "snatConfiguration": {
                 "clientSnat": "existingSNAT",
