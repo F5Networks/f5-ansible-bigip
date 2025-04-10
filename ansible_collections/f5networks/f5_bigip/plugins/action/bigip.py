@@ -58,8 +58,9 @@ class ActionModule(ActionNetworkModule):
                 conn.send_command('exit')
                 out = conn.get_prompt()
 
-        use_proxy = task_vars["vars"]["ansible_httpapi_use_proxy"]
-        if use_proxy:
+        play_vars = task_vars["vars"]
+        use_proxy = play_vars.get("ansible_httpapi_use_proxy")
+        if bool(use_proxy):
             self.set_proxy_vars(task_vars.get("environment"))
 
         result = super(ActionModule, self).run(task_vars=task_vars)
