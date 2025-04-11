@@ -572,6 +572,8 @@ releases:
     - fix-update-sslo-service-ratio.yaml
     - proxy-environment-support.yaml
     release_date: '2025-02-27'
+  3.12.0:
+    release_date: '2025-04-11'
   3.2.1:
     changes:
       bugfixes:
