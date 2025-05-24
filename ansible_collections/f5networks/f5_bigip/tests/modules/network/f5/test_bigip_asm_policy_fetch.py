@@ -52,7 +52,8 @@ class TestParameters(unittest.TestCase):
             base64='yes',
             dest='/tmp/foo.xml',
             force='yes',
-            file='foo.xml'
+            file='foo.xml',
+            format="json"
         )
         p = ModuleParameters(params=args)
 
@@ -60,13 +61,14 @@ class TestParameters(unittest.TestCase):
         self.assertTrue(p.base64)
         self.assertFalse(p.compact)
         self.assertEqual(p.file, 'foo.xml')
+        self.assertEqual(p.format, 'json')
 
     def test_module_params_alternate_values(self):
         args = dict(
             inline='no',
             compact='yes',
             base64='no',
-            binary=True
+            format="xml"
         )
 
         p = ModuleParameters(params=args)
@@ -74,13 +76,14 @@ class TestParameters(unittest.TestCase):
         self.assertTrue(p.compact)
         self.assertFalse(p.inline)
         self.assertFalse(p.base64)
+        self.assertEqual(p.format, 'xml')
 
     @patch.object(bigip_asm_policy_fetch.tempfile,
                   '_get_candidate_names',
                   Mock(return_value=iter(['tempfile', 'tempfile'])))
     def test_module_file_parameter(self):
-        args1 = dict(binary=True)
-        args2 = dict(binary=False)
+        args1 = dict(format="binary")
+        args2 = dict(format="xml")
 
         p1 = ModuleParameters(params=args1)
         p2 = ModuleParameters(params=args2)
@@ -98,15 +101,15 @@ class TestParameters(unittest.TestCase):
         self.assertEqual(p.fulldest, os.path.join(p.dest, p.file))
 
         with \
-             patch.object(bigip_asm_policy_fetch.os.path, 'isdir', Mock(return_value=False)), \
-             patch.object(bigip_asm_policy_fetch.os.path, 'exists', Mock(return_value=True)):
+                patch.object(bigip_asm_policy_fetch.os.path, 'isdir', Mock(return_value=False)), \
+                patch.object(bigip_asm_policy_fetch.os.path, 'exists', Mock(return_value=True)):
             self.assertEqual(p.fulldest, '/tmp/')
 
         with \
-             patch.object(bigip_asm_policy_fetch.os.path, 'isdir', Mock(return_value=False)), \
-             patch.object(bigip_asm_policy_fetch.os.path, 'exists', Mock(return_value=False)), \
-             patch.object(bigip_asm_policy_fetch.os, 'stat', Mock()), \
-             patch.object(bigip_asm_policy_fetch.os, 'access', Mock(side_effect=[True, False])):
+                patch.object(bigip_asm_policy_fetch.os.path, 'isdir', Mock(return_value=False)), \
+                patch.object(bigip_asm_policy_fetch.os.path, 'exists', Mock(return_value=False)), \
+                patch.object(bigip_asm_policy_fetch.os, 'stat', Mock()), \
+                patch.object(bigip_asm_policy_fetch.os, 'access', Mock(side_effect=[True, False])):
             self.assertEqual(p.fulldest, '/tmp/')
 
             with self.assertRaises(F5ModuleError) as err:
@@ -115,9 +118,9 @@ class TestParameters(unittest.TestCase):
             self.assertIn(f"Destination {os.path.dirname(p.dest)} not writable", err.exception.args[0])
 
         with \
-             patch.object(bigip_asm_policy_fetch.os.path, 'isdir', Mock(return_value=False)), \
-             patch.object(bigip_asm_policy_fetch.os.path, 'exists', Mock(return_value=False)), \
-             patch.object(bigip_asm_policy_fetch.os, 'stat', Mock(side_effect=[OSError('permission denied'), OSError()])):
+                patch.object(bigip_asm_policy_fetch.os.path, 'isdir', Mock(return_value=False)), \
+                patch.object(bigip_asm_policy_fetch.os.path, 'exists', Mock(return_value=False)), \
+                patch.object(bigip_asm_policy_fetch.os, 'stat', Mock(side_effect=[OSError('permission denied'), OSError()])):
 
             with self.assertRaises(F5ModuleError) as err1:
                 p.fulldest
@@ -167,6 +170,7 @@ class TestManager(unittest.TestCase):
     def test_module_provision_error(self, *args):
         set_module_args(dict(
             name='fake_policy',
+            format='json'
         ))
 
         module = AnsibleModule(
@@ -189,7 +193,8 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='fake_policy',
             dest='/tmp/',
-            force='no'
+            force='no',
+            format="xml"
         ))
 
         module = AnsibleModule(
@@ -214,6 +219,7 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='fake_policy',
             dest='/tmp/',
+            format='json'
         ))
 
         module = AnsibleModule(
@@ -238,6 +244,7 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='fake_policy',
             dest='/tmp/',
+            format='xml'
         ))
 
         module = AnsibleModule(
@@ -260,6 +267,7 @@ class TestManager(unittest.TestCase):
     def test_policy_exists_failure(self, *args):
         set_module_args(dict(
             name='fake_policy',
+            format='json'
         ))
 
         module = AnsibleModule(
@@ -295,7 +303,8 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name=name,
             file='foobar.xml',
-            dest='/tmp/foobar.xml'
+            dest='/tmp/foobar.xml',
+            format='xml'
         ))
 
         module = AnsibleModule(
@@ -321,7 +330,8 @@ class TestManager(unittest.TestCase):
     def test_create_on_device_failure(self, *args):
         set_module_args(dict(
             name='fake_policy',
-            dest='/tmp/'
+            dest='/tmp/',
+            format='json'
         ))
 
         module = AnsibleModule(
@@ -360,7 +370,8 @@ class TestManager(unittest.TestCase):
     def test_create_on_device_inline_file_name(self, *args):
         set_module_args(dict(
             name='fake_policy',
-            inline='yes'
+            inline='yes',
+            format='xml'
         ))
 
         module = AnsibleModule(
@@ -392,7 +403,8 @@ class TestManager(unittest.TestCase):
 
     def test_create_set_policy_link_error(self, *args):
         set_module_args(dict(
-            name='fake_policy'
+            name='fake_policy',
+            format='xml'
         ))
 
         module = AnsibleModule(
@@ -426,7 +438,7 @@ class TestManager(unittest.TestCase):
             name=name,
             file='foobar.xml',
             dest='/tmp/foobar.xml',
-            binary='yes'
+            format='binary'
         ))
 
         module = AnsibleModule(
@@ -452,7 +464,7 @@ class TestManager(unittest.TestCase):
     def test_export_binary_on_device_failures(self, *args):
         set_module_args(dict(
             name='fake_policy',
-            binary='yes'
+            format='binary'
         ))
 
         module = AnsibleModule(
@@ -480,7 +492,7 @@ class TestManager(unittest.TestCase):
     def test_stat_binary_on_device_failures(self, *args):
         set_module_args(dict(
             name='fake_policy',
-            binary='yes'
+            format="binary"
         ))
 
         module = AnsibleModule(
@@ -529,7 +541,7 @@ class TestManager(unittest.TestCase):
     def test_move_binary_failure(self, *args):
         set_module_args(dict(
             name='fake_policy',
-            binary='yes'
+            format="binary"
         ))
 
         module = AnsibleModule(
@@ -561,6 +573,7 @@ class TestManager(unittest.TestCase):
     def test_wait_for_task(self, *args):
         set_module_args(dict(
             name='fake_policy',
+            format="xml"
         ))
 
         module = AnsibleModule(
@@ -597,7 +610,8 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='fake_policy',
             file='foobar.xml',
-            dest='/tmp/foobar.xml'
+            dest='/tmp/foobar.xml',
+            format='json'
         ))
 
         with self.assertRaises(AnsibleExitJson) as result:
@@ -613,7 +627,8 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='fake_policy',
             file='foobar.xml',
-            dest='/tmp/foobar.xml'
+            dest='/tmp/foobar.xml',
+            format='xml'
         ))
 
         with self.assertRaises(AnsibleFailJson) as result:

@@ -39,6 +39,15 @@ options:
       - An AS3 tenant you want to manage.
       - A value of C(all) when C(state) is C(absent) removes all AS3 declarations from the device.
     type: str
+  as3_apps_delete:
+    description:
+      - A list of AS3 application names to be deleted from a tenant.
+      - This parameter is only relevant when I(state) is C(absent).
+      - When provided, only the specified applications will be removed from the tenant instead of the entire tenant.
+      - This parameter is ignored if I(tenant) is set to C(all).
+    type: list
+    elements: str
+    version_added: "3.13.0"
   timeout:
     description:
       - The amount of time to wait for the AS3 async interface to complete its task, in seconds.
@@ -99,12 +108,18 @@ notes:
     Per-Application deployments is supported from AS3 versions>=3.50.0
     Tenant parameter is mandatory for Per-Application Deployments
     More infotmation can be found here https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/per-app-declarations.html
+  - Applications must exist in the specified tenant for deletion to succeed.
+  - Each application will be deleted individually via a separate API call.
+  - If any application in the list doesn't exist, it will be skipped without causing an error.
+  - When using this parameter, the tenant itself will remain after the specified applications are deleted.
   - Regarding the controls parameter, in this document,
     https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/refguide/as3-api.html#query-parameters-for-controls-objects,
     it is mentioned that controls parameters specified in the url as query parameters will override the controls parameters specified in the declaration,
     but due to a bug that behaviour is not seen, so it is recommended that the user should specify controls options either in the module parameters or in
     the AS3 declaration. Note that using the controls parameter in this module uses url query parameters behind the scenes.
+
 author:
+  - Ravinder Reddy (@chinthalalalli)
   - Wojciech Wypior (@wojtek0806)
   - Prateek Ramani (@ramani)
 """
@@ -209,6 +224,15 @@ EXAMPLES = r"""
         }
       }
     tenant: sample
+
+- name: Deleting AS3 Application using as3_apps_delete
+  bigip_as3_deploy:
+    content: "{{ lookup('file', '<path_of_as3>/as3_2apps.json') }}"
+    tenant: "as3-tenant"
+    as3_apps_delete:
+      - A2
+      - A2
+    state: absent
 
 - name: Declaration with 2 Tenants with controls parameters - AS3
   bigip_as3_deploy:
@@ -393,6 +417,7 @@ class Parameters(AnsibleF5Parameters):
     returnables = [
         "content",
         "tenant",
+        "as3_apps_delete",
     ]
 
 
@@ -664,6 +689,16 @@ class ModuleManager(object):
         else:
             uri = "/mgmt/shared/appsvcs/declare"
 
+        if self.want.tenant != 'all' and self.want.as3_apps_delete is not None:
+            for app in self.want.as3_apps_delete:
+                uri = "/mgmt/shared/appsvcs/declare/{0}/applications/{1}".format(self.want.tenant, app)
+                response = self.client.get(uri)
+                if response['code'] in [200]:
+                    return True
+                if response['code'] in [404, 204]:
+                    pass
+            return False
+
         response = self.client.get(uri)
 
         if response['code'] == 404:
@@ -674,10 +709,17 @@ class ModuleManager(object):
 
     def remove_from_device(self):
         delay, period = self.want.timeout
-        if self.want.tenant == 'all':
-            uri = "/mgmt/shared/appsvcs/declare?async=true"
-        else:
+        uri = "/mgmt/shared/appsvcs/declare?async=true"
+        if self.want.tenant != 'all':
             uri = "/mgmt/shared/appsvcs/declare/{0}?async=true".format(self.want.tenant)
+            if self.want.as3_apps_delete is not None:
+                for app in self.want.as3_apps_delete:
+                    uri = "/mgmt/shared/appsvcs/declare/{0}/applications/{1}".format(self.want.tenant, app)
+                    response = self.client.delete(uri)
+                    if response['code'] not in [200, 201, 202, 204, 207, 500]:
+                        raise F5ModuleError("Failed to delete application '{0}' in tenant '{1}'. Response code: {2}, Message: {3}".format(app, self.want.tenant, response.get('code', 'N/A'), response.get('contents', 'No response content')))  # noqa: E501
+                    self.module.log("Application '{0}' successfully deleted.".format(app))
+                return True
 
         response = self.client.delete(uri)
 
@@ -727,6 +769,7 @@ class ArgumentSpec(object):
         argument_spec = dict(
             content=dict(type='raw'),
             tenant=dict(),
+            as3_apps_delete=dict(type="list", elements="str"),
             controls=dict(
                 type="dict",
                 options=dict(

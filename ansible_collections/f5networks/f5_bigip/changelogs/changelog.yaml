@@ -574,6 +574,14 @@ releases:
     release_date: '2025-02-27'
   3.12.0:
     release_date: '2025-04-11'
+  3.13.0:
+    changes:
+      minor_changes:
+      - bigip_as3_deploy - Added as3_apps_delete for deleting specified apps.
+      - bigip_device_info - Added as3_apps_filter for filtering Apps info from AS3.
+    fragments:
+    - device-info-as3-fix.yaml
+    release_date: '2025-05-24'
   3.2.1:
     changes:
       bugfixes:
