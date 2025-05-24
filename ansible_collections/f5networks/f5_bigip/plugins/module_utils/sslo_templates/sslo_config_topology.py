@@ -47,7 +47,8 @@ create_modify = """
                        "address": {% if params.dest is defined %}"{{ params.dest }}"{% else %}"0.0.0.0%0/0"{% endif %}
                    }
                },
-               "pool": {% if params.pool is defined %}"{{ params.pool }}"{% else %}""{% endif %},
+               "pool": {% if params.topology == 'topology_l3_inbound' and params.mode == "application" and params.pool is defined %}
+                    "{{ params.pool }}"{% else %}""{% endif %},
                "tlsEnabled": true,
                "iRules": [
                   {
@@ -123,11 +124,15 @@ create_modify = """
                      "ipv4Address": "",
                      "ipv4Port": 0,
                      "ipv6Address": "",
-                     "ipv6Port": 0
+                     "ipv6Port": 0,
+                     "mode": {% if params.topology == 'topology_l3_inbound' and params.mode is defined %}"{{ params.mode }}"{% else %}""{% endif %}
                   }
                },
                "advancedMode": "off",
-               "iRulesList": [],
+               "cpmPolicies": {% if params.topology == 'topology_l3_inbound' and params.mode == 'application' and params.cpm_policies is defined %}
+                      {{ params.cpm_policies | tojson }}{% else %}[]{% endif %},
+               "iRulesList": {% if params.topology == 'topology_l3_inbound' and params.irules_list is defined %}
+                      {{ params.irules_list | tojson }}{% else %}[]{% endif %},
                 "loggingConfig": {
                     "logPublisher": "none",
                     "statsToRecord": 0,

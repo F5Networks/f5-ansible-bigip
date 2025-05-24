@@ -35,20 +35,33 @@ options:
       - If C(true), the ASM policy will be exported C(inline) as a string instead of a file.
       - The policy can be be retrieved in the playbook C(result) dictionary under the C(inline_policy) key.
     type: bool
-  compact:
-    description:
-      - If C(true), only the ASM policy custom settings will be exported.
-      - Only applies to XML type ASM policy exports.
-    type: bool
   base64:
     description:
       - If C(true), the returned C(inline) ASM policy content will be Base64 encoded.
       - Only applies to C(inline) ASM policy exports.
     type: bool
-  binary:
+  format:
     description:
-      - If C(true), the exported ASM policy will be in binary format.
-      - Only applies to C(file) ASM policy exports.
+      - Defines the output format for the ASM policy to be exported.
+      - When C(json), the ASM policy will be in JSON format.
+      - When C(xml), the ASM policy will be in XML format.
+      - When C(binary), the ASM policy will be in binary format.
+      - When C(binary), inline export is not supported.
+    required: True
+    choices:
+      - json
+      - xml
+      - binary
+    type: str
+  compact:
+    description:
+      - If C(true), only the ASM policy custom settings will be exported.
+      - Only applies to XML and JSON type ASM policy exports.
+    type: bool
+  learning_suggestions:
+    description:
+      - If C(true), JSON ASM policy with suggestions will be exported.
+      - Only applies to JSON type ASM policy exports.
     type: bool
   force:
     description:
@@ -70,19 +83,21 @@ EXAMPLES = r'''
     name: foobar
     file: export_foo
     dest: /root/download
-    binary: true
+    format: binary
 
 - name: Export policy inline base64 encoded format
   bigip_asm_policy_fetch:
     name: foobar
     inline: true
     base64: true
+    format: xml
 
 - name: Export policy in XML format
   bigip_asm_policy_fetch:
     name: foobar
     file: export_foo
     dest: /root/download
+    format: xml
 
 - name: Export compact policy in XML format
   bigip_asm_policy_fetch:
@@ -90,12 +105,21 @@ EXAMPLES = r'''
     file: export_foo.xml
     dest: /root/download/
     compact: true
+    format: xml
 
 - name: Export policy in binary format, autogenerate name
   bigip_asm_policy_fetch:
     name: foobar
     dest: /root/download/
-    binary: true
+    format: binary
+
+- name: Export policy in JSON compact format with learning suggestions, autogenerate name
+  bigip_asm_policy_fetch:
+    name: foobar
+    dest: /root/download/
+    format: json
+    compact: true
+    learning_suggestions: true
 '''
 
 RETURN = r'''
@@ -161,6 +185,7 @@ class Parameters(AnsibleF5Parameters):
         'filename': 'file',
         'minimal': 'compact',
         'isBase64': 'base64',
+        'exportSuggestions': 'learning_suggestions',
     }
 
     api_attributes = [
@@ -169,6 +194,8 @@ class Parameters(AnsibleF5Parameters):
         'isBase64',
         'policyReference',
         'filename',
+        'format',
+        'exportSuggestions',
     ]
 
     returnables = [
@@ -181,6 +208,8 @@ class Parameters(AnsibleF5Parameters):
         'dest',
         'name',
         'inline_policy',
+        'learning_suggestions',
+        'format'
     ]
 
     updatables = [
@@ -197,10 +226,14 @@ class ModuleParameters(Parameters):
     def file(self):
         if self._values['file'] is not None:
             return self._values['file']
-        if self.binary:
+        if self.format == 'binary':
             result = next(tempfile._get_candidate_names()) + '.plc'
-        else:
+        elif self.format == 'xml':
             result = next(tempfile._get_candidate_names()) + '.xml'
+        elif self.format == 'json':
+            result = next(tempfile._get_candidate_names()) + '.json'
+        else:
+            raise F5ModuleError("File format not supported.")
         self._values['file'] = result
         return result
 
@@ -245,6 +278,14 @@ class ModuleParameters(Parameters):
     @property
     def compact(self):
         result = flatten_boolean(self._values['compact'])
+        if result == 'yes':
+            return True
+        elif result == 'no':
+            return False
+
+    @property
+    def learning_suggestions(self):
+        result = flatten_boolean(self._values['learning_suggestions'])
         if result == 'yes':
             return True
         elif result == 'no':
@@ -322,6 +363,15 @@ class ModuleManager(object):
         return result
 
     def export(self):
+        if self.want.compact is True and self.want.format not in ['json', 'xml']:
+            raise F5ModuleError(
+                "Compact only applies to JSON and XML type ASM policy exports."
+            )
+        if self.want.learning_suggestions is True and self.want.format != 'json':
+            raise F5ModuleError(
+                "Learning Suggestions only applies to JSON type ASM policy exports."
+            )
+
         if self.exists():
             return self.update()
         else:
@@ -335,10 +385,11 @@ class ModuleManager(object):
         self.create()
 
     def create(self):
+
         self._set_changed_options()
         if self.module.check_mode:  # pragma: no cover
             return True
-        if self.want.binary:
+        if self.want.format == "binary":
             self.export_binary()
             return True
         self.create_on_device()
@@ -348,7 +399,8 @@ class ModuleManager(object):
 
     def export_binary(self):
         self.export_binary_on_device()
-        self.execute()
+        if not self.want.inline:
+            self.execute()
         return True
 
     def download(self):
@@ -567,9 +619,12 @@ class ArgumentSpec(object):
             base64=dict(
                 type='bool'
             ),
-            binary=dict(
-                type='bool'
+            format=dict(
+                choices=['json', 'xml', 'binary'],
+                type='str',
+                required=True
             ),
+            learning_suggestions=dict(type='bool'),
             force=dict(
                 default='yes',
                 type='bool'
@@ -582,8 +637,6 @@ class ArgumentSpec(object):
         self.argument_spec = {}
         self.argument_spec.update(argument_spec)
         self.mutually_exclusive = [
-            ['binary', 'inline'],
-            ['binary', 'compact'],
             ['dest', 'inline'],
             ['file', 'inline']
         ]

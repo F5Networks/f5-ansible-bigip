@@ -62,12 +62,14 @@ options:
       - Defines the destination address filter and optional route domain for the topology listener.
       - The address must be specified in CIDR notation, with subnet mask not exceeding 32 bits.
       - When creating a new topology object, if dest is not specified, a value of C(0.0.0.0%0/0) is assumed.
+      - Wildcard C(0.0.0.0%0/0) is supported in case of C(Gateway) mode, in C(Application) mode unique IP/mask should be given.
     type: str
   port:
     description:
       - Defines the port filter for the topology listener.
       - When creating a new topology object, if port is not specified, a value of C(0) is assumed.
       - Valid value range is from C(0) to C(65535).
+      - Port 0 is assumed in C(Gateway) mode, in C(Application) mode unique Port should be given.
     type: int
   snat:
     description:
@@ -207,6 +209,7 @@ options:
     description:
       - Enables TCP Verify Accept proxy through an outbound topology.
       - This parameter is available in SSLO version 9.0 and later.
+      - This parameter is there for Topology Mode C(Gateway).
     type: bool
   ocsp_auth:
     description:
@@ -239,6 +242,7 @@ options:
   pool:
     description:
       - Defines a server pool to use in an application mode inbound topology.
+      - This parameter makes sense when C(topology_type) is C(inbound_l3) with C(Application) mode.
     type: str
   logging:
     description:
@@ -348,6 +352,28 @@ options:
       - The accepted value range is between C(10) and C(1800) seconds.
     type: int
     default: 300
+  mode:
+    description:
+      - Specifies the Topology Mode.
+      - This parameter is required when C(topology_type) is C(inbound_l3).
+      - Default mode will be asssumed as C(application) in case C(topology_type) is C(inbound_l3).
+    type: str
+    choices:
+      - application
+      - gateway
+  irules_list:
+    description:
+      - Defines a list of irules to attach with the topology.
+      - iRules help automate the intercepting, processing, and routing of application traffic.
+      - This parameter makes sense when C(topology_type) is C(inbound_l3).
+    type: list
+    elements: str
+  cpm_policies:
+    description:
+      - Specify the LTM policy you want to be associated with the interception rule.
+      - This parameter makes sense when C(topology_type) is C(inbound_l3) with C(Application) mode.
+    type: list
+    elements: str
   state:
     description:
       - When C(state) is C(present), ensures the object is created or modified.
@@ -373,6 +399,37 @@ EXAMPLES = r'''
     ssl_settings: "foobar"
     vlans:
       - "/Common/fake1"
+
+- name: Create SSLO Topology attaching Server Pool
+  bigip_sslo_config_topology:
+    name: "my_sslo_in_app"
+    topology_type: "inbound_l3"
+    dest: "10.1.10.120/32"
+    port: 443
+    vlans:
+      - "/Common/client-vlan"
+    snat: "automap"
+    pool: "/Common/web-https-pool"
+    profile_scope: "public"
+    security_policy: "my_policy_inbound"
+
+- name: Create SSLO Topology attaching Gateway Pool
+  bigip_sslo_config_topology:
+    name: "l3_in_gateway"
+    topology_type: "inbound_l3"
+    gateway: pool
+    gateway_pool: "test"
+    vlans:
+      - "/Common/test_vlan_l2"
+
+- name: Create SSLO Topology attaching SNAT Pool
+  bigip_sslo_config_topology:
+    name: "l3_in_snat"
+    topology_type: "inbound_l3"
+    snat: snatpool
+    snat_pool: "test_snat"
+    vlans:
+      - "/Common/test_vlan"
 
 - name: Delete SSLO Topology
   bigip_sslo_topology:
@@ -458,7 +515,10 @@ class Parameters(AnsibleF5Parameters):
         'logging',
         'ssl_settings',
         'security_policy',
-        'verify_accept'
+        'mode',
+        'verify_accept',
+        'cpm_policies',
+        'irules_list'
     ]
 
     updatables = [
@@ -493,7 +553,10 @@ class Parameters(AnsibleF5Parameters):
         'logging',
         'ssl_settings',
         'security_policy',
-        'verify_accept'
+        'mode',
+        'verify_accept',
+        'cpm_policies',
+        'irules_list'
     ]
 
 
@@ -564,6 +627,18 @@ class ApiParameters(Parameters):
     @property
     def vlans(self):
         return self._values['ingressNetwork']['vlans']
+
+    @property
+    def mode(self):
+        return self._values['proxySettings']['reverseProxy']['mode']
+
+    @property
+    def cpm_policies(self):
+        return self._values['cpmPolicies']
+
+    @property
+    def irules_list(self):
+        return self._values['iRulesList']
 
     @property
     def protocol(self):
@@ -798,6 +873,34 @@ class ModuleParameters(Parameters):
             element = dict()
             element['name'] = vlan
             element['value'] = vlan
+            result.append(element)
+        return result
+
+    @property
+    def mode(self):
+        return self._values['mode']
+
+    @property
+    def cpm_policies(self):
+        if self._values['cpm_policies'] is None:
+            return None
+        result = list()
+        for policy in self._values['cpm_policies']:
+            element = dict()
+            element['name'] = policy
+            element['value'] = policy
+            result.append(element)
+        return result
+
+    @property
+    def irules_list(self):
+        if self._values['irules_list'] is None:
+            return None
+        result = list()
+        for irule in self._values['irules_list']:
+            element = dict()
+            element['name'] = irule
+            element['value'] = irule
             result.append(element)
         return result
 
@@ -1090,6 +1193,14 @@ class Difference(object):
         return compare_complex_list(self.want.vlans, self.have.vlans)
 
     @property
+    def irules_list(self):
+        return compare_complex_list(self.want.irules_list, self.have.irules_list)
+
+    @property
+    def cpm_policies(self):
+        return compare_complex_list(self.want.cpm_policies, self.have.cpm_policies)
+
+    @property
     def additional_protocols(self):
         return compare_complex_list(self.want.additional_protocols, self.have.additional_protocols)
 
@@ -1365,6 +1476,15 @@ class ModuleManager(object):
                 raise F5ModuleError(
                     "The 'security_policy' is required when creating explicit proxy type topology."
                 )
+        if params['topology'] == 'topology_l3_inbound' and params['mode'] == "application":
+            if params['dest'] == '0.0.0.0%0/0' or params['port'] == 0:
+                raise F5ModuleError(
+                    "The dest/port cannot be wilcard in case of Application Mode Inbound."
+                )
+            if params.get('verify_accept') or params.get('verify_accept') is True:
+                raise F5ModuleError(
+                    "The verify_accept parameter is not supported in case of Application Mode Inbound."
+                )
         if params['topology'] != 'topology_l3_explicit_proxy':
             if params.get('proxy_ip'):
                 raise F5ModuleError(
@@ -1384,6 +1504,9 @@ class ModuleManager(object):
         if self.want.topology == 'topology_l3_explicit_proxy':
             if self.want.proxy_port is None:
                 params['port'] = 0
+        if self.want.topology == 'topology_l3_inbound':
+            if self.want.mode is None:
+                params['mode'] = "application"
         if self.want.topology in ['topology_l2_inbound', 'topology_l3_inbound']:
             if self.want.tcp_settings_client is None:
                 params['tcp_settings_client'] = '/Common/f5-tcp-wan'
@@ -1522,9 +1645,7 @@ class ModuleManager(object):
         payload = self.changes.to_return()
         data = self.add_create_values(self.add_json_metadata(payload))
         self.validate_parameters(data)
-
         output = process_json(data, create_modify)
-
         if self.want.dump_json:
             return None, output
 
@@ -1541,7 +1662,6 @@ class ModuleManager(object):
         payload = self.changes.to_return()
         data = self.add_missing_options(self.add_json_metadata(payload))
         output = process_json(data, create_modify)
-
         if self.want.dump_json:
             return None, output
 
@@ -1708,6 +1828,17 @@ class ArgumentSpec(object):
             state=dict(
                 default='present',
                 choices=['absent', 'present']
+            ),
+            cpm_policies=dict(
+                type='list',
+                elements='str',
+            ),
+            irules_list=dict(
+                type='list',
+                elements='str',
+            ),
+            mode=dict(
+                choices=['application', 'gateway']
             ),
             timeout=dict(
                 type='int',

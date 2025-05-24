@@ -959,10 +959,16 @@ class TestGtmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = GtmSrvPoolsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_gtm_srv_pools.json')),
-            dict(code=200, contents={})
-        ])
+
+        # Create a function for side_effect to handle multiple calls
+        def side_effect(uri):
+            if '&$skip=0&' in uri:
+                return dict(code=200, contents=load_fixture('load_gtm_srv_pools.json'))
+            else:
+                # Return empty response for subsequent pagination calls
+                return dict(code=200, contents={'items': []})
+
+        tm.client.get = Mock(side_effect=side_effect)
         mm.get_manager = Mock(return_value=tm)
 
         results = mm.exec_module()
@@ -970,6 +976,58 @@ class TestGtmManagers(unittest.TestCase):
         self.assertTrue(results['queried'])
         self.assertTrue(len(results['gtm_srv_pools']) == 1)
         self.assertTrue(results['gtm_srv_pools'][0]['full_path'] == '/Common/fake_srv_pool')
+
+    # def test_get_gtm_srv_pool_facts(self, *args):
+    #     set_module_args(dict(
+    #         gather_subset=['gtm-srv-pools']
+    #     ))
+
+    #     module = AnsibleModule(
+    #         argument_spec=self.spec.argument_spec,
+    #         supports_check_mode=self.spec.supports_check_mode
+    #     )
+    #     # Override methods to force specific logic in the module to happen
+    #     mm = ModuleManager(module=module)
+    #     tm = GtmSrvPoolsFactManager(module=module, client=MagicMock())
+    #     # Add more mock responses to handle all API calls
+    #     tm.client.get = Mock(side_effect=[
+    #         dict(code=200, contents=load_fixture('load_gtm_srv_pools.json')),
+    #         dict(code=200, contents={}),
+    #         dict(code=200, contents={}),  # Add additional mock responses as needed
+    #         dict(code=200, contents={})   # Add more if required
+    #     ])
+    #     mm.get_manager = Mock(return_value=tm)
+
+    #     results = mm.exec_module()
+
+    #     self.assertTrue(results['queried'])
+    #     self.assertTrue(len(results['gtm_srv_pools']) == 1)
+    #     self.assertTrue(results['gtm_srv_pools'][0]['full_path'] == '/Common/fake_srv_pool')
+
+    # def test_get_gtm_srv_pool_facts(self, *args):
+    #     set_module_args(dict(
+    #         gather_subset=['gtm-srv-pools']
+    #     ))
+
+    #     module = AnsibleModule(
+    #         argument_spec=self.spec.argument_spec,
+    #         supports_check_mode=self.spec.supports_check_mode
+    #     )
+
+    #     # Override methods to force specific logic in the module to happen
+    #     mm = ModuleManager(module=module)
+    #     tm = GtmSrvPoolsFactManager(module=module, client=MagicMock())
+    #     tm.client.get = Mock(side_effect=[
+    #         dict(code=200, contents=load_fixture('load_gtm_srv_pools.json')),
+    #         dict(code=200, contents={})
+    #     ])
+    #     mm.get_manager = Mock(return_value=tm)
+
+    #     results = mm.exec_module()
+
+    #     self.assertTrue(results['queried'])
+    #     self.assertTrue(len(results['gtm_srv_pools']) == 1)
+    #     self.assertTrue(results['gtm_srv_pools'][0]['full_path'] == '/Common/fake_srv_pool')
 
     def test_get_gtm_srv_pool_facts_raises(self, *args):
         set_module_args(dict(
@@ -991,6 +1049,37 @@ class TestGtmManagers(unittest.TestCase):
             mm.exec_module()
 
         self.assertIn('not found', err.exception.args[0])
+
+    def test_get_gtm_server_facts(self, *args):
+        set_module_args(dict(
+            gather_subset=['gtm-servers']
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(module=module)
+        tm = GtmServersFactManager(module=module, client=MagicMock())
+
+        # Create a function for side_effect to handle multiple calls
+        def side_effect(uri):
+            if '/mgmt/tm/gtm/server' in uri and '&$skip=0&' in uri:
+                return dict(code=200, contents=load_fixture('load_gtm_servers.json'))
+            else:
+                # Return empty response for subsequent pagination calls
+                return dict(code=200, contents={'items': []})
+
+        tm.client.get = Mock(side_effect=side_effect)
+        mm.get_manager = Mock(return_value=tm)
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['queried'])
+        self.assertTrue(len(results['gtm_servers']) > 0)
+        # Add any other assertions you need
 
     def test_get_gtm_servers_facts(self, *args):
         set_module_args(dict(

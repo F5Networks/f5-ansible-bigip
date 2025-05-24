@@ -23,6 +23,14 @@ options:
     type: str
     default: Common
     version_added: "1.5.0"
+  as3_apps_filter:
+    description:
+      - Filters AS3 applications within the specified tenant.
+        By providing a list of specific application names, the module will limit the scope of the gathered data to the specified applications only.
+      - This argument allows targeted querying and processing of AS3 application configurations rather than retrieving all applications.
+    type: list
+    elements: str
+    version_added: "3.13.0"
   data_increment:
     description:
       - Specifies the paging increment at which device data is gathered from the API.
@@ -203,7 +211,11 @@ options:
       - "!vlans"
     aliases: ['include']
 author:
+  - Ravinder Reddy (@chinthalapalli)
   - Wojciech Wypior (@wojtek0806)
+notes:
+  - C(as3_apps_filter) requires if C(gather_subset) to include C(as3).
+  - If C(as3_apps_filter) not provided, all applications within the specified tenant will be retrieved.
 '''
 
 EXAMPLES = r'''
@@ -223,9 +235,37 @@ EXAMPLES = r'''
     gather_subset:
       - all
       - "!trunks"
+
+- name: Collect AS3 information for all applications in tenant "example-tenant"
+  bigip_device_info:
+    gather_subset:
+      - as3
+    partition: example-tenant
+
+- name: Collect AS3 applications A1 and A2 from tenant "example-tenant"
+  bigip_device_info:
+    gather_subset:
+      - as3
+    partition: example-tenant
+    as3_apps_filter:
+      - A1
+      - A2
 '''
 
 RETURN = r'''
+as3_config:
+  description:
+    Contains AS3 (Application Services 3) configuration details retrieved from the BIG-IP system.
+    Includes information about tenants, applications, services, pools, monitors, and associated settings.
+  returned:
+    When C(as3) is specified in C(gather_subset) of the Ansible module.
+  type: complex
+  contains:
+    declaration:
+      description:
+        - AS3 Declaration returned from BIG-IP.
+      type: str
+      returned: queried
 apm_access_profiles:
   description: Information about APM Access profiles.
   returned: When C(apm-access-profiles) is specified in C(gather_subset).
@@ -7810,7 +7850,7 @@ class As3FactManager(BaseManager):
     def __init__(self, *args, **kwargs):
         self.client = kwargs.get('client', None)
         self.module = kwargs.get('module', None)
-        self.installed_packages = packages_installed(self.client)
+        self.as3_packages = packages_installed(self.client)
         super(As3FactManager, self).__init__(**kwargs)
 
     def exec_module(self):
@@ -7819,7 +7859,7 @@ class As3FactManager(BaseManager):
         return result
 
     def _exec_module(self):
-        if 'as3' not in self.installed_packages:
+        if 'as3' not in self.as3_packages:
             return None
         facts = self.read_facts()
         return facts
@@ -7830,6 +7870,22 @@ class As3FactManager(BaseManager):
 
     def read_collection_from_device(self):
         uri = "/mgmt/shared/appsvcs/declare"
+        if self.module.params['partition'] != "Common":
+            uri = f"/mgmt/shared/appsvcs/declare/{self.module.params['partition']}"
+        as3_apps_filter = self.module.params['as3_apps_filter']
+        if as3_apps_filter is not None:
+            as3_app_info = dict()
+            for app in as3_apps_filter:
+                urinew = f"{uri}/applications/{app}"
+                response = self.client.get(urinew)
+                if response['code'] == 204:
+                    return None
+                if response['code'] not in [200, 201, 404]:
+                    raise F5ModuleError(response['contents'])
+                if response['contents'].get(app):
+                    as3_app_info[app] = response['contents'].get(app)
+            return [as3_app_info]
+
         response = self.client.get(uri)
 
         if response['code'] == 204:
@@ -17443,11 +17499,11 @@ class ModuleManager(object):
         self.want.update({'gather_subset': managers})
 
     def handle_packages_keyword(self):
-        if 'packages' not in self.want.gather_subset:
-            return
+        # if 'packages' not in self.want.gather_subset:
+        #     return
         managers = ['as3', 'do', 'cfe', 'ts']
         managers += self.want.gather_subset
-        managers.remove('packages')
+        # managers.remove('packages')
         self.want.update({'gather_subset': managers})
 
     def execute_managers(self, managers):
@@ -17481,6 +17537,10 @@ class ArgumentSpec(object):
                 default='Common',
                 type='str',
                 fallback=(env_fallback, ['F5_PARTITION'])
+            ),
+            as3_apps_filter=dict(
+                type='list',
+                elements='str'
             ),
             data_increment=dict(
                 type='int',

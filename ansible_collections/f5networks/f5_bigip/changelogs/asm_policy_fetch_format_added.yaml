@@ -1,0 +1,3 @@
+---
+breaking_changes:
+  - bigip_asm_policy_fetch - Added "Format" parameter replacing "Binary" parameter. Binary parameter is deprecated and will be removed in a future version.

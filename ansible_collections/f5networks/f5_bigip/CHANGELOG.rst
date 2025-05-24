@@ -4,6 +4,15 @@ F5Networks F5\_BIGIP Collection Release Notes
 
 .. contents:: Topics
 
+v3.13.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_as3_deploy - Added as3_apps_delete for deleting specified apps.
+- bigip_device_info - Added as3_apps_filter for filtering Apps info from AS3.
+
 v3.12.0
 =======
 
