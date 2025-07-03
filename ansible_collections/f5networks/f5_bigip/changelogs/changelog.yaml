@@ -582,6 +582,20 @@ releases:
     fragments:
     - device-info-as3-fix.yaml
     release_date: '2025-05-24'
+  3.14.0:
+    changes:
+      breaking_changes:
+      - bigip_sslo_config_topology - Added Multi SNI support for SSLO Topology (made
+        ssl_settings as a list parameter)
+      minor_changes:
+      - bigip_awaf_policy - Added Support to Import policy with learning suggestions
+      - bigip_do_deploy - Handle Declaration submitted with async mode
+      - bigip_do_deploy - Handle Declaration submitted with no async mode
+    fragments:
+    - added_import_learning_suggestiosn.yaml
+    - added_multi_sni_support.yaml
+    - bigip-do-module-fixes.yaml
+    release_date: '2025-07-03'
   3.2.1:
     changes:
       bugfixes:

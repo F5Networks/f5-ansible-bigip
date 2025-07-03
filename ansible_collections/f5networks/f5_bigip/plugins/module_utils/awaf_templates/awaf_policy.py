@@ -56,6 +56,9 @@ create_modify = """
       "websocket-urls": {{ params.websock_urls | tojson }},{% endif %}{% if params.xml_profiles is defined %}
       "xml-profiles": {{ params.xml_profiles | tojson }},{% endif %}
       "type": "{{ params.type }}"
-   }
+   },
+   {% if params.modifications is defined %}
+      "modifications" : {{ params.modifications | tojson }}
+   {% endif %}
 }
 """

@@ -108,10 +108,12 @@
                      "ipv4Address": "",
                      "ipv4Port": 0,
                      "ipv6Address": "",
-                     "ipv6Port": 0
+                     "ipv6Port": 0,
+                     "mode": ""
                   }
                },
                "advancedMode": "off",
+               "cpmPolicies": [],
                "iRulesList": [],
                 "loggingConfig": {
                     "logPublisher": "none",

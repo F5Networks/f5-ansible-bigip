@@ -213,6 +213,12 @@ options:
       - Device partition to manage resources on.
     type: str
     default: Common
+  learning_suggestions:
+    description:
+      - Specifies whether Policy is to be imported with learning suggestions.
+      - This makes sense when used with policy_in_json.
+    type: bool
+    default: False
   state:
     description:
       - When C(present), ensures the security WAF policy is created/modified.
@@ -411,7 +417,7 @@ from ansible.module_utils.connection import Connection
 from ansible.module_utils.six import (
     string_types, iteritems
 )
-
+import re
 from ..module_utils.client import (
     F5Client, send_teem
 )
@@ -1070,6 +1076,18 @@ class ModuleManager(object):
             else:
                 data = self.add_create_defaults(params)
 
+        # add modifications if learning suggestion is true
+        if (self.want.learning_suggestions is True):
+            in_json = str(self.want.policy_in_json)
+            in_json = in_json.replace("'", '"')
+            in_json = re.sub(r'\bTrue\b', 'true', in_json)
+            in_json = re.sub(r'\bFalse\b', 'false', in_json)
+            in_json = re.sub(r'\bNone\b', 'null', in_json)
+            template = json.loads(in_json)
+
+            if 'modifications' in template:
+                data['modifications'] = template['modifications']
+
         output = process_json(data, create_modify, raw=True)
         return output
 
@@ -1429,6 +1447,10 @@ class ArgumentSpec(object):
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
             ),
+            learning_suggestions=dict(
+                type='bool',
+                default=False
+            ),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
@@ -1444,7 +1466,7 @@ class ArgumentSpec(object):
         )
         self.argument_spec = {}
         self.argument_spec.update(argument_spec)
-        self.required_if = [['force', 'yes', ['policy_in_json']]]
+        self.required_if = [['learning_suggestions', True, ['policy_in_json']], ['force', 'yes', ['policy_in_json']]]
         self.required_one_of = [['name', 'policy_id']]
         self.mutually_exclusive = [
             ['apply_policy', 'dump_json'],

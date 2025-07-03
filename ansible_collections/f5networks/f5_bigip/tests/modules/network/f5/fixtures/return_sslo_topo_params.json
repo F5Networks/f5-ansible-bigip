@@ -128,7 +128,7 @@
         "sslOrchestrator": "err"
     },
     "authProfile": "",
-    "sslSettingReference": "ssloT_for_testing",
+    "sslSettingReference": ["ssloT_for_testing"],
     "securityPolicyReference": "",
     "accessProfile": "",
     "deployMode": "Topology",

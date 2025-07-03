@@ -4,6 +4,21 @@ F5Networks F5\_BIGIP Collection Release Notes
 
 .. contents:: Topics
 
+v3.14.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_awaf_policy - Added Support to Import policy with learning suggestions
+- bigip_do_deploy - Handle Declaration submitted with async mode
+- bigip_do_deploy - Handle Declaration submitted with no async mode
+
+Breaking Changes / Porting Guide
+--------------------------------
+
+- bigip_sslo_config_topology - Added Multi SNI support for SSLO Topology (made ssl_settings as a list parameter)
+
 v3.13.0
 =======
 

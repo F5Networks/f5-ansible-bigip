@@ -126,13 +126,11 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(module=module)
 
         # Override methods to force specific logic in the module to happen
-        mm.client.post.return_value = {'code': 200, 'contents': {'id': uuid}}
+        mm.client.post.return_value = {'code': 200, 'contents': {'id': uuid, 'result': {'code': 200, 'message': 'success'}}}
 
         results = mm.exec_module()
-
         self.assertTrue(results['changed'])
         self.assertEqual(results['task_id'], uuid)
-        self.assertEqual(results['message'], "DO async task started with id: {0}".format(uuid))
 
     def test_check_declaration_task_status(self, *args):
         uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
