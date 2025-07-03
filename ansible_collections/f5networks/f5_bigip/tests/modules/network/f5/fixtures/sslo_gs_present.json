@@ -118,7 +118,7 @@
             "configurationProcessorReference": {
                 "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-general-settings"
             },
-            "configProcessorTimeoutSeconds": 30,
+            "configProcessorTimeoutSeconds": 120,
             "statsProcessorTimeoutSeconds": 15,
             "configProcessorAffinity": {
                 "processorPolicy": "LOCAL",

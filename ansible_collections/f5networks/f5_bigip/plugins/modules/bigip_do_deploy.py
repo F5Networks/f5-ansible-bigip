@@ -267,6 +267,12 @@ class ModuleManager(object):
         if self.want.task_id:
             return self.query_task()
         task = self.upsert_on_device()
+        if isinstance(task, dict) and task.get('message') == 'success':
+            self.changes.update({'task_id': task.get('task_id')})
+            self.changes.update({'content': self.want.content})
+            self.changes.update({'message': 'Declaration submitted successfully.'})
+            return True
+        self.changes.update({'content': self.want.content})
         self.changes.update({'task_id': task})
         self.changes.update({'message': 'DO async task started with id: {0}'.format(task)})
         return True
@@ -328,6 +334,8 @@ class ModuleManager(object):
 
         if response['code'] not in [200, 201, 202, 204, 207]:
             raise F5ModuleError(response['contents'])
+        if response['contents']['result']['code'] == 200 and response['contents']['result']['message'] == 'success':
+            return {'task_id': response['contents']['id'], 'message': 'success'}
         return response['contents']['id']
 
     def query_task(self):
@@ -335,6 +343,7 @@ class ModuleManager(object):
         task = self.wait_for_task(self.want.task_id, delay, period)
         if task:
             if 'message' in task['result'] and task['result']['message'] == 'success':
+                self.changes.update({'message': "DO declaration applied successfully."})
                 return True
         return False
 
@@ -372,7 +381,7 @@ class ModuleManager(object):
                     self.check_task_exists_on_device(task)
                     code, response = self._check_task_on_device(task)
             if code in [200, 201, 202]:
-                if response['result']['status'] != 'RUNNING':
+                if response['result']['status'] not in ['RUNNING', 'ROLLING_BACK']:
                     return response
             time.sleep(delay)
         raise F5ModuleError(

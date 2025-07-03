@@ -329,9 +329,12 @@ options:
           - debug
   ssl_settings:
     description:
-      - Defines the name of the SSL settings object already created.
+      - Defines the names of the SSL settings object already created.
       - Configuration auto-prepends "ssloT_" to provided name if not present.
-    type: str
+      - The Server Names associated with SSL config must be unique.
+      - If multiple are present one (and only one) must be set as sniDefault (true).
+    type: list
+    elements: str
   security_policy:
     description:
       - Defines the name of the security policy object already created.
@@ -396,7 +399,8 @@ EXAMPLES = r'''
     dest: "192.168.1.4%0/32"
     port: 8080
     ip_family: "ipv4"
-    ssl_settings: "foobar"
+    ssl_settings:
+      - "foobar"
     vlans:
       - "/Common/fake1"
 
@@ -430,6 +434,25 @@ EXAMPLES = r'''
     snat_pool: "test_snat"
     vlans:
       - "/Common/test_vlan"
+
+- name: Create SSLO Topology with Application Mode, passing cpm_policies, irules_list and multi ssl settings
+  bigip_sslo_config_topology:
+    name: "my_sslo_in_app"
+    topology_type: "inbound_l3"
+    mode: "application"
+    dest: "10.1.10.120/32"
+    port: 443
+    vlans:
+      - "/Common/test-vlan"
+    pool: "/Common/tp1"
+    cpm_policies:
+      - "/Common/test"
+      - "/Common/test2"
+    irules_list:
+      - "/Common/sslo_l3_topo_exp.app/sslo_l3_topo_exp-gw_in_t"
+    ssl_settings:
+      - "foobar"
+      - "foobar2"
 
 - name: Delete SSLO Topology
   bigip_sslo_topology:
@@ -630,7 +653,8 @@ class ApiParameters(Parameters):
 
     @property
     def mode(self):
-        return self._values['proxySettings']['reverseProxy']['mode']
+        return (self._values.get('proxySettings', {}).get('reverseProxy', {}).get('mode') or ""
+                )
 
     @property
     def cpm_policies(self):
@@ -1013,10 +1037,15 @@ class ModuleParameters(Parameters):
 
     @property
     def ssl_settings(self):
-        name = self._values['ssl_settings']
-        if not name.startswith('ssloT_'):
-            name = "ssloT_" + name
-        return name
+        if self._values['ssl_settings'] is None:
+            return None
+        names = []
+        for name in self._values['ssl_settings']:
+            if not name.startswith('ssloT_'):
+                names.append("ssloT_" + name)
+            else:
+                names.append(name)
+        return names
 
     @property
     def security_policy(self):
@@ -1823,7 +1852,10 @@ class ArgumentSpec(object):
                     smtps=dict(choices=self.logging),
                 )
             ),
-            ssl_settings=dict(),
+            ssl_settings=dict(
+                type='list',
+                elements='str'
+            ),
             security_policy=dict(),
             state=dict(
                 default='present',

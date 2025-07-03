@@ -7884,7 +7884,7 @@ class As3FactManager(BaseManager):
                     raise F5ModuleError(response['contents'])
                 if response['contents'].get(app):
                     as3_app_info[app] = response['contents'].get(app)
-            return [as3_app_info]
+            return as3_app_info
 
         response = self.client.get(uri)
 
@@ -7895,7 +7895,7 @@ class As3FactManager(BaseManager):
             raise F5ModuleError(response['contents'])
 
         if response['contents'].get('class'):
-            return [dict(declaration=response['contents'])]
+            return dict(declaration=response['contents'])
 
 
 class AsmPolicyStatsParameters(BaseParameters):

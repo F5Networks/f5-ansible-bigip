@@ -30,7 +30,6 @@
                "ipFamily": "ipv4",
                "ruleType": "Inbound",
                "ruleLabel": "Inbound",
-               "httpProfile": "",
                "dnsResolver": "",
                "serviceDef": {
                    "description": "",
@@ -38,7 +37,7 @@
                    "protocol": "tcp",
                    "destination": {
                        "mask": "",
-                       "port": 0,
+                       "port": 443,
                        "prefix": 0,
                        "address": "192.168.1.5%0/32"
                    }
@@ -101,12 +100,12 @@
                      "ipv4Port": 0,
                      "ipv6Address": "",
                      "ipv6Port": 0,
-                     "mode":"gateway"
+                     "mode":"application"
                   }
                },
                "advancedMode": "off",
-               "cpmPolicies" : [],
-               "iRulesList": [],
+               "cpmPolicies" : [{"name": "/Common/test", "value": "/Common/test"}, {"name": "/Common/test2", "value": "/Common/test2"}],
+               "iRulesList": [{"name": "/Common/sslo_l3_topo_exp.app/sslo_l3_topo_exp-gw_in_t", "value": "/Common/sslo_l3_topo_exp.app/sslo_l3_topo_exp-gw_in_t"}],
                 "loggingConfig": {
                     "logPublisher": "none",
                     "statsToRecord": 0,
@@ -118,7 +117,7 @@
                     "sslOrchestrator": "err"
                },
                "authProfile": "",
-               "sslSettingReference": "['ssloT_foobar']",
+               "sslSettingReference": "['ssloT_foobar', 'ssloT_foobar2']",
                "securityPolicyReference": "",
                "accessProfile": ""
            }

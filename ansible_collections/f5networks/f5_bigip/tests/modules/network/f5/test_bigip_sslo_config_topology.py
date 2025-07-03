@@ -78,7 +78,7 @@ class TestParameters(unittest.TestCase):
             logging=dict(
                 sslo='critical', per_request_policy='warning', ftp='information', pop3='notice', smtps='alert'
             ),
-            ssl_settings='ssl_fake',
+            ssl_settings=['ssl_fake'],
             security_policy='policy_fake'
         )
 
@@ -121,7 +121,7 @@ class TestParameters(unittest.TestCase):
         assert p.logging == {
             'sslo': 'crit', 'per_request_policy': 'warn', 'ftp': 'info', 'pop3': 'notice', 'smtps': 'alert'
         }
-        assert p.ssl_settings == 'ssloT_ssl_fake'
+        assert p.ssl_settings == ['ssloT_ssl_fake']
         assert p.security_policy == 'ssloP_policy_fake'
 
     def test_returned_proxy_type_and_dep_net(self):
@@ -244,7 +244,7 @@ class TestParameters(unittest.TestCase):
         assert p.snat == 'SNAT'
         assert p.snat_list == [{'ip': '172.16.1.1'}, {'ip': '172.16.1.2'}]
         assert p.source == '0.0.0.0%0/0'
-        assert p.ssl_settings == 'ssloT_for_testing'
+        assert p.ssl_settings == ['ssloT_for_testing']
         assert p.tcp_settings_client == '/Common/f5-tcp-lan'
         assert p.tcp_settings_server == '/Common/f5-tcp-wan'
         assert p.topology == 'topology_l3_outbound'
@@ -280,7 +280,7 @@ class TestManager(unittest.TestCase):
             dest='192.168.1.2%0/32',
             port=0,
             topology_type='outbound_l2',
-            ssl_settings='foobar',
+            ssl_settings=['foobar'],
             vlans=['/Common/fake1'],
             dump_json=True
         ))
@@ -313,7 +313,7 @@ class TestManager(unittest.TestCase):
             dest='192.168.1.3%0/32',
             port=0,
             topology_type='inbound_l2',
-            ssl_settings='foobar',
+            ssl_settings=['foobar'],
             vlans=['/Common/fake1'],
             dump_json=True
         ))
@@ -346,7 +346,7 @@ class TestManager(unittest.TestCase):
             dest='192.168.1.4%0/32',
             port=0,
             topology_type='outbound_l3',
-            ssl_settings='foobar',
+            ssl_settings=['foobar'],
             vlans=['/Common/fake1'],
             dump_json=True
         ))
@@ -367,7 +367,6 @@ class TestManager(unittest.TestCase):
         )
 
         results = mm.exec_module()
-
         assert results['changed'] is False
         assert results['json'] == expected
 
@@ -379,9 +378,45 @@ class TestManager(unittest.TestCase):
             dest='192.168.1.5%0/32',
             port=0,
             topology_type='inbound_l3',
-            ssl_settings='foobar',
+            ssl_settings=['foobar'],
             vlans=['/Common/fake1'],
-            dump_json=True
+            dump_json=True,
+            mode='gateway'
+        ))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_together=self.spec.required_together,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+        mm.client.get = Mock(return_value=dict(
+            code=200, contents=load_fixture('sslo_gs_present.json'))
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        assert results['json'] == expected
+
+    def test_create_l3_in_topology_application_multi_sni_dump_json(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        expected = load_fixture('sslo_l3_in_topo_application_multi_sni.json')
+        set_module_args(dict(
+            name='l3_topo_in',
+            dest='192.168.1.5%0/32',
+            port=443,
+            topology_type='inbound_l3',
+            ssl_settings=['foobar', 'foobar2'],
+            vlans=['/Common/fake1'],
+            dump_json=True,
+            mode='application',
+            cpm_policies=["/Common/test", "/Common/test2"],
+            irules_list=["/Common/sslo_l3_topo_exp.app/sslo_l3_topo_exp-gw_in_t"]
         ))
 
         module = AnsibleModule(
@@ -413,7 +448,7 @@ class TestManager(unittest.TestCase):
             proxy_ip='192.168.1.1',
             proxy_port=3211,
             security_policy='from_gui',
-            ssl_settings='foobar',
+            ssl_settings=['foobar'],
             vlans=['/Common/fake1'],
             dump_json=True
         ))
@@ -473,7 +508,7 @@ class TestManager(unittest.TestCase):
             dest='192.168.1.3%0/32',
             port=0,
             topology_type='inbound_l2',
-            ssl_settings='foobar',
+            ssl_settings=['foobar'],
             vlans=['/Common/fake1']
         ))
 
@@ -506,7 +541,7 @@ class TestManager(unittest.TestCase):
         assert results['dest'] == '192.168.1.3%0/32'
         assert results['port'] == 0
         assert results['vlans'] == ['/Common/fake1']
-        assert results['ssl_settings'] == 'ssloT_foobar'
+        assert results['ssl_settings'] == ['ssloT_foobar']
 
     def test_create_l3_out_topology_object(self, *args):
         # Configure the arguments that would be sent to the Ansible module
@@ -515,7 +550,7 @@ class TestManager(unittest.TestCase):
             dest='192.168.1.4%0/32',
             port=0,
             topology_type='outbound_l3',
-            ssl_settings='foobar',
+            ssl_settings=['foobar'],
             vlans=['/Common/fake1']
         ))
 
@@ -547,7 +582,7 @@ class TestManager(unittest.TestCase):
         assert results['dest'] == '192.168.1.4%0/32'
         assert results['port'] == 0
         assert results['vlans'] == ['/Common/fake1']
-        assert results['ssl_settings'] == 'ssloT_foobar'
+        assert results['ssl_settings'] == ['ssloT_foobar']
 
     def test_create_l3_in_topology_object(self, *args):
         # Configure the arguments that would be sent to the Ansible module
@@ -556,8 +591,9 @@ class TestManager(unittest.TestCase):
             dest='192.168.1.5%0/32',
             port=0,
             topology_type='inbound_l3',
-            ssl_settings='foobar',
-            vlans=['/Common/fake1']
+            ssl_settings=['foobar'],
+            vlans=['/Common/fake1'],
+            mode='gateway'
         ))
 
         module = AnsibleModule(
@@ -588,7 +624,7 @@ class TestManager(unittest.TestCase):
         assert results['dest'] == '192.168.1.5%0/32'
         assert results['port'] == 0
         assert results['vlans'] == ['/Common/fake1']
-        assert results['ssl_settings'] == 'ssloT_foobar'
+        assert results['ssl_settings'] == ['ssloT_foobar']
 
     def test_create_expl_out_topology_object(self, *args):
         # Configure the arguments that would be sent to the Ansible module
@@ -598,7 +634,7 @@ class TestManager(unittest.TestCase):
             proxy_ip='192.168.1.1',
             proxy_port=3211,
             security_policy='from_gui',
-            ssl_settings='foobar',
+            ssl_settings=['foobar'],
             vlans=['/Common/fake1']
         ))
 
@@ -631,14 +667,15 @@ class TestManager(unittest.TestCase):
         assert results['proxy_ip'] == '192.168.1.1'
         assert results['proxy_port'] == 3211
         assert results['vlans'] == ['/Common/fake1']
-        assert results['ssl_settings'] == 'ssloT_foobar'
+        assert results['ssl_settings'] == ['ssloT_foobar']
         assert results['security_policy'] == 'ssloP_from_gui'
 
     def test_vlans_parameter_missing(self, *args):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
             name='l2_topo_out',
-            topology_type='inbound_l2'
+            topology_type='inbound_l2',
+            mode='gateway'
         ))
 
         module = AnsibleModule(
@@ -864,7 +901,7 @@ class TestManager(unittest.TestCase):
             topology_type='outbound_l3',
             vlans=['/Common/fake'],
             protocol='udp',
-            ssl_settings='foobar'
+            ssl_settings=['foobar']
         ))
 
         module = AnsibleModule(
@@ -893,7 +930,7 @@ class TestManager(unittest.TestCase):
             topology_type='outbound_l3',
             vlans=['/Common/fake'],
             protocol='other',
-            ssl_settings='foobar'
+            ssl_settings=['foobar']
         ))
 
         module = AnsibleModule(
@@ -1036,7 +1073,7 @@ class TestManager(unittest.TestCase):
             topology_type='outbound_l2',
             vlans=['/Common/fake'],
             protocol='udp',
-            ssl_settings='foobar'
+            ssl_settings=['foobar']
         ))
 
         module = AnsibleModule(
@@ -1065,7 +1102,7 @@ class TestManager(unittest.TestCase):
             topology_type='outbound_l2',
             vlans=['/Common/fake'],
             protocol='other',
-            ssl_settings='foobar'
+            ssl_settings=['foobar']
         ))
 
         module = AnsibleModule(
@@ -1235,7 +1272,7 @@ class TestManager(unittest.TestCase):
             topology_type='outbound_l2',
             proxy_ip='191.1.1.1',
             proxy_port=1234,
-            ssl_settings='fakesettings',
+            ssl_settings=['fakesettings'],
             vlans=['/Common/fake']
         ))
 

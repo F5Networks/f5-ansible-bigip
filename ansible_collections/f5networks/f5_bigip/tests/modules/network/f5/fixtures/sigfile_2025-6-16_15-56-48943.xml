@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<signatures export_version="17.1.1" >
+<sig id="300000000">
+  <rev num="4">
+    <sig_name>test</sig_name>
+    <rule>content:"NA"; nocase;</rule>
+    <last_update>2025-06-13 02:11:08</last_update>
+    <apply_to>Request</apply_to>
+    <risk>1</risk>
+    <accuracy>1</accuracy>
+    <doc></doc>
+    <attack_type>Abuse of Functionality</attack_type>
+  </rev>
+</sig>
+</signatures>
