@@ -1,6 +1,6 @@
 authors:
+  - Ravinder Reddy (@chinthalapalli)
   - Wojciech Wypior (@wojtek0806)
-  - Rohit Upadhyay (@urohit011)
 dependencies:
   ansible.netcommon: ">=2.0.0"
 description: F5 BIG-IP Declarative Collection for Ansible
@@ -23,6 +23,7 @@ build_ignore:
   - tests/utils
   - tests/*.ini
   - tests/*.py
+  - changelogs/*
 repository: https://github.com/F5Networks/f5-ansible-bigip
 tags:
   - f5
