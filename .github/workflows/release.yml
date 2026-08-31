@@ -35,8 +35,3 @@ jobs:
           collection_dir: 'ansible_collections/f5networks/${{ vars.COLNAME }}'
           api_key: "${{ secrets.GALAXY_API_KEY }}"
           build: false
-
-      - uses: neonidian/teams-notify-build-status@v3
-        with:
-          webhookUrl: ${{ secrets.RELEASE_TEAMS_WEBHOOK }}
-          message: "Collection ${{ vars.COLNAME }} version: ${{ github.ref_name }} released."
