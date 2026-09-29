@@ -198,7 +198,7 @@ from ansible.module_utils.basic import (
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
-    F5Client, sslo_version
+    F5Client, sslo_version, check_sslo_provisioned
 )
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, process_json
@@ -444,6 +444,7 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
+        check_sslo_provisioned(self.client)
         self.check_sslo_version()
 
         if state == 'present':

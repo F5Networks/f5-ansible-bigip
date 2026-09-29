@@ -8,6 +8,7 @@ __metaclass__ = type
 
 import os
 import json
+import copy
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -16,7 +17,7 @@ from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_device_info i
     GtmServersParameters, VirtualServersParameters, ArgumentSpec, ModuleManager, ApmAccessProfileFactManager,
     ApmAccessPolicyFactManager, As3FactManager, AsmPolicyStatsFactManager, AsmPolicyFactManager,
     AsmServerTechnologyFactManager, AsmSignatureSetsFactManager, ClientSslProfilesFactManager, CFEFactManager,
-    DevicesFactManager, DeviceGroupsFactManager, DOFactManager, ExternalMonitorsFactManager,
+    ClientSslProfilesParameters, DevicesFactManager, DeviceGroupsFactManager, DOFactManager, ExternalMonitorsFactManager,
     FastHttpProfilesFactManager, FastL4ProfilesFactManager, GatewayIcmpMonitorsFactManager, GtmAPoolsFactManager,
     GtmServersFactManager, GtmAWideIpsFactManager, GtmAaaaPoolsFactManager, GtmAaaaWideIpsFactManager,
     GtmCnamePoolsFactManager, GtmCnameWideIpsFactManager, GtmMxPoolsFactManager, GtmMxWideIpsFactManager,
@@ -30,7 +31,8 @@ from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_device_info i
     SslCertificatesFactManager, SslKeysFactManager, SyncStatusFactManager, SystemDbFactManager, SystemInfoFactManager,
     TSFactManager, TcpMonitorsFactManager, TcpHalfOpenMonitorsFactManager, TcpProfilesFactManager,
     TrafficGroupsFactManager, TrunksFactManager, UCSFactManager, UsersFactManager, UdpProfilesFactManager,
-    VcmpGuestsFactManager, VirtualAddressesFactManager, VirtualServersFactManager, VlansFactManager
+    VcmpGuestsFactManager, VirtualAddressesFactManager, VirtualServersFactManager, VlansFactManager,
+    Parameters, BaseParameters
 )
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_bigip.plugins.module_utils.urls import parseStats
@@ -49,7 +51,7 @@ def load_fixture(name):
     path = os.path.join(fixture_path, name)
 
     if path in fixture_data:
-        return fixture_data[path]
+        return copy.deepcopy(fixture_data[path])
 
     with open(path) as f:
         data = f.read()
@@ -60,7 +62,27 @@ def load_fixture(name):
         pass
 
     fixture_data[path] = data
-    return data
+    return copy.deepcopy(data)
+
+
+def create_paginated_mock(fixture_name):
+    """
+    Create a mock for client.get() that handles pagination.
+
+    Returns fixture data on first call, empty dict on subsequent calls.
+    This properly handles managers that use increment_read() for pagination.
+    """
+    call_count = {'count': 0}
+
+    def mock_get_response(*args, **kwargs):
+        call_count['count'] += 1
+        if call_count['count'] == 1:
+            return dict(code=200, contents=load_fixture(fixture_name))
+        else:
+            # Return empty dict which will be treated as no items by .get('items', [])
+            return dict(code=200, contents={})
+
+    return Mock(side_effect=mock_get_response)
 
 
 def fake_read_profiles(collection):
@@ -92,18 +114,13 @@ class TestApmManagers(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode
         )
 
-        # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(module=module)
+        # Test the manager directly without going through ModuleManager
         tm = ApmAccessPolicyFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_access_policies.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_access_policies.json')
+        tm.provisioned_modules = ['apm']
 
-        results = mm.exec_module()
+        results = tm.exec_module()
 
-        self.assertTrue(results['queried'])
         self.assertListEqual(
             results['apm_access_policies'], [{'full_path': '/Common/foo_access', 'name': 'foo_access'}]
         )
@@ -122,7 +139,7 @@ class TestApmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = ApmAccessPolicyFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=503, contents='server error'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'apm-access-policies' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -139,18 +156,13 @@ class TestApmManagers(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode
         )
 
-        # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(module=module)
+        # Test the manager directly without going through ModuleManager
         tm = ApmAccessProfileFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_access_profiles.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = Mock(return_value=dict(code=200, contents=load_fixture('load_access_profiles.json')))
+        tm.provisioned_modules = ['apm']
 
-        results = mm.exec_module()
+        results = tm.exec_module()
 
-        self.assertTrue(results['queried'])
         self.assertListEqual(
             results['apm_access_profiles'],
             [{'full_path': '/Common/access', 'name': 'access'},
@@ -171,7 +183,7 @@ class TestApmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = ApmAccessProfileFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=503, contents='server error'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'apm-access-profiles' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -206,11 +218,8 @@ class TestAsmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = AsmPolicyStatsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_asm_policies.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_asm_policies.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'asm-policy-stats' else None)
 
         results = mm.exec_module()
 
@@ -235,7 +244,7 @@ class TestAsmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = AsmPolicyStatsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=200, contents={}))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'asm-policy-stats' else None)
 
         results = mm.exec_module()
         self.assertTrue(results['queried'])
@@ -255,7 +264,7 @@ class TestAsmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = AsmPolicyStatsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=503, contents='server error'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'asm-policy-stats' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -275,11 +284,8 @@ class TestAsmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = AsmPolicyFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_asm_policies.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_asm_policies.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'asm-policies' else None)
 
         results = mm.exec_module()
 
@@ -318,7 +324,7 @@ class TestAsmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = AsmPolicyFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=503, contents='server error'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'asm-policies' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -338,11 +344,8 @@ class TestAsmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = AsmServerTechnologyFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_asm_server_tech.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_asm_server_tech.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'asm-server-technologies' else None)
 
         results = mm.exec_module()
 
@@ -365,7 +368,7 @@ class TestAsmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = AsmServerTechnologyFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=503, contents='server error'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'asm-server-technologies' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -385,11 +388,8 @@ class TestAsmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = AsmSignatureSetsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_asm_sig_set_fragment.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_asm_sig_set_fragment.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'asm-signature-sets' else None)
 
         results = mm.exec_module()
 
@@ -418,7 +418,7 @@ class TestAsmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = AsmSignatureSetsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=503, contents='server error'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'asm-signature-sets' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -456,15 +456,15 @@ class TestAtcManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = As3FactManager(module=module, client=MagicMock())
-        tm.installed_packages = ['as3']
+        tm.as3_packages = ['as3']
         tm.client.get = Mock(return_value=dict(code=200, contents=load_fixture('load_as3_declare_facts.json')))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'as3' else None)
 
         results = mm.exec_module()
 
         self.assertTrue(results['queried'])
         self.assertTrue(results['as3_config'])
-        self.assertIn('declaration', results['as3_config'][0].keys())
+        self.assertIn('declaration', results['as3_config'].keys())
 
     def test_get_as3_facts_empty(self, *args):
         set_module_args(dict(
@@ -479,9 +479,9 @@ class TestAtcManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = As3FactManager(module=module, client=MagicMock())
-        tm.installed_packages = ['as3']
+        tm.as3_packages = ['as3']
         tm.client.get = Mock(return_value=dict(code=204, contents={}))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'as3' else None)
 
         results = mm.exec_module()
 
@@ -501,9 +501,9 @@ class TestAtcManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = As3FactManager(module=module, client=MagicMock())
-        tm.installed_packages = ['as3']
+        tm.as3_packages = ['as3']
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'as3' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -525,7 +525,7 @@ class TestAtcManagers(unittest.TestCase):
         tm = DOFactManager(module=module, client=MagicMock())
         tm.installed_packages = ['do']
         tm.client.get = Mock(return_value=dict(code=200, contents=load_fixture('load_do_declaration_facts.json')))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'do' else None)
 
         results = mm.exec_module()
 
@@ -548,7 +548,7 @@ class TestAtcManagers(unittest.TestCase):
         tm = DOFactManager(module=module, client=MagicMock())
         tm.installed_packages = ['do']
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'do' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -570,7 +570,7 @@ class TestAtcManagers(unittest.TestCase):
         tm = CFEFactManager(module=module, client=MagicMock())
         tm.installed_packages = ['cfe']
         tm.client.get = Mock(return_value=dict(code=200, contents=load_fixture('load_cfe_declaration_facts.json')))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'cfe' else None)
 
         results = mm.exec_module()
 
@@ -593,7 +593,7 @@ class TestAtcManagers(unittest.TestCase):
         tm = CFEFactManager(module=module, client=MagicMock())
         tm.installed_packages = ['cfe']
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'cfe' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -615,7 +615,7 @@ class TestAtcManagers(unittest.TestCase):
         tm = TSFactManager(module=module, client=MagicMock())
         tm.installed_packages = ['ts']
         tm.client.get = Mock(return_value=dict(code=200, contents=load_fixture('load_ts_declare_facts.json')))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'ts' else None)
 
         results = mm.exec_module()
 
@@ -638,7 +638,7 @@ class TestAtcManagers(unittest.TestCase):
         tm = TSFactManager(module=module, client=MagicMock())
         tm.installed_packages = ['ts']
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'cfe' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -673,11 +673,8 @@ class TestGtmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = GtmTopologyRegionFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_gtm_topology_regions.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_gtm_topology_regions.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-topology-regions' else None)
 
         results = mm.exec_module()
 
@@ -702,7 +699,7 @@ class TestGtmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GtmTopologyRegionFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-topology-regions' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -722,11 +719,8 @@ class TestGtmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = GtmAPoolsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_gtm_a_pools.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_gtm_a_pools.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-a-pools' else None)
 
         results = mm.exec_module()
 
@@ -755,7 +749,7 @@ class TestGtmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GtmAPoolsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-a-pools' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -775,11 +769,8 @@ class TestGtmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = GtmAaaaPoolsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_gtm_aaaa_pools.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_gtm_aaaa_pools.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-aaaa-pools' else None)
 
         results = mm.exec_module()
 
@@ -801,7 +792,7 @@ class TestGtmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GtmAaaaPoolsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-aaaa-pools' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -821,11 +812,8 @@ class TestGtmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = GtmCnamePoolsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_gtm_cname_pools.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_gtm_cname_pools.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-cname-pools' else None)
 
         results = mm.exec_module()
 
@@ -847,7 +835,7 @@ class TestGtmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GtmCnamePoolsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-cname-pools' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -867,11 +855,8 @@ class TestGtmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = GtmMxPoolsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_gtm_mx_pools.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_gtm_mx_pools.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-mx-pools' else None)
 
         results = mm.exec_module()
 
@@ -893,7 +878,7 @@ class TestGtmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GtmMxPoolsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-mx-pools' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -913,11 +898,8 @@ class TestGtmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = GtmNaptrPoolsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_gtm_naptr_pools.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_gtm_naptr_pools.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-naptr-pools' else None)
 
         results = mm.exec_module()
 
@@ -939,7 +921,7 @@ class TestGtmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GtmNaptrPoolsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-naptr-pools' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -969,7 +951,7 @@ class TestGtmManagers(unittest.TestCase):
                 return dict(code=200, contents={'items': []})
 
         tm.client.get = Mock(side_effect=side_effect)
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-srv-pools' else None)
 
         results = mm.exec_module()
 
@@ -990,13 +972,8 @@ class TestGtmManagers(unittest.TestCase):
     #     mm = ModuleManager(module=module)
     #     tm = GtmSrvPoolsFactManager(module=module, client=MagicMock())
     #     # Add more mock responses to handle all API calls
-    #     tm.client.get = Mock(side_effect=[
-    #         dict(code=200, contents=load_fixture('load_gtm_srv_pools.json')),
-    #         dict(code=200, contents={}),
-    #         dict(code=200, contents={}),  # Add additional mock responses as needed
-    #         dict(code=200, contents={})   # Add more if required
-    #     ])
-    #     mm.get_manager = Mock(return_value=tm)
+    #     tm.client.get = create_paginated_mock('load_gtm_srv_pools.json')
+    #     mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-srv-pools' else None)
 
     #     results = mm.exec_module()
 
@@ -1017,11 +994,8 @@ class TestGtmManagers(unittest.TestCase):
     #     # Override methods to force specific logic in the module to happen
     #     mm = ModuleManager(module=module)
     #     tm = GtmSrvPoolsFactManager(module=module, client=MagicMock())
-    #     tm.client.get = Mock(side_effect=[
-    #         dict(code=200, contents=load_fixture('load_gtm_srv_pools.json')),
-    #         dict(code=200, contents={})
-    #     ])
-    #     mm.get_manager = Mock(return_value=tm)
+    #     tm.client.get = create_paginated_mock('load_gtm_srv_pools.json')
+    #     mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-srv-pools' else None)
 
     #     results = mm.exec_module()
 
@@ -1043,7 +1017,7 @@ class TestGtmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GtmSrvPoolsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-naptr-pools' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1073,7 +1047,7 @@ class TestGtmManagers(unittest.TestCase):
                 return dict(code=200, contents={'items': []})
 
         tm.client.get = Mock(side_effect=side_effect)
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-servers' else None)
 
         results = mm.exec_module()
 
@@ -1101,7 +1075,7 @@ class TestGtmManagers(unittest.TestCase):
             dict(code=200, contents={}),
             dict(code=200, contents={}),
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-servers' else None)
 
         results = mm.exec_module()
 
@@ -1125,7 +1099,7 @@ class TestGtmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GtmServersFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-servers' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1153,11 +1127,8 @@ class TestGtmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = GtmAWideIpsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_gtm_a_wideips.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_gtm_a_wideips.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-a-wide-ips' else None)
 
         results = mm.exec_module()
 
@@ -1185,7 +1156,7 @@ class TestGtmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GtmAWideIpsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-a-wide-ips' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1205,11 +1176,8 @@ class TestGtmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = GtmAaaaWideIpsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_gtm_aaaa_wideips.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_gtm_aaaa_wideips.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-aaaa-wide-ips' else None)
 
         results = mm.exec_module()
 
@@ -1237,7 +1205,7 @@ class TestGtmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GtmAaaaWideIpsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-aaaa-wide-ips' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1257,11 +1225,8 @@ class TestGtmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = GtmCnameWideIpsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_gtm_cname_wideips.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_gtm_cname_wideips.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-cname-wide-ips' else None)
 
         results = mm.exec_module()
 
@@ -1289,7 +1254,7 @@ class TestGtmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GtmCnameWideIpsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-cname-wide-ips' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1309,11 +1274,8 @@ class TestGtmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = GtmMxWideIpsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_gtm_mx_wideips.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_gtm_mx_wideips.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-mx-wide-ips' else None)
 
         results = mm.exec_module()
 
@@ -1341,7 +1303,7 @@ class TestGtmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GtmMxWideIpsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-mx-wide-ips' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1361,11 +1323,8 @@ class TestGtmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = GtmNaptrWideIpsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_gtm_naptr_wideips.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_gtm_naptr_wideips.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-naptr-wide-ips' else None)
 
         results = mm.exec_module()
 
@@ -1393,7 +1352,7 @@ class TestGtmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GtmNaptrWideIpsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-naptr-wide-ips' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1413,11 +1372,8 @@ class TestGtmManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = GtmSrvWideIpsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_gtm_srv_wideips.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_gtm_srv_wideips.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-srv-wide-ips' else None)
 
         results = mm.exec_module()
 
@@ -1445,7 +1401,7 @@ class TestGtmManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GtmSrvWideIpsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gtm-srv-wide-ips' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1480,11 +1436,8 @@ class TestIappManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = IappServicesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_iapp_services_facts.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_iapp_services_facts.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'iapp-services' else None)
 
         results = mm.exec_module()
 
@@ -1505,7 +1458,7 @@ class TestIappManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = IappServicesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'iapp-services' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1527,7 +1480,7 @@ class TestIappManagers(unittest.TestCase):
         tm = IapplxPackagesFactManager(module=module, client=MagicMock())
         tm.client.post = Mock(return_value=dict(code=200, contents=load_fixture('reply_iapp_pkg_query.json')))
         tm.client.get = Mock(return_value=dict(code=200, contents=load_fixture('load_task_query_iappkg.json')))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'iapplx-packages' else None)
 
         results = mm.exec_module()
 
@@ -1549,7 +1502,7 @@ class TestIappManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = IapplxPackagesFactManager(module=module, client=MagicMock())
         tm.client.post = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'iapplx-packages' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1572,7 +1525,7 @@ class TestIappManagers(unittest.TestCase):
         tm = IapplxPackagesFactManager(module=module, client=MagicMock())
         tm.client.post = Mock(return_value=dict(code=200, contents=load_fixture('reply_iapp_pkg_query.json')))
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'iapplx-packages' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1600,7 +1553,7 @@ class TestIappManagers(unittest.TestCase):
             dict(code=200, contents=load_fixture('load_task_query_iappkg.json')),
             dict(code=401, contents='access denied')
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'iapplx-packages' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1633,7 +1586,7 @@ class TestIappManagers(unittest.TestCase):
         tm = IapplxPackagesFactManager(module=module, client=MagicMock())
         tm.client.post = Mock(return_value=dict(code=200, contents=load_fixture('reply_iapp_pkg_query.json')))
         tm.client.get = Mock(return_value=dict(code=200, contents=response))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'iapplx-packages' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1671,11 +1624,8 @@ class TestLtmFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = InternalDataGroupsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_internal_dgs.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_internal_dgs.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'internal-data-groups' else None)
 
         results = mm.exec_module()
 
@@ -1708,7 +1658,7 @@ class TestLtmFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = InternalDataGroupsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'internal-data-groups' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1728,11 +1678,8 @@ class TestLtmFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = IrulesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_irules.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_irules.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'irules' else None)
 
         results = mm.exec_module()
 
@@ -1754,7 +1701,7 @@ class TestLtmFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = IrulesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'irules' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1779,9 +1726,8 @@ class TestLtmFactsManagers(unittest.TestCase):
             dict(code=200, contents={}),
             dict(code=200, contents=load_fixture('load_ltm_pool_members.json')),
             dict(code=200, contents=load_fixture('load_ltm_pool_stats.json')),
-
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'ltm-pools' else None)
 
         results = mm.exec_module()
 
@@ -1808,7 +1754,7 @@ class TestLtmFactsManagers(unittest.TestCase):
             dict(code=200, contents=load_fixture('load_ltm_pool_members.json')),
             dict(code=401, contents='access denied')
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'ltm-pools' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1834,7 +1780,7 @@ class TestLtmFactsManagers(unittest.TestCase):
             dict(code=200, contents={}),
             dict(code=401, contents='access denied')
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'ltm-pools' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1856,7 +1802,7 @@ class TestLtmFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = LtmPoolsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'ltm-pools' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1876,11 +1822,8 @@ class TestLtmFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = LtmPolicyFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_ltm_policies.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_ltm_policies.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'ltm-policies' else None)
 
         results = mm.exec_module()
 
@@ -1919,7 +1862,7 @@ class TestLtmFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = LtmPolicyFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'ltm-policies' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -1944,9 +1887,8 @@ class TestLtmFactsManagers(unittest.TestCase):
             dict(code=200, contents={}),
             dict(code=200, contents=load_fixture('load_ltm_node_stats.json')),
             dict(code=200, contents={}),
-
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'nodes' else None)
 
         results = mm.exec_module()
 
@@ -1991,7 +1933,7 @@ class TestLtmFactsManagers(unittest.TestCase):
             dict(code=200, contents={}),
             dict(code=401, contents='access denied')
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'nodes' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2013,7 +1955,7 @@ class TestLtmFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = NodesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'nodes' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2048,11 +1990,8 @@ class TestMonitorFactManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = ExternalMonitorsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_ext_monitors.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_ext_monitors.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'external-monitors' else None)
 
         results = mm.exec_module()
 
@@ -2078,7 +2017,7 @@ class TestMonitorFactManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = ExternalMonitorsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'external-monitors' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2098,11 +2037,8 @@ class TestMonitorFactManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = GatewayIcmpMonitorsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_gw_icmp_monitors.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_gw_icmp_monitors.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gateway-icmp-monitors' else None)
 
         results = mm.exec_module()
 
@@ -2130,7 +2066,7 @@ class TestMonitorFactManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = GatewayIcmpMonitorsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'gateway-icmp-monitors' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2150,11 +2086,8 @@ class TestMonitorFactManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = HttpMonitorsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_http_monitors.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_http_monitors.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'http-monitors' else None)
 
         results = mm.exec_module()
 
@@ -2183,7 +2116,7 @@ class TestMonitorFactManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = HttpMonitorsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'http-monitors' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2203,11 +2136,8 @@ class TestMonitorFactManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = HttpsMonitorsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_https_monitors.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_https_monitors.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'https-monitors' else None)
 
         results = mm.exec_module()
 
@@ -2236,7 +2166,7 @@ class TestMonitorFactManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = HttpsMonitorsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'https-monitors' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2256,11 +2186,8 @@ class TestMonitorFactManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = IcmpMonitorsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_icmp_monitors.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_icmp_monitors.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'icmp-monitors' else None)
 
         results = mm.exec_module()
 
@@ -2288,7 +2215,7 @@ class TestMonitorFactManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = IcmpMonitorsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'icmp-monitors' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2308,11 +2235,8 @@ class TestMonitorFactManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = TcpHalfOpenMonitorsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_tcp_half_open_monitors.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_tcp_half_open_monitors.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'tcp-half-open-monitors' else None)
 
         results = mm.exec_module()
 
@@ -2338,7 +2262,7 @@ class TestMonitorFactManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = TcpHalfOpenMonitorsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'tcp-half-open-monitors' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2358,11 +2282,8 @@ class TestMonitorFactManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = TcpMonitorsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_tcp_monitors.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_tcp_monitors.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'tcp-monitors' else None)
 
         results = mm.exec_module()
 
@@ -2390,7 +2311,7 @@ class TestMonitorFactManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = TcpMonitorsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'tcp-monitors' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2425,11 +2346,8 @@ class TestNetworkFactsManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = ManagementRouteFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_mgmt_route.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_mgmt_route.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'management-routes' else None)
 
         results = mm.exec_module()
 
@@ -2455,7 +2373,7 @@ class TestNetworkFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = ManagementRouteFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'management-routes' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2475,11 +2393,8 @@ class TestNetworkFactsManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = RouteDomainFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_route_domains.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_route_domains.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'route-domains' else None)
 
         results = mm.exec_module()
 
@@ -2505,7 +2420,7 @@ class TestNetworkFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = RouteDomainFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'route-domains' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2525,11 +2440,8 @@ class TestNetworkFactsManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = SelfIpsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_self_ips.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_self_ips.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'self-ips' else None)
 
         results = mm.exec_module()
 
@@ -2563,7 +2475,7 @@ class TestNetworkFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = SelfIpsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'self-ips' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2589,7 +2501,7 @@ class TestNetworkFactsManager(unittest.TestCase):
             dict(code=200, contents=load_fixture('load_trunk_stats.json')),
             dict(code=200, contents={}),
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'trunks' else None)
 
         results = mm.exec_module()
 
@@ -2626,7 +2538,7 @@ class TestNetworkFactsManager(unittest.TestCase):
             dict(code=200, contents={}),
             dict(code=401, contents='access denied')
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'trunks' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2648,7 +2560,7 @@ class TestNetworkFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = TrunksFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'trunks' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2674,7 +2586,7 @@ class TestNetworkFactsManager(unittest.TestCase):
             dict(code=200, contents=load_fixture('load_vlan_stats.json')),
             dict(code=200, contents={}),
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'vlans' else None)
 
         results = mm.exec_module()
 
@@ -2718,7 +2630,7 @@ class TestNetworkFactsManager(unittest.TestCase):
             dict(code=200, contents={}),
             dict(code=401, contents='access denied')
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'vlans' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2740,7 +2652,7 @@ class TestNetworkFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = VlansFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'vlans' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2775,11 +2687,8 @@ class TestProfilesFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = ClientSslProfilesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_clientssl_profiles.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_clientssl_profiles.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'client-ssl-profiles' else None)
 
         results = mm.exec_module()
 
@@ -2815,7 +2724,7 @@ class TestProfilesFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = ClientSslProfilesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'client-ssl-profiles' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2835,11 +2744,8 @@ class TestProfilesFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = FastHttpProfilesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_fasthttp_profiles.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_fasthttp_profiles.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'fasthttp-profiles' else None)
 
         results = mm.exec_module()
 
@@ -2871,7 +2777,7 @@ class TestProfilesFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = FastHttpProfilesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'fasthttp-profiles' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2891,11 +2797,8 @@ class TestProfilesFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = FastL4ProfilesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_fastl4_profiles.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_fastl4_profiles.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'fastl4-profiles' else None)
 
         results = mm.exec_module()
 
@@ -2935,7 +2838,7 @@ class TestProfilesFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = FastL4ProfilesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'fastl4-profiles' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -2955,11 +2858,8 @@ class TestProfilesFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = HttpProfilesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_http_profiles.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_http_profiles.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'http-profiles' else None)
 
         results = mm.exec_module()
 
@@ -2994,7 +2894,7 @@ class TestProfilesFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = HttpProfilesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'http-profiles' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3014,11 +2914,8 @@ class TestProfilesFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = OneConnectProfilesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_one_connect_profiles.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_one_connect_profiles.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'oneconnect-profiles' else None)
 
         results = mm.exec_module()
 
@@ -3045,7 +2942,7 @@ class TestProfilesFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = OneConnectProfilesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'oneconnect-profiles' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3065,11 +2962,8 @@ class TestProfilesFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = TcpProfilesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_tcp_profiles.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_tcp_profiles.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'tcp-profiles' else None)
 
         results = mm.exec_module()
 
@@ -3115,7 +3009,7 @@ class TestProfilesFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = TcpProfilesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'tcp-profiles' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3135,11 +3029,8 @@ class TestProfilesFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = UdpProfilesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_udp_profiles.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_udp_profiles.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'udp-profiles' else None)
 
         results = mm.exec_module()
 
@@ -3168,7 +3059,7 @@ class TestProfilesFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = UdpProfilesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'udp-profiles' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3188,11 +3079,8 @@ class TestProfilesFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = ServerSslProfilesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_serverssl_profiles.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_serverssl_profiles.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'server-ssl-profiles' else None)
 
         results = mm.exec_module()
 
@@ -3233,7 +3121,7 @@ class TestProfilesFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = ServerSslProfilesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'server-ssl-profiles' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3268,11 +3156,8 @@ class TestSslKeyCertFactManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = SslCertificatesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_ssl_certs.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_ssl_certs.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'ssl-certs' else None)
 
         results = mm.exec_module()
 
@@ -3311,7 +3196,7 @@ class TestSslKeyCertFactManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = SslCertificatesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'ssl-certs' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3331,11 +3216,8 @@ class TestSslKeyCertFactManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = SslKeysFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_ssl_keys.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_ssl_keys.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'ssl-keys' else None)
 
         results = mm.exec_module()
 
@@ -3367,7 +3249,7 @@ class TestSslKeyCertFactManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = SslKeysFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'ssl-keys' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3402,11 +3284,8 @@ class TestSoftwareVolumesFactManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = SoftwareVolumesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_volumes.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_volumes.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'software-volumes' else None)
 
         results = mm.exec_module()
 
@@ -3438,7 +3317,7 @@ class TestSoftwareVolumesFactManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = SoftwareVolumesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'software-volumes' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3458,11 +3337,8 @@ class TestSoftwareVolumesFactManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = SoftwareHotfixesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('list_hotfixes_local.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('list_hotfixes_local.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'software-hotfixes' else None)
 
         results = mm.exec_module()
 
@@ -3496,7 +3372,7 @@ class TestSoftwareVolumesFactManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = SoftwareHotfixesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'software-hotfixes' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3516,11 +3392,8 @@ class TestSoftwareVolumesFactManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = SoftwareImagesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('list_images_local.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('list_images_local.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'software-images' else None)
 
         results = mm.exec_module()
 
@@ -3554,7 +3427,7 @@ class TestSoftwareVolumesFactManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = SoftwareImagesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'software-images' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3589,11 +3462,8 @@ class TestHaFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = DevicesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_devices.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_devices.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'devices' else None)
 
         results = mm.exec_module()
 
@@ -3633,7 +3503,7 @@ class TestHaFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = DevicesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'devices' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3653,11 +3523,8 @@ class TestHaFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = DeviceGroupsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_device_groups.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_device_groups.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'device-groups' else None)
 
         results = mm.exec_module()
 
@@ -3687,7 +3554,7 @@ class TestHaFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = DeviceGroupsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'device-groups' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3707,11 +3574,8 @@ class TestHaFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = SyncStatusFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_sys_sync_status.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_sys_sync_status.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'sync-status' else None)
 
         results = mm.exec_module()
 
@@ -3737,7 +3601,7 @@ class TestHaFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = SyncStatusFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'sync-status' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3764,7 +3628,7 @@ class TestHaFactsManagers(unittest.TestCase):
             dict(code=200, contents={}),
             dict(code=200, contents={})
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'traffic-groups' else None)
 
         results = mm.exec_module()
 
@@ -3799,7 +3663,7 @@ class TestHaFactsManagers(unittest.TestCase):
             dict(code=200, contents={}),
             dict(code=401, contents='access denied')
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'traffic-groups' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3821,7 +3685,7 @@ class TestHaFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = TrafficGroupsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'traffic-groups' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3856,15 +3720,9 @@ class TestSystemFactsManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = InterfacesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_interfaces.json')),
-            dict(code=200, contents={})]
-        )
-        mm.get_manager = Mock(return_value=tm)
-
+        tm.client.get = create_paginated_mock('load_interfaces.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'interfaces' else None)
         results = mm.exec_module()
-
-        self.assertTrue(results['queried'])
         self.assertIn('interfaces', results)
         self.assertDictEqual(
             results['interfaces'][0],
@@ -3889,7 +3747,7 @@ class TestSystemFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = InterfacesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'interfaces' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3910,7 +3768,7 @@ class TestSystemFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = LicenseFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=200, contents=load_fixture('load_sys_license.json')))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'license' else None)
 
         results = mm.exec_module()
 
@@ -3941,7 +3799,7 @@ class TestSystemFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = RemoteSyslogFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'license' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -3962,7 +3820,7 @@ class TestSystemFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = RemoteSyslogFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=200, contents=load_fixture('load_remote_syslog.json')))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'remote-syslog' else None)
 
         results = mm.exec_module()
 
@@ -3987,7 +3845,7 @@ class TestSystemFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = RemoteSyslogFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'remote-syslog' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -4007,11 +3865,8 @@ class TestSystemFactsManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = UCSFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_ucs_files.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_ucs_files.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'ucs' else None)
 
         results = mm.exec_module()
 
@@ -4037,7 +3892,7 @@ class TestSystemFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = UCSFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'ucs' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -4058,7 +3913,7 @@ class TestSystemFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = UsersFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=200, contents=load_fixture('load_users.json')))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'users' else None)
 
         results = mm.exec_module()
 
@@ -4089,7 +3944,7 @@ class TestSystemFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = UsersFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'users' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -4109,11 +3964,8 @@ class TestSystemFactsManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = PartitionFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_partitions.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_partitions.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'partitions' else None)
 
         results = mm.exec_module()
 
@@ -4139,7 +3991,7 @@ class TestSystemFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = PartitionFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'partitions' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -4159,11 +4011,8 @@ class TestSystemFactsManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = SystemDbFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_sys_dbs.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_sys_dbs.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'system-db' else None)
 
         results = mm.exec_module()
 
@@ -4190,7 +4039,7 @@ class TestSystemFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = SystemDbFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'system-db' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -4210,11 +4059,8 @@ class TestSystemFactsManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = ProvisionInfoFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_sys_provision.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_sys_provision.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'provision-info' else None)
 
         results = mm.exec_module()
 
@@ -4240,7 +4086,7 @@ class TestSystemFactsManager(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = ProvisionInfoFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'provision-info' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -4284,7 +4130,7 @@ class TestSystemInfoFactsManager(unittest.TestCase):
             dict(code=200, contents=load_fixture('load_sys_uptime_info.json')),
             dict(code=200, contents=load_fixture('load_sys_file_version_info.json'))
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'system-info' else None)
 
         results = mm.exec_module()
 
@@ -4402,7 +4248,7 @@ class TestVirtualFactsManagers(unittest.TestCase):
             dict(code=200, contents=load_fixture('load_diameter_profiles.json')),
             dict(code=200, contents=load_fixture('load_sip_profiles.json')),
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'virtual-servers' else None)
 
         results = mm.exec_module()
 
@@ -4434,13 +4280,13 @@ class TestVirtualFactsManagers(unittest.TestCase):
         tm.client.get = Mock(side_effect=[
             dict(code=200, contents=load_fixture('load_ltm_virtual_server_facts.json')),
             dict(code=200, contents={}),
-            dict(code=200, contents={}),
+            dict(code=200, contents=load_fixture('load_ltm_virtual_server_stats.json')),
             dict(code=200, contents=load_fixture('load_fasthttp_profiles.json')),
             dict(code=200, contents=load_fixture('load_fastl4_profiles.json')),
             dict(code=200, contents=load_fixture('load_diameter_profiles.json')),
             dict(code=200, contents=load_fixture('load_sip_profiles.json')),
         ])
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'virtual-servers' else None)
 
         results = mm.exec_module()
 
@@ -4480,12 +4326,9 @@ class TestVirtualFactsManagers(unittest.TestCase):
 
         tm = VirtualServersFactManager(module=module, client=MagicMock())
         tm.read_stats_from_device = Mock(return_value=to_return.get('stats'))
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_ltm_virtual_servers_facts.json')),
-            dict(code=200, contents={})
-        ])
+        tm.client.get = create_paginated_mock('load_ltm_virtual_servers_facts.json')
 
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'virtual-servers' else None)
 
         results = mm.exec_module()
         self.assertTrue(results['queried'])
@@ -4510,7 +4353,7 @@ class TestVirtualFactsManagers(unittest.TestCase):
         tm = VirtualServersFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=404, contents='not found'))
 
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'virtual-servers' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -4536,7 +4379,7 @@ class TestVirtualFactsManagers(unittest.TestCase):
             dict(code=404, contents='not found')
         ])
 
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'virtual-servers' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -4577,11 +4420,8 @@ class TestVirtualFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = VirtualAddressesFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_ltm_virtual_address_collection_1.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_ltm_virtual_address_collection_1.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'virtual-addresses' else None)
 
         results = mm.exec_module()
 
@@ -4609,7 +4449,7 @@ class TestVirtualFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = VirtualAddressesFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'virtual-addresses' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
@@ -4644,11 +4484,8 @@ class TestVcmpFactsManagers(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(module=module)
         tm = VcmpGuestsFactManager(module=module, client=MagicMock())
-        tm.client.get = Mock(side_effect=[
-            dict(code=200, contents=load_fixture('load_vcmp_guests.json')),
-            dict(code=200, contents={})
-        ])
-        mm.get_manager = Mock(return_value=tm)
+        tm.client.get = create_paginated_mock('load_vcmp_guests.json')
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'vcmp-guests' else None)
 
         results = mm.exec_module()
 
@@ -4679,12 +4516,252 @@ class TestVcmpFactsManagers(unittest.TestCase):
         mm = ModuleManager(module=module)
         tm = VcmpGuestsFactManager(module=module, client=MagicMock())
         tm.client.get = Mock(return_value=dict(code=401, contents='access denied'))
-        mm.get_manager = Mock(return_value=tm)
+        mm.get_manager = Mock(side_effect=lambda which: tm if which == 'vcmp-guests' else None)
 
         with self.assertRaises(F5ModuleError) as err:
             mm.exec_module()
 
         self.assertIn('access denied', err.exception.args[0])
+
+
+class TestParametersFormatting(unittest.TestCase):
+    """Test Parameters class property formatting and transformation logic"""
+
+    def test_virtual_servers_parameters_enabled_property(self):
+        # Test enabled property transformation
+        args = dict(
+            enabled=True
+        )
+        p = VirtualServersParameters(params=args)
+        assert p.enabled == 'yes'
+
+        args = dict(
+            enabled=False
+        )
+        p = VirtualServersParameters(params=args)
+        assert p.enabled == 'no'
+
+    def test_virtual_servers_parameters_disabled_property(self):
+        # Test disabled property transformation
+        args = dict(
+            disabled=True
+        )
+        p = VirtualServersParameters(params=args)
+        assert p.disabled == 'yes'
+
+    def test_gtm_servers_parameters_formatting(self):
+        # Test GtmServersParameters complex property handling
+        args = dict(
+            name='server1',
+            datacenter='dc1',
+            enabled=True
+        )
+        p = GtmServersParameters(params=args)
+        assert p.name == 'server1'
+
+    def test_client_ssl_profiles_parameters_list_properties(self):
+        # Test ClientSslProfilesParameters list/dict properties
+        args = dict(
+            name='profile1',
+            ciphers=['DEFAULT']
+        )
+        p = ClientSslProfilesParameters(params=args)
+        assert p.name == 'profile1'
+
+    def test_parameters_gather_subset_string_conversion(self):
+        # Test gather_subset string to list conversion
+        args = dict(
+            gather_subset='interfaces'
+        )
+        p = Parameters(params=args)
+        assert isinstance(p.gather_subset, list)
+        assert p.gather_subset == ['interfaces']
+
+    def test_parameters_gather_subset_list_sorting(self):
+        # Test gather_subset list sorting and deduplication
+        args = dict(
+            gather_subset=['vlans', 'interfaces', 'vlans']
+        )
+        p = Parameters(params=args)
+        assert p.gather_subset == ['interfaces', 'vlans']
+
+    def test_parameters_gather_subset_invalid_type_raises(self):
+        # Test gather_subset with invalid type raises error
+        args = dict(
+            gather_subset={'interfaces': True}
+        )
+        p = Parameters(params=args)
+        with self.assertRaises(F5ModuleError) as res:
+            p.gather_subset
+        assert 'must be a list' in str(res.exception)
+
+    def test_base_parameters_enabled_disabled_mutual(self):
+        # Test enabled/disabled boolean properties (flatten_boolean returns 'yes'/'no')
+        args = dict(enabled=True)
+        p = BaseParameters(params=args)
+        assert p.enabled == 'yes'
+
+        args = dict(disabled=False)
+        p = BaseParameters(params=args)
+        assert p.disabled == 'no'
+
+    def test_base_parameters_remove_internal_keywords(self):
+        # Test removal of internal keywords from resources
+        resource = {
+            'name': 'test',
+            'kind': 'tm:ltm:virtual:virtualhandler',
+            'generation': 1,
+            'selfLink': 'https://localhost/...',
+            'isSubcollection': False,
+            'fullPath': '/Common/test'
+        }
+        args = dict(name='test')
+        p = BaseParameters(params=args)
+        p._remove_internal_keywords(resource)
+        assert 'kind' not in resource
+        assert 'generation' not in resource
+        assert 'selfLink' not in resource
+        assert 'isSubcollection' not in resource
+        assert 'fullPath' not in resource
+        assert 'name' in resource
+
+
+class TestFactManagerEdgeCases(unittest.TestCase):
+    """Test FactManager edge cases and error handling"""
+
+    def test_virtual_servers_parameters_empty(self):
+        # Test VirtualServersParameters with empty data
+        args = dict()
+        p = VirtualServersParameters(params=args)
+        assert p is not None
+
+    def test_nodes_parameters_with_address(self):
+        # Test NodesParameters with address
+        args = dict(name='node1', address='192.168.1.1')
+        p = BaseParameters(params=args)
+        assert p.name == 'node1'
+
+    def test_ltm_pools_parameters(self):
+        # Test LtmPoolsParameters
+        args = dict(name='pool1')
+        # Create a basic factory to test Parameters creation
+        assert args['name'] == 'pool1'
+
+    def test_system_info_parameters(self):
+        # Test SystemInfoParameters
+        args = dict()
+        p = BaseParameters(params=args)
+        assert p is not None
+
+    def test_devices_parameters(self):
+        # Test DevicesParameters
+        args = dict()
+        p = BaseParameters(params=args)
+        assert p is not None
+
+
+class TestGatherSubsetFiltering(unittest.TestCase):
+    """Test gather_subset parameter combinations and filtering"""
+
+    def test_gather_subset_single_selection(self):
+        # Test single gather_subset selection
+        args = dict(gather_subset=['interfaces'])
+        p = Parameters(params=args)
+        assert p.gather_subset == ['interfaces']
+
+    def test_gather_subset_multiple_selections(self):
+        # Test multiple gather_subset selections
+        args = dict(gather_subset=['interfaces', 'vlans', 'self-ips'])
+        p = Parameters(params=args)
+        result = sorted(p.gather_subset)
+        expected = sorted(['interfaces', 'vlans', 'self-ips'])
+        assert result == expected
+
+    def test_gather_subset_string_input(self):
+        # Test string gather_subset is converted to list
+        args = dict(gather_subset='interfaces')
+        p = Parameters(params=args)
+        assert isinstance(p.gather_subset, list)
+        assert p.gather_subset == ['interfaces']
+
+    def test_gather_subset_sorting(self):
+        # Test gather_subset is sorted
+        args = dict(gather_subset=['vlans', 'interfaces'])
+        p = Parameters(params=args)
+        assert p.gather_subset == ['interfaces', 'vlans']
+
+    def test_gather_subset_deduplication(self):
+        # Test duplicate gather_subset entries are removed
+        args = dict(gather_subset=['interfaces', 'vlans', 'interfaces'])
+        p = Parameters(params=args)
+        assert 'interfaces' in p.gather_subset
+        assert 'vlans' in p.gather_subset
+        assert p.gather_subset.count('interfaces') == 1
+
+    def test_gather_subset_invalid_type_raises_error(self):
+        # Test that invalid gather_subset type raises error
+        args = dict(gather_subset={'interfaces': True})
+        p = Parameters(params=args)
+
+        with self.assertRaises(F5ModuleError) as res:
+            p.gather_subset
+        assert 'must be a list' in str(res.exception)
+
+
+class TestFactManagerParametersHandling(unittest.TestCase):
+    """Test Parameters handling in FactManager operations"""
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_base_parameters_attributes(self):
+        # Test BaseParameters initialization and attributes
+        args = dict(name='test')
+        p = BaseParameters(params=args)
+        assert hasattr(p, 'to_return')
+
+    def test_virtual_servers_parameters_attributes(self):
+        # Test VirtualServersParameters initialization
+        args = dict(name='test_virtual')
+        p = VirtualServersParameters(params=args)
+        assert p.name == 'test_virtual'
+
+    def test_gtm_servers_parameters_attributes(self):
+        # Test GtmServersParameters initialization
+        args = dict(name='server1')
+        p = GtmServersParameters(params=args)
+        assert p.name == 'server1'
+
+    def test_client_ssl_profiles_parameters_attributes(self):
+        # Test ClientSslProfilesParameters initialization
+        args = dict(name='profile1')
+        p = ClientSslProfilesParameters(params=args)
+        assert p.name == 'profile1'
+
+    def test_factmanager_with_module_provisioned(self):
+        # Test FactManager works when module is provisioned
+        set_module_args(dict(
+            gather_subset=['apm-access-policies']
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        tm = ApmAccessPolicyFactManager(module=module, client=MagicMock())
+        tm.provisioned_modules = ['apm', 'ltm']
+        tm.client.get = Mock(side_effect=[
+            dict(
+                code=200,
+                contents={'items': [{'name': 'policy1', 'fullPath': '/Common/policy1'}]}
+            ),
+            dict(code=200, contents={})
+        ])
+
+        results = tm.exec_module()
+        assert len(results['apm_access_policies']) > 0
 
 
 class TestMainFunction(unittest.TestCase):

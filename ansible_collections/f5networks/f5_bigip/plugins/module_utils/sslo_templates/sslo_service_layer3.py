@@ -140,6 +140,7 @@ create_modify = """
                 },
                 "serviceEntrySSLProfile": "{{ params.service_entry_sslprofile }}",
                 "serviceReturnSSLProfile": "{{ params.service_return_sslprofile }}",
+                {% if params.sslo_version >= 14 %}"defaultPersistenceProfile": "{{ params.default_persistence_profile }}",{% endif %}
                 "controlChannels": {{ params.control_channels | tojson }},
                 "connectionInformation":{
                     "toBigipNetwork":{
@@ -225,11 +226,15 @@ create_modify = """
                 "initialIpFamily": "{{ params.ip_family }}",
                 "ipFamily": "{{ params.ip_family }}",
                 "isAutoManage": {{ params.auto_manage | tojson }},
-                "portRemap": {% if params.port_remap is defined %}true{% else %}false{% endif %},
-                "httpPortRemapValue": {% if params.port_remap is defined -%}{{ params.port_remap }},{% else %}80,
+                "portRemap": {% if params.port_remap %}true{% else %}false{% endif %},
+                "httpPortRemapValue": {% if params.port_remap -%}{{ params.port_remap }},{% else %}80,
                 {% endif %}
                 "serviceDownAction": "{{ params.service_down_action }}",
                 "iRuleList": {% if params.rules is defined %}{{ params.rules | tojson }}{% else %}[]{% endif %},
+                {% if params.sslo_version >= 13 %}
+                "iRuleListEgress": {% if params.rules_egress is defined %}
+                {{ params.rules_egress | tojson }}{% else %}[]{% endif %},
+                {% endif %}
                 "managedNetwork":{
                     "serviceType": "L3",
                     "ipFamily": "{{ params.ip_family }}",
@@ -246,7 +251,7 @@ create_modify = """
                         "fromServiceNetwork": "{{ params.devices_from.network }}",
                         "fromServiceMask": "{{ params.devices_from.netmask }}",
                         "fromServiceSelfIp": "{{ params.devices_from.self_ip }}"
-                    }{% endif %},{% if params.ip_family == 'ipv6' %}
+                    },{% endif %}{% if params.ip_family == 'ipv6' %}
                    "ipv6": {
                         "serviceType": "L3",
                         "ipFamily": "{{ params.ip_family }}",
@@ -489,6 +494,7 @@ modify_new = """
                 },
                 "serviceEntrySSLProfile": "{{ params.service_entry_sslprofile }}",
                 "serviceReturnSSLProfile": "{{ params.service_return_sslprofile }}",
+                {% if params.sslo_version >= 14 %}"defaultPersistenceProfile": "{{ params.default_persistence_profile }}",{% endif %}
                 "controlChannels": {{ params.control_channels | tojson }},
                 "connectionInformation":{
                     "toBigipNetwork":{
@@ -574,11 +580,15 @@ modify_new = """
                 "initialIpFamily": "{{ params.ip_family }}",
                 "ipFamily": "{{ params.ip_family }}",
                 "isAutoManage": {{ params.auto_manage | tojson }},
-                "portRemap": {% if params.port_remap is defined %}true{% else %}false{% endif %},
-                "httpPortRemapValue": {% if params.port_remap is defined -%}{{ params.port_remap }},{% else %}80,
+                "portRemap": {% if params.port_remap %}true{% else %}false{% endif %},
+                "httpPortRemapValue": {% if params.port_remap -%}{{ params.port_remap }},{% else %}80,
                 {% endif %}
                 "serviceDownAction": "{{ params.service_down_action }}",
                 "iRuleList": {% if params.rules is defined %}{{ params.rules | tojson }}{% else %}[]{% endif %},
+                {% if params.sslo_version >= 13 %}
+                "iRuleListEgress": {% if params.rules_egress is defined %}
+                {{ params.rules_egress | tojson }}{% else %}[]{% endif %},
+                {% endif %}
                 "managedNetwork":{
                     "serviceType": "L3",
                     "ipFamily": "{{ params.ip_family }}",
@@ -595,7 +605,7 @@ modify_new = """
                         "fromServiceNetwork": "{{ params.devices_from.network }}",
                         "fromServiceMask": "{{ params.devices_from.netmask }}",
                         "fromServiceSelfIp": "{{ params.devices_from.self_ip }}"
-                    }{% endif %},{% if params.ip_family == 'ipv6' %}
+                    },{% endif %}{% if params.ip_family == 'ipv6' %}
                    "ipv6": {
                         "serviceType": "L3",
                         "ipFamily": "{{ params.ip_family }}",

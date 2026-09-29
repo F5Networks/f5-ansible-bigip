@@ -57,7 +57,7 @@ class TestParameters(unittest.TestCase):
         p = ModuleParameters(params=args)
 
         with self.assertRaises(F5ModuleError) as err:
-            p.policy_in_json()
+            p.policy_in_json
         self.assertIn("The provided 'policy_in_json' could not be converted into valid json", err.exception.args[0])
 
         args = dict(
@@ -67,7 +67,7 @@ class TestParameters(unittest.TestCase):
         p = ModuleParameters(params=args)
 
         with self.assertRaises(F5ModuleError) as err:
-            p.policy_in_json()
+            p.policy_in_json
         self.assertIn("The provided 'policy_in_json' could not be converted into valid json", err.exception.args[0])
 
         args = dict(
@@ -77,7 +77,7 @@ class TestParameters(unittest.TestCase):
         p = ModuleParameters(params=args)
 
         with self.assertRaises(F5ModuleError) as err:
-            p.server_technologies()
+            p.server_technologies
         self.assertIn("Invalid entry for server technology: foobar", err.exception.args[0])
 
     def test_api_parameters(self):
@@ -856,3 +856,484 @@ class TestManager(unittest.TestCase):
 
         res = mm.wait_for_task('123456', apply=True)
         self.assertTrue(res)
+
+    def test_parameter_case_insensitive_true(self):
+        args = dict(
+            name='test_policy',
+            server_technologies=['AngularJS'],
+            template='POLICY_TEMPLATE_RAPID_DEPLOYMENT',
+            case_insensitive=True
+        )
+        p = ModuleParameters(params=args)
+        self.assertTrue(p.case_insensitive)
+
+    def test_parameter_case_insensitive_false(self):
+        args = dict(
+            name='test_policy',
+            server_technologies=['AngularJS'],
+            template='POLICY_TEMPLATE_RAPID_DEPLOYMENT',
+            case_insensitive=False
+        )
+        p = ModuleParameters(params=args)
+        self.assertFalse(p.case_insensitive)
+
+    def test_parameter_enable_passive_mode_true(self):
+        args = dict(
+            name='test_policy',
+            server_technologies=['AngularJS'],
+            template='POLICY_TEMPLATE_RAPID_DEPLOYMENT',
+            enable_passive_mode=True
+        )
+        p = ModuleParameters(params=args)
+        self.assertTrue(p.enable_passive_mode)
+
+    def test_parameter_protocol_independent_true(self):
+        args = dict(
+            name='test_policy',
+            server_technologies=['AngularJS'],
+            template='POLICY_TEMPLATE_RAPID_DEPLOYMENT',
+            protocol_independent=True
+        )
+        p = ModuleParameters(params=args)
+        self.assertTrue(p.protocol_independent)
+
+    def test_parameter_apply_policy_true(self):
+        args = dict(
+            name='test_policy',
+            server_technologies=['AngularJS'],
+            template='POLICY_TEMPLATE_RAPID_DEPLOYMENT',
+            apply_policy=True
+        )
+        p = ModuleParameters(params=args)
+        self.assertTrue(p.apply_policy)
+
+    def test_parameter_file_types_complex(self):
+        args = dict(
+            name='test_policy',
+            server_technologies=['AngularJS'],
+            template='POLICY_TEMPLATE_RAPID_DEPLOYMENT',
+            allowed_file_types=[
+                dict(name='php', type='explicit'),
+                dict(name='jpg', type='explicit'),
+                dict(name='pdf', type='explicit')
+            ],
+            disallowed_file_types=[
+                dict(name='js'),
+                dict(name='exe'),
+                dict(name='*')
+            ]
+        )
+        p = ModuleParameters(params=args)
+        file_types = p.file_types
+        self.assertEqual(len(file_types), 6)
+
+    def test_parameter_valid_server_technologies(self):
+        args = dict(
+            name='test_policy',
+            server_technologies=['AngularJS', 'Apache Struts', 'Apache Tomcat'],
+            template='POLICY_TEMPLATE_RAPID_DEPLOYMENT'
+        )
+        p = ModuleParameters(params=args)
+        techs = p.server_technologies
+        self.assertEqual(len(techs), 3)
+
+    def test_parameter_multiple_open_api_files(self):
+        args = dict(
+            name='test_policy',
+            server_technologies=['AngularJS'],
+            template='POLICY_TEMPLATE_RAPID_DEPLOYMENT',
+            open_api_files=['https://example.com/api1.yaml', 'https://example.com/api2.yaml', 'https://example.com/api3.yaml']
+        )
+        p = ModuleParameters(params=args)
+        files = p.open_api_files
+        self.assertEqual(len(files), 3)
+
+    def test_parameter_policy_in_json_invalid_set_raises(self):
+        args = dict(
+            policy_in_json={"foobar", "set"},
+            name='test_foo'
+        )
+        p = ModuleParameters(params=args)
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.policy_in_json
+        self.assertIn("The provided 'policy_in_json' could not be converted into valid json", err.exception.args[0])
+
+    def test_parameter_server_technologies_mixed_case(self):
+        args = dict(
+            name='test_policy',
+            server_technologies=['AngularJS', 'apache tomcat'],
+            template='POLICY_TEMPLATE_RAPID_DEPLOYMENT'
+        )
+        p = ModuleParameters(params=args)
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.server_technologies
+        self.assertIn('Invalid entry for server technology', err.exception.args[0])
+
+    def test_check_by_policy_name_api_error_in_exists(self):
+        set_module_args(dict(
+            name='custom_awaf',
+            state='present'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.client.get = Mock(return_value=dict(code=500, contents='lookup error'))
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exists()
+        self.assertIn('lookup error', err.exception.args[0])
+
+    def test_check_by_policy_id_api_error_in_exists(self):
+        set_module_args(dict(
+            policy_id='12345',
+            state='present'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.client.get = Mock(side_effect=[
+            dict(code=500, contents='policy lookup error')
+        ])
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exists()
+        self.assertIn('policy lookup error', err.exception.args[0])
+
+    def test_read_current_from_device_api_error(self):
+        set_module_args(dict(
+            policy_id='12345',
+            state='present'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.policy_id = '12345'
+        mm.client.post = Mock(return_value=dict(code=500, contents='read error'))
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.read_current_from_device()
+        self.assertIn('read error', err.exception.args[0])
+
+    def test_remove_from_device_api_error(self):
+        set_module_args(dict(
+            policy_id='12345',
+            state='absent'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.client.delete = Mock(return_value=dict(code=500, contents='delete error'))
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.remove_from_device()
+        self.assertIn('delete error', err.exception.args[0])
+
+    def test_remove_from_device_failure(self):
+        set_module_args(dict(
+            policy_id='12345',
+            state='absent'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.policy_id = '12345'
+        mm.client.delete = Mock(return_value=dict(code=400, contents='delete failed'))
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.remove_from_device()
+        self.assertIn('delete failed', err.exception.args[0])
+
+    def test_import_policy_api_error(self):
+        set_module_args(dict(
+            name='custom_awaf',
+            server_technologies=['AngularJS'],
+            template='POLICY_TEMPLATE_RAPID_DEPLOYMENT'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.client.post = Mock(return_value=dict(code=500, contents='import error'))
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.import_policy('{"test": "json"}')
+        self.assertIn('import error', err.exception.args[0])
+
+    def test_apply_policy_api_error(self):
+        set_module_args(dict(
+            policy_id='12345'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.policy_id = '12345'
+        mm.client.post = Mock(return_value=dict(code=500, contents='apply error'))
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.apply_policy()
+        self.assertIn('apply error', err.exception.args[0])
+
+    def test_wait_for_task_export_failure(self):
+        set_module_args(dict(
+            policy_id='12345',
+            state='present'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.client.get = Mock(return_value=dict(
+            code=200,
+            contents=dict(status='FAILURE', result=dict(message='Export failed'))
+        ))
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.wait_for_task('task-123', export=True)
+        self.assertIn('Export failed', err.exception.args[0])
+
+    def test_wait_for_task_apply_failure(self):
+        set_module_args(dict(
+            policy_id='12345',
+            state='present'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.client.get = Mock(return_value=dict(
+            code=200,
+            contents=dict(status='FAILURE', result=dict(message='Apply failed'))
+        ))
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.wait_for_task('task-123', apply=True)
+        self.assertIn('Apply failed', err.exception.args[0])
+
+    def test_create_missing_server_techs_raises(self):
+        set_module_args(dict(
+            name='test_policy',
+            template='POLICY_TEMPLATE_RAPID_DEPLOYMENT',
+            state='present'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.create()
+        self.assertIn("'server_technologies' parameter must be provided", err.exception.args[0])
+
+    def test_create_missing_template_raises(self):
+        set_module_args(dict(
+            name='test_policy',
+            server_technologies=['AngularJS'],
+            state='present'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.create()
+        self.assertIn("'template' parameter must be provided", err.exception.args[0])
+
+    def test_policy_exists_by_id(self):
+        set_module_args(dict(
+            policy_id='12345',
+            state='present'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.client.get = Mock(return_value=dict(
+            code=200,
+            contents=dict(id='12345', fullPath='/Common/test_policy')
+        ))
+
+        result = mm.exists()
+        self.assertTrue(result)
+
+    def test_policy_not_exists(self):
+        set_module_args(dict(
+            name='nonexistent_policy',
+            state='present'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.client.get = Mock(return_value=dict(
+            code=200,
+            contents=dict(items=[])
+        ))
+
+        result = mm.exists()
+        self.assertFalse(result)
+
+    def test_idempotent_policy_with_file_types(self):
+        set_module_args(dict(
+            name='test_policy',
+            server_technologies=['AngularJS'],
+            template='POLICY_TEMPLATE_RAPID_DEPLOYMENT',
+            allowed_file_types=[
+                dict(name='php', type='explicit'),
+                dict(name='jpg', type='explicit')
+            ],
+            disallowed_file_types=[
+                dict(name='js'),
+                dict(name='*')
+            ],
+            dump_json=True
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+        self.assertFalse(results['changed'])
+        self.assertIn('test_policy', results['json'])
+
+    def test_idempotent_with_open_api_files(self):
+        set_module_args(dict(
+            name='test_policy',
+            server_technologies=['AngularJS'],
+            template='POLICY_TEMPLATE_RAPID_DEPLOYMENT',
+            open_api_files=['https://example.com/api.yaml'],
+            dump_json=True
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+        self.assertFalse(results['changed'])
+        self.assertIn('api.yaml', results['json'])
+
+    def test_all_boolean_parameters(self):
+        args = dict(
+            name='test_policy',
+            server_technologies=['AngularJS'],
+            template='POLICY_TEMPLATE_RAPID_DEPLOYMENT',
+            case_insensitive=True,
+            enable_passive_mode=True,
+            protocol_independent=True,
+            apply_policy=True
+        )
+        p = ModuleParameters(params=args)
+        self.assertTrue(p.case_insensitive)
+        self.assertTrue(p.enable_passive_mode)
+        self.assertTrue(p.protocol_independent)
+        self.assertTrue(p.apply_policy)
+
+    def test_read_current_from_device_not_found(self):
+        set_module_args(dict(
+            policy_id='12345',
+            state='present'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if,
+            required_one_of=self.spec.required_one_of,
+            mutually_exclusive=self.spec.mutually_exclusive
+        )
+        mm = ModuleManager(module=module)
+        mm.policy_id = '12345'
+        mm.client.get = Mock(return_value=dict(code=200, contents={'items': []}))
+
+        with self.assertRaises(F5ModuleError):
+            mm.read_current_from_device()
+        # Module raises error when policy not found

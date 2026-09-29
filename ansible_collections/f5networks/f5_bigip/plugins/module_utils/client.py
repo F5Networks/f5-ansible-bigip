@@ -200,6 +200,13 @@ def send_teem(client, start_time, **kwargs):
         return False
 
 
+def check_sslo_provisioned(client):
+    if not module_provisioned(client, 'sslo'):
+        raise F5ModuleError(
+            "The SSL Orchestrator module is not provisioned. Please provision the module and try again."
+        )
+
+
 class TransactionContextManager(object):
     def __init__(self, client, validate_only=False):
         self.client = client

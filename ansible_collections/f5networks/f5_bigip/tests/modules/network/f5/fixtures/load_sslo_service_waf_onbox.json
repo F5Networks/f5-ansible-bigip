@@ -1,0 +1,55 @@
+{
+    "items": [
+        {
+            "id": "006a16ad-d7b0-4e65-9c42-aaaa55556666",
+            "name": "ssloS_waf1",
+            "inputProperties": [
+                {
+                    "id": "f5-ssl-orchestrator-operation-context",
+                    "type": "JSON",
+                    "value": {
+                        "version": 14.0,
+                        "partition": "Common",
+                        "strictness": false,
+                        "operationType": "CREATE",
+                        "deploymentName": "ssloS_waf1",
+                        "deploymentType": "SERVICE"
+                    }
+                },
+                {
+                    "id": "f5-ssl-orchestrator-service",
+                    "type": "JSON",
+                    "value": [{
+                        "customService": {
+                            "name": "ssloS_waf1",
+                            "serviceDownAction": "reset",
+                            "serviceType": "awaf",
+                            "serviceSpecific": {
+                                "name": "ssloS_waf1",
+                                "appSecurityPolicy": "/Common/Testing",
+                                "dosProtectionProfile": "/Common/Test",
+                                "botDefenseProfile": "/Common/bot-defense",
+                                "appCloudSecurityService": [],
+                                "logProfile": [
+                                    {
+                                        "name": "/Common/local-dos",
+                                        "value": "/Common/local-dos"
+                                    }
+                                ],
+                                "iRuleList": [
+                                    {
+                                        "name": "/Common/Test1",
+                                        "value": "/Common/Test1"
+                                    }
+                                ]
+                            }
+                        },
+                        "vendorInfo": {
+                            "name": "F5 Advanced WAF (On-Box)"
+                        }
+                    }]
+                }
+            ]
+        }
+    ]
+}

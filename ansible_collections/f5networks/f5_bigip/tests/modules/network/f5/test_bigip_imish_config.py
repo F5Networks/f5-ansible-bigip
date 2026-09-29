@@ -423,3 +423,231 @@ class TestManager(unittest.TestCase):
             mm.upload_file_to_device(content='fake_content', name='fake_name')
 
         self.assertIn('Failed to upload the file.', err9.exception.args[0])
+
+    def test_load_config_dynamic_routing_not_enabled(self, *args):
+        set_module_args(dict(
+            lines=['neighbor 10.10.10.11 remote-as 65000'],
+            parents='router bgp 64664'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_if=self.spec.required_if,
+            add_file_common_args=self.spec.add_file_common_args
+        )
+
+        mm = ModuleManager(module=module)
+        mm.client.post.return_value = {
+            'code': 200,
+            'contents': {'commandResult': 'Dynamic routing is not enabled'}
+        }
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.load_config_on_device('test_file')
+
+        self.assertIn('Dynamic routing is not enabled', str(err.exception))
+
+    def test_read_current_dynamic_routing_not_enabled(self, *args):
+        set_module_args(dict(
+            lines=['neighbor 10.10.10.11 remote-as 65000'],
+            parents='router bgp 64664'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_if=self.spec.required_if,
+            add_file_common_args=self.spec.add_file_common_args
+        )
+
+        mm = ModuleManager(module=module)
+        mm.client.post.return_value = {
+            'code': 200,
+            'contents': {'commandResult': 'Dynamic routing is not enabled'}
+        }
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.read_current_from_device()
+
+        self.assertIn('Dynamic routing is not enabled', str(err.exception))
+
+    def test_save_on_device_success(self, *args):
+        set_module_args(dict(
+            lines=['neighbor 10.10.10.11 remote-as 65000'],
+            parents='router bgp 64664'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_if=self.spec.required_if,
+            add_file_common_args=self.spec.add_file_common_args
+        )
+
+        mm = ModuleManager(module=module)
+        mm.client.post.return_value = {'code': 200, 'contents': {'commandResult': 'saved'}}
+
+        result = mm.save_on_device()
+
+        self.assertTrue(result)
+
+    def test_match_strict(self, *args):
+        set_module_args(dict(
+            lines=[
+                'bgp graceful-restart restart-time 120',
+                'redistribute kernel route-map rhi',
+            ],
+            parents='router bgp 64664',
+            match='strict',
+        ))
+
+        current = load_fixture('load_imish_output_1.json')
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_if=self.spec.required_if,
+            add_file_common_args=self.spec.add_file_common_args
+        )
+
+        mm = ModuleManager(module=module)
+        mm.client.post.side_effect = [
+            {'code': 200, 'contents': {'commandResult': current['commandResult']}},
+            {'code': 200, 'contents': {'commandResult': ''}},
+            {'code': 200}
+        ]
+        mm.client.plugin.upload_file = Mock()
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+
+    def test_match_exact(self, *args):
+        set_module_args(dict(
+            lines=[
+                'bgp graceful-restart restart-time 120',
+                'redistribute kernel route-map rhi',
+                'neighbor 10.10.10.11 remote-as 65000',
+                'neighbor 10.10.10.11 fall-over bfd',
+                'neighbor 10.10.10.11 remote-as 65000',
+                'neighbor 10.10.10.11 fall-over bfd'
+            ],
+            parents='router bgp 64664',
+            match='exact',
+        ))
+
+        current = load_fixture('load_imish_output_1.json')
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_if=self.spec.required_if,
+            add_file_common_args=self.spec.add_file_common_args
+        )
+
+        mm = ModuleManager(module=module)
+        mm.client.post.side_effect = [
+            {'code': 200, 'contents': {'commandResult': current['commandResult']}},
+            {'code': 200, 'contents': {'commandResult': ''}},
+            {'code': 200}
+        ]
+        mm.client.plugin.upload_file = Mock()
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+
+    def test_replace_line_mode(self, *args):
+        set_module_args(dict(
+            lines=[
+                'bgp graceful-restart restart-time 180',
+            ],
+            parents='router bgp 64664',
+            replace='line',
+        ))
+
+        current = load_fixture('load_imish_output_1.json')
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_if=self.spec.required_if,
+            add_file_common_args=self.spec.add_file_common_args
+        )
+
+        mm = ModuleManager(module=module)
+        mm.client.post.side_effect = [
+            {'code': 200, 'contents': {'commandResult': current['commandResult']}},
+            {'code': 200, 'contents': {'commandResult': ''}},
+            {'code': 200}
+        ]
+        mm.client.plugin.upload_file = Mock()
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+
+    def test_with_before_after_commands(self, *args):
+        set_module_args(dict(
+            lines=[
+                'bgp graceful-restart restart-time 120',
+            ],
+            parents='router bgp 64664',
+            before='enable',
+            after='disable',
+        ))
+
+        current = load_fixture('load_imish_output_1.json')
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_if=self.spec.required_if,
+            add_file_common_args=self.spec.add_file_common_args
+        )
+
+        mm = ModuleManager(module=module)
+        mm.client.post.side_effect = [
+            {'code': 200, 'contents': {'commandResult': current['commandResult']}},
+            {'code': 200, 'contents': {'commandResult': ''}},
+            {'code': 200}
+        ]
+        mm.client.plugin.upload_file = Mock()
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+
+    def test_route_domain_zero(self, *args):
+        set_module_args(dict(
+            lines=[
+                'bgp graceful-restart restart-time 120',
+            ],
+            parents='router bgp 64664',
+            route_domain=0,
+        ))
+
+        current = load_fixture('load_imish_output_1.json')
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+            required_if=self.spec.required_if,
+            add_file_common_args=self.spec.add_file_common_args
+        )
+
+        mm = ModuleManager(module=module)
+        mm.client.post.side_effect = [
+            {'code': 200, 'contents': {'commandResult': current['commandResult']}},
+            {'code': 200, 'contents': {'commandResult': ''}},
+            {'code': 200}
+        ]
+        mm.client.plugin.upload_file = Mock()
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])

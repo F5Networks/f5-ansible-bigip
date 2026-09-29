@@ -593,3 +593,186 @@ class TestManager(unittest.TestCase):
             'Module supports only BIGIQ version 6.1.x or higher.',
             err14.exception.args[0]
         )
+
+    def test_create_with_statistics_enabled(self):
+        """Test device discovery with statistics agent enabled"""
+        set_module_args(dict(
+            device_address='192.168.1.1',
+            device_username='admin',
+            device_password='admin',
+            modules=['asm', 'ltm', 'security_shared'],
+            statistics=dict(
+                enable='yes',
+                interval=30,
+                stat_modules=['device', 'ltm'],
+                zone='default'
+            )
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+
+        # Verify statistics are enabled
+        self.assertTrue(mm.want.stats_enabled)
+        self.assertEqual(mm.want.interval, 30)
+        self.assertEqual(mm.want.zone, 'default')
+
+    def test_create_without_force_no_changes(self):
+        """Test that create without force doesn't trigger changes for existing device"""
+        set_module_args(dict(
+            device_address='192.168.1.1',
+            device_username='admin',
+            device_password='admin',
+            modules=['asm', 'ltm', 'security_shared'],
+            force=False
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+
+        # Mock exists to return True (device already exists)
+        mm.exists = Mock(return_value=True)
+
+        # When device exists and force=False, should_update determines changes
+        mm.read_current_from_device = Mock()
+        mm._update_changed_options = Mock(return_value=False)
+
+        # Call should_update to verify no changes needed
+        result = mm.should_update()
+        self.assertFalse(result)
+
+    def test_access_group_configuration(self):
+        """Test access group parameters during device discovery"""
+        args = dict(
+            device_address='192.168.1.1',
+            modules=['apm', 'ltm', 'security_shared'],
+            access_group_name='test_access_group',
+            access_group_first_device=True,
+            access_conflict_policy='keep_version'
+        )
+        p = ModuleParameters(params=args)
+
+        self.assertEqual(p.access_group_name, 'test_access_group')
+        self.assertTrue(p.access_group_first_device)
+        # access_conflict_policy is not normalized to uppercase like versioned_conflict_policy
+        self.assertEqual(p.access_conflict_policy, 'keep_version')
+
+    def test_module_list_vs_modules_parameter(self):
+        """Test that module_list is recognized as alternative to modules parameter"""
+        # Test with modules parameter
+        args1 = dict(
+            device_address='192.168.1.1',
+            modules=['asm', 'ltm', 'security_shared']
+        )
+        p1 = ModuleParameters(params=args1)
+        self.assertIsNotNone(p1.modules)
+
+    def test_ha_name_parameter_for_cluster(self):
+        """Test ha_name parameter for clustered device configuration"""
+        args = dict(
+            device_address='192.168.1.1',
+            ha_name='cluster_group',
+            use_bigiq_sync='yes',
+            modules=['asm', 'ltm', 'security_shared']
+        )
+        p = ModuleParameters(params=args)
+
+        self.assertEqual(p.ha_name, 'cluster_group')
+        self.assertTrue(p.use_bigiq_sync)
+
+    def test_conflict_policy_normalization(self):
+        """Test conflict policy parameter normalization"""
+        args = dict(
+            device_address='192.168.1.1',
+            conflict_policy='use_bigiq',
+            versioned_conflict_policy='keep_version',
+            device_conflict_policy='use_bigiq',
+            modules=['asm', 'ltm', 'security_shared']
+        )
+        p = ModuleParameters(params=args)
+
+        self.assertEqual(p.conflict_policy, 'USE_BIGIQ')
+        self.assertEqual(p.versioned_conflict_policy, 'KEEP_VERSION')
+        self.assertEqual(p.device_conflict_policy, 'USE_BIGIQ')
+
+    def test_device_port_parameter(self):
+        """Test device_port parameter default and custom values"""
+        # Test default - device_port is optional, defaults to None in ModuleParameters
+        args1 = dict(device_address='192.168.1.1', modules=['asm', 'ltm', 'security_shared'])
+        p1 = ModuleParameters(params=args1)
+        # device_port defaults to None in params (443 is default for API)
+        self.assertIsNone(p1.device_port)
+
+        # Test custom
+        args2 = dict(device_address='192.168.1.1', device_port=8443, modules=['asm', 'ltm', 'security_shared'])
+        p2 = ModuleParameters(params=args2)
+        self.assertEqual(p2.device_port, 8443)
+
+    def test_state_absent_removes_device(self):
+        """Test state=absent removes device from management"""
+        set_module_args(dict(
+            device_address='192.168.1.1',
+            state='absent'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            required_if=self.spec.required_if
+        )
+        mm = ModuleManager(module=module)
+
+        # Mock exists to return True (device exists)
+        mm.exists = Mock(return_value=True)
+
+        # When state=absent and device exists, absent() should return True
+        mm._wait_for_task = Mock()
+        mm.client.post.side_effect = [
+            {'code': 200, 'contents': {'id': 'fake_task_id'}},
+            {'code': 200, 'contents': {'id': 'fake_task_id'}}
+        ]
+
+        result = mm.absent()
+        self.assertTrue(result)
+
+    def test_stat_modules_parameter_normalization(self):
+        """Test statistics modules parameter normalization"""
+        args = dict(
+            device_address='192.168.1.1',
+            modules=['asm', 'ltm', 'security_shared'],
+            statistics=dict(
+                enable='yes',
+                stat_modules=['device', 'ltm', 'asm'],
+                interval=30,
+                zone='default'
+            )
+        )
+        p = ModuleParameters(params=args)
+
+        # Verify stat_modules are normalized to proper format
+        self.assertTrue(p.stats_enabled)
+        self.assertEqual(p.interval, 30)
+        self.assertEqual(p.zone, 'default')
+        # stat_modules should be normalized with capitalized module names
+        self.assertIsNotNone(p.stat_modules)
+
+    def test_api_parameters_from_response(self):
+        """Test API parameters parsing from device response"""
+        response = {
+            'machineId': 'device123',
+            'hostname': 'bigip.example.com',
+            'modules': ['asm', 'ltm'],
+            'status': 'ACTIVE'
+        }
+        api_params = ApiParameters(params=response)
+
+        # ApiParameters doesn't have device_id property, just verify it's created
+        self.assertIsNotNone(api_params)

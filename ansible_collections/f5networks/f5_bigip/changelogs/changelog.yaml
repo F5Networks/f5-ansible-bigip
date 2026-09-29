@@ -596,6 +596,21 @@ releases:
     - added_multi_sni_support.yaml
     - bigip-do-module-fixes.yaml
     release_date: '2025-07-03'
+  3.15.0:
+    changes:
+      minor_changes:
+      - bigip_sslo_service_offbox_awaf - New module to manage F5 Advanced WAF (Off-Box)
+        services in SSL Orchestrator.
+    fragments:
+    - add_sslo_offbox_awaf_module.yaml
+    modules:
+    - description: Manage an SSL Orchestrator AWAF (Off\-Box) security service
+      name: bigip_sslo_service_offbox_awaf
+      namespace: ''
+    - description: Manage an SSL Orchestrator WAF On\-Box security service
+      name: bigip_sslo_service_waf_onbox
+      namespace: ''
+    release_date: '2026-09-28'
   3.2.1:
     changes:
       bugfixes:

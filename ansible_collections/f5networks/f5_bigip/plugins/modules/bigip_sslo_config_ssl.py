@@ -428,7 +428,7 @@ from ansible.module_utils.basic import (
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
-    F5Client, sslo_version
+    F5Client, sslo_version, check_sslo_provisioned
 )
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, process_json,
@@ -576,6 +576,22 @@ class ApiParameters(Parameters):
         if not self._values['clientSettings']['certKeyChain']:
             return None
         return self._values['clientSettings']['certKeyChain'][0]['chain']
+
+    @property
+    def key_pfId(self):
+        if self._values['clientSettings'] is None:
+            return None
+        if not self._values['clientSettings']['certKeyChain']:
+            return None
+        return self._values['clientSettings']['certKeyChain'][0].get('pfId')
+
+    @property
+    def ca_key_pfId(self):
+        if self._values['clientSettings'] is None:
+            return None
+        if not self._values['clientSettings'].get('caCertKeyChain'):
+            return None
+        return self._values['clientSettings']['caCertKeyChain'][0].get('pfId')
 
     @property
     def client_ca_cert(self):
@@ -1118,6 +1134,7 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
+        check_sslo_provisioned(self.client)
         self.check_sslo_version()
 
         if state == 'present':
@@ -1264,6 +1281,9 @@ class ModuleManager(object):
         payload['block_untrusted'] = self.want.block_untrusted
         payload['client_ssl_options'] = self.want.client_ssl_options
         payload['server_ssl_options'] = self.want.server_ssl_options
+        # On CREATE, clientSettings/serverSettings always start at empty — no prior state
+        payload['existing_sni_server_name'] = ''
+        payload['existing_sni_default'] = False
         return payload
 
     def add_missing_options(self, payload):
@@ -1317,25 +1337,63 @@ class ModuleManager(object):
             payload['sni_server_name'] = self.have.sni_server_name
         if self.changes.sni_default is None and self.have.sni_default:
             payload['sni_default'] = self.have.sni_default
+        # existing_sni_* always carries the current stored values for clientSettings/serverSettings
+        # generalSettings will use sni_server_name/sni_default (new value or preserved above)
+        payload['existing_sni_server_name'] = self.have.sni_server_name or ''
+        payload['existing_sni_default'] = self.have.sni_default or False
         if self.changes.alpn is None and self.have.alpn:
             payload['alpn'] = self.have.alpn
         payload['proxy_type'] = self.want.proxy_type
         return payload
 
     def add_passphrases(self, payload):
-        if payload.get('client_key_passphrase') is not None:
-            passphrase = payload['client_key_passphrase']
-            if Version(self.version) < Version('9.3'):
-                payload['client_key_passphrase'] = ''.join([str(ord(i)).rjust(3, '0') for i in passphrase])
-            else:
-                payload['key_pfId'] = 'T_' + str(int(time.time() * 1000) * randint(0, 1000))
+        if Version(self.version) >= Version('9.3'):
+            if self.operation == 'MODIFY':
+                # MODIFY: reuse existing pfId from the deployed block
+                existing_key_pfId = self.have.key_pfId
+                existing_ca_pfId = self.have.ca_key_pfId
 
-        if payload.get('client_ca_key_passphrase') is not None:
-            passphrase = payload['client_ca_key_passphrase']
-            if Version(self.version) < Version('9.3'):
-                payload['client_ca_key_passphrase'] = ''.join([str(ord(i)).rjust(3, '0') for i in passphrase])
+                if existing_key_pfId:
+                    payload['key_pfId'] = existing_key_pfId
+                else:
+                    payload['key_pfId'] = 'T_' + str(int(time.time() * 1000)) + str(randint(0, 999))
+
+                if payload.get('client_key_passphrase') and self.want.update_key_passphrase:
+                    # Passphrase changed: id = existing pfId, value = new plaintext
+                    payload['key_passphrase'] = payload['client_key_passphrase']
+                else:
+                    # Passphrase unchanged: sentinel pattern (id === value)
+                    payload['key_passphrase'] = payload['key_pfId']
+
+                if payload.get('proxy_type') == 'forward':
+                    if existing_ca_pfId:
+                        payload['ca_key_pfId'] = existing_ca_pfId
+                    else:
+                        payload['ca_key_pfId'] = 'T_' + str(int(time.time() * 1000)) + str(randint(0, 999))
+
+                    if payload.get('client_ca_key_passphrase') and self.want.update_ca_key_passphrase:
+                        # CA passphrase changed: id = existing pfId, value = new plaintext
+                        pass
+                    else:
+                        # CA passphrase unchanged: sentinel pattern (id === value)
+                        payload['client_ca_key_passphrase'] = payload['ca_key_pfId']
             else:
-                payload['ca_key_pfId'] = 'T_' + str(int(time.time() * 1000) * randint(0, 1000))
+                # CREATE: generate new pfId tokens
+                payload['key_pfId'] = 'T_' + str(int(time.time() * 1000)) + str(randint(0, 999))
+                payload['key_passphrase'] = payload.get('client_key_passphrase', '') or ''
+
+                if payload.get('proxy_type') == 'forward':
+                    payload['ca_key_pfId'] = 'T_' + str(int(time.time() * 1000)) + str(randint(0, 999))
+                    payload['client_ca_key_passphrase'] = payload.get('client_ca_key_passphrase', '') or ''
+        else:
+            # SSLO < 9.3: obfuscate passphrases using 3-digit ASCII encoding
+            if payload.get('client_key_passphrase'):
+                passphrase = payload['client_key_passphrase']
+                payload['client_key_passphrase'] = ''.join([str(ord(i)).rjust(3, '0') for i in passphrase])
+
+            if payload.get('client_ca_key_passphrase'):
+                passphrase = payload['client_ca_key_passphrase']
+                payload['client_ca_key_passphrase'] = ''.join([str(ord(i)).rjust(3, '0') for i in passphrase])
 
         return payload
 

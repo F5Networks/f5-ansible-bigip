@@ -44,6 +44,9 @@ options:
           - http-proxy
           - icap
           - tap
+          - awaf
+          - awaf-off-box
+          - f5-tenant-restrictions
       ip_family:
         description:
           - Defines the IP family for this service.
@@ -153,7 +156,7 @@ from ansible.module_utils.basic import (
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
-    F5Client, sslo_version
+    F5Client, sslo_version, check_sslo_provisioned
 )
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, process_json
@@ -206,7 +209,7 @@ class ModuleParameters(Parameters):
                 element['name'] = service['service_name']
             else:
                 element['name'] = "ssloS_" + service['service_name']
-            if 'ip_family' not in service:
+            if service.get('ip_family') is None:
                 element['ipFamily'] = 'ipv4'
             else:
                 element['ipFamily'] = service['ip_family']
@@ -330,6 +333,7 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
+        check_sslo_provisioned(self.client)
         self.check_sslo_version()
 
         if state == 'present':
@@ -559,7 +563,7 @@ class ArgumentSpec(object):
                 options=dict(
                     service_name=dict(),
                     type=dict(
-                        choices=['L2', 'L3', 'http-proxy', 'icap', 'tap']
+                        choices=['L2', 'L3', 'http-proxy', 'icap', 'tap', 'awaf', 'awaf-off-box', 'f5-tenant-restrictions']
                     ),
                     ip_family=dict(
                         choices=['ipv4', 'ipv6']

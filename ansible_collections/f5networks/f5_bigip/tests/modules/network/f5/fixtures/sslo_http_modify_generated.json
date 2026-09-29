@@ -31,7 +31,6 @@
                         "proxyType": "Transparent",
                         "authOffload": true
                     },
-                    "controlChannels": [],
                     "connectionInformation": {
                         "fromBigipNetwork": {
                             "name": "toNetwork",
@@ -112,7 +111,7 @@
                     "isAutoManage": true,
                     "portRemap": true,
                     "serviceEntrySSLProfile": "",
-                    "serviceReturnSSLProfile": "",    
+                    "serviceReturnSSLProfile": "",
                     "httpPortRemapValue": 80,
                     "serviceDownAction": "reset",
                     "iRuleList": [],

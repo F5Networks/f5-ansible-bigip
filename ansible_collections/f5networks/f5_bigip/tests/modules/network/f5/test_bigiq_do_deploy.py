@@ -189,6 +189,7 @@ class TestManager(unittest.TestCase):
         declaration = load_fixture('do_declaration.json')
         set_module_args(dict(
             content=declaration,
+            timeout=500
         ))
 
         module = AnsibleModule(
@@ -243,3 +244,257 @@ class TestManager(unittest.TestCase):
             mm.upsert_on_device()
 
         self.assertIn('service not available', err4.exception.args[0])
+
+
+class TestManagerAdditionalCoverage(unittest.TestCase):
+    """Additional tests to close coverage gaps - direct unit testing of methods"""
+
+    def setUp(self):
+        self.patcher1 = patch('time.sleep')
+        self.patcher1.start()
+
+    def tearDown(self):
+        self.patcher1.stop()
+
+    def test_timeout_parameter_minimum_boundary(self):
+        """Test timeout parameter at minimum boundary (150 seconds)"""
+        args = dict(timeout=150)
+        p = ModuleParameters(params=args)
+        # Should not raise an error at boundary
+        timeout_tuple = p.timeout
+        self.assertEqual(timeout_tuple, (1.5, 100))
+
+    def test_timeout_parameter_maximum_boundary(self):
+        """Test timeout parameter at maximum boundary (3600 seconds)"""
+        args = dict(timeout=3600)
+        p = ModuleParameters(params=args)
+        # Should not raise an error at boundary
+        timeout_tuple = p.timeout
+        self.assertEqual(timeout_tuple, (36.0, 100))
+
+    def test_timeout_parameter_below_minimum(self):
+        """Test timeout parameter raises error when below minimum (149 seconds)"""
+        args = dict(timeout=149)
+        p = ModuleParameters(params=args)
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.timeout
+
+        self.assertIn(
+            "Timeout value must be between 150 and 3600 seconds.",
+            err.exception.args[0]
+        )
+
+    def test_timeout_parameter_above_maximum(self):
+        """Test timeout parameter raises error when above maximum (3601 seconds)"""
+        args = dict(timeout=3601)
+        p = ModuleParameters(params=args)
+
+        with self.assertRaises(F5ModuleError) as err:
+            p.timeout
+
+        self.assertIn(
+            "Timeout value must be between 150 and 3600 seconds.",
+            err.exception.args[0]
+        )
+
+    def test_module_parameters_content_from_json_string(self):
+        """Test ModuleParameters parses JSON string content"""
+        args = dict(content='{"key": "value", "nested": {"data": 123}}')
+        p = ModuleParameters(params=args)
+        content = p.content
+
+        self.assertIsInstance(content, dict)
+        self.assertEqual(content['key'], 'value')
+        self.assertEqual(content['nested']['data'], 123)
+
+    def test_module_parameters_content_empty_string(self):
+        """Test ModuleParameters handles empty JSON string"""
+        args = dict(content='{}')
+        p = ModuleParameters(params=args)
+        content = p.content
+
+        self.assertIsInstance(content, dict)
+        self.assertEqual(content, {})
+
+    def test_module_parameters_content_as_dict(self):
+        """Test ModuleParameters with content already as dict"""
+        args = dict(content={'key': 'value'})
+        p = ModuleParameters(params=args)
+        content = p.content
+
+        self.assertIsInstance(content, dict)
+        self.assertEqual(content['key'], 'value')
+
+    def test_upsert_on_device_success_201(self):
+        """Test upsert_on_device succeeds with 201 response and returns task id"""
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
+
+        # Create a mock manager directly without AnsibleModule
+        mm = Mock(spec=ModuleManager)
+        mm.want = Mock()
+        mm.want.content = {'declaration': 'test'}
+        mm.client = Mock()
+        mm.client.post = Mock(return_value={'code': 201, 'contents': {'id': uuid}})
+
+        # Bind the real method to the mock instance
+        mm.upsert_on_device = ModuleManager.upsert_on_device.__get__(mm, ModuleManager)
+
+        result = mm.upsert_on_device()
+
+        self.assertEqual(result, uuid)
+
+    def test_upsert_on_device_error_400(self):
+        """Test upsert_on_device raises error with 400 response"""
+        mm = Mock(spec=ModuleManager)
+        mm.want = Mock()
+        mm.want.content = {'declaration': 'invalid'}
+        mm.client = Mock()
+        mm.client.post = Mock(return_value={'code': 400, 'contents': 'bad request'})
+
+        # Bind the real method to the mock instance
+        mm.upsert_on_device = ModuleManager.upsert_on_device.__get__(mm, ModuleManager)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.upsert_on_device()
+
+        self.assertIn('bad request', err.exception.args[0])
+
+    def test_upsert_on_device_error_500(self):
+        """Test upsert_on_device raises error with 500 response"""
+        mm = Mock(spec=ModuleManager)
+        mm.want = Mock()
+        mm.want.content = {'declaration': 'test'}
+        mm.client = Mock()
+        mm.client.post = Mock(return_value={'code': 500, 'contents': 'server error'})
+
+        mm.upsert_on_device = ModuleManager.upsert_on_device.__get__(mm, ModuleManager)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.upsert_on_device()
+
+        self.assertIn('server error', err.exception.args[0])
+
+    def test_upsert_on_device_error_503(self):
+        """Test upsert_on_device raises error with 503 response"""
+        mm = Mock(spec=ModuleManager)
+        mm.want = Mock()
+        mm.want.content = {'declaration': 'test'}
+        mm.client = Mock()
+        mm.client.post = Mock(return_value={'code': 503, 'contents': 'service unavailable'})
+
+        mm.upsert_on_device = ModuleManager.upsert_on_device.__get__(mm, ModuleManager)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.upsert_on_device()
+
+        self.assertIn('service unavailable', err.exception.args[0])
+
+    def test_get_errors_from_response_message_and_errors_list(self):
+        """Test _get_errors_from_response extracts both message and errors list"""
+        mm = Mock(spec=ModuleManager)
+
+        message = {
+            'message': 'invalid config - rolled back',
+            'errors': ['error 1', 'error 2', 'error 3']
+        }
+
+        mm._get_errors_from_response = ModuleManager._get_errors_from_response.__get__(mm, ModuleManager)
+        errors = mm._get_errors_from_response(message)
+
+        self.assertEqual(len(errors), 4)
+        self.assertIn('invalid config - rolled back', errors)
+        self.assertIn('error 1', errors)
+        self.assertIn('error 2', errors)
+        self.assertIn('error 3', errors)
+
+    def test_get_errors_from_response_only_errors_list(self):
+        """Test _get_errors_from_response extracts only errors list"""
+        mm = Mock(spec=ModuleManager)
+
+        message = {'errors': ['parse error', 'validation error']}
+
+        mm._get_errors_from_response = ModuleManager._get_errors_from_response.__get__(mm, ModuleManager)
+        errors = mm._get_errors_from_response(message)
+
+        self.assertEqual(len(errors), 2)
+        self.assertIn('parse error', errors)
+        self.assertIn('validation error', errors)
+
+    def test_get_errors_from_response_only_message(self):
+        """Test _get_errors_from_response extracts only message field"""
+        mm = Mock(spec=ModuleManager)
+
+        message = {'message': 'invalid config - rolled back'}
+
+        mm._get_errors_from_response = ModuleManager._get_errors_from_response.__get__(mm, ModuleManager)
+        errors = mm._get_errors_from_response(message)
+
+        self.assertEqual(len(errors), 1)
+        self.assertIn('invalid config - rolled back', errors)
+
+    def test_check_task_on_device_error_422(self):
+        """Test _check_task_on_device raises error with 422 response and extracts errors"""
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
+        mm = Mock(spec=ModuleManager)
+        mm.client = Mock()
+        mm.client.get = Mock(return_value={
+            'code': 422,
+            'contents': {
+                'message': 'invalid config - rolled back',
+                'errors': ['deployment error 1', 'deployment error 2']
+            }
+        })
+
+        # Bind both methods so they can call each other
+        mm._get_errors_from_response = ModuleManager._get_errors_from_response.__get__(mm, ModuleManager)
+        mm._check_task_on_device = ModuleManager._check_task_on_device.__get__(mm, ModuleManager)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm._check_task_on_device(uuid)
+
+        error_msg = err.exception.args[0]
+        self.assertIn('invalid config - rolled back', error_msg)
+        self.assertIn('deployment error 1', error_msg)
+        self.assertIn('deployment error 2', error_msg)
+
+    def test_check_task_on_device_error_424(self):
+        """Test _check_task_on_device raises error with 424 response"""
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
+        mm = Mock(spec=ModuleManager)
+        mm.client = Mock()
+        mm.client.get = Mock(return_value={
+            'code': 424,
+            'contents': {
+                'message': 'invalid config - rolled back',
+                'errors': ['failed to deploy']
+            }
+        })
+
+        # Bind both methods so they can call each other
+        mm._get_errors_from_response = ModuleManager._get_errors_from_response.__get__(mm, ModuleManager)
+        mm._check_task_on_device = ModuleManager._check_task_on_device.__get__(mm, ModuleManager)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm._check_task_on_device(uuid)
+
+        error_msg = err.exception.args[0]
+        self.assertIn('invalid config - rolled back', error_msg)
+        self.assertIn('failed to deploy', error_msg)
+
+    def test_check_task_on_device_error_503(self):
+        """Test _check_task_on_device raises error with 503 response"""
+        uuid = "e7550a12-994b-483f-84ee-761eb9af6750"
+        mm = Mock(spec=ModuleManager)
+        mm.client = Mock()
+        mm.client.get = Mock(return_value={
+            'code': 503,
+            'contents': 'service unavailable'
+        })
+
+        mm._check_task_on_device = ModuleManager._check_task_on_device.__get__(mm, ModuleManager)
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm._check_task_on_device(uuid)
+
+        self.assertIn('service unavailable', err.exception.args[0])

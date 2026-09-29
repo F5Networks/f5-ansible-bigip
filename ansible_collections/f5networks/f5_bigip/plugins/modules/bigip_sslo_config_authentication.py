@@ -248,12 +248,15 @@ from ansible.module_utils.basic import (
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
-    F5Client, sslo_version
+    F5Client, check_sslo_provisioned, sslo_version
 )
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, flatten_boolean, process_json
 )
 from ..module_utils.compare import compare_complex_list
+from ..module_utils.constants import (
+    min_sslo_version, max_sslo_version
+)
 from ..module_utils.sslo_templates.sslo_auth import (
     create_modify, delete
 )
@@ -665,6 +668,7 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
+        check_sslo_provisioned(self.client)
         self.check_sslo_version()
 
         if state == 'present':
@@ -683,9 +687,12 @@ class ModuleManager(object):
 
     def check_sslo_version(self):
         self.version = sslo_version(self.client)
-        if Version(self.version) > Version('12.0') or \
-                Version(self.version) < Version('9.0'):
-            raise F5ModuleError("Unsupported SSL Orchestrator version, requires a version between '9.0' and '9.9'")
+        if Version(self.version) > Version(max_sslo_version) or \
+                Version(self.version) < Version(min_sslo_version):
+            raise F5ModuleError(
+                f"Unsupported SSL Orchestrator version, "
+                f"requires a version between {min_sslo_version} and {max_sslo_version}"
+            )
         return True
 
     def present(self):
@@ -794,7 +801,7 @@ class ModuleManager(object):
         payload['name'] = f"sslo_obj_AUTHENTICATION_{self.operation}_{self.want.name}"
         payload['deployment_name'] = self.want.name
         payload['operation'] = self.operation
-        payload['sslo_version'] = float(self.version)
+        payload['sslo_version'] = Version(self.version)
         if self.operation == 'MODIFY' or self.operation == 'DELETE':
             payload['dep_ref'] = f"https://localhost/mgmt/shared/iapp/blocks/{self.block_id}"
             payload['block_id'] = self.block_id
@@ -831,6 +838,8 @@ class ModuleManager(object):
             payload['ocsp_dest'] = self.have.ocsp_dest
         if self.changes.ocsp_source is None:
             payload['ocsp_source'] = self.have.ocsp_source
+        if self.changes.ocsp_ssl_profile is None:
+            payload['ocsp_ssl_profile'] = self.have.ocsp_ssl_profile
         if self.changes.ocsp_vlans is None:
             payload['ocsp_vlans'] = self.have.ocsp_vlans
         if self.changes.ocsp_port is None:

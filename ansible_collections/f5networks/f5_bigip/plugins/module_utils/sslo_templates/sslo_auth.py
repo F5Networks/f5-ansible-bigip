@@ -79,7 +79,7 @@ create_modify = """
                },
                "ocsp":{
                   "useExisting": {{ params.use_existing | tojson }},
-                  "ocspProfile": {% if params.existing_ocsp is defined and params.existing_ocsp != ""%}{{ params.existing_ocsp }},{% else %}"",{% endif %}
+                  "ocspProfile": {% if params.existing_ocsp is defined and params.existing_ocsp != "" %}"{{ params.existing_ocsp }}"{% else %}""{% endif %},
                   "maxAge": {{ params.ocsp_max_age }},
                   "nonce": "{{ params.ocsp_nonce }}",
                   "fqdn": "{{ params.ocsp_fqdn }}"

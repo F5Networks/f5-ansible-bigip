@@ -1,0 +1,38 @@
+{
+    "name": "sslo_obj_SERVICE_DELETE_ssloS_awaf1a",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "deploymentName": "ssloS_awaf1a",
+                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/006a16ad-d7b0-4e65-9c42-aaaa55556666",
+                "deploymentType": "SERVICE",
+                "operationType": "DELETE",
+                "version": 9.0,
+                "partition": "Common"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-network",
+            "type": "JSON",
+            "value": []
+        },
+        {
+            "id": "f5-ssl-orchestrator-service",
+            "type": "JSON",
+            "value": {
+                "existingBlockId": "006a16ad-d7b0-4e65-9c42-aaaa55556666",
+                "name": "ssloS_awaf1a",
+                "partition": "Common",
+                "previousVersion": 9.0,
+                "version": 9.0
+            }
+        }
+    ],
+    "dataProperties": [],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "state": "BINDING"
+}

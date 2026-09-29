@@ -1,0 +1,248 @@
+{
+    "name": "sslo_obj_SERVICE_MODIFY_ssloS_awaf1a",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "version": 9.0,
+                "partition": "Common",
+                "strictness": false,
+                "operationType": "MODIFY",
+                "deploymentName": "ssloS_awaf1a",
+                "deploymentType": "SERVICE",
+                "deploymentReference": "https://localhost/mgmt/shared/iapp/blocks/006a16ad-d7b0-4e65-9c42-aaaa55556666"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-network",
+            "type": "JSON",
+            "value": []
+        },
+        {
+            "id": "f5-ssl-orchestrator-service",
+            "type": "JSON",
+            "value": {
+                "customService": {
+                    "name": "ssloS_awaf1a",
+                    "serviceType": "awaf-off-box",
+                    "serviceSpecific": {
+                        "name": "ssloS_awaf1a",
+                        "proxyType": "Transparent",
+                        "httpProfile": "/Common/http",
+                        "description": ""
+                    },
+                    "connectionInformation": {
+                        "fromBigipNetwork": {
+                            "name": "toNetwork",
+                            "vlan": {
+                                "path": "/Common/sslo-inbound-vlan",
+                                "create": false,
+                                "modify": false,
+                                "selectedValue": "/Common/sslo-inbound-vlan",
+                                "networkVlanValue": ""
+                            },
+                            "routeDomain": {
+                                "id": 0,
+                                "create": false
+                            },
+                            "selfIpConfig": {
+                                "create": false,
+                                "modify": false,
+                                "autoValue": "198.19.128.10/25",
+                                "selectedValue": "",
+                                "selfIp": "198.19.128.10",
+                                "netmask": "255.255.255.128",
+                                "floating": false,
+                                "HAstaticIpMap": []
+                            },
+                            "networkBlockId": ""
+                        },
+                        "toBigipNetwork": {
+                            "name": "fromNetwork",
+                            "vlan": {
+                                "path": "/Common/sslo-outbound-vlan",
+                                "create": false,
+                                "modify": false,
+                                "selectedValue": "/Common/sslo-outbound-vlan",
+                                "networkVlanValue": ""
+                            },
+                            "routeDomain": {
+                                "id": 0,
+                                "create": false
+                            },
+                            "selfIpConfig": {
+                                "create": false,
+                                "modify": false,
+                                "autoValue": "198.19.128.138/25",
+                                "selectedValue": "",
+                                "selfIp": "198.19.128.138",
+                                "netmask": "255.255.255.128",
+                                "floating": false,
+                                "HAstaticIpMap": []
+                            },
+                            "networkBlockId": ""
+                        }
+                    },
+                    "snatConfiguration": {
+                        "clientSnat": "existingSNAT",
+                        "snat": {
+                            "referredObj": "/Common/awaf1a-snatpool",
+                            "ipv4SnatAddresses": [],
+                            "ipv6SnatAddresses": []
+                        }
+                    },
+                    "loadBalancing": {
+                        "devices": [
+                            {
+                                "ip": "10.10.100.100",
+                                "port": 3128
+                            },
+                            {
+                                "ip": "10.10.100.100",
+                                "port": 8080
+                            }
+                        ],
+                        "monitor": {
+                            "fromSystem": "/Common/gateway_icmp"
+                        }
+                    },
+                    "initialIpFamily": "ipv4",
+                    "ipFamily": "ipv4",
+                    "isAutoManage": true,
+                    "portRemap": true,
+                    "serviceEntrySSLProfile": "",
+                    "serviceReturnSSLProfile": "",
+                    "controlChannels": [],
+                    "httpPortRemapValue": 8080,
+                    "serviceDownAction": "reset",
+                    "iRuleList": [],
+                    "managedNetwork": {
+                        "serviceType": "awaf-off-box",
+                        "ipFamily": "ipv4",
+                        "isAutoManage": true,
+                        "ipv4": {
+                            "serviceType": "awaf-off-box",
+                            "ipFamily": "ipv4",
+                            "serviceSubnet": "198.19.128.0",
+                            "serviceIndex": 0,
+                            "subnetMask": "255.255.255.0",
+                            "toServiceNetwork": "198.19.128.0",
+                            "toServiceMask": "255.255.255.128",
+                            "toServiceSelfIp": "198.19.128.10",
+                            "fromServiceNetwork": "198.19.128.128",
+                            "fromServiceMask": "255.255.255.128",
+                            "fromServiceSelfIp": "198.19.128.138"
+                        },
+                        "operation": "RESERVEANDCOMMIT"
+                    }
+                },
+                "fromVlanNetworkObj": {
+                    "create": false,
+                    "modify": false,
+                    "networkError": false
+                },
+                "toVlanNetworkObj": {
+                    "create": false,
+                    "modify": false,
+                    "networkError": false
+                },
+                "fromNetworkObj": {
+                    "name": "toNetwork",
+                    "partition": "Common",
+                    "strictness": false,
+                    "vlan": {
+                        "create": false,
+                        "modify": false,
+                        "name": "toNetwork",
+                        "path": "/Common/sslo-inbound-vlan",
+                        "networkError": false,
+                        "interface": [],
+                        "tag": 0,
+                        "networkInterface": "",
+                        "networkTag": 0
+                    },
+                    "selfIpConfig": {
+                        "create": false,
+                        "modify": false,
+                        "selfIp": "198.19.128.10",
+                        "netmask": "255.255.255.128",
+                        "floating": false,
+                        "HAstaticIpMap": []
+                    },
+                    "routeDomain": {
+                        "id": 0,
+                        "create": false
+                    }
+                },
+                "toNetworkObj": {
+                    "name": "fromNetwork",
+                    "partition": "Common",
+                    "strictness": true,
+                    "vlan": {
+                        "create": false,
+                        "modify": false,
+                        "name": "fromNetwork",
+                        "path": "/Common/sslo-outbound-vlan",
+                        "networkError": false,
+                        "interface": [],
+                        "tag": 0,
+                        "networkInterface": "",
+                        "networkTag": 0
+                    },
+                    "selfIpConfig": {
+                        "create": false,
+                        "modify": false,
+                        "selfIp": "198.19.128.138",
+                        "netmask": "255.255.255.128",
+                        "floating": false,
+                        "HAstaticIpMap": []
+                    },
+                    "routeDomain": {
+                        "id": 0,
+                        "create": false
+                    }
+                },
+                "vendorInfo": {
+                    "name": "F5 Advanced WAF (Off-Box)"
+                },
+                "name": "ssloS_awaf1a",
+                "partition": "Common",
+                "description": "Type: AWAF Off-Box",
+                "strictness": false,
+                "useTemplate": false,
+                "serviceTemplate": "",
+                "templateName": "AWAF Off-Box Service",
+                "previousVersion": 9.0,
+                "version": 9.0,
+                "existingBlockId": "006a16ad-d7b0-4e65-9c42-aaaa55556666"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-service-chain",
+            "type": "JSON",
+            "value": []
+        },
+        {
+            "id": "f5-ssl-orchestrator-policy",
+            "type": "JSON",
+            "value": []
+        }
+    ],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "configProcessorTimeoutSeconds": 120,
+    "statsProcessorTimeoutSeconds": 60,
+    "configProcessorAffinity": {
+        "processorPolicy": "LOCAL",
+        "affinityProcessorReference": {
+            "link": "https://localhost/mgmt/shared/iapp/affinity/local"
+        }
+    },
+    "state": "BINDING",
+    "presentationHtmlReference": {
+        "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+    },
+    "operation": "MODIFY"
+}

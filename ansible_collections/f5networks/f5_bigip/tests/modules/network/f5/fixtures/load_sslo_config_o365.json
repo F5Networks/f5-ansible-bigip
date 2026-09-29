@@ -1,0 +1,77 @@
+{
+    "endpoint": "Worldwide",
+    "service_areas": {
+        "common": true,
+        "exchange": true,
+        "sharepoint": true,
+        "skype": true
+    },
+    "outputs": {
+        "url_categories": true,
+        "url_datagroups": false,
+        "ip_datagroups": true
+    },
+    "o365_categories": {
+        "all": true,
+        "optimize": true,
+        "default": true,
+        "allow": true
+    },
+    "only_required": true,
+    "excluded_urls": [
+        "platform.linkedin.com",
+        ".entrust.net"
+    ],
+    "included_urls": {
+        "all": [],
+        "optimized": [],
+        "default": [],
+        "allow": []
+    },
+    "excluded_ips": [],
+    "system": {
+        "log_level": 1,
+        "ca_bundle": "/Common/ca-bundle.crt",
+        "working_directory": "/var/config/rest/iapps/f5-iappslx-ssl-orchestrator/nodejs/o365",
+        "retry_attempts": 3,
+        "retry_delay": 300
+    },
+    "schedule": {
+        "periods": "daily",
+        "run_date": 1,
+        "run_time": "04:00",
+        "start_date": "",
+        "start_time": ""
+    },
+    "status": {
+        "description": "URLs exists - update bypassed",
+        "last_run": "2026-04-06 04:00",
+        "next_run": "2026-04-07 04:00 (Tomorrow)",
+        "last_hash_includedUrls": {
+            "default": "286ff503039939571318b166a7ce27d5b00381c0def20e933eaa939b4656672a",
+            "all": "286ff503039939571318b166a7ce27d5b00381c0def20e933eaa939b4656672a",
+            "optimized": "286ff503039939571318b166a7ce27d5b00381c0def20e933eaa939b4656672a",
+            "allow": "286ff503039939571318b166a7ce27d5b00381c0def20e933eaa939b4656672a"
+        },
+        "last_hash_excludedUrls": "cea453823c316a2f1cd2ea13b4187a16337cab068aa1dcf8b7e48c381bb4eccf",
+        "last_hash_excludedIPs": "be8c31d1ff7f62ca82ba7ab8d0ec9c27728857cfa798451fbe88d23f1de8d427"
+    },
+    "deviceStatus": [
+        {
+            "deviceId": "bigip1",
+            "status": {
+                "description": "URLs exists - update bypassed",
+                "last_run": "2026-04-06 04:00",
+                "next_run": "2026-04-07 04:00 (Tomorrow)",
+                "last_hash_includedUrls": {
+                    "default": "286ff503039939571318b166a7ce27d5b00381c0def20e933eaa939b4656672a",
+                    "all": "286ff503039939571318b166a7ce27d5b00381c0def20e933eaa939b4656672a",
+                    "optimized": "286ff503039939571318b166a7ce27d5b00381c0def20e933eaa939b4656672a",
+                    "allow": "286ff503039939571318b166a7ce27d5b00381c0def20e933eaa939b4656672a"
+                },
+                "last_hash_excludedUrls": "cea453823c316a2f1cd2ea13b4187a16337cab068aa1dcf8b7e48c381bb4eccf",
+                "last_hash_excludedIPs": "be8c31d1ff7f62ca82ba7ab8d0ec9c27728857cfa798451fbe88d23f1de8d427"
+            }
+        }
+    ]
+}

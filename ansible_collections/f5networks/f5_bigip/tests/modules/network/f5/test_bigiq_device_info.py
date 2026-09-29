@@ -571,3 +571,463 @@ class TestMainFunction(unittest.TestCase):
 
         self.assertTrue(result.exception.args[0]['failed'])
         self.assertIn('This module has failed', result.exception.args[0]['msg'])
+
+
+class TestApplicationsFactManagerEdgeCases(unittest.TestCase):
+    """Test edge cases and error scenarios for ApplicationsFactManager"""
+    def setUp(self):
+        self.spec = ArgumentSpec()
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_device_info.send_teem')
+        self.m1 = self.p1.start()
+        self.m1.return_value = True
+
+    def tearDown(self):
+        self.p1.stop()
+
+    def test_get_facts_empty_collection(self, *args):
+        """Test handling of empty applications collection"""
+        set_module_args(dict(gather_subset=['applications']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        tm = ApplicationsFactManager(module=module, client=Mock())
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+        tm.client.get.return_value = dict(code=200, contents={'result': {'items': []}})
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertEqual(len(results['applications']), 0)
+
+    def test_get_facts_403_forbidden(self, *args):
+        """Test 403 Forbidden error"""
+        set_module_args(dict(gather_subset=['applications']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        tm = ApplicationsFactManager(module=module, client=Mock())
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+        tm.client.get.return_value = dict(code=403, contents='Forbidden')
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('Forbidden', err.exception.args[0])
+
+    def test_get_facts_500_server_error(self, *args):
+        """Test 500 Internal Server Error"""
+        set_module_args(dict(gather_subset=['applications']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        tm = ApplicationsFactManager(module=module, client=Mock())
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+        tm.client.get.return_value = dict(code=500, contents='Internal Server Error')
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('Internal Server Error', err.exception.args[0])
+
+
+class TestManagedDevicesFactManagerEdgeCases(unittest.TestCase):
+    """Test edge cases and error scenarios for ManagedDevicesFactManager"""
+    def setUp(self):
+        self.spec = ArgumentSpec()
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_device_info.send_teem')
+        self.m1 = self.p1.start()
+        self.m1.return_value = True
+
+    def tearDown(self):
+        self.p1.stop()
+
+    def test_get_facts_empty_collection(self, *args):
+        """Test handling of empty managed devices collection"""
+        set_module_args(dict(gather_subset=['managed-devices']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        tm = ManagedDevicesFactManager(module=module, client=Mock())
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+        tm.client.get.return_value = dict(code=200, contents={'items': []})
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertEqual(len(results['managed_devices']), 0)
+
+    def test_get_facts_401_unauthorized(self, *args):
+        """Test 401 Unauthorized error"""
+        set_module_args(dict(gather_subset=['managed-devices']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        tm = ManagedDevicesFactManager(module=module, client=Mock())
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+        tm.client.get.return_value = dict(code=401, contents='Unauthorized')
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('Unauthorized', err.exception.args[0])
+
+    def test_get_facts_with_is_clustered_property(self, *args):
+        """Test boolean property transformation for is_clustered"""
+        set_module_args(dict(gather_subset=['managed-devices']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        tm = ManagedDevicesFactManager(module=module, client=Mock())
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+        tm.client.get.return_value = dict(code=200, contents=load_fixture('load_bigiq_devices.json'))
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        for device in results['managed_devices']:
+            self.assertIn(device['is_clustered'], ['yes', 'no', True, False])
+
+
+class TestPurchasedPoolLicensesFactManagerEdgeCases(unittest.TestCase):
+    """Test edge cases and error scenarios for PurchasedPoolLicensesFactManager"""
+    def setUp(self):
+        self.spec = ArgumentSpec()
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_device_info.send_teem')
+        self.m1 = self.p1.start()
+        self.m1.return_value = True
+
+    def tearDown(self):
+        self.p1.stop()
+
+    def test_get_facts_empty_collection(self, *args):
+        """Test handling of empty purchased pool licenses"""
+        set_module_args(dict(gather_subset=['purchased-pool-licenses']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        tm = PurchasedPoolLicensesFactManager(module=module, client=Mock())
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+        tm.client.get.return_value = dict(code=200, contents={'items': []})
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertEqual(len(results['purchased_pool_licenses']), 0)
+
+    def test_get_facts_502_bad_gateway(self, *args):
+        """Test 502 Bad Gateway error"""
+        set_module_args(dict(gather_subset=['purchased-pool-licenses']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        tm = PurchasedPoolLicensesFactManager(module=module, client=Mock())
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+        tm.client.get.return_value = dict(code=502, contents='Bad Gateway')
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('Bad Gateway', err.exception.args[0])
+
+
+class TestRegkeyPoolsFactManagerEdgeCases(unittest.TestCase):
+    """Test edge cases and error scenarios for RegkeyPoolsFactManager"""
+    def setUp(self):
+        self.spec = ArgumentSpec()
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_device_info.send_teem')
+        self.m1 = self.p1.start()
+        self.m1.return_value = True
+
+    def tearDown(self):
+        self.p1.stop()
+
+    def test_get_facts_empty_pools(self, *args):
+        """Test handling of empty regkey pools"""
+        set_module_args(dict(gather_subset=['regkey-pools']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        tm = RegkeyPoolsFactManager(module=module, client=Mock())
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+        tm.client.get.return_value = dict(code=200, contents={'items': []})
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertEqual(len(results['regkey_pools']), 0)
+
+    def test_get_facts_multiple_api_calls_partial_failure(self, *args):
+        """Test failure on second API call in multi-call scenario"""
+        set_module_args(dict(gather_subset=['regkey-pools']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        tm = RegkeyPoolsFactManager(module=module, client=Mock())
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+        tm.client.get.side_effect = [
+            dict(code=200, contents=load_fixture('load_bigiq_licenses.json')),
+            dict(code=500, contents='Internal Server Error')
+        ]
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('Internal Server Error', err.exception.args[0])
+
+
+class TestSystemInfoFactManagerEdgeCases(unittest.TestCase):
+    """Test edge cases and error scenarios for SystemInfoFactManager"""
+    def setUp(self):
+        self.spec = ArgumentSpec()
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_device_info.send_teem')
+        self.m1 = self.p1.start()
+        self.m1.return_value = True
+
+    def tearDown(self):
+        self.p1.stop()
+
+    def test_get_facts_partial_data(self, *args):
+        """Test handling when some system info API calls succeed"""
+        set_module_args(dict(gather_subset=['system-info']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        tm = SystemInfoFactManager(module=module, client=Mock())
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+        tm.client.get.side_effect = [
+            dict(code=200, contents=load_fixture('load_bigiq_hw_info.json')),
+            dict(code=200, contents=load_fixture('load_bigiq_system_setup.json')),
+            dict(code=200, contents=load_fixture('load_bigiq_clock_info.json')),
+            dict(code=200, contents=load_fixture('load_bigiq_version.json')),
+        ]
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertIn('time', results['system_info'])
+        self.assertIn('hardware_information', results['system_info'])
+
+
+class TestVlansFactManagerEdgeCases(unittest.TestCase):
+    """Test edge cases and error scenarios for VlansFactManager"""
+    def setUp(self):
+        self.spec = ArgumentSpec()
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_device_info.send_teem')
+        self.m1 = self.p1.start()
+        self.m1.return_value = True
+
+    def tearDown(self):
+        self.p1.stop()
+
+    def test_get_facts_empty_vlans(self, *args):
+        """Test handling of empty vlans collection"""
+        set_module_args(dict(gather_subset=['vlans']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        tm = VlansFactManager(module=module, client=Mock())
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+        tm.client.get.return_value = dict(code=200, contents={'items': []})
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertEqual(len(results['vlans']), 0)
+
+    def test_get_facts_stats_call_failure(self, *args):
+        """Test failure when stats API call fails"""
+        set_module_args(dict(gather_subset=['vlans']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        tm = VlansFactManager(module=module, client=Mock())
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+        tm.client.get.side_effect = [
+            dict(code=200, contents=load_fixture('load_bigiq_vlan.json')),
+            dict(code=503, contents='Service Unavailable')
+        ]
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('Service Unavailable', err.exception.args[0])
+
+
+class TestModuleManagerGatherSubsetFiltering(unittest.TestCase):
+    """Test gather_subset parameter filtering and combinations"""
+    def setUp(self):
+        self.spec = ArgumentSpec()
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_device_info.send_teem')
+        self.m1 = self.p1.start()
+        self.m1.return_value = True
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_device_info.F5Client')
+        self.m2 = self.p2.start()
+        self.m2.return_value = Mock()
+        self.mock_module_helper = patch.multiple(AnsibleModule,
+                                                 exit_json=exit_json,
+                                                 fail_json=fail_json)
+        self.mock_module_helper.start()
+
+    def tearDown(self):
+        self.p1.stop()
+        self.p2.stop()
+        self.mock_module_helper.stop()
+
+    def test_gather_subset_single_fact(self):
+        """Test single fact type gathering"""
+        set_module_args(dict(gather_subset=['applications']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+        mm.execute_managers = Mock(return_value={'applications': []})
+
+        result = mm.exec_module()
+
+        self.assertTrue(result['changed'])
+
+    def test_gather_subset_all_with_exclusion(self):
+        """Test 'all' keyword with specific exclusion"""
+        set_module_args(dict(gather_subset=['all', '!vlans']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+
+        # Verify that after processing, vlans is not in the gather_subset
+        mm.handle_all_keyword()
+        mm.filter_excluded_meta_facts()
+        result = mm.filter_excluded_facts()
+
+        self.assertNotIn('vlans', result)
+        self.assertIn('applications', result)
+        self.assertIn('managed-devices', result)
+
+    def test_gather_subset_multiple_exclusions(self):
+        """Test multiple exclusions"""
+        set_module_args(dict(
+            gather_subset=['all', '!vlans', '!system-info', '!applications']
+        ))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+
+        mm.handle_all_keyword()
+        mm.filter_excluded_meta_facts()
+        result = mm.filter_excluded_facts()
+
+        self.assertNotIn('vlans', result)
+        self.assertNotIn('system-info', result)
+        self.assertNotIn('applications', result)
+        self.assertIn('managed-devices', result)
+        self.assertIn('purchased-pool-licenses', result)
+
+    def test_gather_subset_exclude_all_only(self):
+        """Test '!all' exclusion only"""
+        set_module_args(dict(gather_subset=['!all']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+
+        mm.handle_all_keyword()
+        mm.filter_excluded_meta_facts()
+        result = mm.filter_excluded_facts()
+
+        self.assertEqual(len(result), 0)
+
+    def test_gather_subset_multiple_explicit_facts(self):
+        """Test multiple explicit facts without 'all' keyword"""
+        set_module_args(dict(
+            gather_subset=['applications', 'vlans', 'system-info']
+        ))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+        mm.execute_managers = Mock(return_value={
+            'applications': [],
+            'vlans': [],
+            'system_info': {}
+        })
+
+        result = mm.exec_module()
+
+        self.assertTrue(result['changed'])
+
+
+class TestModuleIdempotency(unittest.TestCase):
+    """Test idempotent behavior of the module"""
+    def setUp(self):
+        self.spec = ArgumentSpec()
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_device_info.send_teem')
+        self.m1 = self.p1.start()
+        self.m1.return_value = True
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigiq_device_info.F5Client')
+        self.m2 = self.p2.start()
+        self.m2.return_value = Mock()
+        self.mock_module_helper = patch.multiple(AnsibleModule,
+                                                 exit_json=exit_json,
+                                                 fail_json=fail_json)
+        self.mock_module_helper.start()
+
+    def tearDown(self):
+        self.p1.stop()
+        self.p2.stop()
+        self.mock_module_helper.stop()
+
+    def test_repeated_fact_gathering_idempotent(self):
+        """Test that repeated fact gathering returns identical results"""
+        set_module_args(dict(gather_subset=['applications']))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        tm = ApplicationsFactManager(module=module, client=Mock())
+        mm = ModuleManager(module=module)
+        mm.get_manager = Mock(return_value=tm)
+        tm.client.get.return_value = dict(code=200, contents=load_fixture('load_bigiq_app.json'))
+
+        result1 = mm.exec_module()
+
+        # Reset and gather again
+        tm.client.get.return_value = dict(code=200, contents=load_fixture('load_bigiq_app.json'))
+
+        result2 = mm.exec_module()
+
+        # Both should have applications data (results will be marked changed both times due to module design)
+        self.assertIn('applications', result1)
+        self.assertIn('applications', result2)
+        self.assertEqual(len(result1['applications']), len(result2['applications']))

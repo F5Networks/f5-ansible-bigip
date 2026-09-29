@@ -91,11 +91,14 @@ class TestManager(unittest.TestCase):
         self.p3 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_service_tap.sslo_version')
         self.m3 = self.p3.start()
         self.m3.return_value = '7.5'
+        self.p4 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_service_tap.check_sslo_provisioned')
+        self.p4.start()
 
     def tearDown(self):
         self.p1.stop()
         self.p2.stop()
         self.p3.stop()
+        self.p4.stop()
 
     def test_create_tap_service_object_dump_json(self, *args):
         # Configure the arguments that would be sent to the Ansible module
@@ -262,3 +265,194 @@ class TestManager(unittest.TestCase):
 
         results = mm.exec_module()
         assert results['changed'] is True
+
+    def test_timeout_below_min_raises(self):
+        p = ModuleParameters(params=dict(name='tap1', timeout=5))
+        with self.assertRaisesRegex(Exception, 'Timeout value must be between 10 and 1800'):
+            p.timeout
+
+    def test_timeout_above_max_raises(self):
+        p = ModuleParameters(params=dict(name='tap1', timeout=2000))
+        with self.assertRaisesRegex(Exception, 'Timeout value must be between 10 and 1800'):
+            p.timeout
+
+    def test_unsupported_sslo_version_raises(self):
+        from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
+
+        set_module_args(dict(name='tap1', devices=dict(interface='1.1')))
+        module = AnsibleModule(argument_spec=self.spec.argument_spec, supports_check_mode=self.spec.supports_check_mode)
+        mm = ModuleManager(module=module)
+
+        with patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_service_tap.sslo_version', return_value='6.0'):
+            with self.assertRaisesRegex(F5ModuleError, 'Unsupported SSL Orchestrator version'):
+                mm.check_sslo_version()
+
+    def test_devices_required_on_create_raises(self):
+        from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
+
+        set_module_args(dict(name='tap1'))
+        module = AnsibleModule(argument_spec=self.spec.argument_spec, supports_check_mode=self.spec.supports_check_mode)
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+
+        with self.assertRaisesRegex(F5ModuleError, 'Devices must be defined'):
+            mm.check_for_required_create_parameters()
+
+    def test_exists_api_error_raises(self):
+        from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
+
+        set_module_args(dict(name='tap1', devices=dict(interface='1.1')))
+        module = AnsibleModule(argument_spec=self.spec.argument_spec, supports_check_mode=self.spec.supports_check_mode)
+        mm = ModuleManager(module=module)
+        mm.client.get = Mock(return_value=dict(code=500, contents='exists error'))
+
+        with self.assertRaisesRegex(F5ModuleError, 'exists error'):
+            mm.exists()
+
+    def test_create_api_error_raises(self):
+        from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
+
+        set_module_args(dict(name='tap1', devices=dict(interface='1.1')))
+        module = AnsibleModule(argument_spec=self.spec.argument_spec, supports_check_mode=self.spec.supports_check_mode)
+        mm = ModuleManager(module=module)
+        mm.version = '7.5'
+        mm.changes = Mock(to_return=Mock(return_value={}))
+        mm.client.post = Mock(return_value=dict(code=500, contents='create error'))
+
+        with patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_service_tap.process_json', return_value={}):
+            with self.assertRaisesRegex(F5ModuleError, 'create error'):
+                mm.create_on_device()
+
+    def test_update_api_error_raises(self):
+        from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
+
+        set_module_args(dict(name='tap1', port_remap=8081))
+        module = AnsibleModule(argument_spec=self.spec.argument_spec, supports_check_mode=self.spec.supports_check_mode)
+        mm = ModuleManager(module=module)
+        mm.version = '7.5'
+        mm.have = Mock(port_remap=8080)
+        mm.changes = Mock(to_return=Mock(return_value={}))
+        mm.client.post = Mock(return_value=dict(code=500, contents='update error'))
+
+        with patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_service_tap.process_json', return_value={}):
+            with self.assertRaisesRegex(F5ModuleError, 'update error'):
+                mm.update_on_device()
+
+    def test_read_api_error_raises(self):
+        from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
+
+        set_module_args(dict(name='tap1'))
+        module = AnsibleModule(argument_spec=self.spec.argument_spec, supports_check_mode=self.spec.supports_check_mode)
+        mm = ModuleManager(module=module)
+        mm.client.get = Mock(return_value=dict(code=500, contents='read error'))
+
+        with self.assertRaisesRegex(F5ModuleError, 'read error'):
+            mm.read_current_from_device()
+
+    def test_delete_api_error_raises(self):
+        from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
+
+        set_module_args(dict(name='tap1', state='absent'))
+        module = AnsibleModule(argument_spec=self.spec.argument_spec, supports_check_mode=self.spec.supports_check_mode)
+        mm = ModuleManager(module=module)
+        mm.version = '7.5'
+        mm.client.post = Mock(return_value=dict(code=500, contents='delete error'))
+
+        with patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_service_tap.process_json', return_value={}):
+            with self.assertRaisesRegex(F5ModuleError, 'delete error'):
+                mm.remove_from_device()
+
+    def test_check_task_api_error_raises(self):
+        from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
+
+        set_module_args(dict(name='tap1'))
+        module = AnsibleModule(argument_spec=self.spec.argument_spec, supports_check_mode=self.spec.supports_check_mode)
+        mm = ModuleManager(module=module)
+        mm.client.get = Mock(return_value=dict(code=500, contents='task check error'))
+
+        with self.assertRaisesRegex(F5ModuleError, 'task check error'):
+            mm._check_task_on_device('task-id')
+
+    def test_task_failure_raises(self):
+        from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
+
+        set_module_args(dict(name='tap1', devices=dict(interface='1.1')))
+        module = AnsibleModule(argument_spec=self.spec.argument_spec, supports_check_mode=self.spec.supports_check_mode)
+        mm = ModuleManager(module=module)
+        mm.want = Mock(timeout=(1, 10))
+        mm.client.get = Mock(return_value=dict(
+            code=200,
+            contents={'items': [{'id': 'task-id', 'state': 'ERROR', 'error': 'task failed'}]}
+        ))
+
+        with self.assertRaisesRegex(F5ModuleError, 'operation error'):
+            mm.wait_for_task('task-id')
+
+    def test_task_timeout_raises(self):
+        from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
+
+        set_module_args(dict(name='tap1', timeout=10))
+        module = AnsibleModule(argument_spec=self.spec.argument_spec, supports_check_mode=self.spec.supports_check_mode)
+        mm = ModuleManager(module=module)
+        mm.want = Mock(timeout=(1, 10))
+        mm.client.get = Mock(return_value=dict(
+            code=200,
+            contents={'items': [{'id': 'task-id', 'state': 'PENDING'}]}
+        ))
+
+        with self.assertRaisesRegex(F5ModuleError, 'Module timeout reached'):
+            mm.wait_for_task('task-id')
+
+    def test_idempotent_absent_no_change(self):
+        set_module_args(dict(name='nonexistent', state='absent'))
+        module = AnsibleModule(argument_spec=self.spec.argument_spec, supports_check_mode=self.spec.supports_check_mode)
+        mm = ModuleManager(module=module)
+
+        mm.client.get = Mock(return_value=dict(code=200, contents={'items': []}))
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+
+
+class TestMainFunction(unittest.TestCase):
+    """Test main() entry point"""
+
+    def test_main_function_success(self):
+        from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_sslo_service_tap
+
+        module = Mock(_socket_path='/tmp/socket')
+        manager = Mock()
+        manager.exec_module.return_value = {'changed': False}
+
+        with patch.object(bigip_sslo_service_tap, 'AnsibleModule', return_value=module), \
+                patch.object(bigip_sslo_service_tap, 'Connection'), \
+                patch.object(bigip_sslo_service_tap, 'ModuleManager', return_value=manager):
+            bigip_sslo_service_tap.main()
+
+        module.exit_json.assert_called_once_with(changed=False)
+
+    def test_main_function_failed(self):
+        from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_sslo_service_tap
+        from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
+
+        module = Mock(_socket_path='/tmp/socket')
+        manager = Mock()
+        manager.exec_module.side_effect = F5ModuleError('service failed')
+
+        with patch.object(bigip_sslo_service_tap, 'AnsibleModule', return_value=module), \
+                patch.object(bigip_sslo_service_tap, 'Connection'), \
+                patch.object(bigip_sslo_service_tap, 'ModuleManager', return_value=manager):
+            bigip_sslo_service_tap.main()
+
+        module.fail_json.assert_called_once_with(msg='service failed')
+
+    def test_update_tap_idempotent(self, *args):
+        manager = ModuleManager.__new__(ModuleManager)
+        manager.read_current_from_device = Mock()
+        manager.should_update = Mock(return_value=False)
+        manager.module = Mock(check_mode=False)
+
+        assert manager.update() is False
+        manager.read_current_from_device.assert_called_once()
+        manager.should_update.assert_called_once()

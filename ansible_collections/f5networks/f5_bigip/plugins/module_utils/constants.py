@@ -51,7 +51,11 @@ CICD_ENV = {
 }
 
 min_sslo_version = '7.5'
-max_sslo_version = '12.0'
+max_sslo_version = '15.0'
+
+VENDOR_INFO_IMMUTABLE_ERROR = "vendor_info cannot be changed after a service is created."
+RULES_EGRESS_VERSION_ERROR = "The rules_egress parameter requires SSL Orchestrator version 13.0 or later."
+DEFAULT_PERSISTENCE_VERSION_ERROR = "The default_persistence_profile parameter requires SSL Orchestrator version 14.0 or later."
 
 resolver_logging_config = {
     "logLevel": 0,

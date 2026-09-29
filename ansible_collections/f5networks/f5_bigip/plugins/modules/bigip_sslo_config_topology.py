@@ -55,13 +55,15 @@ options:
     description:
       - Defines the source address filter and optional route domain for the topology listener.
       - The address must be specified in CIDR notation, with subnet mask not exceeding 32 bits.
-      - When creating a new topology object, if source is not specified, a value of C(0.0.0.0%0/0) is assumed.
+      - When creating a new topology object, if source is not specified, a value of C(0.0.0.0%0/0) is assumed, or
+        C(::%0/0) when C(ip_family) is C(ipv6).
     type: str
   dest:
     description:
       - Defines the destination address filter and optional route domain for the topology listener.
       - The address must be specified in CIDR notation, with subnet mask not exceeding 32 bits.
-      - When creating a new topology object, if dest is not specified, a value of C(0.0.0.0%0/0) is assumed.
+      - When creating a new topology object, if dest is not specified, a value of C(0.0.0.0%0/0) is assumed, or
+        C(::%0/0) when C(ip_family) is C(ipv6).
       - Wildcard C(0.0.0.0%0/0) is supported in case of C(Gateway) mode, in C(Application) mode unique IP/mask should be given.
     type: str
   port:
@@ -182,6 +184,14 @@ options:
       - Defines a custom access profile to use.
       - When not specified, a topology-defined access profile is created.
       - This parameter is mandatory when C(topology_type) is C(outbound_explicit) or when C(security_policy) is set.
+    type: str
+  log_publisher:
+    description:
+      - Defines the BIG-IP log publisher used for SSLO logging.
+      - Required when C(topology_type) is C(inbound_l3) and the attached security policy is of LTM type,
+        because SSLO internally creates an LTM policy whose log action requires a named publisher.
+      - When not specified, defaults to C(none) on creation, which matches the SSLO GUI default.
+      - Use the full path, for example C(/Common/local-db-publisher).
     type: str
   profile_scope:
     description:
@@ -486,7 +496,7 @@ from ansible.module_utils.basic import (
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
-    F5Client, sslo_version
+    F5Client, sslo_version, check_sslo_provisioned
 )
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, process_json, flatten_boolean, fq_name
@@ -536,12 +546,14 @@ class Parameters(AnsibleF5Parameters):
         'gateway_list',
         'gateway_pool',
         'logging',
+        'log_publisher',
         'ssl_settings',
         'security_policy',
         'mode',
         'verify_accept',
         'cpm_policies',
-        'irules_list'
+        'irules_list',
+        'dns_resolver'
     ]
 
     updatables = [
@@ -574,12 +586,14 @@ class Parameters(AnsibleF5Parameters):
         'gateway_list',
         'gateway_pool',
         'logging',
+        'log_publisher',
         'ssl_settings',
         'security_policy',
         'mode',
         'verify_accept',
         'cpm_policies',
-        'irules_list'
+        'irules_list',
+        'dns_resolver'
     ]
 
 
@@ -677,6 +691,10 @@ class ApiParameters(Parameters):
         return self._values['l7Profile']
 
     @property
+    def dns_resolver(self):
+        return self._values.get('dnsResolver', None)
+
+    @property
     def l7_profile_type(self):
         return self._values['l7ProfileType']
 
@@ -748,16 +766,37 @@ class ApiParameters(Parameters):
 
     @property
     def logging(self):
+        # ('per_request_policy', 'sslo'). Normalise here so that:
+        #   - add_missing_options carries the right keys on non-logging MODIFYs
         values = self._values['loggingConfig']
-        remove = ['logPublisher', 'statsToRecord']
-        for k in remove:
-            if k in values.keys():
-                values.pop(k)
-        return values
+        skip = {'logPublisher', 'statsToRecord'}
+        key_map = {
+            'perRequestPolicy': 'per_request_policy',
+            'sslOrchestrator': 'sslo',
+        }
+        result = dict()
+        for k, v in values.items():
+            if k in skip:
+                continue
+            result[key_map.get(k, k)] = v
+        return result
+
+    @property
+    def log_publisher(self):
+        # Read the existing logPublisher from the device carry it forward on MODIFY
+        return self._values['loggingConfig'].get('logPublisher', 'none')
 
     @property
     def ssl_settings(self):
         return self._values['sslSettingReference']
+
+    @property
+    def access_profile(self):
+        # Preserve empty string as-is — "" means no access profile on this topology
+        value = self._values.get('accessProfile')
+        if value is None:
+            return None
+        return value
 
     @property
     def security_policy(self):
@@ -798,13 +837,11 @@ class ModuleParameters(Parameters):
         result = iplist[0] + "%0/" + iplist[1]
         return result
 
-    @staticmethod
-    def _check_for_subnet(item):
+    def _check_for_subnet(self, item):
+        max_cidr = 128 if self.ip_family == 'ipv6' else 32
         net = re.search(r'^.*/(\d+)$', item)
-        if net is None:
-            raise F5ModuleError('Address must contain a subnet (CIDR) value <= 32.')
-        if int(net.group(1)) > 32:
-            raise F5ModuleError('Address must contain a subnet (CIDR) value <= 32.')
+        if net is None or int(net.group(1)) > max_cidr:
+            raise F5ModuleError(f'Address must contain a subnet (CIDR) value <= {max_cidr}.')
 
     @property
     def name(self):
@@ -929,6 +966,30 @@ class ModuleParameters(Parameters):
         return result
 
     @property
+    def dns_resolver(self):
+        return self._values['dns_resolver']
+
+    @property
+    def l7_profile_type(self):
+        value = self._values['l7_profile_type']
+        if value is None:
+            return None
+        # 'none' choice means no L7 parsing — send empty string to the template
+        if value == 'none':
+            return ''
+        return value
+
+    @property
+    def l7_profile(self):
+        value = self._values['l7_profile']
+        if value is None:
+            return None
+        # 'none' string means no profile — send empty string to the template
+        if value == 'none':
+            return ''
+        return value
+
+    @property
     def additional_protocols(self):
         add_prot = self._values['additional_protocols']
         protocol = self._values['protocol']
@@ -1036,6 +1097,10 @@ class ModuleParameters(Parameters):
             return result
 
     @property
+    def log_publisher(self):
+        return self._values['log_publisher']
+
+    @property
     def ssl_settings(self):
         if self._values['ssl_settings'] is None:
             return None
@@ -1050,6 +1115,10 @@ class ModuleParameters(Parameters):
     @property
     def security_policy(self):
         name = self._values['security_policy']
+        if name is None:
+            return None
+        if name == '':
+            return ''   # explicit clear — sends "" to template, removes the policy reference
         if not name.startswith('ssloP_'):
             name = "ssloP_" + name
         return name
@@ -1276,6 +1345,10 @@ class ModuleManager(object):
         if changed:
             self.changes = UsableChanges(params=changed)
 
+    # Keys whose Difference property returns a dict that must be stored
+    # under the key name, NOT merged into the top-level changed dict.
+    _dict_valued_keys = {'logging'}
+
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
@@ -1285,7 +1358,7 @@ class ModuleManager(object):
             if change is None:
                 continue
             else:
-                if isinstance(change, dict):
+                if isinstance(change, dict) and k not in self._dict_valued_keys:
                     changed.update(change)
                 else:
                     changed[k] = change
@@ -1307,6 +1380,7 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
+        check_sslo_provisioned(self.client)
         self.check_sslo_version()
 
         if state == 'present':
@@ -1325,7 +1399,7 @@ class ModuleManager(object):
 
     def check_sslo_version(self):
         self.version = sslo_version(self.client)
-        if Version(self.version) > Version(max_sslo_version) or \
+        if Version(self.version) >= Version(max_sslo_version) or \
                 Version(self.version) < Version(min_sslo_version):
             raise F5ModuleError(
                 f"Unsupported SSL Orchestrator version, "
@@ -1521,13 +1595,16 @@ class ModuleManager(object):
                 )
 
     def add_create_values(self, params):
+        # ip_family-aware wildcard, since dest/source default must match ip_family or
+        # _same_ip_family() in validate_parameters() incorrectly rejects valid ipv6 requests.
+        wildcard = '::%0/0' if self.want.ip_family == 'ipv6' else '0.0.0.0%0/0'
         if self.want.protocol is None:
             params['protocol'] = 'tcp'
         if self.want.ip_family is None:
             params['ip_family'] = 'ipv4'
         if self.want.topology != 'topology_l3_explicit_proxy':
             if self.want.dest is None:
-                params['dest'] = '0.0.0.0%0/0'
+                params['dest'] = wildcard
             if self.want.port is None:
                 params['port'] = 0
         if self.want.topology == 'topology_l3_explicit_proxy':
@@ -1547,7 +1624,7 @@ class ModuleManager(object):
             if self.want.tcp_settings_server is None:
                 params['tcp_settings_server'] = '/Common/f5-tcp-wan'
         if self.want.source is None:
-            params['source'] = '0.0.0.0%0/0'
+            params['source'] = wildcard
         if self.want.snat == 'existingSNAT':
             params['snat_ref_id'] = self.want.snat_pool
         if self.want.gateway == 'existingGatewayPool':
@@ -1559,10 +1636,32 @@ class ModuleManager(object):
             params['l7_profile_type'] = 'http'
         if self.want.l7_profile is None:
             params['l7_profile'] = '/Common/http'
+        # dnsResolver is only relevant for explicit proxy when a non-default HTTP profile is used.
+        # topology_l3_explicit_proxy auto-generates httpProfile; only pass dns_resolver when provided.
+        if self.want.dns_resolver is not None:
+            params['dns_resolver'] = self.want.dns_resolver
+        # Default log_publisher to 'none' on CREATE (matches SSLO GUI default).
+        if self.want.log_publisher is None:
+            params['log_publisher'] = 'none'
         return params
 
     def add_missing_options(self, params):
         params['topology'] = self.have.topology
+        # mode controls reverseProxy.mode and the pool/cpmPolicies template conditions.
+        # Must always be present — without it pool renders as "" for application mode.
+        if self.changes.mode is None:
+            if self.have.mode is not None:
+                params['mode'] = self.have.mode
+        # access_profile: use what the device has (including empty string "").
+        # Empty string means no access profile on this topology — keep it that way.
+        # Only reconstruct from name if the field was entirely absent from the response.
+        if self.want.access_profile is not None:
+            params['access_profile'] = self.want.access_profile
+        elif self.have.access_profile is not None:
+            params['access_profile'] = self.have.access_profile
+        else:
+            # Field missing from GET response entirely — reconstruct as safety fallback
+            params['access_profile'] = f'/Common/{self.want.name}.app/{self.want.name}_accessProfile'
         if self.changes.ip_family is None:
             params['ip_family'] = self.have.ip_family
         if self.changes.rule is None:
@@ -1595,16 +1694,23 @@ class ModuleManager(object):
             params['l7_profile'] = self.have.l7_profile
         if self.changes.l7_profile_type is None:
             params['l7_profile_type'] = self.have.l7_profile_type
+        if self.changes.dns_resolver is None:
+            if self.have.dns_resolver is not None:
+                params['dns_resolver'] = self.have.dns_resolver
         if self.changes.additional_protocols is None:
             params['additional_protocols'] = self.have.additional_protocols
         if self.changes.profile_scope is None:
-            params['profile_scope'] = self.have.profile_scope
+            if self.have.profile_scope is not None:
+                params['profile_scope'] = self.have.profile_scope
         if self.changes.profile_scope_value is None:
-            params['profile_scope_value'] = self.have.profile_scope_value
+            if self.have.profile_scope_value is not None:
+                params['profile_scope_value'] = self.have.profile_scope_value
         if self.changes.primary_auth_uri is None:
-            params['primary_auth_uri'] = self.have.primary_auth_uri
+            if self.have.primary_auth_uri is not None:
+                params['primary_auth_uri'] = self.have.primary_auth_uri
         if self.changes.ocsp_auth is None:
-            params['ocsp_auth'] = self.have.ocsp_auth
+            if self.have.ocsp_auth is not None:
+                params['ocsp_auth'] = self.have.ocsp_auth
         if self.changes.snat is None:
             params['snat'] = self.have.snat
             if self.have.snat == 'SNAT':
@@ -1631,12 +1737,17 @@ class ModuleManager(object):
             params['gw_ref_id'] = self.changes.gateway_pool
         if self.changes.logging is None:
             params['logging'] = self.have.logging
+        if self.changes.log_publisher is None:
+            params['log_publisher'] = self.have.log_publisher
+        else:
+            params['log_publisher'] = self.changes.log_publisher
         if self.changes.ssl_settings is None:
             params['ssl_settings'] = self.have.ssl_settings
         if self.changes.security_policy is None:
             params['security_policy'] = self.have.security_policy
         if self.changes.verify_accept is None:
-            params['verify_accept'] = self.have.verify_accept
+            if self.have.verify_accept is not None:
+                params['verify_accept'] = self.have.verify_accept
         return params
 
     def add_json_metadata(self, payload=None):
@@ -1829,6 +1940,7 @@ class ArgumentSpec(object):
                 elements='str'
             ),
             access_profile=dict(),
+            log_publisher=dict(),
             profile_scope=dict(
                 choices=['public', 'named']
             ),

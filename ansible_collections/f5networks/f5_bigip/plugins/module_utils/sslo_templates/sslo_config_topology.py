@@ -35,16 +35,18 @@ create_modify = """
                "httpProfile": {% if params.topology == 'topology_l3_explicit_proxy' %}
                "/Common/sslo_{{ params.deployment_name | replace('sslo_', '') }}.app/sslo_{{ params.deployment_name | replace('sslo_', '') }}-xp-http"
                {% else %}""{% endif %},
-               "dnsResolver": {% if params.dns_desolver is defined %}"{{ params.dns_desolver }}"{% else %}""{% endif %},
+               "dnsResolver": {% if params.dns_resolver is defined %}"{{ params.dns_resolver }}"{% else %}""{% endif %},
                "serviceDef": {
                    "description": "",
-                   "source": {% if params.source is defined %}"{{ params.source }}"{% else %}"0.0.0.0%0/0"{% endif %},
+                   "source": {% if params.source is defined %}"{{ params.source }}"
+                   {%- elif params.ip_family == 'ipv6' %}"::%0/0"{% else %}"0.0.0.0%0/0"{% endif %},
                    "protocol": {% if params.protocol is defined %}"{{ params.protocol }}"{% else %}"tcp"{% endif %},
                    "destination": {
                        "mask": "",
                        "port": {% if params.port is defined %}{{ params.port }}{% else %}0{% endif %},
                        "prefix": 0,
-                       "address": {% if params.dest is defined %}"{{ params.dest }}"{% else %}"0.0.0.0%0/0"{% endif %}
+                       "address": {% if params.dest is defined %}"{{ params.dest }}"
+                       {%- elif params.ip_family == 'ipv6' %}"::%0/0"{% else %}"0.0.0.0%0/0"{% endif %}
                    }
                },
                "pool": {% if params.topology == 'topology_l3_inbound' and params.mode == "application" and params.pool is defined %}
@@ -134,7 +136,7 @@ create_modify = """
                "iRulesList": {% if params.topology == 'topology_l3_inbound' and params.irules_list is defined %}
                       {{ params.irules_list | tojson }}{% else %}[]{% endif %},
                 "loggingConfig": {
-                    "logPublisher": "none",
+                    "logPublisher": {% if params.log_publisher is defined %}"{{ params.log_publisher }}"{% else %}"none"{% endif %},
                     "statsToRecord": 0,
                     "perRequestPolicy": {% if params.logging is defined and 'per_request_policy' in params.logging -%}
                     "{{ params.logging.per_request_policy }}"{% else %}"err"{% endif %},

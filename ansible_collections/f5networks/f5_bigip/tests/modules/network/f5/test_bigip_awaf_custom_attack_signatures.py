@@ -220,3 +220,362 @@ class TestManager(unittest.TestCase):
             f"Custom Attack Signature Policy '{mm.want.names}' was not found.",
             err.exception.args[0]
         )
+
+    def test_export_idempotent(self, *args):
+        set_module_args(dict(
+            names=['test'],
+            dest='/tmp/',
+            state='export'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+
+        mm = ModuleManager(module=module)
+
+        # First call returns signatures exist
+        mm.client.get.side_effect = [
+            {'code': 200, 'contents': {'items': [{"name": "test", "id": "-_8EPkjfmhhlNqchgFw74g"}], 'totalItems': 1}},
+            {'code': 200, 'contents': {'status': 'COMPLETED', 'result': {'fileSize': 100}}}
+        ]
+        mm.client.post.return_value = {'code': 200, 'contents': {'id': "1"}}
+
+        results = mm.exec_module()
+        self.assertTrue(results['changed'])
+
+    def test_import_api_error_on_signature_check(self, *args):
+        path = os.path.join(fixture_path, "sigfile_2025-6-16_15-56-48943.xml")
+        set_module_args(dict(
+            source=path,
+            state='import'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+
+        mm = ModuleManager(module=module)
+
+        mm.client.get.return_value = {'code': 500, 'contents': 'API error'}
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('API error', err.exception.args[0])
+
+    def test_import_task_wait_failure(self, *args):
+        path = os.path.join(fixture_path, "sigfile_2025-6-16_15-56-48943.xml")
+        set_module_args(dict(
+            source=path,
+            state='import'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+
+        mm = ModuleManager(module=module)
+
+        mm.client.get.side_effect = [
+            {'code': 200, 'contents': {'items': [], 'totalItems': 0}},
+            {'code': 200, 'contents': {'status': 'FAILURE'}}
+        ]
+        mm.client.post.return_value = {'code': 200, 'contents': {'id': "1"}}
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('Failed to import Custom Signatures Attack file', err.exception.args[0])
+
+    def test_export_api_error_on_export_task(self, *args):
+        set_module_args(dict(
+            names=['test'],
+            dest='/tmp/',
+            state='export'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+
+        mm = ModuleManager(module=module)
+
+        mm.client.get.return_value = {'code': 200, 'contents': {'items': [{"name": "test", "id": "-_8EPkjfmhhlNqchgFw74g"}], 'totalItems': 1}}
+        mm.client.post.return_value = {'code': 500, 'contents': 'export failed'}
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('export failed', err.exception.args[0])
+
+    def test_export_task_wait_failure(self, *args):
+        set_module_args(dict(
+            names=['test'],
+            dest='/tmp/',
+            state='export'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+
+        mm = ModuleManager(module=module)
+
+        mm.client.get.side_effect = [
+            {'code': 200, 'contents': {'items': [{"name": "test", "id": "-_8EPkjfmhhlNqchgFw74g"}], 'totalItems': 1}},
+            {'code': 200, 'contents': {'status': 'FAILURE'}}
+        ]
+        mm.client.post.return_value = {'code': 200, 'contents': {'id': "1"}}
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('Failed to import Custom Signatures Attack file', err.exception.args[0])
+
+    def test_signature_exists_api_error(self, *args):
+        set_module_args(dict(
+            names=['test'],
+            dest='/tmp/',
+            state='export'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+
+        mm = ModuleManager(module=module)
+
+        mm.client.get.return_value = {'code': 500, 'contents': 'API error on signature check'}
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('API error on signature check', err.exception.args[0])
+
+    def test_signature_not_found_404(self, *args):
+        set_module_args(dict(
+            names=['nonexistent'],
+            dest='/tmp/',
+            state='export'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+
+        mm = ModuleManager(module=module)
+
+        mm.client.get.return_value = {'code': 404}
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn(
+            f"Custom Attack Signature Policy '{mm.want.names}' was not found.",
+            err.exception.args[0]
+        )
+
+    def test_import_force_overwrites_existing(self, *args):
+        path = os.path.join(fixture_path, "sigfile_2025-6-16_15-56-48943.xml")
+        set_module_args(dict(
+            source=path,
+            state='import',
+            force=True
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+
+        mm = ModuleManager(module=module)
+
+        # Signatures already exist but force=True
+        mm.client.get.side_effect = [
+            {'code': 200, 'contents': {'items': [{"name": "test", "id": "-_8EPkjfmhhlNqchgFw74g"}], 'totalItems': 1}},
+            {'code': 200, 'contents': {'status': 'COMPLETED', 'result': {'fileSize': 100}}}
+        ]
+        mm.client.post.return_value = {'code': 200, 'contents': {'id': "1"}}
+
+        results = mm.exec_module()
+        self.assertTrue(results['changed'])
+
+    def test_import_no_force_skips_existing(self, *args):
+        path = os.path.join(fixture_path, "sigfile_2025-6-16_15-56-48943.xml")
+        set_module_args(dict(
+            source=path,
+            state='import',
+            force=False
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+
+        mm = ModuleManager(module=module)
+
+        # Signatures already exist and force=False
+        mm.client.get.return_value = {'code': 200, 'contents': {'items': [{"name": "test", "id": "-_8EPkjfmhhlNqchgFw74g"}], 'totalItems': 1}}
+
+        results = mm.exec_module()
+        self.assertFalse(results['changed'])
+
+    def test_partial_signatures_mismatch(self, *args):
+        set_module_args(dict(
+            names=['test1', 'test2'],
+            dest='/tmp/',
+            state='export'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+
+        mm = ModuleManager(module=module)
+
+        # Only one of two requested signatures exists
+        mm.client.get.return_value = {'code': 200, 'contents': {'items': [{"name": "test1", "id": "id1"}], 'totalItems': 1}}
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn(
+            f"Custom Attack Signature Policy '{mm.want.names}' was not found.",
+            err.exception.args[0]
+        )
+
+    def test_main_function_success(self, *args):
+        with patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_awaf_custom_attack_signatures.Connection',
+                   create=True) as mock_connection:
+            path = os.path.join(fixture_path, "sigfile_2025-6-16_15-56-48943.xml")
+            set_module_args(dict(
+                source=path,
+                state='import'
+            ))
+
+            mock_conn_instance = Mock()
+            mock_connection.return_value = mock_conn_instance
+
+            with patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_awaf_custom_attack_signatures.ModuleManager') as mm_mock:
+                mm_instance = Mock()
+                mm_mock.return_value = mm_instance
+                mm_instance.exec_module.return_value = {'changed': True, 'state': 'import'}
+
+                with patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_awaf_custom_attack_signatures.AnsibleModule') as module_mock:
+                    module_instance = Mock()
+                    module_mock.return_value = module_instance
+
+                    from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_awaf_custom_attack_signatures import main
+                    main()
+
+                    module_instance.exit_json.assert_called_once()
+
+    def test_main_function_failed(self, *args):
+        with patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_awaf_custom_attack_signatures.Connection',
+                   create=True) as mock_connection:
+            set_module_args(dict(
+                names=['test'],
+                dest='/tmp/',
+                state='export'
+            ))
+
+            mock_conn_instance = Mock()
+            mock_connection.return_value = mock_conn_instance
+
+            with patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_awaf_custom_attack_signatures.ModuleManager') as mm_mock:
+                mm_instance = Mock()
+                mm_mock.return_value = mm_instance
+                mm_instance.exec_module.side_effect = F5ModuleError('Test error')
+
+                with patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_awaf_custom_attack_signatures.AnsibleModule') as module_mock:
+                    module_instance = Mock()
+                    module_mock.return_value = module_instance
+
+                    from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_awaf_custom_attack_signatures import main
+                    main()
+
+                    module_instance.fail_json.assert_called_once()
+
+    def test_import_post_request_error(self, *args):
+        path = os.path.join(fixture_path, "sigfile_2025-6-16_15-56-48943.xml")
+        set_module_args(dict(
+            source=path,
+            state='import'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+
+        mm = ModuleManager(module=module)
+
+        # Signatures don't exist (OK to import)
+        mm.client.get.return_value = {'code': 200, 'contents': {'items': [], 'totalItems': 0}}
+        # POST request fails during import task
+        mm.client.post.return_value = {'code': 500, 'contents': 'import post error'}
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('import post error', err.exception.args[0])
+
+    def test_export_empty_results_list(self, *args):
+        set_module_args(dict(
+            names=['test'],
+            dest='/tmp/',
+            state='export'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+
+        mm = ModuleManager(module=module)
+
+        # Return empty items list for signature search
+        mm.client.get.return_value = {'code': 200, 'contents': {'items': [], 'totalItems': 0}}
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('was not found', err.exception.args[0])
+
+    def test_export_task_wait_api_error(self, *args):
+        set_module_args(dict(
+            names=['test'],
+            dest='/tmp/',
+            state='export'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+
+        mm = ModuleManager(module=module)
+
+        # Signature exists
+        # POST to export returns success
+        # GET on task wait returns error
+        mm.client.get.side_effect = [
+            {'code': 200, 'contents': {'items': [{"name": "test", "id": "-_8EPkjfmhhlNqchgFw74g"}], 'totalItems': 1}},
+            {'code': 500, 'contents': 'task api error'}
+        ]
+        mm.client.post.return_value = {'code': 200, 'contents': {'id': "task-123"}}
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+
+        self.assertIn('task api error', err.exception.args[0])

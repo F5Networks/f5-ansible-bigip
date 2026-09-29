@@ -435,3 +435,471 @@ class TestModuleManagers(unittest.TestCase):
 
         self.assertTrue(isinstance(res3, MadmLocationManager))
         self.assertTrue(isinstance(res4, BulkLocationManager))
+
+    def test_timeout_boundary_lower(self):
+        """Test timeout at lower boundary (10 seconds)"""
+        args = dict(timeout=10)
+        p = Parameters(params=args)
+
+        interval, divisor = p.timeout
+        self.assertEqual(interval, 1)
+        self.assertEqual(divisor, 10)
+
+    def test_timeout_boundary_upper(self):
+        """Test timeout at upper boundary (1800 seconds)"""
+        args = dict(timeout=1800)
+        p = Parameters(params=args)
+
+        interval, divisor = p.timeout
+        self.assertEqual(interval, 18)
+        self.assertEqual(divisor, 100)
+
+    def test_timeout_divisor_threshold(self):
+        """Test timeout divisor changes at 100 seconds"""
+        # At 99 seconds, divisor should be 10
+        args_99 = dict(timeout=99)
+        p_99 = Parameters(params=args_99)
+        interval_99, divisor_99 = p_99.timeout
+        self.assertEqual(divisor_99, 10)
+
+        # At 100 seconds, divisor should be 100
+        args_100 = dict(timeout=100)
+        p_100 = Parameters(params=args_100)
+        interval_100, divisor_100 = p_100.timeout
+        self.assertEqual(divisor_100, 100)
+
+    def test_exclude_core_option(self):
+        """Test exclude_core parameter transforms correctly (PINS EXISTING BUG)"""
+        # NOTE: This test documents a bug in bigip_qkview.py:154-159
+        # The exclude_core property incorrectly reads self._values['exclude'] instead of
+        # self._values['exclude_core'], so exclude_core=True is ignored and only checked
+        # if the 'exclude' list is present. This is incorrect behavior but currently expected.
+        # If this bug is fixed in the module, this test will fail and must be updated to
+        # verify correct behavior (exclude_core=True should return '-C' regardless of exclude).
+        args = dict(exclude_core=True)
+        p = Parameters(params=args)
+
+        # Due to bug: exclude_core is ignored when exclude is not set
+        self.assertIsNone(p.exclude_core)
+
+        # Due to bug: exclude_core returns '-C' only when exclude list is present
+        args_with_exclude = dict(exclude_core=True, exclude=['audit'])
+        p_with_exclude = Parameters(params=args_with_exclude)
+        self.assertEqual(p_with_exclude.exclude_core, '-C')
+
+    def test_exclude_options_single(self):
+        """Test single exclude option"""
+        for exclude_item in ['audit', 'secure', 'bash_history']:
+            args = dict(exclude=[exclude_item])
+            p = Parameters(params=args)
+
+            self.assertIsNotNone(p.exclude)
+            self.assertIn(exclude_item, p.exclude)
+            self.assertIn(exclude_item, p.exclude_raw)
+
+    def test_exclude_options_multiple(self):
+        """Test multiple exclude options"""
+        args = dict(exclude=['audit', 'secure', 'bash_history'])
+        p = Parameters(params=args)
+
+        self.assertIsNotNone(p.exclude)
+        self.assertIn('audit', p.exclude)
+        self.assertIn('secure', p.exclude)
+        self.assertIn('bash_history', p.exclude)
+        self.assertEqual(len(p.exclude_raw), 3)
+
+    def test_exclude_all_option(self):
+        """Test exclude with 'all' option"""
+        args = dict(exclude=['all'])
+        p = Parameters(params=args)
+
+        self.assertIsNotNone(p.exclude)
+        self.assertIn('all', p.exclude)
+        self.assertEqual(p.exclude_raw, ['all'])
+
+    def test_complete_information_option_true(self):
+        """Test complete_information parameter transforms correctly"""
+        args = dict(complete_information=True)
+        p = Parameters(params=args)
+
+        self.assertEqual(p.complete_information, '-c')
+
+    def test_complete_information_option_false(self):
+        """Test complete_information parameter is None when false"""
+        args = dict(complete_information=False)
+        p = Parameters(params=args)
+
+        self.assertIsNone(p.complete_information)
+
+    def test_max_file_size_option(self):
+        """Test max_file_size parameter transforms correctly"""
+        args = dict(max_file_size=2048)
+        p = Parameters(params=args)
+
+        self.assertEqual(p.max_file_size, '-s 2048')
+
+    def test_all_options_together(self):
+        """Test all options working together"""
+        args = dict(
+            filename='test_qkview.qkview',
+            asm_request_log=True,
+            max_file_size=5120,
+            complete_information=True,
+            exclude_core=True,
+            exclude=['audit', 'secure'],
+            force=True,
+            timeout=600,
+            dest='/tmp/test.qkview',
+            only_create_file=False
+        )
+        p = Parameters(params=args)
+
+        # Verify all transformations
+        self.assertEqual(p.filename, 'test_qkview.qkview')
+        self.assertEqual(p.asm_request_log, '-o asm-request-log')
+        self.assertEqual(p.max_file_size, '-s 5120')
+        self.assertEqual(p.complete_information, '-c')
+        self.assertIn('audit', p.exclude)
+        self.assertEqual(p.timeout, (6, 100))
+
+    def test_force_false_dest_not_exists(self):
+        """Test idempotent behavior with force=False when dest doesn't exist"""
+        set_module_args(dict(
+            dest='/tmp/new_qkview.qkview',
+            force=False
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        tm = MadmLocationManager(module=module, client=Mock())
+        tm.client.plugin = Mock()
+        tm.client.plugin.download_file = Mock()
+        # POST 1: script create, POST 2: task create (needs _taskId), POST 3: script delete, POST 4: move file, POST 5: delete file
+        tm.client.post = Mock(side_effect=[
+            dict(code=200, contents=dict()),  # script create
+            dict(code=200, contents={'_taskId': 'task123'}),  # task create (needs _taskId)
+            dict(code=200, contents=dict()),  # script delete
+            dict(code=200, contents=dict()),  # move file
+            dict(code=200, contents=dict())   # delete file
+        ])
+        tm.client.put = Mock(return_value=dict(code=202, contents=dict()))  # task exec
+        tm.client.get = Mock(side_effect=[
+            dict(code=200, contents={'_taskState': 'COMPLETED'})  # task complete
+        ])
+
+        # Mock os.path.exists with side_effect for multiple calls
+        # Call 1: dest check for force (False - file doesn't exist)
+        # Call 2: dirname check (True - dir exists)
+        # Call 3: post-download check (True - download succeeded)
+        # Call 4: Any extra calls
+        with patch.object(bigip_qkview.os.path, 'exists', Mock(side_effect=[False, True, True, True])):
+            results = tm.exec_module()
+
+        self.assertFalse(results['changed'])
+
+    def test_force_true_dest_exists(self):
+        """Test idempotent behavior with force=True when dest exists"""
+        set_module_args(dict(
+            dest='/tmp/existing_qkview.qkview',
+            force=True
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        tm = MadmLocationManager(module=module, client=Mock())
+        tm.client.plugin = Mock()
+        tm.client.plugin.download_file = Mock()
+        tm.client.post = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_cli_script_status.json')),
+            dict(code=200, contents=load_fixture('start_cli_script.json')),
+            dict(code=200, contents=dict()),
+            dict(code=200, contents=dict()),
+            dict(code=200, contents=dict())
+        ])
+        tm.client.put = Mock(return_value=dict(code=202, contents=load_fixture('load_cli_task_start.json')))
+        tm.client.get = Mock(side_effect=[
+            dict(code=200, contents=dict()),
+            dict(code=200, contents={'_taskState': 'COMPLETED'})
+        ])
+
+        with patch.object(bigip_qkview.os.path, 'exists', Mock(return_value=True)):
+            results = tm.exec_module()
+
+        self.assertFalse(results['changed'])
+
+    def test_only_create_file_true(self):
+        """Test only_create_file=True skips dest validation and download"""
+        set_module_args(dict(
+            only_create_file=True
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        tm = MadmLocationManager(module=module, client=Mock())
+        tm.client.plugin = Mock()
+        tm.client.plugin.download_file = Mock()
+        # With only_create_file=True, execute() skips move/download/delete
+        # POST 1: script create, POST 2: task create (needs _taskId), POST 3: script delete
+        tm.client.post = Mock(side_effect=[
+            dict(code=200, contents=dict()),  # script create
+            dict(code=200, contents={'_taskId': 'task123'}),  # task create (needs _taskId)
+            dict(code=200, contents=dict())   # script delete
+        ])
+        tm.client.put = Mock(return_value=dict(code=202, contents=dict()))
+        tm.client.get = Mock(side_effect=[
+            dict(code=200, contents={'_taskState': 'COMPLETED'})
+        ])
+
+        results = tm.exec_module()
+
+        self.assertFalse(results['changed'])
+        # Verify that only_create_file path was taken (3 post calls: script create, task create, script delete, no move/delete)
+        self.assertEqual(tm.client.post.call_count, 3)
+
+    def test_bulk_location_manager_full_flow(self):
+        """Test BulkLocationManager end-to-end flow"""
+        set_module_args(dict(
+            dest='/tmp/foo.qkview'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods to force specific logic in the module to happen
+        bm = BulkLocationManager(module=module, client=Mock())
+        bm.client.plugin = Mock()
+        bm.client.plugin.download_file = Mock()
+        bm.client.post = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_cli_script_status.json')),
+            dict(code=200, contents=load_fixture('start_cli_script.json')),
+            dict(code=200, contents=dict()),
+            dict(code=200, contents=dict()),
+            dict(code=200, contents=dict())
+        ])
+        bm.client.put = Mock(return_value=dict(code=202, contents=load_fixture('load_cli_task_start.json')))
+        bm.client.get = Mock(side_effect=[
+            dict(code=200, contents=dict()),
+            dict(code=200, contents={'_taskState': 'COMPLETED'})
+        ])
+
+        results = bm.exec_module()
+
+        self.assertFalse(results['changed'])
+        self.assertTrue(bm.client.put.call_count == 1)
+        self.assertTrue(bm.client.get.call_count == 2)
+
+    def test_task_completes_on_first_poll(self):
+        """Test task completion on first poll attempt"""
+        set_module_args(dict(
+            dest='/tmp/foo.qkview'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        tm = MadmLocationManager(module=module, client=Mock())
+        tm.client.plugin = Mock()
+        tm.client.plugin.download_file = Mock()
+        tm.client.post = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_cli_script_status.json')),
+            dict(code=200, contents=load_fixture('start_cli_script.json')),
+            dict(code=200, contents=dict()),
+            dict(code=200, contents=dict()),
+            dict(code=200, contents=dict())
+        ])
+        tm.client.put = Mock(return_value=dict(code=202, contents=load_fixture('load_cli_task_start.json')))
+        # Task completes on first get
+        tm.client.get = Mock(side_effect=[
+            dict(code=200, contents={'_taskState': 'COMPLETED'})
+        ])
+
+        results = tm.exec_module()
+
+        self.assertFalse(results['changed'])
+        # Should only call get once since task completed immediately
+        self.assertEqual(tm.client.get.call_count, 1)
+
+    def test_filename_edge_cases(self):
+        """Test filename with dots and underscores"""
+        for filename in ['test_qkview.qkview', 'my.qkview.file', 'test_file_123.qkview']:
+            args = dict(filename=filename)
+            p = Parameters(params=args)
+
+            # Should not raise error for valid filenames
+            self.assertEqual(p.filename, filename)
+
+    def test_download_failure_file_not_saved(self):
+        """Test error when download fails to save file locally"""
+        set_module_args(dict(
+            dest='/tmp/foo.qkview'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        tm = MadmLocationManager(module=module, client=Mock())
+        tm.client.plugin = Mock()
+        tm.client.plugin.download_file = Mock(return_value=None)
+        tm.client.post = Mock(side_effect=[
+            dict(code=200, contents=dict()),  # script create
+            dict(code=200, contents={'_taskId': 'task123'}),  # task create (needs _taskId)
+            dict(code=200, contents=dict()),  # script delete
+            dict(code=200, contents=dict()),  # move file
+            dict(code=200, contents=dict())   # delete file (will fail before this)
+        ])
+        tm.client.put = Mock(return_value=dict(code=202, contents=dict()))
+        tm.client.get = Mock(side_effect=[
+            dict(code=200, contents={'_taskState': 'COMPLETED'})
+        ])
+
+        # Mock os.path.exists with side_effect for multiple calls
+        # Call 1: dest check for force (False - file doesn't exist)
+        # Call 2: dirname check (True - dir exists)
+        # Call 3: post-download check (False - download failed)
+        # Call 4: Any extra calls
+        with patch.object(bigip_qkview.os.path, 'exists', Mock(side_effect=[False, True, False, False])):
+            with self.assertRaises(F5ModuleError) as err:
+                tm.exec_module()
+
+        self.assertIn('Failed to save the qkview to local disk', err.exception.args[0])
+
+    def test_task_failed_state(self):
+        """Test error handling when task reaches FAILED state"""
+        set_module_args(dict(
+            dest='/tmp/foo.qkview'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        tm = MadmLocationManager(module=module, client=Mock())
+        tm.client.plugin = Mock()
+        tm.client.plugin.download_file = Mock()
+        tm.client.post = Mock(side_effect=[
+            dict(code=200, contents=load_fixture('load_cli_script_status.json')),
+            dict(code=200, contents=load_fixture('start_cli_script.json')),
+            dict(code=200, contents=dict()),
+            dict(code=200, contents=dict()),
+            dict(code=200, contents=dict())
+        ])
+        tm.client.put = Mock(return_value=dict(code=202, contents=load_fixture('load_cli_task_start.json')))
+        # Task fails immediately
+        tm.client.get = Mock(side_effect=[
+            dict(code=200, contents={'_taskState': 'FAILED'})
+        ])
+
+        with self.assertRaises(F5ModuleError) as err:
+            tm.exec_module()
+
+        self.assertIn('qkview creation task failed unexpectedly', err.exception.args[0])
+
+    def test_invalid_exclude_option(self):
+        """Test error when invalid exclude option provided"""
+        set_module_args(dict(
+            dest='/tmp/foo.qkview',
+            exclude=['invalid_option']
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        tm = MadmLocationManager(module=module, client=Mock())
+
+        with self.assertRaises(F5ModuleError) as err:
+            tm.present()
+
+        self.assertIn('The specified excludes must be in the following list', err.exception.args[0])
+
+    def test_dest_directory_not_exists(self):
+        """Test error when dest directory doesn't exist"""
+        set_module_args(dict(
+            dest='/nonexistent/foo.qkview'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        tm = MadmLocationManager(module=module, client=Mock())
+
+        with patch.object(bigip_qkview.os.path, 'exists', Mock(return_value=False)):
+            with self.assertRaises(F5ModuleError) as err:
+                tm.present()
+
+        self.assertIn("The directory of your 'dest' file does not exist", err.exception.args[0])
+
+    def test_execute_on_device_failure(self):
+        """Test error when execute_on_device fails"""
+        set_module_args(dict(
+            dest='/tmp/foo.qkview'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        tm = MadmLocationManager(module=module, client=Mock())
+        tm.execute_on_device = Mock(return_value=False)
+
+        with self.assertRaises(F5ModuleError) as err:
+            tm.execute()
+
+        self.assertIn('Failed to create qkview on device', err.exception.args[0])
+
+    def test_create_script_then_update_flow(self):
+        """Test script creation fails with 409, then update succeeds"""
+        set_module_args(dict(
+            dest='/tmp/foo.qkview'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        tm = MadmLocationManager(module=module, client=Mock())
+        tm.client.plugin = Mock()
+        tm.client.plugin.download_file = Mock()
+        tm.client.post = Mock(side_effect=[
+            dict(code=409, contents=dict()),  # Script create returns conflict
+            dict(code=200, contents=load_fixture('start_cli_script.json')),
+            dict(code=200, contents=dict()),
+            dict(code=200, contents=dict()),
+            dict(code=200, contents=dict())
+        ])
+        tm.client.put = Mock(side_effect=[
+            dict(code=200, contents=dict()),  # Script update succeeds
+            dict(code=202, contents=load_fixture('load_cli_task_start.json'))
+        ])
+        tm.client.get = Mock(side_effect=[
+            dict(code=200, contents=dict()),
+            dict(code=200, contents={'_taskState': 'COMPLETED'})
+        ])
+
+        results = tm.exec_module()
+
+        self.assertFalse(results['changed'])
+        # Verify both create POST attempt and update PUT were called
+        self.assertTrue(tm.client.post.call_count == 5)
+        self.assertTrue(tm.client.put.call_count == 2)

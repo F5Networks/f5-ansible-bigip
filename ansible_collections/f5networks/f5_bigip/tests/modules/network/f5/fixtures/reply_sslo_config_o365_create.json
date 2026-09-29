@@ -1,0 +1,61 @@
+{
+    "endpoint": "Worldwide",
+    "service_areas": {
+        "common": true,
+        "exchange": true,
+        "sharepoint": true,
+        "skype": true
+    },
+    "outputs": {
+        "url_categories": true,
+        "url_datagroups": false,
+        "ip_datagroups": true
+    },
+    "o365_categories": {
+        "all": true,
+        "optimize": true,
+        "default": true,
+        "allow": true
+    },
+    "only_required": true,
+    "excluded_urls": [
+        "platform.linkedin.com",
+        ".entrust.net"
+    ],
+    "included_urls": {
+        "all": [],
+        "optimized": [],
+        "default": [],
+        "allow": []
+    },
+    "excluded_ips": [],
+    "system": {
+        "log_level": 1,
+        "ca_bundle": "/Common/ca-bundle.crt",
+        "working_directory": "/var/config/rest/iapps/f5-iappslx-ssl-orchestrator/nodejs/o365",
+        "retry_attempts": 3,
+        "retry_delay": 300
+    },
+    "schedule": {
+        "periods": "daily",
+        "run_date": 1,
+        "run_time": "04:00",
+        "start_date": "",
+        "start_time": ""
+    },
+    "status": {
+        "description": "URLs updated successfully",
+        "last_run": "2026-04-06 04:00",
+        "next_run": "2026-04-07 04:00 (Tomorrow)"
+    },
+    "deviceStatus": [
+        {
+            "deviceId": "bigip1",
+            "status": {
+                "description": "URLs updated successfully",
+                "last_run": "2026-04-06 04:00",
+                "next_run": "2026-04-07 04:00 (Tomorrow)"
+            }
+        }
+    ]
+}

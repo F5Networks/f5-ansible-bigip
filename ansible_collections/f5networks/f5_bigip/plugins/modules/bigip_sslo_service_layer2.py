@@ -76,7 +76,9 @@ options:
   ip_offset:
     description:
       - Defines an IP offset integer to be used in the internal IP addressing.
-      - This parameter is required when creating a new L2 service.
+      - This parameter is required when creating a new L2 service in C(l3_legacy) mode.
+      - This parameter must B(not) be set when using C(l3_enhanced) mode. The backend always
+        uses an offset of C(0) for enhanced mode services.
       - Accepted values are in the range of C(0) to C(30).
       - This is typically used in a tiered architecture, where a Layer 2 service is shared between multiple
         standalone SSL Orchestrator instances.
@@ -87,9 +89,31 @@ options:
     type: int
   rules:
     description:
-      - Defines a list of iRules to attach to the service.
+      - Defines a list of iRules to attach to the ingress virtual server of the service.
     type: list
     elements: str
+  rules_egress:
+    description:
+      - Defines a list of iRules to attach to the egress virtual server of the service.
+      - This parameter is only supported on SSLO version 13.0 and above.
+    type: list
+    elements: str
+  mode:
+    description:
+      - Specifies the operational mode of the L2 service.
+      - C(l3_legacy) is the classic mode available on all supported versions.
+      - C(l3_enhanced) enables Enhanced Mode, which is only available on SSLO version 14.0 and above.
+      - When creating an L2 service, if the parameter is not provided a default of C(l3_legacy) is assumed.
+      - This value is set at creation time and cannot be changed once the service exists.
+    type: str
+    choices:
+      - l3_legacy
+      - l3_enhanced
+  default_persistence_profile:
+    description:
+      - Specifies the persistence profile to attach to the L2 service virtual servers.
+      - This parameter is only supported on SSLO version 14.0 and above.
+    type: str
   service_down_action:
     description:
       - Specifies the action to take on monitor failure.
@@ -127,6 +151,7 @@ options:
   vendor_info:
     description:
       - Specifies the vendor-specific L2 service used. The default is C(Generic Inline Layer 2).
+      - This value is set at creation time and cannot be changed once the service exists.
     type: str
     version_added: "3.3.0"
 notes:
@@ -212,10 +237,28 @@ port_remap:
   sample: 8080
 rules:
   description:
-    - List of iRules attached to the service.
+    - List of iRules attached to the ingress virtual server of the service.
   returned: changed
   type: list
   sample: ["/Common/test-rule-1", "/Common/test-rule-2"]
+rules_egress:
+  description:
+    - List of iRules attached to the egress virtual server of the service.
+  returned: changed
+  type: list
+  sample: ["/Common/test-rule-1", "/Common/test-rule-2"]
+mode:
+  description:
+    - The operational mode of the L2 service.
+  returned: changed
+  type: str
+  sample: l3_legacy
+default_persistence_profile:
+  description:
+    - The persistence profile attached to the L2 service virtual servers.
+  returned: changed
+  type: str
+  sample: /Common/dest_addr
 '''
 
 import time
@@ -237,7 +280,7 @@ from ansible.module_utils.basic import (
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
-    F5Client, sslo_version
+    F5Client, sslo_version, check_sslo_provisioned
 )
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, process_json
@@ -245,7 +288,7 @@ from ..module_utils.common import (
 from ..module_utils.constants import (
     min_sslo_version, max_sslo_version
 )
-from ..module_utils.compare import compare_complex_list
+from ..module_utils.compare import compare_complex_list, compare_complex_list_ordered
 from ..module_utils.sslo_templates.sslo_service_layer2 import (
     create, modify
 )
@@ -264,6 +307,9 @@ class Parameters(AnsibleF5Parameters):
         'port_remap',
         'service_subnet',
         'rules',
+        'rules_egress',
+        'mode',
+        'default_persistence_profile',
         'vendor_info',
         'devices'
     ]
@@ -276,6 +322,9 @@ class Parameters(AnsibleF5Parameters):
         'port_remap',
         # 'service_subnet',
         'rules',
+        'rules_egress',
+        'mode',
+        'default_persistence_profile',
         'vendor_info',
         'devices'
     ]
@@ -368,15 +417,35 @@ class ApiParameters(Parameters):
 
     @property
     def port_remap(self):
-        return int(self._values['customService']['httpPortRemapValue'])
+        if self._values['customService'].get('portRemap') and 'httpPortRemapValue' in self._values['customService']:
+            return int(self._values['customService']['httpPortRemapValue'])
 
     @property
     def rules(self):
         return self._values['customService']['iRuleList']
 
     @property
+    def rules_egress(self):
+        return self._values['customService'].get('iRuleListEgress', [])
+
+    @property
+    def mode(self):
+        return self._values['customService'].get('mode', 'l3_legacy')
+
+    @property
+    def default_persistence_profile(self):
+        return self._values['customService'].get('defaultPersistenceProfile', "")
+
+    @property
     def vendor_info(self):
         return self._values['vendorInfo']['name']
+
+    @property
+    def service_index(self):
+        try:
+            return int(self._values['customService']['managedNetwork']['ipv4']['serviceIndex'])
+        except Exception:
+            return 0
 
 
 class ModuleParameters(Parameters):
@@ -422,20 +491,24 @@ class ModuleParameters(Parameters):
                 dev['from_vlan']['name'] = f"ssloN_{device['name']}_in"
                 dev['from_vlan']['path'] = f"/Common/ssloN_{device['name']}_in.app/ssloN_{device['name']}_in"
                 dev['from_vlan']['interface'] = device['interface_in']
+                dev['from_vlan']['create'] = True
                 if device.get('tag_in', None):
                     dev['from_vlan']['tag'] = device.get('tag_in', None)
             if 'interface_out' in device.keys() and device['interface_out']:
                 dev['to_vlan']['name'] = f"ssloN_{device['name']}_out"
                 dev['to_vlan']['path'] = f"/Common/ssloN_{device['name']}_out.app/ssloN_{device['name']}_out"
                 dev['to_vlan']['interface'] = device['interface_out']
+                dev['to_vlan']['create'] = True
                 if device.get('tag_out', None):
                     dev['to_vlan']['tag'] = device.get('tag_out', None)
             if 'vlan_in' in device.keys() and device['vlan_in']:
                 dev['from_vlan']['name'] = f"ssloN_{device['name']}_in"
                 dev['from_vlan']['path'] = device['vlan_in']
+                dev['from_vlan']['create'] = False
             if 'vlan_out' in device.keys() and device['vlan_out']:
                 dev['to_vlan']['name'] = f"ssloN_{device['name']}_out"
                 dev['to_vlan']['path'] = device['vlan_out']
+                dev['to_vlan']['create'] = False
             result.append(dev)
         return result
 
@@ -443,38 +516,56 @@ class ModuleParameters(Parameters):
     def devices_ips(self):
         if self._values['devices'] is None:
             return None
-        if self.ip_offset is None:
+        if self.ip_offset is None and self._values.get('mode') != 'l3_enhanced':
             return None
+        offset = self.ip_offset if self.ip_offset is not None else 0
+        result = list()
+        # l3_enhanced: backend assigns link-local IPs automatically — send empty ip lists.
+        # l3_legacy:   pre-assign IPs from the managed subnet lookup tables.
+        if self._values.get('mode') == 'l3_enhanced':
+            for device in self._values['devices']:
+                dev = dict(ratio=None, ip=list())
+                dev['ratio'] = self._ratio_check(device.get('ratio', None))
+                result.append(dev)
+            return result
         services_ip4_list = {1: 30, 2: 62, 3: 95, 4: 126, 5: 158, 6: 190, 7: 222, 8: 255}
         services_ip6_list = {1: "1e", 2: "3e", 3: "5e", 4: "7e", 5: "9e", 6: "ae", 7: "ce", 8: "ee"}
         service_cnt = 1
-        result = list()
         ip4_offset_octet = 32 + self.ip_offset
-        ip6_offset_octet = 200 + self.ip_offset
+        ip6_group = f"{0x0200 + self.ip_offset:04x}"
         for device in self._values['devices']:
             dev = dict(ratio=None, ip=list())
             dev['ratio'] = self._ratio_check(device.get('ratio', None))
             dev['ip'].append(f"198.19.{str(ip4_offset_octet)}.{str(services_ip4_list[service_cnt])}")
-            dev['ip'].append(f"2001:0200:0:{str(ip6_offset_octet)}::{str(services_ip6_list[service_cnt])}")
-            service_cnt += service_cnt
+            dev['ip'].append(f"2001:0200:0:{ip6_group}::{services_ip6_list[service_cnt]}")
+            service_cnt += 1
             result.append(dev)
         return result
 
     @property
     def service_subnet(self):
+        # l3_enhanced always uses offset 0 (backend default)
+        if self._values.get('mode') == 'l3_enhanced':
+            return dict(ipv4='198.19.32.0', ipv6='2001:0200:0:200::')
         if self.ip_offset is None:
             return None
         result = dict()
         ip4_offset_octet = 32 + self.ip_offset
-        ip6_offset_octet = 200 + self.ip_offset
+        ip6_group = 0x0200 + self.ip_offset
         result['ipv4'] = f"198.19.{str(ip4_offset_octet)}.0"
-        result['ipv6'] = f"2001:0200:0:{str(ip6_offset_octet)}::"
+        result['ipv6'] = f"2001:0200:0:{ip6_group:04x}::"
         return result
+
+    @property
+    def port_remap(self):
+        if self._values['port_remap'] is None:
+            return None
+        return self._values['port_remap']
 
     @property
     def ip_offset(self):
         if self._values['ip_offset'] is None:
-            return 0
+            return None
         if 0 <= self._values['ip_offset'] <= 30:
             return self._values['ip_offset']
         raise F5ModuleError(
@@ -492,6 +583,37 @@ class ModuleParameters(Parameters):
             element['value'] = rule
             result.append(element)
         return result
+
+    @property
+    def rules_egress(self):
+        if self._values['rules_egress'] is None:
+            return None
+        result = list()
+        for rule in self._values['rules_egress']:
+            element = dict()
+            element['name'] = rule
+            element['value'] = rule
+            result.append(element)
+        return result
+
+    @property
+    def mode(self):
+        return self._values['mode']
+
+    @property
+    def default_persistence_profile(self):
+        if self._values['default_persistence_profile'] is None:
+            return ""
+        return self._values['default_persistence_profile']
+
+    @property
+    def service_index(self):
+        # l3_enhanced always uses serviceIndex 0
+        if self._values.get('mode') == 'l3_enhanced':
+            return 0
+        if self.ip_offset is None:
+            return 0
+        return self.ip_offset
 
     @staticmethod
     def _ratio_check(item):
@@ -618,15 +740,43 @@ class Difference(object):
 
     @property
     def rules(self):
-        return compare_complex_list(self.want.rules, self.have.rules)
+        return compare_complex_list_ordered(self.want.rules, self.have.rules)
+
+    @property
+    def rules_egress(self):
+        return compare_complex_list_ordered(self.want.rules_egress, self.have.rules_egress)
 
     @property
     def devices(self):
+        if self.want.devices is None:
+            return None
+        if self.have.devices_ips is None:
+            return self.want.devices
         if len(self.want.devices) != len(self.have.devices_ips):
             return self.want.devices
         for wd, hd in zip(self.want.devices, self.have.devices_ips):
             if wd['ratio'] != float(hd['ratio']):
                 return self.want.devices
+        return None
+
+    @property
+    def vendor_info(self):
+        if self.want.vendor_info is None:
+            return None
+        if self.want.vendor_info != self.have.vendor_info:
+            raise F5ModuleError(
+                "vendor_info cannot be changed after a service is created."
+            )
+        return None
+
+    @property
+    def mode(self):
+        if self.want.mode is None:
+            return None
+        if self.want.mode != self.have.mode:
+            raise F5ModuleError(
+                "mode cannot be changed after a service is created."
+            )
         return None
 
     @property
@@ -673,7 +823,8 @@ class ModuleManager(object):
                     changed[k] = change
         if changed:
             changed['network_ids'] = self.have.network_ids
-            changed['devices_ips'] = self.want.devices_ips
+            if self.want.devices_ips is not None:
+                changed['devices_ips'] = self.want.devices_ips
             self.changes = UsableChanges(params=changed)
             return True
         return False
@@ -691,6 +842,7 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
+        check_sslo_provisioned(self.client)
         self.check_sslo_version()
 
         if state == 'present':
@@ -715,6 +867,40 @@ class ModuleManager(object):
                 f"Unsupported SSL Orchestrator version, "
                 f"requires a version between {min_sslo_version} and {max_sslo_version}"
             )
+        if self.want.rules_egress is not None and Version(self.version) < Version('13.0'):
+            raise F5ModuleError(
+                "The rules_egress parameter is not supported on SSLO versions below 13.0. "
+                f"Detected version: {self.version}"
+            )
+        if self.want.mode is not None and Version(self.version) < Version('14.0'):
+            raise F5ModuleError(
+                "The mode parameter is not supported on SSLO versions below 14.0. "
+                f"Detected version: {self.version}"
+            )
+        if self.want.default_persistence_profile and Version(self.version) < Version('14.0'):
+            raise F5ModuleError(
+                "The default_persistence_profile parameter is not supported on SSLO versions below 14.0. "
+                f"Detected version: {self.version}"
+            )
+        # Device count limits:
+        #   l3_legacy (and all pre-v14 devices): max 8 devices
+        #   l3_enhanced (v14+): max 50 devices
+        if self.want.devices is not None:
+            device_count = len(self.want.devices)
+            is_enhanced = (
+                Version(self.version) >= Version('14.0') and
+                self.want.mode == 'l3_enhanced'
+            )
+            if not is_enhanced and device_count > 8:
+                raise F5ModuleError(
+                    "The service is in Legacy Mode and only supports 8 or less devices. "
+                    "If you want to support more than 8 devices, please create a new L2 "
+                    "Inline Service with mode: l3_enhanced (requires SSLO 14.0+)."
+                )
+            if is_enhanced and device_count > 50:
+                raise F5ModuleError(
+                    "The service is in Enhanced Mode and only supports 50 or less devices."
+                )
         return True
 
     def present(self):
@@ -806,8 +992,23 @@ class ModuleManager(object):
         return result
 
     def check_for_required_creation_parameters(self):
-        if self.want.ip_offset is None:
-            raise F5ModuleError('The ip_offset parameter is required when creating a new layer2 SSLO service')
+        if self.want.mode == 'l3_enhanced' and self.want.ip_offset is not None:
+            raise F5ModuleError('The ip_offset parameter must not be set when using l3_enhanced mode')
+
+    def _default_legacy_service_subnet(self):
+        return dict(ipv4='198.19.32.0', ipv6='2001:0200:0:0200::')
+
+    def _default_legacy_devices_ips(self):
+        services_ip4_list = {1: 30, 2: 62, 3: 95, 4: 126, 5: 158, 6: 190, 7: 222, 8: 255}
+        services_ip6_list = {1: "1e", 2: "3e", 3: "5e", 4: "7e", 5: "9e", 6: "ae", 7: "ce", 8: "ee"}
+        result = list()
+        for service_cnt, device in enumerate(self.module.params['devices'], start=1):
+            dev = dict(ratio=None, ip=list())
+            dev['ratio'] = self.want._ratio_check(device.get('ratio', None))
+            dev['ip'].append(f"198.19.32.{services_ip4_list[service_cnt]}")
+            dev['ip'].append(f"2001:0200:0:0200::{services_ip6_list[service_cnt]}")
+            result.append(dev)
+        return result
 
     def add_create_values(self, payload):
         if self.want.monitor is None:
@@ -816,6 +1017,13 @@ class ModuleManager(object):
             payload['service_down_action'] = 'ignore'
         if self.want.vendor_info is None:
             payload['vendor_info'] = 'Generic Inline Layer 2'
+        if self.want.mode is None:
+            payload['mode'] = 'l3_legacy'
+        if payload['mode'] == 'l3_legacy' and payload.get('service_subnet') is None:
+            payload['service_subnet'] = self._default_legacy_service_subnet()
+        if payload['mode'] == 'l3_legacy' and payload.get('devices_ips') is None:
+            payload['devices_ips'] = self._default_legacy_devices_ips()
+        payload['service_index'] = self.want.service_index
         return payload
 
     def add_missing_options(self, payload):
@@ -835,8 +1043,15 @@ class ModuleManager(object):
             payload['service_subnet'] = self.have.service_subnet
         if self.changes.rules is None:
             payload['rules'] = self.have.rules
+        if self.changes.rules_egress is None:
+            payload['rules_egress'] = self.have.rules_egress
+        if self.changes.mode is None:
+            payload['mode'] = self.have.mode
+        if self.changes.default_persistence_profile is None:
+            payload['default_persistence_profile'] = self.have.default_persistence_profile
         if self.changes.vendor_info is None:
             payload['vendor_info'] = self.have.vendor_info
+        payload['service_index'] = self.have.service_index
         return payload
 
     def exists(self):
@@ -1017,6 +1232,14 @@ class ArgumentSpec(object):
                 type='list',
                 elements='str'
             ),
+            rules_egress=dict(
+                type='list',
+                elements='str'
+            ),
+            mode=dict(
+                choices=['l3_legacy', 'l3_enhanced']
+            ),
+            default_persistence_profile=dict(),
             timeout=dict(
                 type='int',
                 default=300

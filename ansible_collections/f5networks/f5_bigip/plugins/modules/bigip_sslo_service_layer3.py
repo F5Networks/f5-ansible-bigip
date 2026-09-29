@@ -139,6 +139,12 @@ options:
         - Introduced in SSL Orchestrator 11.1.x. Please use this feature for SSL Orchestrator 11.1.x and later.
     type: str
     version_added: "3.11.0"
+  default_persistence_profile:
+    description:
+        - Specifies the persistence profile used for the L3 inline service.
+        - Supported in SSL Orchestrator 14.0 and later.
+    type: str
+    version_added: "3.14.0"
   auto_manage:
     description:
       - Specifies whether to provide a set of unique, non-overlapping, non-routable
@@ -158,6 +164,7 @@ options:
   vendor_info:
     description:
       - Specifies the vendor-specific L3 service used. The default is C(Generic Inline Layer 3).
+      - This value is set at creation time and cannot be changed once the service exists.
     type: str
   monitor:
     description:
@@ -210,6 +217,13 @@ options:
       - Defines a list of iRules to attach to the service.
     type: list
     elements: str
+  rules_egress:
+    description:
+      - Defines a list of egress iRules to attach to the service return path.
+      - Supported in SSL Orchestrator 13.0 and later.
+    type: list
+    elements: str
+    version_added: "3.14.0"
   dump_json:
     description:
       - Sets the module to output a JSON blob for further consumption.
@@ -440,15 +454,16 @@ from ..module_utils.common import (
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
-    F5Client, sslo_version
+    F5Client, sslo_version, check_sslo_provisioned
 )
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, process_json
 )
 from ..module_utils.constants import (
-    min_sslo_version, max_sslo_version
+    min_sslo_version, max_sslo_version, VENDOR_INFO_IMMUTABLE_ERROR,
+    RULES_EGRESS_VERSION_ERROR, DEFAULT_PERSISTENCE_VERSION_ERROR
 )
-from ..module_utils.compare import compare_complex_list, compare_dictionary
+from ..module_utils.compare import compare_complex_list, compare_dictionary, compare_complex_list_ordered
 from ..module_utils.sslo_templates.sslo_service_layer3 import (
     create_modify, delete, modify_new
 )
@@ -464,6 +479,7 @@ class Parameters(AnsibleF5Parameters):
         'control_channels',
         'service_entry_sslprofile',
         'service_return_sslprofile',
+        'default_persistence_profile',
         'ip_family',
         'monitor',
         'service_down_action',
@@ -473,6 +489,7 @@ class Parameters(AnsibleF5Parameters):
         'snat_pool',
         'vendor_info',
         'rules',
+        'rules_egress',
         'auto_manage'
     ]
     returnables = [
@@ -482,6 +499,7 @@ class Parameters(AnsibleF5Parameters):
         'control_channels',
         'service_entry_sslprofile',
         'service_return_sslprofile',
+        'default_persistence_profile',
         'ip_family',
         'monitor',
         'service_down_action',
@@ -492,7 +510,8 @@ class Parameters(AnsibleF5Parameters):
         'auto_manage',
         'use_exist_selfip',
         'vendor_info',
-        'rules'
+        'rules',
+        'rules_egress'
     ]
 
 
@@ -575,6 +594,10 @@ class ApiParameters(Parameters):
         return self._values['customService']['serviceReturnSSLProfile']
 
     @property
+    def default_persistence_profile(self):
+        return self._values['customService'].get('defaultPersistenceProfile', "")
+
+    @property
     def control_channels(self):
         return self._values['customService']['controlChannels']
 
@@ -588,7 +611,7 @@ class ApiParameters(Parameters):
 
     @property
     def port_remap(self):
-        if 'httpPortRemapValue' in self._values['customService']:
+        if self._values['customService'].get('portRemap') and 'httpPortRemapValue' in self._values['customService']:
             return int(self._values['customService']['httpPortRemapValue'])
 
     @property
@@ -615,6 +638,10 @@ class ApiParameters(Parameters):
     @property
     def rules(self):
         return self._values['customService']['iRuleList']
+
+    @property
+    def rules_egress(self):
+        return self._values['customService'].get('iRuleListEgress', [])
 
     @property
     def auto_manage(self):
@@ -660,6 +687,11 @@ class ModuleParameters(Parameters):
         )
 
     @staticmethod
+    def _normalize_netmask(netmask):
+        # Normalize to collapsed form so SSLO can match existing IPv6 self-IPs
+        return str(IPAddress(netmask))
+
+    @staticmethod
     def _process_network(item):
         cidr = IPAddress(item['netmask']).netmask_bits()
         ip = f"{item['self_ip']}/{cidr}"
@@ -689,7 +721,7 @@ class ModuleParameters(Parameters):
         if 'tag' in devices.keys() and devices['tag']:
             result['tag'] = devices['tag']
         result['self_ip'] = devices['self_ip']
-        result['netmask'] = devices['netmask']
+        result['netmask'] = self._normalize_netmask(devices['netmask'])
         result['network'] = self._process_network(devices)
         return result
 
@@ -709,7 +741,7 @@ class ModuleParameters(Parameters):
         if 'tag' in devices.keys() and devices['tag']:
             result['tag'] = devices['tag']
         result['self_ip'] = devices['self_ip']
-        result['netmask'] = devices['netmask']
+        result['netmask'] = self._normalize_netmask(devices['netmask'])
         result['network'] = self._process_network(devices)
         return result
 
@@ -759,6 +791,12 @@ class ModuleParameters(Parameters):
         return self._values['service_return_sslprofile']
 
     @property
+    def default_persistence_profile(self):
+        if self._values['default_persistence_profile'] is None:
+            return ""
+        return self._values['default_persistence_profile']
+
+    @property
     def port_remap(self):
         if self._values['port_remap'] is None:
             return None
@@ -770,6 +808,18 @@ class ModuleParameters(Parameters):
             return None
         result = list()
         for rule in self._values['rules']:
+            element = dict()
+            element['name'] = rule
+            element['value'] = rule
+            result.append(element)
+        return result
+
+    @property
+    def rules_egress(self):
+        if self._values['rules_egress'] is None:
+            return None
+        result = list()
+        for rule in self._values['rules_egress']:
             element = dict()
             element['name'] = rule
             element['value'] = rule
@@ -850,6 +900,11 @@ class UsableChanges(Changes):
 
 class ReportableChanges(Changes):
     @staticmethod
+    def _normalize_netmask(netmask):
+        # Normalize to collapsed form so SSLO can match existing IPv6 self-IPs
+        return str(IPAddress(netmask))
+
+    @staticmethod
     def _normalize_devices(devices):
         result = dict()
         if 'vlan' in devices.keys() and devices['vlan']:
@@ -859,7 +914,7 @@ class ReportableChanges(Changes):
         if 'tag' in devices.keys() and devices['tag']:
             result['tag'] = devices['tag']
         result['self_ip'] = devices['self_ip']
-        result['netmask'] = devices['netmask']
+        result['netmask'] = ReportableChanges._normalize_netmask(devices['netmask'])
         return result
 
     @property
@@ -881,6 +936,16 @@ class ReportableChanges(Changes):
     @property
     def rules(self):
         rules = self._values['rules']
+        if rules is None:
+            return None
+        result = list()
+        for rule in rules:
+            result.append(rule['name'])
+        return result
+
+    @property
+    def rules_egress(self):
+        rules = self._values['rules_egress']
         if rules is None:
             return None
         result = list()
@@ -986,7 +1051,19 @@ class Difference(object):
 
     @property
     def rules(self):
-        return compare_complex_list(self.want.rules, self.have.rules)
+        return compare_complex_list_ordered(self.want.rules, self.have.rules)
+
+    @property
+    def rules_egress(self):
+        return compare_complex_list_ordered(self.want.rules_egress, self.have.rules_egress)
+
+    @property
+    def vendor_info(self):
+        if self.want.vendor_info is None:
+            return None
+        if self.want.vendor_info != self.have.vendor_info:
+            raise F5ModuleError(VENDOR_INFO_IMMUTABLE_ERROR)
+        return None
 
 
 class ModuleManager(object):
@@ -1043,6 +1120,7 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
+        check_sslo_provisioned(self.client)
         self.check_sslo_version()
         if state == 'present':
             changed = self.present()
@@ -1066,6 +1144,10 @@ class ModuleManager(object):
                 f"Unsupported SSL Orchestrator version, "
                 f"requires a version between {min_sslo_version} and {max_sslo_version}"
             )
+        if self.want.rules_egress and Version(self.version) < Version('13.0'):
+            raise F5ModuleError(RULES_EGRESS_VERSION_ERROR)
+        if self.want.default_persistence_profile and Version(self.version) < Version('14.0'):
+            raise F5ModuleError(DEFAULT_PERSISTENCE_VERSION_ERROR)
         return True
 
     def present(self):
@@ -1170,6 +1252,8 @@ class ModuleManager(object):
             params['service_entry_sslprofile'] = self.have.service_entry_sslprofile
         if self.changes.service_return_sslprofile is None:
             params['service_return_sslprofile'] = self.have.service_return_sslprofile
+        if self.changes.default_persistence_profile is None:
+            params['default_persistence_profile'] = self.have.default_persistence_profile
         if self.changes.ip_family is None:
             params['ip_family'] = self.have.ip_family
         if self.changes.monitor is None:
@@ -1186,6 +1270,8 @@ class ModuleManager(object):
             params['use_exist_selfip'] = self.want.use_exist_selfip
         if self.changes.rules is None:
             params['rules'] = self.have.rules
+        if self.changes.rules_egress is None:
+            params['rules_egress'] = self.have.rules_egress
         if self.changes.snat is None:
             params['snat'] = self.have.snat
             if self.have.snat == 'SNAT':
@@ -1411,6 +1497,7 @@ class ArgumentSpec(object):
             ),
             service_entry_sslprofile=dict(),
             service_return_sslprofile=dict(),
+            default_persistence_profile=dict(),
             ip_family=dict(
                 choices=['ipv4', 'ipv6']
             ),
@@ -1435,6 +1522,10 @@ class ArgumentSpec(object):
             snat_pool=dict(),
             vendor_info=dict(),
             rules=dict(
+                type='list',
+                elements='str'
+            ),
+            rules_egress=dict(
                 type='list',
                 elements='str'
             ),
