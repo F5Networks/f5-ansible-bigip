@@ -75,7 +75,8 @@ class TestManager(unittest.TestCase):
             proxy_client_public_key="YYYYYYYYYYYYYYYYYYY",
             proxy_server_public_key="CCCCCCCCCCCCCCCCCCC",
             proxy_server_private_key="BBBBBBBBBBBBBBBBBB",
-            real_server_public_key="AAAAAAAAAAAAAAAAAAAA"
+            real_server_public_key="AAAAAAAAAAAAAAAAAAAA",
+            state='present'
         ))
 
         module = AnsibleModule(
@@ -84,7 +85,7 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(module=module)
-        mm.client.get.side_effect = [dict(code=200), dict(code=404)]
+        mm.exists = Mock(side_effect=[False, True])
         mm.client.post.return_value = dict(code=200)
 
         results = mm.exec_module()
@@ -105,7 +106,8 @@ class TestManager(unittest.TestCase):
             proxy_client_public_key="YYYYYYYYYYYYYYYYYYY",
             proxy_server_public_key="CCCCCCCCCCCCCCCCCCC",
             proxy_server_private_key="BBBBBBBBBBBBBBBBBB",
-            real_server_public_key="AAAAAAAAAAAAAAAAAAAA"
+            real_server_public_key="AAAAAAAAAAAAAAAAAAAA",
+            state='present'
         ))
 
         module = AnsibleModule(
@@ -114,7 +116,7 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(module=module)
-        mm.client.get.side_effect = [dict(code=200), dict(code=404)]
+        mm.exists = Mock(return_value=False)
         mm.client.post.return_value = dict(code=503, contents='internal server error')
 
         with self.assertRaises(F5ModuleError) as err:
@@ -129,7 +131,8 @@ class TestManager(unittest.TestCase):
             profile_name='test_ssh_profile',
             proxy_client_private_key="XXXXXXXXXXXXXXXXXX",
             proxy_server_private_key="BBBBBBBBBBBBBBBBBB",
-            force=True
+            force=True,
+            state='present'
         ))
 
         module = AnsibleModule(
@@ -138,6 +141,7 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
         mm.client.get.return_value = dict(code=200, contents=load_fixture('load_ssh_profile_keys.json'))
         mm.client.patch.return_value = dict(code=200)
 
@@ -154,7 +158,8 @@ class TestManager(unittest.TestCase):
             profile_name='test_ssh_profile',
             proxy_client_private_key="XXXXXXXXXXXXXXXXXX",
             proxy_server_private_key="BBBBBBBBBBBBBBBBBB",
-            force=False
+            force=False,
+            state='present'
         ))
 
         module = AnsibleModule(
@@ -163,6 +168,7 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
         mm.client.get.return_value = dict(code=200, contents=load_fixture('load_ssh_profile_keys.json'))
 
         results = mm.exec_module()
@@ -177,7 +183,8 @@ class TestManager(unittest.TestCase):
             proxy_server_private_key="BBBBBBBBBBBBBBBBBB",
             proxy_client_public_key="YYYYYYYYYYYYYYYYYYY",
             proxy_server_public_key="CCCCCCCCCCCCCCCCCCC",
-            real_server_public_key="AAAAAAAAAAAAAAAAAAAA"
+            real_server_public_key="AAAAAAAAAAAAAAAAAAAA",
+            state='present'
         ))
 
         module = AnsibleModule(
@@ -186,6 +193,7 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
         mm.client.get.return_value = dict(code=200, contents=load_fixture('load_ssh_profile_no_keys.json'))
         mm.client.patch.return_value = dict(code=200)
 
@@ -205,7 +213,8 @@ class TestManager(unittest.TestCase):
             profile_name='test_ssh_profile',
             proxy_client_public_key="YYYYYYYYYYYYYYYYYYY",
             proxy_server_public_key="CCCCCCCCCCCCCCCCCCC",
-            real_server_public_key="AAAAAAAAAAAAAAAAAAAA"
+            real_server_public_key="AAAAAAAAAAAAAAAAAAAA",
+            state='present'
         ))
 
         module = AnsibleModule(
@@ -214,6 +223,7 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
         mm.client.get.return_value = dict(code=200, contents=load_fixture('load_ssh_profile_no_keys.json'))
         mm.client.patch.return_value = dict(code=503, contents='internal server error')
 
@@ -350,3 +360,25 @@ class TestManager(unittest.TestCase):
         mm._update_changed_options = Mock(return_value=False)
         mm.read_current_from_device = Mock(return_value=dict())
         self.assertFalse(mm.update())
+
+    def test_delete_ssh_profile_keys_check_mode(self, *args):
+        set_module_args(dict(
+            name='test_auth',
+            profile_name='test_ssh_profile',
+            state='absent'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        module.check_mode = True
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(side_effect=[True, True])
+        mm.client.delete.return_value = dict(code=200)
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        self.assertFalse(mm.client.delete.called)

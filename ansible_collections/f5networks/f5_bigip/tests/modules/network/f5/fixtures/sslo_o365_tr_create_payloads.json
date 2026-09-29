@@ -1,0 +1,127 @@
+{
+  "with_irules": {
+    "name": "sslo_obj_SERVICE_CREATE_ssloS_o365_tr1",
+    "operation": "CREATE",
+    "configurationProcessorReference": {
+      "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "inputProperties": [
+      {
+        "id": "f5-ssl-orchestrator-operation-context",
+        "type": "JSON",
+        "value": {
+          "deploymentName": "ssloS_o365_tr1",
+          "deploymentType": "SERVICE",
+          "operationType": "CREATE",
+          "partition": "Common",
+          "strictness": false,
+          "version": 7.5
+        }
+      },
+      {
+        "id": "f5-ssl-orchestrator-service",
+        "type": "JSON",
+        "value": {
+          "customService": {
+            "iRuleList": [
+              {
+                "name": "/Common/test_rule_1",
+                "value": "/Common/test_rule_1"
+              }
+            ],
+            "name": "ssloS_o365_tr1",
+            "serviceDownAction": "ignore",
+            "serviceSpecific": {
+              "description": "",
+              "name": "ssloS_o365_tr1",
+              "restrictAccessContext": "Generic o365 tenant restrictions Service",
+              "restrictAccessToTenant": "example_tenant",
+              "subType": "o365"
+            },
+            "serviceType": "f5-tenant-restrictions"
+          },
+          "description": "Type: o365 Tenant Restrictions Service",
+          "name": "ssloS_o365_tr1",
+          "partition": "Common",
+          "previousVersion": 7.5,
+          "serviceTemplate": "",
+          "strictness": false,
+          "useTemplate": false,
+          "vendorInfo": {
+            "name": "F5 Secure Web Gateway"
+          },
+          "version": 7.5
+        }
+      },
+      {
+        "id": "f5-ssl-orchestrator-network",
+        "type": "JSON",
+        "value": []
+      }
+    ],
+    "presentationHtmlReference": {
+      "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+    },
+    "state": "BINDING"
+  },
+  "no_irules": {
+    "name": "sslo_obj_SERVICE_CREATE_ssloS_o365_tr_empty",
+    "operation": "CREATE",
+    "configurationProcessorReference": {
+      "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "inputProperties": [
+      {
+        "id": "f5-ssl-orchestrator-operation-context",
+        "type": "JSON",
+        "value": {
+          "deploymentName": "ssloS_o365_tr_empty",
+          "deploymentType": "SERVICE",
+          "operationType": "CREATE",
+          "partition": "Common",
+          "strictness": false,
+          "version": 7.5
+        }
+      },
+      {
+        "id": "f5-ssl-orchestrator-service",
+        "type": "JSON",
+        "value": {
+          "customService": {
+            "iRuleList": [],
+            "name": "ssloS_o365_tr_empty",
+            "serviceDownAction": "ignore",
+            "serviceSpecific": {
+              "description": "",
+              "name": "ssloS_o365_tr_empty",
+              "restrictAccessContext": "Generic o365 tenant restrictions Service",
+              "restrictAccessToTenant": "test_tenant",
+              "subType": "o365"
+            },
+            "serviceType": "f5-tenant-restrictions"
+          },
+          "description": "Type: o365 Tenant Restrictions Service",
+          "name": "ssloS_o365_tr_empty",
+          "partition": "Common",
+          "previousVersion": 7.5,
+          "serviceTemplate": "",
+          "strictness": false,
+          "useTemplate": false,
+          "vendorInfo": {
+            "name": "F5 Secure Web Gateway"
+          },
+          "version": 7.5
+        }
+      },
+      {
+        "id": "f5-ssl-orchestrator-network",
+        "type": "JSON",
+        "value": []
+      }
+    ],
+    "presentationHtmlReference": {
+      "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+    },
+    "state": "BINDING"
+  }
+}

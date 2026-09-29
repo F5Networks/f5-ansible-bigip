@@ -60,10 +60,9 @@ create_modify = """
              "generalSettings":{
                 "isForwardProxy": {% if params.proxy_type == "forward" %}true{% else %}false{% endif %},
                 "bypassHandshakeAlert": {{ params.bypass_handshake_failure | tojson }},
-                "bypassClientCertFailure": {{ params.bypass_client_cert_failure | tojson }}{% if params.sni_default is defined %},
-                "sniDefault": {{ params.sni_default | tojson }}{% endif %}{% if params.sni_server_name is defined %},
-                "serverName": "{{ params.sni_server_name }}"
-                {% endif %}
+                "bypassClientCertFailure": {{ params.bypass_client_cert_failure | tojson }},
+                "serverName": {% if params.sni_server_name is defined %}"{{ params.sni_server_name }}"{% else %}""{% endif %},
+                "sniDefault": {% if params.sni_default is defined %}{{ params.sni_default | tojson }}{% else %}false{% endif %}
              },
              "clientSettings":{
                 "ciphers":{
@@ -75,6 +74,7 @@ create_modify = """
                    {
                       "cert": "{{ params.client_cert }}",
                       "key": "{{ params.client_key }}",
+                      "keyType": "rsa-public",
                       "chain": {% if params.client_chain is defined %}
                       "{{ params.client_chain }}"{% else %}""{% endif %},
                       {% if params.sslo_version >= 9.3 %}
@@ -90,6 +90,7 @@ create_modify = """
                     {
                         "cert": "{{ params.client_ca_cert }}",
                         "key": "{{ params.client_ca_key }}",
+                        "keyType": "rsa-public",
                         "chain": {% if params.client_ca_chain is defined %}
                         "{{ params.client_ca_chain }}"{% else %}""{% endif %},
                         "isCa": true,
@@ -111,7 +112,9 @@ create_modify = """
                 {{ params.client_ssl_options | tojson }}
                 {% else %}[]{% endif %}{% if params.client_log_publisher is defined %},
                 "logPublisher": "{{ params.client_log_publisher }}"{% endif %}{% if params.alpn is defined %},
-                "alpn": {{ params.alpn | tojson }}{% endif %}
+                "alpn": {{ params.alpn | tojson }}{% endif %},
+                "serverName": {% if params.existing_sni_server_name is defined %}"{{ params.existing_sni_server_name }}"{% else %}""{% endif %},
+                "sniDefault": {% if params.existing_sni_default is defined %}{{ params.existing_sni_default | tojson }}{% else %}false{% endif %}
              },
              "serverSettings":{
                 "ciphers":{
@@ -127,7 +130,9 @@ create_modify = """
                 "enabledSSLProcessingOptions": {% if params.server_ssl_options is defined %}
                 {{ params.server_ssl_options | tojson }}{% else %}[]
                 {% endif %}{% if params.server_log_publisher is defined %},
-                "logPublisher": "{{ params.server_log_publisher }}"{% endif %}
+                "logPublisher": "{{ params.server_log_publisher }}"{% endif %},
+                "serverName": {% if params.existing_sni_server_name is defined %}"{{ params.existing_sni_server_name }}"{% else %}""{% endif %},
+                "sniDefault": {% if params.existing_sni_default is defined %}{{ params.existing_sni_default | tojson }}{% else %}false{% endif %}
              },
              "name": "{{ params.deployment_name }}",
              "advancedMode": "off",
@@ -147,13 +152,13 @@ create_modify = """
       {
          "id": "{{params.key_pfId}}",
          "type": "STRING",
-         "value": {% if params.key_passphrase %} "{{ params.key_passphrase }}" {% else %}""{% endif %}
-      },
+         "value": {% if params.key_passphrase %}"{{ params.key_passphrase }}"{% else %}""{% endif %}
+      }{% if params.proxy_type == "forward" %},
       {
          "id": "{{params.ca_key_pfId}}",
          "type": "STRING",
-         "value": {% if params.client_ca_key_passphrase %} "{{ params.client_ca_key_passphrase }}" {% else %}""{% endif %}
-      }
+         "value": {% if params.client_ca_key_passphrase %}"{{ params.client_ca_key_passphrase }}"{% else %}""{% endif %}
+      }{% endif %}
     ],
     {% endif %}
     "configurationProcessorReference":{

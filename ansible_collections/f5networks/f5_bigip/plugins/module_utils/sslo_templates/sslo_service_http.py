@@ -224,14 +224,23 @@ create_modify = """
                 "initialIpFamily": "{{ params.ip_family }}",
                 "ipFamily": "{{ params.ip_family }}",
                 "isAutoManage": {{ params.auto_manage | tojson }},
-                "portRemap": {% if params.port_remap is defined %}true{% else %}false{% endif %},
-                "serviceEntrySSLProfile": "{{ params.service_entry_sslprofile }}",
-                "serviceReturnSSLProfile": "{{ params.service_return_sslprofile }}",
-                "controlChannels": {{ params.control_channels | tojson }},
-                "httpPortRemapValue": {% if params.port_remap is defined -%}{{ params.port_remap }},{% else %}80,
+                "portRemap": {% if params.port_remap %}true{% else %}false{% endif %},
+                {% if params.sslo_version >= 14.0 -%}
+                {% set dpp = params.default_persistence_profile if params.default_persistence_profile else '' -%}
+                "defaultPersistenceProfile": "{{ dpp }}",
+                {% endif -%}
+                {% set sep = params.service_entry_sslprofile if params.service_entry_sslprofile else '' -%}
+                "serviceEntrySSLProfile": "{{ sep }}",
+                "serviceReturnSSLProfile": {% if params.service_return_sslprofile %}"{{ params.service_return_sslprofile }}"{% else %}""{% endif %},
+                {% if params.sslo_version >= 11.1 %}"controlChannels": {{ params.control_channels | tojson }},
+                {% endif %}"httpPortRemapValue": {% if params.port_remap -%}{{ params.port_remap }},{% else %}80,
                 {% endif %}
                 "serviceDownAction": "{{ params.service_down_action }}",
                 "iRuleList": {% if params.rules is defined %}{{ params.rules | tojson }}{% else %}[]{% endif %},
+                {% if params.sslo_version >= 13.0 -%}
+                {% set egress = params.rules_egress if params.rules_egress is defined else [] -%}
+                "iRuleListEgress": {{ egress | tojson }},
+                {% endif %}
                 "managedNetwork":{
                     "serviceType": "http-proxy",
                     "ipFamily": "{{ params.ip_family }}",
@@ -248,7 +257,7 @@ create_modify = """
                         "fromServiceNetwork": "{{ params.devices_from.network }}",
                         "fromServiceMask": "{{ params.devices_from.netmask }}",
                         "fromServiceSelfIp": "{{ params.devices_from.self_ip }}"
-                    }{% endif %},{% if params.ip_family == 'ipv6' %}
+                    },{% endif %}{% if params.ip_family == 'ipv6' %}
                    "ipv6": {
                         "serviceType": "http-proxy",
                         "ipFamily": "{{ params.ip_family }}",

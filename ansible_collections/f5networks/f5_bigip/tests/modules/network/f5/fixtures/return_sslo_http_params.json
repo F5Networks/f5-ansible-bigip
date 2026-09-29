@@ -88,7 +88,12 @@
         "portRemap": true,
         "httpPortRemapValue": 8080.0,
         "serviceDownAction": "reset",
-        "iRuleList": [],
+        "defaultPersistenceProfile": "/Common/source_addr",
+        "serviceEntrySSLProfile": "/Common/sslo-default-serverssl",
+        "serviceReturnSSLProfile": "/Common/sslo-default-clientssl",
+        "controlChannels": [],
+        "iRuleList": ["/Common/test_ingress_rule"],
+        "iRuleListEgress": ["/Common/test_egress_rule"],
         "managedNetwork": {
             "serviceType": "http-proxy",
             "ipFamily": "ipv4",

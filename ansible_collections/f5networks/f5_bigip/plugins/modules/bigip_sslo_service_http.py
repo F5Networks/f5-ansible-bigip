@@ -129,6 +129,13 @@ options:
         description:
           - Gateway pool - the routed path for this outbound traffic.
         type: str
+  default_persistence_profile:
+    description:
+      - Specifies the default persistence profile to attach to the HTTP service.
+      - The persistence profile must already exist on the BIG-IP.
+      - When creating an HTTP service, if the parameter is not provided no persistence profile is attached.
+    type: str
+    version_added: "3.15.0"
   service_entry_sslprofile:
     description:
         - Specifies the SSL profile used for the service entry.
@@ -209,9 +216,17 @@ options:
     elements: str
   rules:
     description:
-      - Defines a list of iRules to attach to the service.
+      - Defines a list of iRules to attach to the service entry (ingress side).
+      - Also known as "iRules on Service Entry".
     type: list
     elements: str
+  rules_egress:
+    description:
+      - Defines a list of iRules to attach to the service return (egress side).
+      - Also known as "iRules on Service Return".
+    type: list
+    elements: str
+    version_added: "3.15.0"
   ip_family:
     description:
       - Specifies the IP family used for attached HTTP security devices.
@@ -446,10 +461,22 @@ snatlist:
   sample: ["198.19.64.10" , "198.19.64.11"]
 rules:
   description:
-    - List of iRules attached to the service.
+    - List of iRules attached to the service entry (ingress).
   returned: changed
   type: list
   sample: ["/Common/test-rule-1", "/Common/test-rule-2"]
+rules_egress:
+  description:
+    - List of iRules attached to the service return (egress).
+  returned: changed
+  type: list
+  sample: ["/Common/test-egress-rule-1", "/Common/test-egress-rule-2"]
+default_persistence_profile:
+  description:
+    - The default persistence profile attached to the HTTP service.
+  returned: changed
+  type: str
+  sample: /Common/source_addr
 '''
 
 import re
@@ -483,15 +510,16 @@ from ansible.module_utils.basic import (
 from ansible.module_utils.connection import Connection
 
 from ..module_utils.client import (
-    F5Client, sslo_version
+    F5Client, sslo_version, check_sslo_provisioned
 )
 from ..module_utils.common import (
     F5ModuleError, AnsibleF5Parameters, process_json, flatten_boolean
 )
 from ..module_utils.constants import (
-    min_sslo_version, max_sslo_version
+    min_sslo_version, max_sslo_version, VENDOR_INFO_IMMUTABLE_ERROR,
+    RULES_EGRESS_VERSION_ERROR, DEFAULT_PERSISTENCE_VERSION_ERROR
 )
-from ..module_utils.compare import compare_complex_list, compare_dictionary
+from ..module_utils.compare import compare_complex_list, compare_dictionary, compare_complex_list_ordered
 from ..module_utils.sslo_templates.sslo_service_http import (
     create_modify, delete
 )
@@ -518,10 +546,12 @@ class Parameters(AnsibleF5Parameters):
         'snat_pool',
         'vendor_info',
         'rules',
+        'rules_egress',
         'proxy_type',
         'auto_manage',
         'use_exist_selfip',
-        'auth_offload'
+        'auth_offload',
+        'default_persistence_profile'
     ]
 
     updatables = [
@@ -540,9 +570,11 @@ class Parameters(AnsibleF5Parameters):
         'snat_pool',
         'vendor_info',
         'rules',
+        'rules_egress',
         'proxy_type',
         'auto_manage',
-        'auth_offload'
+        'auth_offload',
+        'default_persistence_profile'
     ]
 
 
@@ -623,6 +655,10 @@ class ApiParameters(Parameters):
         return self._values['customService']['ipFamily']
 
     @property
+    def default_persistence_profile(self):
+        return self._values['customService'].get('defaultPersistenceProfile', "")
+
+    @property
     def service_entry_sslprofile(self):
         return self._values['customService']['serviceEntrySSLProfile']
 
@@ -632,7 +668,7 @@ class ApiParameters(Parameters):
 
     @property
     def control_channels(self):
-        return self._values['customService']['controlChannels']
+        return self._values['customService'].get('controlChannels')
 
     @property
     def monitor(self):
@@ -644,7 +680,7 @@ class ApiParameters(Parameters):
 
     @property
     def port_remap(self):
-        if 'httpPortRemapValue' in self._values['customService']:
+        if self._values['customService'].get('portRemap') and 'httpPortRemapValue' in self._values['customService']:
             return int(self._values['customService']['httpPortRemapValue'])
 
     @property
@@ -671,6 +707,10 @@ class ApiParameters(Parameters):
     @property
     def rules(self):
         return self._values['customService']['iRuleList']
+
+    @property
+    def rules_egress(self):
+        return self._values['customService'].get('iRuleListEgress', [])
 
     @property
     def proxy_type(self):
@@ -713,6 +753,11 @@ class ModuleParameters(Parameters):
         )
 
     @staticmethod
+    def _normalize_netmask(netmask):
+        # Normalize to collapsed form so SSLO can match existing IPv6 self-IPs
+        return str(IPAddress(netmask))
+
+    @staticmethod
     def _process_network(item):
         cidr = IPAddress(item['netmask']).netmask_bits()
         ip = f"{item['self_ip']}/{cidr}"
@@ -742,7 +787,7 @@ class ModuleParameters(Parameters):
         if 'tag' in devices.keys() and devices['tag']:
             result['tag'] = devices['tag']
         result['self_ip'] = devices['self_ip']
-        result['netmask'] = devices['netmask']
+        result['netmask'] = self._normalize_netmask(devices['netmask'])
         result['network'] = self._process_network(devices)
         return result
 
@@ -762,7 +807,7 @@ class ModuleParameters(Parameters):
         if 'tag' in devices.keys() and devices['tag']:
             result['tag'] = devices['tag']
         result['self_ip'] = devices['self_ip']
-        result['netmask'] = devices['netmask']
+        result['netmask'] = self._normalize_netmask(devices['netmask'])
         result['network'] = self._process_network(devices)
         return result
 
@@ -776,7 +821,7 @@ class ModuleParameters(Parameters):
             tmp = dict()
             tmp['ip'] = device['ip']
             if 'port' not in device.keys() or not device['port']:
-                if proxy == 'explicit':
+                if proxy == 'Explicit':
                     raise F5ModuleError('Explicit proxy requires an IP and port specified for devices.')
                 tmp['port'] = 80
             else:
@@ -795,12 +840,18 @@ class ModuleParameters(Parameters):
             tmp['sourceIP'] = control_channel['source_ip']
             tmp['destinationIP'] = control_channel['destination_ip']
             tmp['destinationPort'] = control_channel['destination_port']
-            tmp['gatewayPool'] = control_channel['gateway_pool']
+            tmp['gatewayPool'] = control_channel['gateway_pool'] or 'none'
             tmp['protocol'] = control_channel['protocol']
             tmp['snat'] = control_channel['snat']
             result.append(tmp)
         if result:
             return result
+
+    @property
+    def default_persistence_profile(self):
+        if self._values['default_persistence_profile'] is None:
+            return ""
+        return self._values['default_persistence_profile']
 
     @property
     def service_entry_sslprofile(self):
@@ -818,7 +869,7 @@ class ModuleParameters(Parameters):
     def port_remap(self):
         if self._values['port_remap'] is None:
             return None
-        if self.proxy_type == 'explicit':
+        if self._values['proxy_type'] == 'explicit':
             raise F5ModuleError('Port remap cannot be used with explicit proxy.')
         return self._values['port_remap']
 
@@ -828,6 +879,18 @@ class ModuleParameters(Parameters):
             return None
         result = list()
         for rule in self._values['rules']:
+            element = dict()
+            element['name'] = rule
+            element['value'] = rule
+            result.append(element)
+        return result
+
+    @property
+    def rules_egress(self):
+        if self._values['rules_egress'] is None:
+            return None
+        result = list()
+        for rule in self._values['rules_egress']:
             element = dict()
             element['name'] = rule
             element['value'] = rule
@@ -949,6 +1012,7 @@ class RemovalChanges(Changes):
         'snat_list',
         'snat_pool',
         'rules',
+        'rules_egress',
         'proxy_type',
         'auth_offload',
         'snat_ref_id'
@@ -956,6 +1020,11 @@ class RemovalChanges(Changes):
 
 
 class ReportableChanges(Changes):
+    @staticmethod
+    def _normalize_netmask(netmask):
+        # Normalize to collapsed form so SSLO can match existing IPv6 self-IPs
+        return str(IPAddress(netmask))
+
     @staticmethod
     def _normalize_devices(devices):
         result = dict()
@@ -966,7 +1035,7 @@ class ReportableChanges(Changes):
         if 'tag' in devices.keys() and devices['tag']:
             result['tag'] = devices['tag']
         result['self_ip'] = devices['self_ip']
-        result['netmask'] = devices['netmask']
+        result['netmask'] = ReportableChanges._normalize_netmask(devices['netmask'])
         return result
 
     @property
@@ -988,6 +1057,16 @@ class ReportableChanges(Changes):
     @property
     def rules(self):
         rules = self._values['rules']
+        if rules is None:
+            return None
+        result = list()
+        for rule in rules:
+            result.append(rule['name'])
+        return result
+
+    @property
+    def rules_egress(self):
+        rules = self._values['rules_egress']
         if rules is None:
             return None
         result = list()
@@ -1086,11 +1165,32 @@ class Difference(object):
 
     @property
     def control_channels(self):
+        if self.have.control_channels is None:
+            return None
         return compare_complex_list(self.want.control_channels, self.have.control_channels)
 
     @property
+    def default_persistence_profile(self):
+        want = self.want.default_persistence_profile
+        have = self.have.default_persistence_profile
+        if want != have:
+            return want
+
+    @property
     def rules(self):
-        return compare_complex_list(self.want.rules, self.have.rules)
+        return compare_complex_list_ordered(self.want.rules, self.have.rules)
+
+    @property
+    def rules_egress(self):
+        return compare_complex_list_ordered(self.want.rules_egress, self.have.rules_egress)
+
+    @property
+    def vendor_info(self):
+        if self.want.vendor_info is None:
+            return None
+        if self.want.vendor_info != self.have.vendor_info:
+            raise F5ModuleError(VENDOR_INFO_IMMUTABLE_ERROR)
+        return None
 
 
 class ModuleManager(object):
@@ -1156,6 +1256,7 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
+        check_sslo_provisioned(self.client)
         self.check_sslo_version()
 
         if state == 'present':
@@ -1180,6 +1281,10 @@ class ModuleManager(object):
                 f"Unsupported SSL Orchestrator version, "
                 f"requires a version between {min_sslo_version} and {max_sslo_version}"
             )
+        if self.want.rules_egress and Version(self.version) < Version('13.0'):
+            raise F5ModuleError(RULES_EGRESS_VERSION_ERROR)
+        if self.want.default_persistence_profile and Version(self.version) < Version('14.0'):
+            raise F5ModuleError(DEFAULT_PERSISTENCE_VERSION_ERROR)
         return True
 
     def present(self):
@@ -1294,6 +1399,8 @@ class ModuleManager(object):
             params['port_remap'] = self.have.port_remap
         if self.changes.rules is None:
             params['rules'] = self.have.rules
+        if self.changes.rules_egress is None:
+            params['rules_egress'] = self.have.rules_egress
         if self.changes.vendor_info is None:
             params['vendor_info'] = self.have.vendor_info
         if self.changes.proxy_type is None:
@@ -1306,6 +1413,8 @@ class ModuleManager(object):
             params['use_exist_selfip'] = self.want.use_exist_selfip
         if self.changes.control_channels is None:
             params['control_channels'] = self.have.control_channels
+        if self.changes.default_persistence_profile is None:
+            params['default_persistence_profile'] = self.have.default_persistence_profile
         if self.changes.service_entry_sslprofile is None:
             params['service_entry_sslprofile'] = self.have.service_entry_sslprofile
         if self.changes.service_return_sslprofile is None:
@@ -1534,6 +1643,7 @@ class ArgumentSpec(object):
                     snat=dict()
                 )
             ),
+            default_persistence_profile=dict(),
             service_entry_sslprofile=dict(),
             service_return_sslprofile=dict(),
             auto_manage=dict(
@@ -1562,6 +1672,10 @@ class ArgumentSpec(object):
             snat_pool=dict(),
             vendor_info=dict(),
             rules=dict(
+                type='list',
+                elements='str'
+            ),
+            rules_egress=dict(
                 type='list',
                 elements='str'
             ),

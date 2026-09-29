@@ -438,7 +438,9 @@ class ModuleParameters(Parameters):
     @property
     def timeout(self):
         divisor = 10
-        timeout = self._values['timeout']
+        timeout = self._values.get('timeout', None)
+        if timeout is None:
+            timeout = 300
         if timeout < 10 or timeout > 1800:
             raise F5ModuleError(
                 "Timeout value must be between 10 and 1800 seconds."

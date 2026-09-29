@@ -1,0 +1,26 @@
+{
+  "strictness": false,
+  "customService": {
+    "name": "ssloS_o365_tr1",
+    "serviceType": "O365_TR",
+    "serviceSpecific": {
+      "restrictAccessToTenant": "company_tenant",
+      "restrictAccessContext": "Generic o365 tenant restrictions Service",
+      "subType": "o365"
+    },
+    "iRuleList": [
+      {
+        "name": "/Common/ssloS_o365_tr1.app/ssloS_o365_tr1-f5-tenant-restrictions",
+        "value": "/Common/ssloS_o365_tr1.app/ssloS_o365_tr1-f5-tenant-restrictions"
+      },
+      {
+        "name": "/Common/test_rule_1",
+        "value": "/Common/test_rule_1"
+      },
+      {
+        "name": "/Common/test_rule_2",
+        "value": "/Common/test_rule_2"
+      }
+    ]
+  }
+}

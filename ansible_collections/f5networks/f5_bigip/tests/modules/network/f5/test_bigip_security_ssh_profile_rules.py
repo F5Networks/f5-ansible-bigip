@@ -186,7 +186,8 @@ class TestManager(unittest.TestCase):
                 action=dict(
                     name='test_action_name',
                     shell=dict(control='allow', log=True)
-                )
+                ),
+                state='present'
             )
         )
 
@@ -217,7 +218,8 @@ class TestManager(unittest.TestCase):
                 action=dict(
                     name='test_action_name',
                     shell=dict(control='allow', log=True)
-                )
+                ),
+                state='present'
             )
         )
 
@@ -248,7 +250,8 @@ class TestManager(unittest.TestCase):
                 action=dict(
                     name='test_action_name',
                     shell=dict(control='terminate', log=True)
-                )
+                ),
+                state='present'
             )
         )
 
@@ -307,7 +310,8 @@ class TestManager(unittest.TestCase):
                 action=dict(
                     name='test_action_name',
                     other=dict(control='terminate', log=True)
-                )
+                ),
+                state='present'
             )
         )
 

@@ -78,6 +78,30 @@ def compare_complex_list(want, have):
         return want
 
 
+def compare_complex_list_ordered(want, have):
+    """Performs an order-sensitive complex list comparison.
+
+    Unlike compare_complex_list, list ordering is preserved so that
+    reordering elements (e.g. iRules) is detected as a change.
+
+    Args:
+        want (list): List of dictionaries to compare with second parameter.
+        have (list): List of dictionaries to compare with first parameter.
+
+    Returns:
+        list or None:
+    """
+    if want == [] and have is None:
+        return None
+    if want is None:
+        return None
+    if have is None:
+        return want
+    if want != have:
+        return want
+    return None
+
+
 def compare_dictionary(want, have):
     """Performs a dictionary comparison
 

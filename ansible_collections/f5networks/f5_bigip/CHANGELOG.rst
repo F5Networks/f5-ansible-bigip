@@ -4,6 +4,20 @@ F5Networks F5\_BIGIP Collection Release Notes
 
 .. contents:: Topics
 
+v3.15.0
+=======
+
+Minor Changes
+-------------
+
+- bigip_sslo_service_offbox_awaf - New module to manage F5 Advanced WAF (Off-Box) services in SSL Orchestrator.
+
+New Modules
+-----------
+
+- bigip_sslo_service_offbox_awaf - Manage an SSL Orchestrator AWAF (Off\-Box) security service
+- bigip_sslo_service_waf_onbox - Manage an SSL Orchestrator WAF On\-Box security service
+
 v3.14.0
 =======
 

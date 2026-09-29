@@ -1,0 +1,146 @@
+{
+  "create_start": {
+    "id": "8f5fd043-e0e3-4c16-9436-5e83596a9c5c",
+    "state": "STARTED",
+    "currentTaskId": "8f5fd043-e0e3-4c16-9436-5e83596a9c5c",
+    "startTime": 1234567890
+  },
+  "create_done": {
+    "items": [
+      {
+        "id": "8f5fd043-e0e3-4c16-9436-5e83596a9c5c",
+        "state": "BOUND",
+        "currentTaskId": "8f5fd043-e0e3-4c16-9436-5e83596a9c5c",
+        "startTime": 1234567890,
+        "endTime": 1234567950,
+        "inputProperties": [
+          {
+            "value": {
+              "strictness": false,
+              "customService": {
+                "name": "ssloS_o365_tr1",
+                "serviceType": "O365_TR",
+                "serviceSpecific": {
+                  "restrictAccessToTenant": "example_tenant",
+                  "restrictAccessContext": "Generic o365 tenant restrictions Service",
+                  "subType": "o365"
+                },
+                "iRuleList": [
+                  {
+                    "name": "/Common/ssloS_o365_tr1.app/ssloS_o365_tr1-f5-tenant-restrictions",
+                    "value": "/Common/ssloS_o365_tr1.app/ssloS_o365_tr1-f5-tenant-restrictions"
+                  },
+                  {
+                    "name": "/Common/test_rule_1",
+                    "value": "/Common/test_rule_1"
+                  },
+                  {
+                    "name": "/Common/test_rule_2",
+                    "value": "/Common/test_rule_2"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "create_done_no_irules": {
+    "items": [
+      {
+        "id": "8f5fd043-e0e3-4c16-9436-5e83596a9c5c",
+        "state": "BOUND",
+        "currentTaskId": "8f5fd043-e0e3-4c16-9436-5e83596a9c5c",
+        "startTime": 1234567890,
+        "endTime": 1234567950,
+        "inputProperties": [
+          {
+            "value": {
+              "strictness": false,
+              "customService": {
+                "name": "ssloS_o365_tr_empty",
+                "serviceType": "O365_TR",
+                "serviceSpecific": {
+                  "restrictAccessToTenant": "test_tenant",
+                  "restrictAccessContext": "Generic o365 tenant restrictions Service",
+                  "subType": "o365"
+                },
+                "iRuleList": [
+                  {
+                    "name": "/Common/ssloS_o365_tr_empty.app/ssloS_o365_tr_empty-f5-tenant-restrictions",
+                    "value": "/Common/ssloS_o365_tr_empty.app/ssloS_o365_tr_empty-f5-tenant-restrictions"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "modify_start": {
+    "id": "9a6b1234-e0e3-4c16-9436-5e83596a9c5d",
+    "state": "STARTED",
+    "currentTaskId": "9a6b1234-e0e3-4c16-9436-5e83596a9c5d",
+    "startTime": 1234567891
+  },
+  "modify_done": {
+    "items": [
+      {
+        "id": "9a6b1234-e0e3-4c16-9436-5e83596a9c5d",
+        "state": "BOUND",
+        "currentTaskId": "9a6b1234-e0e3-4c16-9436-5e83596a9c5d",
+        "startTime": 1234567891,
+        "endTime": 1234567951,
+        "inputProperties": [
+          {
+            "value": {
+              "strictness": false,
+              "customService": {
+                "name": "ssloS_o365_tr1",
+                "serviceType": "O365_TR",
+                "serviceSpecific": {
+                  "restrictAccessToTenant": "modified_tenant",
+                  "restrictAccessContext": "Generic o365 tenant restrictions Service",
+                  "subType": "o365"
+                },
+                "iRuleList": [
+                  {
+                    "name": "/Common/ssloS_o365_tr1.app/ssloS_o365_tr1-f5-tenant-restrictions",
+                    "value": "/Common/ssloS_o365_tr1.app/ssloS_o365_tr1-f5-tenant-restrictions"
+                  },
+                  {
+                    "name": "/Common/test_rule_1",
+                    "value": "/Common/test_rule_1"
+                  },
+                  {
+                    "name": "/Common/test_rule_3",
+                    "value": "/Common/test_rule_3"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "delete_start": {
+    "id": "7e4c3456-f1f4-5d27-0547-6f94697b0d6e",
+    "state": "STARTED",
+    "currentTaskId": "7e4c3456-f1f4-5d27-0547-6f94697b0d6e",
+    "startTime": 1234567892
+  },
+  "delete_done": {
+    "items": [
+      {
+        "id": "7e4c3456-f1f4-5d27-0547-6f94697b0d6e",
+        "state": "BOUND",
+        "currentTaskId": "7e4c3456-f1f4-5d27-0547-6f94697b0d6e",
+        "startTime": 1234567892,
+        "endTime": 1234567952
+      }
+    ]
+  }
+}

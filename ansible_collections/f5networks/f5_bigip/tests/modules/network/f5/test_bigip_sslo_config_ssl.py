@@ -8,15 +8,18 @@ __metaclass__ = type
 
 import json
 import os
+from copy import deepcopy
+from types import SimpleNamespace
 
 from ansible.module_utils.basic import AnsibleModule
 
+from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_sslo_config_ssl as ssl_module
 from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_config_ssl import (
-    ModuleParameters, ApiParameters, ArgumentSpec, ModuleManager
+    ModuleParameters, ApiParameters, ArgumentSpec, Difference, ModuleManager, F5ModuleError
 )
 from ansible_collections.f5networks.f5_bigip.tests.compat import unittest
 from ansible_collections.f5networks.f5_bigip.tests.compat.mock import Mock, patch, MagicMock
-from ansible_collections.f5networks.f5_bigip.tests.modules.utils import set_module_args
+from ansible_collections.f5networks.f5_bigip.tests.modules.utils import AnsibleFailJson, fail_json, set_module_args
 
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
@@ -42,6 +45,9 @@ def load_fixture(name):
 
 
 class TestParameters(unittest.TestCase):
+    def setUp(self):
+        fixture_data.clear()
+
     def test_module_parameters(self):
         args = dict(
             name='fake_foo',
@@ -129,7 +135,7 @@ class TestParameters(unittest.TestCase):
         assert p.bypass_client_cert_failure is False
 
     def test_api_param_block_expired_untrusted(self):
-        args = load_fixture('return_sslo_config_ssl_params.json')
+        args = deepcopy(load_fixture('return_sslo_config_ssl_params.json'))
 
         p = ApiParameters(params=args)
         self.assertEqual(p.block_expired, 'drop')
@@ -153,9 +159,77 @@ class TestParameters(unittest.TestCase):
         self.assertEqual(p.block_expired, 'drop')
         self.assertEqual(p.block_untrusted, 'drop')
 
+    def test_proxy_type_required(self):
+        params = ModuleParameters(params=dict(client_settings={}))
+
+        with self.assertRaisesRegex(F5ModuleError, "'proxy_type' parameter is required"):
+            params.proxy_type
+
+    def test_alpn_rejects_reverse_proxy(self):
+        params = ModuleParameters(params=dict(client_settings=dict(proxy_type='reverse', alpn=True)))
+
+        with self.assertRaisesRegex(F5ModuleError, "'alpn' parameter can only be used with 'forward'"):
+            params.alpn
+
+    def test_timeout_rejects_values_outside_range(self):
+        for timeout in (9, 1801):
+            params = ModuleParameters(params=dict(timeout=timeout))
+
+            with self.assertRaisesRegex(F5ModuleError, 'Timeout value must be between 10 and 1800 seconds'):
+                params.timeout
+
+    def test_proxy_type_cannot_be_changed(self):
+        want = ModuleParameters(params=dict(client_settings=dict(proxy_type='forward')))
+        have = ApiParameters(params=dict(clientSettings=dict(caCertKeyChain=[])))
+
+        with self.assertRaisesRegex(F5ModuleError, "'proxy_type' parameter cannot be changed"):
+            Difference(want, have).proxy_type
+
+
+class TestArgumentSpec(unittest.TestCase):
+    def setUp(self):
+        fixture_data.clear()
+        self.spec = ArgumentSpec()
+
+    def assert_invalid_parameters(self, client_settings=None, server_settings=None):
+        args = dict(name='foobar')
+        if client_settings is not None:
+            args['client_settings'] = client_settings
+        if server_settings is not None:
+            args['server_settings'] = server_settings
+        set_module_args(args)
+
+        with patch.object(AnsibleModule, 'fail_json', fail_json), \
+                self.assertRaises(AnsibleFailJson):
+            AnsibleModule(
+                argument_spec=self.spec.argument_spec,
+                supports_check_mode=self.spec.supports_check_mode,
+            )
+
+    def test_client_certificate_and_key_are_required_together(self):
+        self.assert_invalid_parameters(client_settings=dict(proxy_type='reverse', cert='/Common/default.crt'))
+        self.assert_invalid_parameters(client_settings=dict(proxy_type='reverse', key='/Common/default.key'))
+
+    def test_forward_ca_certificate_and_key_are_required_together(self):
+        self.assert_invalid_parameters(client_settings=dict(proxy_type='forward', ca_cert='/Common/default.crt'))
+        self.assert_invalid_parameters(client_settings=dict(proxy_type='forward', ca_key='/Common/default.key'))
+
+    def test_client_cipher_group_validation(self):
+        self.assert_invalid_parameters(client_settings=dict(proxy_type='reverse', cipher_type='group'))
+        self.assert_invalid_parameters(client_settings=dict(
+            proxy_type='reverse', cipher_type='group', cipher_string='DEFAULT', cipher_group='/Common/f5-default'
+        ))
+
+    def test_server_cipher_group_validation(self):
+        self.assert_invalid_parameters(server_settings=dict(cipher_type='group'))
+        self.assert_invalid_parameters(server_settings=dict(
+            cipher_type='group', cipher_string='DEFAULT', cipher_group='/Common/f5-default'
+        ))
+
 
 class TestManager(unittest.TestCase):
     def setUp(self):
+        fixture_data.clear()
         self.spec = ArgumentSpec()
         self.p1 = patch('time.sleep')
         self.p1.start()
@@ -165,11 +239,160 @@ class TestManager(unittest.TestCase):
         self.p3 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_config_ssl.sslo_version')
         self.m3 = self.p3.start()
         self.m3.return_value = '9.0'
+        self.p4 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_sslo_config_ssl.check_sslo_provisioned')
+        self.p4.start()
 
     def tearDown(self):
         self.p1.stop()
         self.p2.stop()
         self.p3.stop()
+        self.p4.stop()
+
+    def create_manager(self, args):
+        set_module_args(args)
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+        )
+        return ModuleManager(module=module)
+
+    def test_reverse_proxy_is_idempotent(self):
+        mm = self.create_manager(dict(
+            name='foobar',
+            client_settings=dict(proxy_type='reverse', cert='/Common/default.crt', key='/Common/default.key')
+        ))
+        current = dict(code=200, contents=deepcopy(load_fixture('load_sslo_ssl_rev_proxy.json')))
+        mm.client.get = Mock(side_effect=[current, current])
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        mm.client.post.assert_not_called()
+
+    def test_forward_proxy_is_idempotent(self):
+        mm = self.create_manager(dict(
+            name='barfoo',
+            client_settings=dict(
+                proxy_type='forward', cipher_type='group', cipher_group='/Common/f5-default',
+                ca_cert='/Common/default.crt', ca_key='/Common/default.key', alpn=True
+            ),
+            server_settings=dict(cipher_type='group', cipher_group='/Common/f5-default'),
+            bypass_handshake_failure=True
+        ))
+        current = dict(code=200, contents=deepcopy(load_fixture('load_sslo_ssl_fwd_proxy.json')))
+        mm.client.get = Mock(side_effect=[current, current])
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        mm.client.post.assert_not_called()
+
+    def test_unsupported_sslo_version(self):
+        self.m3.return_value = '99.0'
+        mm = self.create_manager(dict(name='foobar', client_settings=dict(proxy_type='reverse')))
+
+        with self.assertRaisesRegex(F5ModuleError, 'Unsupported SSL Orchestrator version'):
+            mm.check_sslo_version()
+
+    def test_version_specific_parameters_require_sslo_9(self):
+        mm = self.create_manager(dict(name='foobar', client_settings=dict(proxy_type='reverse')))
+        mm.version = '8.0'
+        cases = (
+            ('alpn', True, "'alpn' parameter"),
+            ('sni', dict(sni_default=True), "'sni' parameter"),
+            ('client_log_publisher', '/Common/client-logger', "'client_log_publisher' parameter"),
+            ('server_log_publisher', '/Common/server-logger', "'server_log_publisher' parameter"),
+        )
+
+        for field, value, message in cases:
+            changes = dict(alpn=None, sni=None, client_log_publisher=None, server_log_publisher=None)
+            changes[field] = value
+            mm.changes = SimpleNamespace(**changes)
+
+            with self.assertRaisesRegex(F5ModuleError, message):
+                mm.check_version_specific_parameters()
+
+    def test_exists_raises_for_api_error(self):
+        mm = self.create_manager(dict(name='foobar', client_settings=dict(proxy_type='reverse')))
+        mm.client.get.return_value = dict(code=500, contents='exists failed')
+
+        with self.assertRaisesRegex(F5ModuleError, 'exists failed'):
+            mm.exists()
+
+    def test_create_on_device_raises_for_api_error(self):
+        mm = self.create_manager(dict(name='foobar', client_settings=dict(proxy_type='reverse')))
+        mm.version = '9.0'
+        mm.operation = 'CREATE'
+        mm._set_changed_options()
+        mm.client.post.return_value = dict(code=500, contents='create failed')
+
+        with self.assertRaisesRegex(F5ModuleError, 'create failed'):
+            mm.create_on_device()
+
+    def test_update_on_device_raises_for_api_error(self):
+        mm = self.create_manager(dict(name='foobar', client_settings=dict(proxy_type='reverse')))
+        mm.version = '9.0'
+        mm.operation = 'MODIFY'
+        mm.block_id = '1234'
+        mm.changes = MagicMock()
+        mm.changes.to_return.return_value = {}
+        mm.add_missing_options = Mock(return_value={})
+        mm.client.post.return_value = dict(code=500, contents='update failed')
+
+        with patch.object(ssl_module, 'process_json', return_value={}):
+            with self.assertRaisesRegex(F5ModuleError, 'update failed'):
+                mm.update_on_device()
+
+    def test_remove_from_device_raises_for_api_error(self):
+        mm = self.create_manager(dict(name='foobar', state='absent'))
+        mm.version = '9.0'
+        mm.operation = 'DELETE'
+        mm.block_id = '1234'
+        mm.client.post.return_value = dict(code=500, contents='remove failed')
+
+        with self.assertRaisesRegex(F5ModuleError, 'remove failed'):
+            mm.remove_from_device()
+
+    def test_read_current_raises_for_api_error(self):
+        mm = self.create_manager(dict(name='foobar', client_settings=dict(proxy_type='reverse')))
+        mm.client.get.return_value = dict(code=500, contents='read failed')
+
+        with self.assertRaisesRegex(F5ModuleError, 'read failed'):
+            mm.read_current_from_device()
+
+    def test_read_current_raises_when_object_is_missing(self):
+        mm = self.create_manager(dict(name='foobar', client_settings=dict(proxy_type='reverse')))
+        mm.client.get.return_value = dict(code=200, contents={'items': []})
+
+        with self.assertRaisesRegex(F5ModuleError, r"'items': \[\]"):
+            mm.read_current_from_device()
+
+    def test_check_task_raises_for_api_error(self):
+        mm = self.create_manager(dict(name='foobar', client_settings=dict(proxy_type='reverse')))
+        mm.client.get.return_value = dict(code=500, contents='task failed')
+
+        with self.assertRaisesRegex(F5ModuleError, 'task failed'):
+            mm._check_task_on_device('1234')
+
+    def test_wait_for_task_raises_for_error_state(self):
+        mm = self.create_manager(dict(name='foobar', client_settings=dict(proxy_type='reverse')))
+        mm.operation = 'CREATE'
+        mm._check_task_on_device = Mock(return_value=dict(state='ERROR', error='deployment failed'))
+        mm.client.delete.return_value = dict(code=200, contents={})
+
+        with self.assertRaisesRegex(F5ModuleError, 'CREATE operation error: 1234 : deployment failed'):
+            mm.wait_for_task('1234')
+
+        mm.client.delete.assert_called_once()
+
+    def test_wait_for_task_raises_on_timeout(self):
+        mm = self.create_manager(dict(
+            name='foobar', timeout=10, client_settings=dict(proxy_type='reverse')
+        ))
+        mm._check_task_on_device = Mock(return_value=dict(state='RUNNING'))
+
+        with self.assertRaisesRegex(F5ModuleError, 'Module timeout reached'):
+            mm.wait_for_task('1234')
 
     def test_create_ssl_object_rev_proxy_dump_json(self, *args):
         # Configure the arguments that would be sent to the Ansible module
@@ -252,7 +475,7 @@ class TestManager(unittest.TestCase):
         )
         mm = ModuleManager(module=module)
 
-        exists = dict(code=200, contents=load_fixture('load_sslo_ssl_rev_proxy.json'))
+        exists = dict(code=200, contents=deepcopy(load_fixture('load_sslo_ssl_rev_proxy.json')))
         # Override methods to force specific logic in the module to happen
         mm.client.get = Mock(side_effect=[exists, exists])
 
@@ -280,7 +503,7 @@ class TestManager(unittest.TestCase):
         )
         mm = ModuleManager(module=module)
 
-        exists = dict(code=200, contents=load_fixture('load_sslo_ssl_fwd_proxy.json'))
+        exists = dict(code=200, contents=deepcopy(load_fixture('load_sslo_ssl_fwd_proxy.json')))
         # Override methods to force specific logic in the module to happen
         mm.client.get = Mock(side_effect=[exists, exists])
 
@@ -410,7 +633,7 @@ class TestManager(unittest.TestCase):
         )
         mm = ModuleManager(module=module)
 
-        exists = dict(code=200, contents=load_fixture('load_sslo_ssl_rev_proxy.json'))
+        exists = dict(code=200, contents=deepcopy(load_fixture('load_sslo_ssl_rev_proxy.json')))
         done = dict(code=200, contents=load_fixture('reply_sslo_ssl_modify_rev_proxy_done.json'))
         # Override methods to force specific logic in the module to happen
         mm.client.post = Mock(return_value=dict(
@@ -473,3 +696,36 @@ class TestManager(unittest.TestCase):
 
         results = mm.exec_module()
         assert results['changed'] is True
+
+
+class TestMain(unittest.TestCase):
+    def setUp(self):
+        fixture_data.clear()
+        set_module_args(dict(name='foobar', client_settings=dict(proxy_type='reverse')))
+
+    def tearDown(self):
+        pass
+
+    @patch.object(ssl_module, 'Connection')
+    @patch.object(ssl_module, 'ModuleManager')
+    @patch.object(ssl_module, 'AnsibleModule')
+    def test_main_function_success(self, module, manager, connection):
+        module.return_value._socket_path = '/tmp/socket'
+        manager.return_value.exec_module.return_value = dict(changed=False)
+
+        ssl_module.main()
+
+        connection.assert_called_once_with('/tmp/socket')
+        module.return_value.exit_json.assert_called_once_with(changed=False)
+
+    @patch.object(ssl_module, 'Connection')
+    @patch.object(ssl_module, 'ModuleManager')
+    @patch.object(ssl_module, 'AnsibleModule')
+    def test_main_function_failed(self, module, manager, connection):
+        module.return_value._socket_path = '/tmp/socket'
+        manager.return_value.exec_module.side_effect = F5ModuleError('module failed')
+
+        ssl_module.main()
+
+        connection.assert_called_once_with('/tmp/socket')
+        module.return_value.fail_json.assert_called_once_with(msg='module failed')

@@ -377,3 +377,13 @@ class TestModuleManager(unittest.TestCase):
             mm.remove()
 
         self.assertIn('Failed to delete the resourc', err2.exception.args[0])
+
+    def test_csr_present_idempotent(self, *args):
+        manager = ModuleManager.__new__(ModuleManager)
+        manager.exists = Mock(return_value=True)
+        manager.want = Mock()
+        manager.want.dest = '/tmp/test.csr'
+        manager.module = Mock(check_mode=False)
+
+        # When CSR already exists, present() should return False (no changes)
+        assert manager.present() is False

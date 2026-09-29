@@ -1,0 +1,1645 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Copyright: (c) 2026, F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
+
+DOCUMENTATION = r'''
+---
+module: bigip_sslo_service_offbox_awaf
+short_description: Manage an SSL Orchestrator AWAF (Off-Box) security service
+description:
+  - Manage an SSL Orchestrator F5 Advanced WAF (Off-Box) security service.
+  - The Off-Box AWAF service forwards inspected traffic to an external Advanced
+    WAF (BIG-IP ASM) device and returns it to the SSL Orchestrator inspection
+    chain. Proxy type is always C(Transparent) for this service type.
+version_added: "3.15.0"
+options:
+  name:
+    description:
+      - Specifies the name of the AWAF Off-Box service object.
+      - The configuration auto-prepends C(ssloS_) to the object.
+      - Names should be less than 14 characters and not contain dashes C(-).
+    type: str
+    required: True
+  devices_to:
+    description:
+      - Specifies the set of network settings for traffic going to the service from the BIG-IP.
+    type: dict
+    suboptions:
+      vlan:
+        description:
+          - Defines an existing VLAN to attach on the to-service side.
+          - Mutually exclusive with C(tag) or C(interface) parameter.
+        type: str
+      interface:
+        description:
+          - Defines the interface on the to-service side.
+          - Mutually exclusive with C(vlan).
+        type: str
+      tag:
+        description:
+          - Defines the VLAN tag on the to-service side.
+          - Mutually exclusive with C(vlan).
+        type: int
+      self_ip:
+        description:
+          - Defines the to-service self IP.
+        type: str
+      netmask:
+        description:
+          - Defines the to-service self IP netmask.
+        type: str
+  devices_from:
+    description:
+      - Specifies the set of network settings for traffic going to the BIG-IP from the service.
+    type: dict
+    suboptions:
+      vlan:
+        description:
+          - Defines an existing VLAN to attach on the from-service side.
+          - Mutually exclusive with the C(tag) or C(interface) parameters.
+        type: str
+      interface:
+        description:
+          - Defines the interface on the from-service side.
+          - Mutually exclusive with C(vlan).
+        type: str
+      tag:
+        description:
+          - Defines the VLAN tag on the from-service side.
+          - Mutually exclusive with C(vlan).
+        type: int
+      self_ip:
+        description:
+          - Defines the from-service self IP.
+        type: str
+      netmask:
+        description:
+          - Defines the from-service self IP netmask.
+        type: str
+  devices:
+    description:
+      - Defines a list of remote AWAF device IP addresses and ports.
+    type: list
+    elements: dict
+    suboptions:
+      ip:
+        description:
+          - The nominal IP address for this AWAF device.
+        type: str
+      port:
+        description:
+          - The port for this AWAF device. Defaults to C(80) if not provided.
+        type: int
+  control_channels:
+    description:
+      - Service control channel definition, enabling you to create service control channel pathways.
+      - Service control channels allow device-initiated traffic to egress to the Internet.
+    type: list
+    elements: dict
+    suboptions:
+      source_ip:
+        description:
+          - Source IP and subnet mask - typically the outbound IP address of the inspection service(s).
+        type: str
+      destination_ip:
+        description:
+          - Destination IP and subnet mask - typically the discrete destination.
+        type: str
+      protocol:
+        description:
+          - Protocol options for the control channel - typically B(TCP) or B(UDP).
+        type: str
+      destination_port:
+        description:
+          - Destination port for the control channel.
+        type: str
+      snat:
+        description:
+          - SNAT pool/SNAT settings - whether or not to apply SNAT to this outbound traffic.
+        type: str
+      gateway_pool:
+        description:
+          - Gateway pool - the routed path for this outbound traffic.
+        type: str
+  service_entry_sslprofile:
+    description:
+      - Specifies the Server SSL profile used for the service entry
+        (re-encrypt on service entry).
+    type: str
+  service_return_sslprofile:
+    description:
+      - Specifies the Client SSL profile used for the service return
+        (decrypt on service return).
+    type: str
+  default_persistence_profile:
+    description:
+      - Specifies the persistence profile used for the AWAF Off-Box service.
+      - Supported in SSL Orchestrator 14.0 and later.
+    type: str
+    version_added: "3.15.0"
+  http_profile:
+    description:
+      - Specifies the HTTP profile attached to the AWAF Off-Box service virtual.
+      - When creating an AWAF Off-Box service, if the parameter is not provided
+        a default of C(/Common/http) is assumed.
+    type: str
+  auto_manage:
+    description:
+      - Enables or disables Internal Service Addressing for the AWAF Off-Box service.
+      - When C(true), SSL Orchestrator allocates self-IPs and subnets from the
+        C(198.19.128.0/19) pool. When C(false), the user must supply self-IPs and
+        netmasks via I(devices_to) and I(devices_from).
+      - When creating an AWAF Off-Box service, if the parameter is not provided
+        a default of C(true) is assumed.
+    type: bool
+  use_exist_selfip:
+    description:
+      - Enables using existing self-IP addresses for the AWAF Off-Box service.
+      - When creating an AWAF Off-Box service, if the parameter is not provided
+        a default of C(false) is assumed.
+    type: bool
+  monitor:
+    description:
+      - Specifies the monitor attached to the AWAF Off-Box device pool.
+      - The monitor must already exist on the BIG-IP.
+      - When creating an AWAF Off-Box service, if the parameter is not provided
+        a default of C(/Common/gateway_icmp) is assumed.
+    type: str
+  port_remap:
+    description:
+      - Defines the port to remap decrypted traffic to.
+    type: int
+  vendor_info:
+    description:
+      - Specifies the vendor label for the service. Defaults to C(F5 Advanced WAF (Off-Box)).
+      - This value is immutable after the service is created.
+    type: str
+  snat:
+    description:
+      - Defines if and how a SNAT configuration is deployed.
+      - When C(none) no SNAT configuration is performed. This is the default when
+        creating an AWAF Off-Box service if the parameter is not provided.
+      - When C(automap), SNAT automap is configured.
+      - When C(snatpool), the SNAT configuration points to an existing SNAT Pool
+        defined by the C(snat_pool) parameter.
+      - When C(snatlist), a new SNAT Pool is created from the provided C(snat_list).
+    type: str
+    choices:
+      - none
+      - automap
+      - snatpool
+      - snatlist
+  snat_pool:
+    description:
+      - Defines an existing SNAT pool.
+      - This parameter is required when C(snat) is set to C(snatpool).
+    type: str
+  snat_list:
+    description:
+      - Defines a list of IP addresses to use in a SNAT pool configuration.
+      - This parameter is required when C(snat) is set to C(snatlist).
+    type: list
+    elements: str
+  rules:
+    description:
+      - Defines a list of iRules to attach to the service.
+    type: list
+    elements: str
+  rules_egress:
+    description:
+      - Defines a list of egress iRules to attach to the service return path.
+      - Supported in SSL Orchestrator 13.0 and later.
+    type: list
+    elements: str
+    version_added: "3.15.0"
+  ip_family:
+    description:
+      - Specifies the IP family used for attached AWAF Off-Box devices.
+      - When creating an AWAF Off-Box service, if the parameter is not provided
+        a default of C(ipv4) is assumed.
+    type: str
+    choices:
+      - ipv4
+      - ipv6
+  service_down_action:
+    description:
+      - Specifies the action to take on monitor failure.
+      - Setting to C(ignore) bypasses the security device in the service chain.
+      - Setting to C(reset) or C(drop) resets or drops the connection, respectively,
+        if the service monitor fails.
+      - When creating an AWAF Off-Box service, if the parameter is not provided
+        a default value of C(ignore) is assumed.
+    type: str
+    choices:
+      - ignore
+      - reset
+      - drop
+  dump_json:
+    description:
+      - Sets the module to output a JSON blob for further consumption.
+      - When C(true), does not make any changes on the device and always returns C(changed=False).
+      - The output provided is idempotent in nature, meaning if there are no changes to be made during
+        C(MODIFY) on an existing service, no JSON output is generated.
+    type: bool
+    default: false
+  timeout:
+    description:
+      - The amount of time to wait for the C(CREATE) or C(MODIFY) task to complete, in seconds.
+      - The accepted value range is between C(10) and C(1800) seconds.
+    type: int
+    default: 300
+  state:
+    description:
+      - When C(state) is C(present), ensures the object is created or modified.
+      - When C(state) is C(absent), ensures the service is removed.
+    type: str
+    choices:
+      - present
+      - absent
+    default: present
+author:
+  - Uzzwalpreet Kaur (@ukaur)
+'''
+
+EXAMPLES = r'''
+- name: Create an AWAF Off-Box service (auto manage addresses)
+  bigip_sslo_service_offbox_awaf:
+    name: "awaf1a"
+    devices:
+      - ip: "198.19.128.30"
+        port: 80
+    ip_family: "ipv4"
+
+- name: Create an AWAF Off-Box service with explicit addressing
+  bigip_sslo_service_offbox_awaf:
+    name: "awaf1a"
+    auto_manage: false
+    devices_to:
+      vlan: "/Common/sslo-inbound-vlan"
+      self_ip: "198.19.128.10"
+      netmask: "255.255.255.128"
+    devices_from:
+      vlan: "/Common/sslo-outbound-vlan"
+      self_ip: "198.19.128.138"
+      netmask: "255.255.255.128"
+    devices:
+      - ip: "198.19.128.30"
+        port: 80
+    snat: snatpool
+    snat_pool: "/Common/awaf1a-snatpool"
+    service_entry_sslprofile: "/Common/serverssl"
+    service_return_sslprofile: "/Common/clientssl"
+    service_down_action: "reset"
+    port_remap: 8080
+
+- name: Modify an AWAF Off-Box service
+  bigip_sslo_service_offbox_awaf:
+    name: "awaf1a"
+    snat: "snatlist"
+    snat_list:
+      - "198.19.64.10"
+      - "198.19.64.11"
+
+- name: Delete SSLO AWAF Off-Box service
+  bigip_sslo_service_offbox_awaf:
+    name: "awaf1a"
+    state: "absent"
+'''
+
+RETURN = r'''
+devices_to:
+  description: Network settings for to-service configuration.
+  returned: changed
+  type: complex
+  contains:
+    vlan:
+       description: Defines an existing to-service VLAN.
+       type: str
+       sample: /Common/awaf1a-to-vlan
+    interface:
+       description: Defines a to-service interface.
+       type: str
+       sample: 1.3
+    tag:
+       description: Defines a to-service VLAN tag.
+       type: int
+       sample: 40
+    self_ip:
+       description: Defines the to-service VLAN self IP.
+       type: str
+       sample: 198.19.128.10
+    netmask:
+       description: Defines the to-service VLAN self IP netmask.
+       type: str
+       sample: 255.255.255.128
+devices_from:
+  description: Network settings for from-service configuration.
+  returned: changed
+  type: complex
+  contains:
+    vlan:
+       description: Defines an existing from-service VLAN.
+       type: str
+       sample: /Common/awaf1a-from-vlan
+    interface:
+       description: Defines a from-service interface.
+       type: str
+       sample: 1.3
+    tag:
+       description: Defines a from-service VLAN tag.
+       type: int
+       sample: 50
+    self_ip:
+       description: Defines the from-service VLAN self IP.
+       type: str
+       sample: 198.19.128.138
+    netmask:
+       description: Defines the from-service VLAN self IP netmask.
+       type: str
+       sample: 255.255.255.128
+devices:
+  description: The list of AWAF device IP addresses and ports.
+  returned: changed
+  type: complex
+  contains:
+    ip:
+       description: The nominal IP address for this AWAF device.
+       type: str
+       sample: "198.19.128.30"
+    port:
+       description: The port for this AWAF device.
+       type: int
+       sample: 80
+http_profile:
+  description: The HTTP profile attached to the AWAF Off-Box service virtual.
+  returned: changed
+  type: str
+  sample: /Common/http
+ip_family:
+  description: The IP family used for attached AWAF Off-Box devices.
+  returned: changed
+  type: str
+  sample: ipv4
+monitor:
+  description: The monitor attached to the AWAF Off-Box device pool.
+  returned: changed
+  type: str
+  sample: /Common/gateway_icmp
+service_down_action:
+  description: The action to take on monitor failure.
+  returned: changed
+  type: str
+  sample: ignore
+port_remap:
+  description: Port remap settings.
+  returned: changed
+  type: int
+  sample: 8080
+snat:
+  description: SNAT configuration type.
+  returned: changed
+  type: str
+  sample: none
+snat_pool:
+  description: The name of the existing SNAT pool.
+  returned: changed
+  type: str
+  sample: /Common/test-snat-pool
+snat_list:
+  description: The list of SNAT pool members.
+  returned: changed
+  type: list
+  sample: ["198.19.64.10", "198.19.64.11"]
+rules:
+  description: List of iRules attached to the service.
+  returned: changed
+  type: list
+  sample: ["/Common/test-rule-1", "/Common/test-rule-2"]
+vendor_info:
+  description: Vendor label for the service.
+  returned: changed
+  type: str
+  sample: F5 Advanced WAF (Off-Box)
+'''
+
+import re
+import ipaddress
+import time
+import traceback
+
+try:
+    from packaging.version import Version
+except ImportError:
+    HAS_PACKAGING = False
+    Version = None
+    PACKAGING_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_PACKAGING = True
+    PACKAGING_IMPORT_ERROR = None
+
+try:
+    from netaddr import IPAddress
+except ImportError:
+    HAS_NETADDR = False
+    IPAddress = None
+    NETADDR_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_NETADDR = True
+    NETADDR_IMPORT_ERROR = None
+
+from ansible.module_utils.basic import (
+    AnsibleModule, missing_required_lib
+)
+from ansible.module_utils.connection import Connection
+
+from ..module_utils.client import (
+    F5Client, sslo_version
+)
+from ..module_utils.common import (
+    F5ModuleError, AnsibleF5Parameters, process_json, flatten_boolean
+)
+from ..module_utils.constants import (
+    min_sslo_version, max_sslo_version, VENDOR_INFO_IMMUTABLE_ERROR,
+    RULES_EGRESS_VERSION_ERROR, DEFAULT_PERSISTENCE_VERSION_ERROR
+)
+from ..module_utils.compare import compare_complex_list, compare_dictionary, compare_complex_list_ordered
+from ..module_utils.sslo_templates.sslo_service_offbox_awaf import (
+    create_modify, delete
+)
+
+
+class Parameters(AnsibleF5Parameters):
+    api_map = {}
+
+    api_attributes = []
+
+    returnables = [
+        'devices_to',
+        'devices_from',
+        'devices',
+        'control_channels',
+        'service_entry_sslprofile',
+        'service_return_sslprofile',
+        'http_profile',
+        'ip_family',
+        'monitor',
+        'service_down_action',
+        'port_remap',
+        'snat',
+        'snat_list',
+        'snat_pool',
+        'vendor_info',
+        'rules',
+        'rules_egress',
+        'auto_manage',
+        'use_exist_selfip',
+        'default_persistence_profile'
+    ]
+
+    updatables = [
+        'devices_to',
+        'devices_from',
+        'devices',
+        'control_channels',
+        'service_entry_sslprofile',
+        'service_return_sslprofile',
+        'http_profile',
+        'ip_family',
+        'monitor',
+        'service_down_action',
+        'port_remap',
+        'snat',
+        'snat_list',
+        'snat_pool',
+        'vendor_info',
+        'rules',
+        'rules_egress',
+        'auto_manage',
+        'default_persistence_profile'
+    ]
+
+
+class ApiParameters(Parameters):
+    @property
+    def devices_to(self):
+        ipfamily = self.ip_family
+        result = dict()
+        result['name'] = self._values['customService']['connectionInformation']['fromBigipNetwork']['name']
+        result['path'] = self._values['customService']['connectionInformation']['fromBigipNetwork']['vlan']['path']
+        result['self_ip'] = self._values['customService']['managedNetwork'][ipfamily]['toServiceSelfIp']
+        result['netmask'] = self._values['customService']['managedNetwork'][ipfamily]['toServiceMask']
+        result['network'] = self._values['customService']['managedNetwork'][ipfamily]['toServiceNetwork']
+        if not self._values['customService']['isAutoManage']:
+            result['self_ip'] = self._values['customService']['connectionInformation']['fromBigipNetwork']['selfIpConfig']['selfIp'].split('/')[0]
+            result['netmask'] = self._values['customService']['connectionInformation']['fromBigipNetwork']['selfIpConfig']['netmask']
+        if self._values['fromVlanNetworkObj']['create'] and 'networkInterface' in self._values['fromVlanNetworkObj']:
+            if isinstance(self._values['fromVlanNetworkObj']['networkInterface'], list):
+                result['interface'] = self._values['fromVlanNetworkObj']['networkInterface'][0]
+            else:
+                result['interface'] = self._values['fromVlanNetworkObj']['networkInterface']
+            if int(self._values['fromVlanNetworkObj']['networkTag']) != 0:
+                result['tag'] = int(self._values['fromVlanNetworkObj']['networkTag'])
+        elif 'fromNetworkObj' in self._values and self._values['fromNetworkObj']['vlan']['create']:
+            if isinstance(self._values['fromNetworkObj']['vlan']['interface'], list):
+                result['interface'] = self._values['fromNetworkObj']['vlan']['interface'][0]
+            else:
+                result['interface'] = self._values['fromNetworkObj']['vlan']['interface']
+            if int(self._values['fromNetworkObj']['vlan']['tag']) != 0:
+                result['tag'] = int(self._values['fromNetworkObj']['vlan']['tag'])
+        else:
+            result['vlan'] = self._values['customService']['connectionInformation']['fromBigipNetwork']['vlan']['path']
+        return result
+
+    @property
+    def devices_from(self):
+        ipfamily = self.ip_family
+        result = dict()
+        result['name'] = self._values['customService']['connectionInformation']['toBigipNetwork']['name']
+        result['path'] = self._values['customService']['connectionInformation']['toBigipNetwork']['vlan']['path']
+        result['self_ip'] = self._values['customService']['managedNetwork'][ipfamily]['fromServiceSelfIp']
+        result['netmask'] = self._values['customService']['managedNetwork'][ipfamily]['fromServiceMask']
+        result['network'] = self._values['customService']['managedNetwork'][ipfamily]['fromServiceNetwork']
+        if not self._values['customService']['isAutoManage']:
+            result['self_ip'] = self._values['customService']['connectionInformation']['toBigipNetwork']['selfIpConfig']['selfIp'].split('/')[0]
+            result['netmask'] = self._values['customService']['connectionInformation']['toBigipNetwork']['selfIpConfig']['netmask']
+        if self._values['toVlanNetworkObj']['create'] and 'networkInterface' in self._values['toVlanNetworkObj']:
+            if isinstance(self._values['toVlanNetworkObj']['networkInterface'], list):
+                result['interface'] = self._values['toVlanNetworkObj']['networkInterface'][0]
+            else:
+                result['interface'] = self._values['toVlanNetworkObj']['networkInterface']
+            if int(self._values['toVlanNetworkObj']['networkTag']) != 0:
+                result['tag'] = int(self._values['toVlanNetworkObj']['networkTag'])
+        elif 'toNetworkObj' in self._values and self._values['toNetworkObj']['vlan']['create']:
+            if isinstance(self._values['toNetworkObj']['vlan']['interface'], list):
+                result['interface'] = self._values['toNetworkObj']['vlan']['interface'][0]
+            else:
+                result['interface'] = self._values['toNetworkObj']['vlan']['interface']
+            if int(self._values['toNetworkObj']['vlan']['tag']) != 0:
+                result['tag'] = int(self._values['toNetworkObj']['vlan']['tag'])
+        else:
+            result['vlan'] = self._values['customService']['connectionInformation']['toBigipNetwork']['vlan']['path']
+        return result
+
+    @property
+    def devices(self):
+        devices = self._values['customService']['loadBalancing']['devices']
+        result = list()
+        for device in devices:
+            element = dict()
+            element['ip'] = device['ip']
+            element['port'] = int(device['port'])
+            result.append(element)
+        return result
+
+    @property
+    def ip_family(self):
+        return self._values['customService']['ipFamily']
+
+    @property
+    def service_entry_sslprofile(self):
+        return self._values['customService']['serviceEntrySSLProfile']
+
+    @property
+    def service_return_sslprofile(self):
+        return self._values['customService']['serviceReturnSSLProfile']
+
+    @property
+    def default_persistence_profile(self):
+        return self._values['customService'].get('defaultPersistenceProfile', "")
+
+    @property
+    def http_profile(self):
+        if 'httpProfile' in self._values['customService']['serviceSpecific']:
+            return self._values['customService']['serviceSpecific']['httpProfile']
+
+    @property
+    def control_channels(self):
+        return self._values['customService']['controlChannels']
+
+    @property
+    def monitor(self):
+        return self._values['customService']['loadBalancing']['monitor']['fromSystem']
+
+    @property
+    def service_down_action(self):
+        return self._values['customService']['serviceDownAction']
+
+    @property
+    def port_remap(self):
+        if self._values['customService'].get('portRemap') and 'httpPortRemapValue' in self._values['customService']:
+            return int(self._values['customService']['httpPortRemapValue'])
+
+    @property
+    def snat(self):
+        return self._values['customService']['snatConfiguration']['clientSnat']
+
+    @property
+    def snat_list(self):
+        ipfamily = self.ip_family
+        if ipfamily == 'ipv6':
+            return self._values['customService']['snatConfiguration']['snat']['ipv6SnatAddresses']
+        else:
+            return self._values['customService']['snatConfiguration']['snat']['ipv4SnatAddresses']
+
+    @property
+    def snat_pool(self):
+        if self.snat == 'existingSNAT':
+            return self._values['customService']['snatConfiguration']['snat']['referredObj']
+
+    @property
+    def vendor_info(self):
+        return self._values['vendorInfo']['name']
+
+    @property
+    def rules(self):
+        return self._values['customService']['iRuleList']
+
+    @property
+    def rules_egress(self):
+        return self._values['customService'].get('iRuleListEgress', [])
+
+    @property
+    def auto_manage(self):
+        return self._values['customService']['isAutoManage']
+
+    @property
+    def from_net_id(self):
+        block_id = self._values['customService']['connectionInformation']['fromBigipNetwork']['networkBlockId']
+        if block_id:
+            return block_id
+
+    @property
+    def to_net_id(self):
+        block_id = self._values['customService']['connectionInformation']['toBigipNetwork']['networkBlockId']
+        if block_id:
+            return block_id
+
+    @property
+    def snat_ref_id(self):
+        if self.snat == 'SNAT':
+            return self._values['customService']['snatConfiguration']['snat']['referredObj']
+
+
+class ModuleParameters(Parameters):
+    @staticmethod
+    def _port_check(item):
+        if 0 <= item <= 65535:
+            return item
+        raise F5ModuleError(
+            "Valid ports must be in range 0 - 65535."
+        )
+
+    @staticmethod
+    def _process_network(item):
+        cidr = IPAddress(item['netmask']).netmask_bits()
+        ip = f"{item['self_ip']}/{cidr}"
+        network = re.sub('/[0-9]+', '', str(ipaddress.ip_network(ip, strict=False)))
+        return network
+
+    @property
+    def name(self):
+        name = self._values['name']
+        if not name.startswith('ssloS_'):
+            name = "ssloS_" + name
+        return name
+
+    @property
+    def devices_to(self):
+        devices = self._values['devices_to']
+        if devices is None:
+            return None
+        result = dict()
+        result['name'] = f"ssloN_{self._values['name']}_in"
+        if 'vlan' in devices.keys() and devices['vlan']:
+            result['path'] = devices['vlan']
+            result['vlan'] = devices['vlan']
+        else:
+            result['path'] = f"/Common/ssloN_{self._values['name']}_in.app/ssloN_{self._values['name']}_in"
+            result['interface'] = devices['interface']
+        if 'tag' in devices.keys() and devices['tag']:
+            result['tag'] = devices['tag']
+        if devices.get('self_ip') and devices.get('netmask'):
+            result['self_ip'] = devices['self_ip']
+            result['netmask'] = devices['netmask']
+            result['network'] = self._process_network(devices)
+        return result
+
+    @property
+    def devices_from(self):
+        devices = self._values['devices_from']
+        if devices is None:
+            return None
+        result = dict()
+        result['name'] = f"ssloN_{self._values['name']}_out"
+        if 'vlan' in devices.keys() and devices['vlan']:
+            result['path'] = devices['vlan']
+            result['vlan'] = devices['vlan']
+        else:
+            result['path'] = f"/Common/ssloN_{self._values['name']}_out.app/ssloN_{self._values['name']}_out"
+            result['interface'] = devices['interface']
+        if 'tag' in devices.keys() and devices['tag']:
+            result['tag'] = devices['tag']
+        if devices.get('self_ip') and devices.get('netmask'):
+            result['self_ip'] = devices['self_ip']
+            result['netmask'] = devices['netmask']
+            result['network'] = self._process_network(devices)
+        return result
+
+    @property
+    def devices(self):
+        result = list()
+        if self._values['devices'] is None:
+            return None
+        for device in self._values['devices']:
+            tmp = dict()
+            tmp['ip'] = device['ip']
+            if 'port' not in device.keys() or not device['port']:
+                tmp['port'] = 80
+            else:
+                tmp['port'] = self._port_check(device['port'])
+            result.append(tmp)
+        if result:
+            return result
+
+    @property
+    def control_channels(self):
+        result = list()
+        if self._values['control_channels'] is None:
+            return []
+        for control_channel in self._values['control_channels']:
+            tmp = dict()
+            tmp['sourceIP'] = control_channel['source_ip']
+            tmp['destinationIP'] = control_channel['destination_ip']
+            tmp['destinationPort'] = control_channel['destination_port']
+            tmp['gatewayPool'] = control_channel['gateway_pool']
+            tmp['protocol'] = control_channel['protocol']
+            tmp['snat'] = control_channel['snat']
+            result.append(tmp)
+        if result:
+            return result
+
+    @property
+    def service_entry_sslprofile(self):
+        if self._values['service_entry_sslprofile'] is None:
+            return ""
+        return self._values['service_entry_sslprofile']
+
+    @property
+    def service_return_sslprofile(self):
+        if self._values['service_return_sslprofile'] is None:
+            return ""
+        return self._values['service_return_sslprofile']
+
+    @property
+    def default_persistence_profile(self):
+        if self._values['default_persistence_profile'] is None:
+            return ""
+        return self._values['default_persistence_profile']
+
+    @property
+    def http_profile(self):
+        if self._values['http_profile'] is None:
+            return None
+        return self._values['http_profile']
+
+    @property
+    def port_remap(self):
+        if self._values['port_remap'] is None:
+            return None
+        return self._values['port_remap']
+
+    @property
+    def rules(self):
+        if self._values['rules'] is None:
+            return None
+        result = list()
+        for rule in self._values['rules']:
+            element = dict()
+            element['name'] = rule
+            element['value'] = rule
+            result.append(element)
+        return result
+
+    @property
+    def rules_egress(self):
+        if self._values['rules_egress'] is None:
+            return None
+        result = list()
+        for rule in self._values['rules_egress']:
+            element = dict()
+            element['name'] = rule
+            element['value'] = rule
+            result.append(element)
+        return result
+
+    @property
+    def vendor_info(self):
+        if self._values['vendor_info'] is None:
+            return "F5 Advanced WAF (Off-Box)"
+        return self._values['vendor_info']
+
+    @property
+    def auto_manage(self):
+        flag = self._values['auto_manage']
+        if flag is None:
+            return True
+        result = flatten_boolean(flag)
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
+
+    @property
+    def use_exist_selfip(self):
+        if self._values['use_exist_selfip'] is None:
+            return False
+        result = flatten_boolean(self._values['use_exist_selfip'])
+        if result == 'yes':
+            return True
+        if result == 'no':
+            return False
+
+    @property
+    def snat_list(self):
+        snats = self._values['snat_list']
+        if snats is None:
+            return None
+        result = list()
+        for snat in snats:
+            element = dict(ip=None)
+            element['ip'] = snat
+            result.append(element)
+        return result
+
+    @property
+    def snat(self):
+        snat = self._values['snat']
+        if snat is None:
+            return None
+        if snat == 'none':
+            return 'None'
+        elif snat == 'automap':
+            return 'AutoMap'
+        elif snat == 'snatlist':
+            return 'SNAT'
+        elif snat == 'snatpool':
+            return 'existingSNAT'
+
+    @property
+    def timeout(self):
+        divisor = 10
+        timeout = self._values['timeout']
+        if timeout < 10 or timeout > 1800:
+            raise F5ModuleError(
+                "Timeout value must be between 10 and 1800 seconds."
+            )
+        if timeout > 99:
+            divisor = 100
+        delay = timeout / divisor
+
+        return int(delay), divisor
+
+
+class Changes(Parameters):
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            raise
+        return result
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class RemovalChanges(Changes):
+    returnables = [
+        'devices_to',
+        'devices_from',
+        'devices',
+        'http_profile',
+        'ip_family',
+        'monitor',
+        'service_down_action',
+        'port_remap',
+        'snat',
+        'snat_list',
+        'snat_pool',
+        'rules',
+        'snat_ref_id'
+    ]
+
+
+class ReportableChanges(Changes):
+    @staticmethod
+    def _normalize_devices(devices):
+        result = dict()
+        if 'vlan' in devices.keys() and devices['vlan']:
+            result['vlan'] = devices['vlan']
+        if 'interface' in devices.keys() and devices['interface']:
+            result['interface'] = devices['interface']
+        if 'tag' in devices.keys() and devices['tag']:
+            result['tag'] = devices['tag']
+        if devices.get('self_ip'):
+            result['self_ip'] = devices['self_ip']
+        if devices.get('netmask'):
+            result['netmask'] = devices['netmask']
+        return result
+
+    @property
+    def devices_to(self):
+        devices = self._values['devices_to']
+        if devices is None:
+            return None
+        result = self._normalize_devices(devices)
+        return result
+
+    @property
+    def devices_from(self):
+        devices = self._values['devices_from']
+        if devices is None:
+            return None
+        result = self._normalize_devices(devices)
+        return result
+
+    @property
+    def rules(self):
+        rules = self._values['rules']
+        if rules is None:
+            return None
+        result = list()
+        for rule in rules:
+            result.append(rule['name'])
+        return result
+
+    @property
+    def rules_egress(self):
+        rules = self._values['rules_egress']
+        if rules is None:
+            return None
+        result = list()
+        for rule in rules:
+            result.append(rule['name'])
+        return result
+
+    @property
+    def snat_list(self):
+        snats = self._values['snat_list']
+        if snats is None:
+            return None
+        result = list()
+        for snat in snats:
+            result.append(snat['ip'])
+        return result
+
+    @property
+    def snat(self):
+        snat = self._values['snat']
+        if snat is None:
+            return None
+        if snat == 'None':
+            return 'none'
+        elif snat == 'AutoMap':
+            return 'autoMap'
+        elif snat == 'SNAT':
+            return 'snatlist'
+        elif snat == 'existingSNAT':
+            return 'snatpool'
+
+
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
+
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            return self.__default(param)
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
+    @property
+    def devices_to(self):
+        want = self.want.devices_to
+        have = self.have.devices_to
+        diff = compare_dictionary(want, have)
+        if diff:
+            if want.get('self_ip') and have.get('self_ip'):
+                if want['self_ip'] != have['self_ip'] or want['netmask'] != have['netmask']:
+                    raise F5ModuleError(
+                        'Self-IPs are immutable. You must delete and recreate the service to change the self-IPs.'
+                    )
+            if have['name'] == "toNetwork" and (self.want.use_exist_selfip or 'vlan' in have):
+                return None
+            return diff
+
+    @property
+    def devices_from(self):
+        want = self.want.devices_from
+        have = self.have.devices_from
+        diff = compare_dictionary(want, have)
+        if diff:
+            if want.get('self_ip') and have.get('self_ip'):
+                if want['self_ip'] != have['self_ip'] or want['netmask'] != have['netmask']:
+                    raise F5ModuleError(
+                        'Self-IPs are immutable. You must delete and recreate the service to change the self-IPs.'
+                    )
+            if have['name'] == "fromNetwork" and (self.want.use_exist_selfip or 'vlan' in have):
+                return None
+            return diff
+
+    @property
+    def devices(self):
+        return compare_complex_list(self.want.devices, self.have.devices)
+
+    @property
+    def control_channels(self):
+        return compare_complex_list(self.want.control_channels, self.have.control_channels)
+
+    @property
+    def rules(self):
+        return compare_complex_list_ordered(self.want.rules, self.have.rules)
+
+    @property
+    def rules_egress(self):
+        return compare_complex_list_ordered(self.want.rules_egress, self.have.rules_egress)
+
+    @property
+    def default_persistence_profile(self):
+        want = self.want.default_persistence_profile
+        have = self.have.default_persistence_profile
+        if want != have:
+            return want
+
+    @property
+    def vendor_info(self):
+        if self.want.vendor_info is None:
+            return None
+        if self.want.vendor_info != self.have.vendor_info:
+            raise F5ModuleError(VENDOR_INFO_IMMUTABLE_ERROR)
+        return None
+
+
+class ModuleManager(object):
+    def __init__(self, *args, **kwargs):
+        self.module = kwargs.get('module', None)
+        self.connection = kwargs.get('connection', None)
+        self.client = F5Client(module=self.module, client=self.connection)
+        self.want = ModuleParameters(params=self.module.params)
+        self.changes = UsableChanges()
+        self.removals = RemovalChanges()
+        self.have = ApiParameters()
+
+        # define a set of common instance variables used during module execution
+        self.block_id = None
+        self.operation = None
+        self.version = None
+        self.json_dump = None
+
+    def _set_options_to_remove(self):
+        changed = {}
+        for key in RemovalChanges.returnables:
+            if getattr(self.have, key) is not None:
+                changed[key] = getattr(self.have, key)
+        if changed:
+            self.removals = RemovalChanges(params=changed)
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = UsableChanges(params=changed)
+
+    def _update_changed_options(self):
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
+        if changed:
+            self.changes = UsableChanges(params=changed)
+            return True
+        return False
+
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.client.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
+
+    def exec_module(self):
+        changed = False
+        result = dict()
+        state = self.want.state
+
+        self.check_sslo_version()
+
+        if state == 'present':
+            changed = self.present()
+        elif state == 'absent':
+            changed = self.absent()
+
+        reportable = ReportableChanges(params=self.changes.to_return())
+        changes = reportable.to_return()
+        result.update(**changes)
+        result.update(dict(changed=changed))
+        if self.json_dump:
+            result.update(dict(json=self.json_dump))
+        self._announce_deprecations(result)
+        return result
+
+    def check_sslo_version(self):
+        self.version = sslo_version(self.client)
+        if Version(self.version) > Version(max_sslo_version) or \
+                Version(self.version) < Version(min_sslo_version):
+            raise F5ModuleError(
+                f"Unsupported SSL Orchestrator version, "
+                f"requires a version between {min_sslo_version} and {max_sslo_version}"
+            )
+        if self.want.rules_egress and Version(self.version) < Version('13.0'):
+            raise F5ModuleError(RULES_EGRESS_VERSION_ERROR)
+        if self.want.default_persistence_profile and Version(self.version) < Version('14.0'):
+            raise F5ModuleError(DEFAULT_PERSISTENCE_VERSION_ERROR)
+        return True
+
+    def present(self):
+        if self.exists():
+            return self.update()
+        else:
+            return self.create()
+
+    def absent(self):
+        if self.exists():
+            return self.remove()
+        return False
+
+    def should_update(self):
+        result = self._update_changed_options()
+        if result:
+            return True
+        return False
+
+    def create(self):
+        self.check_for_required_create_parameters()
+        self._set_changed_options()
+        if self.module.check_mode:
+            return True
+        self.operation = 'CREATE'
+        task_id, output = self.create_on_device()
+        if task_id:
+            self.wait_for_task(task_id)
+        if output:
+            self.json_dump = output
+            return False
+        return True
+
+    def update(self):
+        self.have = self.read_current_from_device()
+        if not self.should_update():
+            return False
+        if self.module.check_mode:
+            return True
+        self.operation = 'MODIFY'
+        task_id, output = self.update_on_device()
+        if task_id:
+            self.wait_for_task(task_id)
+        if output:
+            self.json_dump = output
+            return False
+        return True
+
+    def remove(self):
+        if self.module.check_mode:
+            return True
+        self.operation = 'DELETE'
+        self.have = self.read_current_from_device()
+        self._set_options_to_remove()
+        task_id, output = self.remove_from_device()
+        if task_id:
+            self.wait_for_task(task_id)
+        if output:
+            self.json_dump = output
+            return False
+        return True
+
+    def check_for_required_create_parameters(self):
+        if self.want.devices_to is None or self.want.devices_from is None or self.want.devices is None:
+            raise F5ModuleError(
+                "Creating SSLO AWAF Off-Box service requires 'devices_to', 'devices_from' and"
+                " 'devices' parameters to be specified."
+            )
+        if not self.want.auto_manage:
+            for side, net in [('devices_to', self.want.devices_to), ('devices_from', self.want.devices_from)]:
+                if not net.get('self_ip') or not net.get('netmask'):
+                    raise F5ModuleError(
+                        f"'self_ip' and 'netmask' are required in '{side}' when 'auto_manage' is false."
+                    )
+        if self.want.snat == 'existingSNAT' and self.want.snat_pool is None:
+            raise F5ModuleError(
+                "Creating SSLO AWAF Off-Box service requires 'snat_pool' parameter to be"
+                " specified when 'snat' is set to 'snatpool'."
+            )
+
+    def add_create_values(self, params):
+        if self.want.monitor is None:
+            params['monitor'] = '/Common/gateway_icmp'
+        if self.want.service_down_action is None:
+            params['service_down_action'] = 'ignore'
+        if self.want.snat is None:
+            params['snat'] = 'None'
+        if self.want.ip_family is None:
+            params['ip_family'] = 'ipv4'
+        if self.want.snat == 'existingSNAT':
+            params['snat_ref_id'] = self.want.snat_pool
+        if self.want.auto_manage is None:
+            params['auto_manage'] = True
+        if self.want.use_exist_selfip is None:
+            params['use_exist_selfip'] = False
+        if self.want.http_profile is None:
+            params['http_profile'] = '/Common/http'
+        if self.want.service_entry_sslprofile is None:
+            params['service_entry_sslprofile'] = ''
+        if self.want.service_return_sslprofile is None:
+            params['service_return_sslprofile'] = ''
+        if self.changes.control_channels is None:
+            params['control_channels'] = []
+        return params
+
+    def add_missing_options(self, params):
+        if self.changes.devices_to is None:
+            params['devices_to'] = self.have.devices_to
+        if self.changes.devices_from is None:
+            params['devices_from'] = self.have.devices_from
+        if self.changes.devices is None:
+            params['devices'] = self.have.devices
+        if self.changes.http_profile is None:
+            params['http_profile'] = self.have.http_profile
+        if self.changes.ip_family is None:
+            params['ip_family'] = self.have.ip_family
+        if self.changes.monitor is None:
+            params['monitor'] = self.have.monitor
+        if self.changes.service_down_action is None:
+            params['service_down_action'] = self.have.service_down_action
+        if self.changes.port_remap is None:
+            params['port_remap'] = self.have.port_remap
+        if self.changes.rules is None:
+            params['rules'] = self.have.rules
+        if self.changes.rules_egress is None:
+            params['rules_egress'] = self.have.rules_egress
+        if self.changes.default_persistence_profile is None:
+            params['default_persistence_profile'] = self.have.default_persistence_profile
+        if self.changes.vendor_info is None:
+            params['vendor_info'] = self.have.vendor_info
+        if self.changes.auto_manage is None:
+            params['auto_manage'] = self.have.auto_manage
+        if self.changes.use_exist_selfip is None:
+            params['use_exist_selfip'] = self.want.use_exist_selfip
+        if self.changes.control_channels is None:
+            params['control_channels'] = self.have.control_channels
+        if self.changes.service_entry_sslprofile is None:
+            params['service_entry_sslprofile'] = self.have.service_entry_sslprofile
+        if self.changes.service_return_sslprofile is None:
+            params['service_return_sslprofile'] = self.have.service_return_sslprofile
+        if self.changes.snat is None:
+            params['snat'] = self.have.snat
+            if self.have.snat == 'SNAT':
+                params['snat_ref_id'] = self.have.snat_ref_id
+                if self.changes.snat_list is None:
+                    params['snat_list'] = self.have.snat_list
+            if self.have.snat == 'existingSNAT':
+                if self.changes.snat_pool is None:
+                    params['snat_ref_id'] = self.have.snat_pool
+                    params['snat_pool'] = self.have.snat_pool
+                else:
+                    params['snat_ref_id'] = self.changes.snat_pool
+                    params['snat_pool'] = self.changes.snat_pool
+        if self.changes.snat == 'existingSNAT':
+            params['snat_ref_id'] = self.changes.snat_pool
+            params['snat_pool'] = self.changes.snat_pool
+        return params
+
+    def add_json_metadata(self, payload):
+        payload['name'] = f"sslo_obj_SERVICE_{self.operation}_{self.want.name}"
+        payload['deployment_name'] = self.want.name
+        payload['operation'] = self.operation
+        payload['sslo_version'] = float(self.version)
+        if self.operation == 'MODIFY' or self.operation == 'DELETE':
+            payload['dep_ref'] = f"https://localhost/mgmt/shared/iapp/blocks/{self.block_id}"
+            payload['block_id'] = self.block_id
+        if self.operation == 'MODIFY':
+            if self.have.to_net_id:
+                payload['to_net_id'] = self.have.to_net_id
+            if self.have.from_net_id:
+                payload['from_net_id'] = self.have.from_net_id
+        return payload
+
+    def exists(self):
+        uri = "/mgmt/shared/iapp/blocks/"
+        query = f"?$filter=name+eq+'{self.want.name}'"
+        response = self.client.get(uri + query)
+
+        if response['code'] == 404:
+            return False
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        if response['contents'].get('items', None):
+            if response['contents']['items'][0]['name'] == self.want.name:
+                self.block_id = response['contents']['items'][0]['id']
+                return True
+        return False
+
+    def create_on_device(self):
+        payload = self.changes.to_return()
+        data = self.add_create_values(self.add_json_metadata(payload))
+
+        output = process_json(data, create_modify)
+
+        if self.want.dump_json:
+            return None, output
+
+        uri = "/mgmt/shared/iapp/blocks/"
+        response = self.client.post(uri, data=output)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        task_id = str(response['contents']['id'])
+        return task_id, None
+
+    def update_on_device(self):
+        payload = self.changes.to_return()
+        data = self.add_missing_options(self.add_json_metadata(payload))
+
+        output = process_json(data, create_modify)
+
+        if self.want.dump_json:
+            return None, output
+
+        uri = "/mgmt/shared/iapp/blocks/"
+        response = self.client.post(uri, data=output)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        task_id = str(response['contents']['id'])
+        return task_id, None
+
+    def remove_from_device(self):
+        payload = self.removals.to_return()
+        data = self.add_json_metadata(payload)
+
+        output = process_json(data, delete)
+
+        if self.want.dump_json:
+            return None, output
+
+        uri = "/mgmt/shared/iapp/blocks/"
+        response = self.client.post(uri, data=output)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        task_id = str(response['contents']['id'])
+        return task_id, None
+
+    def read_current_from_device(self):
+        uri = "/mgmt/shared/iapp/blocks/"
+        query = f"?$filter=name+eq+'{self.want.name}'"
+        response = self.client.get(uri + query)
+
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+
+        if response['contents'].get('items', None) and response['contents']['items'][0]['name'] == self.want.name:
+            returned_json = response['contents']['items'][0]['inputProperties'][0]['value']
+            self.block_id = response['contents']['items'][0]['id']
+            return ApiParameters(params=returned_json)
+        raise F5ModuleError(response['contents'])
+
+    def delete_failed_operation_on_device(self, task):
+        # use this method to delete the operation that failed
+        # if there are any http errors we ignore them
+        uri = "/mgmt/shared/iapp/blocks/{0}".format(task)
+        response = self.client.delete(uri)
+
+        if response['code'] in [200, 201, 202]:
+            return True
+        else:
+            return False
+
+    def wait_for_task(self, task_id):
+        error = None
+        delay, period = self.want.timeout
+        for x in range(0, period):
+            task = self._check_task_on_device(task_id)
+            if task['state'] == 'BOUND':
+                return True
+            if task['state'] == 'ERROR':
+                error = str(task['error'])
+                break
+            time.sleep(delay)
+        if error:
+            self.delete_failed_operation_on_device(task_id)
+            raise F5ModuleError(f"{self.operation} operation error: {task_id} : {error}")
+        raise F5ModuleError(
+            "Module timeout reached, state change is unknown, "
+            "please increase the timeout parameter for long lived actions."
+        )
+
+    def _check_task_on_device(self, task_id):
+        uri = "/mgmt/shared/iapp/blocks/"
+        query = f"?$filter=id+eq+'{task_id}'"
+        response = self.client.get(uri + query)
+        if response['code'] not in [200, 201, 202]:
+            raise F5ModuleError(response['contents'])
+        return response['contents']['items'][0]
+
+
+class ArgumentSpec(object):
+    def __init__(self):
+        self.supports_check_mode = True
+        argument_spec = dict(
+            name=dict(required=True),
+            devices_to=dict(
+                type='dict',
+                options=dict(
+                    vlan=dict(),
+                    interface=dict(),
+                    tag=dict(type='int'),
+                    self_ip=dict(),
+                    netmask=dict()
+                ),
+                required_together=[
+                    ['self_ip', 'netmask']
+                ],
+                mutually_exclusive=[
+                    ['vlan', 'interface'],
+                    ['vlan', 'tag']
+                ],
+                required_one_of=[
+                    ['vlan', 'interface']
+                ]
+            ),
+            devices_from=dict(
+                type='dict',
+                options=dict(
+                    vlan=dict(),
+                    interface=dict(),
+                    tag=dict(type='int'),
+                    self_ip=dict(),
+                    netmask=dict()
+                ),
+                required_together=[
+                    ['self_ip', 'netmask']
+                ],
+                mutually_exclusive=[
+                    ['vlan', 'interface'],
+                    ['vlan', 'tag']
+                ],
+                required_one_of=[
+                    ['vlan', 'interface']
+                ]
+            ),
+            devices=dict(
+                type='list',
+                elements='dict',
+                options=dict(
+                    ip=dict(),
+                    port=dict(type='int')
+                )
+            ),
+            control_channels=dict(
+                type='list',
+                elements='dict',
+                options=dict(
+                    source_ip=dict(),
+                    destination_ip=dict(),
+                    destination_port=dict(),
+                    protocol=dict(),
+                    gateway_pool=dict(),
+                    snat=dict()
+                )
+            ),
+            service_entry_sslprofile=dict(),
+            service_return_sslprofile=dict(),
+            http_profile=dict(),
+            auto_manage=dict(
+                type='bool'
+            ),
+            use_exist_selfip=dict(
+                type='bool'
+            ),
+            ip_family=dict(
+                choices=['ipv4', 'ipv6']
+            ),
+            monitor=dict(),
+            service_down_action=dict(
+                choices=['ignore', 'reset', 'drop']
+            ),
+            port_remap=dict(
+                type='int'
+            ),
+            snat=dict(
+                choices=['none', 'automap', 'snatlist', 'snatpool']
+            ),
+            snat_list=dict(
+                type='list',
+                elements='str'
+            ),
+            snat_pool=dict(),
+            vendor_info=dict(),
+            rules=dict(
+                type='list',
+                elements='str'
+            ),
+            rules_egress=dict(
+                type='list',
+                elements='str'
+            ),
+            default_persistence_profile=dict(),
+            state=dict(
+                default='present',
+                choices=['absent', 'present']
+            ),
+            timeout=dict(
+                type='int',
+                default=300
+            ),
+            dump_json=dict(
+                type='bool',
+                default='no'
+            )
+        )
+        self.required_if = [
+            ['snat', 'snatlist', ['snat_list']],
+            ['snat', 'snatpool', ['snat_pool']]
+        ]
+        self.mutually_exclusive = [
+            ['snat_list', 'snat_pool']
+        ]
+        self.argument_spec = {}
+        self.argument_spec.update(argument_spec)
+
+
+def main():
+    spec = ArgumentSpec()
+
+    module = AnsibleModule(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode,
+    )
+
+    if not HAS_NETADDR:
+        module.fail_json(
+            msg=missing_required_lib('netaddr'),
+            exception=NETADDR_IMPORT_ERROR
+        )
+
+    if not HAS_PACKAGING:
+        module.fail_json(
+            msg=missing_required_lib('packaging'),
+            exception=PACKAGING_IMPORT_ERROR
+        )
+
+    try:
+        mm = ModuleManager(module=module, connection=Connection(module._socket_path))
+        results = mm.exec_module()
+        module.exit_json(**results)
+    except F5ModuleError as ex:
+        module.fail_json(msg=str(ex))
+
+
+if __name__ == '__main__':
+    main()

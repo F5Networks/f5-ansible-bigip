@@ -85,13 +85,9 @@
                       "ipv6OutboundGateways": []
                    }
                },
-               "ocspAuth": "None",
                "proxySettings": {
                   "proxyType": "transparent"
                       ,
-                  "tcpProfile": {
-                      "verifyAccept": null
-                  },
                   "forwardProxy": {
                       "explicitProxy": {
                           "ipv4Port": 3128,
@@ -129,9 +125,6 @@
                "sslSettingReference": "ssloT_for_testing",
                "securityPolicyReference": "",
                "accessProfile": "",
-               "accessProfileScope": "None",
-               "accessProfileNameScopeValue": "None",
-               "primaryAuthenticationURI": "None",
                "existingBlockId": "64344723-7b1c-406f-9e2e-31204b602276"
            }
        },

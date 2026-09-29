@@ -1,0 +1,79 @@
+{
+    "name": "sslo_obj_SERVICE_CREATE_ssloS_waf1",
+    "inputProperties": [
+        {
+            "id": "f5-ssl-orchestrator-operation-context",
+            "type": "JSON",
+            "value": {
+                "version": 14.0,
+                "partition": "Common",
+                "strictness": false,
+                "operationType": "CREATE",
+                "deploymentName": "ssloS_waf1",
+                "deploymentType": "SERVICE"
+            }
+        },
+        {
+            "id": "f5-ssl-orchestrator-service",
+            "type": "JSON",
+            "value": [{
+                "name": "ssloS_waf1",
+                "vendorInfo": {
+                    "name": "F5 Advanced WAF (On-Box)"
+                },
+                "customService": {
+                    "name": "ssloS_waf1",
+                    "serviceDownAction": "reset",
+                    "serviceType": "awaf",
+                    "serviceSpecific": {
+                        "name": "ssloS_waf1",
+                        "appSecurityPolicy": "/Common/Testing",
+                        "dosProtectionProfile": "/Common/Test",
+                        "botDefenseProfile": "/Common/bot-defense",
+                        "appCloudSecurityService": [],
+                        "logProfile": [
+                            {
+                                "name": "/Common/local-dos",
+                                "value": "/Common/local-dos"
+                            },
+                            {
+                                "name": "/Common/Log all requests",
+                                "value": "/Common/Log all requests"
+                            }
+                        ],
+                        "iRuleList": [
+                            {
+                                "name": "/Common/Test1",
+                                "value": "/Common/Test1"
+                            },
+                            {
+                                "name": "/Common/Test2",
+                                "value": "/Common/Test2"
+                            }
+                        ]
+                    }
+                },
+                "description": "Type: awaf",
+                "strictness": true,
+                "useTemplate": false,
+                "serviceTemplate": "",
+                "partition": "Common",
+                "previousVersion": 14.0,
+                "version": 14.0
+            }]
+        },
+        {
+            "id": "f5-ssl-orchestrator-network",
+            "type": "JSON",
+            "value": []
+        }
+    ],
+    "configurationProcessorReference": {
+        "link": "https://localhost/mgmt/shared/iapp/processors/f5-iappslx-ssl-orchestrator-gc"
+    },
+    "state": "BINDING",
+    "presentationHtmlReference": {
+        "link": "https://localhost/iapps/f5-iappslx-ssl-orchestrator/sgc/sgcIndex.html"
+    },
+    "operation": "CREATE"
+}

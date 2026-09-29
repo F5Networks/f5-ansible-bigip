@@ -73,6 +73,7 @@ create_modify = """
                     "type": "{{ params.policy_consumer }}",
                     "subType": "{{ params.policy_consumer }}"
                 },
+                "policyProvider": "{{ params.policy_provider }}",
                 "isDefaultPinnersSet": true,
                 "proxyConfigurations": {{ params.proxy_connect | tojson }},
                 "type": "custom",

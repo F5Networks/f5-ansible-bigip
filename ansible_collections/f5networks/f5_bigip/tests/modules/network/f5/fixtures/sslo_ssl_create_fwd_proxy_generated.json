@@ -23,7 +23,9 @@
              "generalSettings":{
                 "isForwardProxy": true,
                 "bypassHandshakeAlert": true,
-                "bypassClientCertFailure": false
+                "bypassClientCertFailure": false,
+                "serverName": "",
+                "sniDefault": false
              },
              "clientSettings":{
                 "ciphers":{
@@ -35,6 +37,7 @@
                    {
                       "cert": "/Common/default.crt",
                       "key": "/Common/default.key",
+                      "keyType": "rsa-public",
                       "chain": "",
                       "passphrase":"",
                       "name":"CERT_KEY_CHAIN_0"
@@ -44,6 +47,7 @@
                     {
                         "cert": "/Common/default.crt",
                         "key": "/Common/default.key",
+                        "keyType": "rsa-public",
                         "chain": "",
                         "isCa": true,
                         "usage": "CA",
@@ -57,7 +61,9 @@
                 "forwardByPass": true,
                 "enabledSSLProcessingOptions": [{"name": "TLSv1.3", "value": "TLSv1.3"}],
                 "logPublisher": "/Common/sys-ssl-publisher",
-                "alpn": true
+                "alpn": true,
+                "serverName": "",
+                "sniDefault": false
              },
              "serverSettings":{
                 "ciphers":{
@@ -71,7 +77,9 @@
                 "ocsp": "",
                 "crl": "",
                 "enabledSSLProcessingOptions": [{"name": "TLSv1.3", "value": "TLSv1.3"}],
-                "logPublisher": "/Common/sys-ssl-publisher"
+                "logPublisher": "/Common/sys-ssl-publisher",
+                "serverName": "",
+                "sniDefault": false
              },
              "name": "ssloT_barfoo",
              "advancedMode": "off",

@@ -7810,7 +7810,7 @@ class ApmAccessPolicyFactManager(BaseManager):
         results = []
         collection = self.increment_read()
         for resource in collection:
-            params = ApmAccessProfileFactParameters(params=resource)
+            params = ApmAccessPolicyFactParameters(params=resource)
             results.append(params)
         return results
 

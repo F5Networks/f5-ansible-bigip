@@ -233,3 +233,402 @@ class TestManager(unittest.TestCase):
         self.assertFalse(mm.absent())
 
         self.assertFalse(mm.present())
+
+
+class TestIdempotency(unittest.TestCase):
+    def setUp(self):
+        self.spec = ArgumentSpec()
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_ssl_pkcs12.send_teem')
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_ssl_pkcs12.F5Client')
+        self.m1 = self.p1.start()
+        self.m1.return_value = True
+        self.m2 = self.p2.start()
+        self.m2.return_value = Mock()
+        self.mock_module_helper = patch.multiple(AnsibleModule,
+                                                 exit_json=exit_json,
+                                                 fail_json=fail_json)
+        self.mock_module_helper.start()
+
+    def tearDown(self):
+        self.p1.stop()
+        self.p2.stop()
+        self.mock_module_helper.stop()
+
+    def test_idempotent_install_with_force_false_when_exists(self):
+        # Test creating cert when it already exists with force=False (idempotent)
+        set_module_args(dict(
+            name='existing_cert',
+            source='/var/fake/fake.p12',
+            cert_pass='nopass',
+            force=False
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        self.assertFalse(results['changed'])
+
+    def test_idempotent_remove_when_not_exists(self):
+        # Test removing cert that doesn't exist (idempotent)
+        set_module_args(dict(
+            name='nonexistent_cert',
+            state='absent'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+
+        self.assertFalse(results['changed'])
+
+    def test_force_overwrite_existing_cert(self):
+        # Test force=True overwrites existing cert
+        set_module_args(dict(
+            name='existing_cert',
+            source='/var/fake/fake.p12',
+            cert_pass='nopass',
+            force=True
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.plugin = Mock()
+        mm.client.plugin.upload_file = Mock()
+        mm.client.post.return_value = dict(code=200, contents={})
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+
+
+class TestParameterHandling(unittest.TestCase):
+    def setUp(self):
+        self.spec = ArgumentSpec()
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_ssl_pkcs12.send_teem')
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_ssl_pkcs12.F5Client')
+        self.m1 = self.p1.start()
+        self.m1.return_value = True
+        self.m2 = self.p2.start()
+        self.m2.return_value = Mock()
+        self.mock_module_helper = patch.multiple(AnsibleModule,
+                                                 exit_json=exit_json,
+                                                 fail_json=fail_json)
+        self.mock_module_helper.start()
+
+    def tearDown(self):
+        self.p1.stop()
+        self.p2.stop()
+        self.mock_module_helper.stop()
+
+    def test_passphrase_with_special_characters(self):
+        # Test passphrase handling with special characters
+        set_module_args(dict(
+            name='special_pass_cert',
+            source='/var/fake/fake.p12',
+            cert_pass='p@$$w0rd!#%&'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.client.plugin = Mock()
+        mm.client.plugin.upload_file = Mock()
+        mm.client.post.return_value = dict(code=200, contents={})
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        # Verify passphrase was passed to install
+        call_args = mm.client.post.call_args_list[0]
+        self.assertIn('passphrase', call_args[1]['data'])
+        self.assertEqual(call_args[1]['data']['passphrase'], 'p@$$w0rd!#%&')
+
+    def test_name_derived_from_source_path(self):
+        # Test name parameter is derived from source when not provided
+        set_module_args(dict(
+            source='/var/fake/mycert.p12',
+            cert_pass='nopass'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        self.assertEqual(mm.want.name, 'mycert')
+        self.assertEqual(mm.want.filename, 'mycert.p12')
+
+    def test_custom_partition_parameter(self):
+        # Test custom partition parameter is used
+        set_module_args(dict(
+            name='custom_partition_cert',
+            state='absent',
+            partition='MyPartition'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+
+        self.assertFalse(results['changed'])
+        self.assertEqual(mm.want.partition, 'MyPartition')
+
+
+class TestErrorHandlingScenarios(unittest.TestCase):
+    def setUp(self):
+        self.spec = ArgumentSpec()
+        self.p1 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_ssl_pkcs12.send_teem')
+        self.p2 = patch('ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_ssl_pkcs12.F5Client')
+        self.m1 = self.p1.start()
+        self.m1.return_value = True
+        self.m2 = self.p2.start()
+        self.m2.return_value = Mock()
+        self.mock_module_helper = patch.multiple(AnsibleModule,
+                                                 exit_json=exit_json,
+                                                 fail_json=fail_json)
+        self.mock_module_helper.start()
+
+    def tearDown(self):
+        self.p1.stop()
+        self.p2.stop()
+        self.mock_module_helper.stop()
+
+    def test_cert_lookup_error_exists(self):
+        # Test exists() when certificate lookup fails
+        set_module_args(dict(
+            name='test_cert',
+            state='absent'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.client.get.return_value = dict(code=500, contents='server error')
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exists()
+        self.assertIn('server error', err.exception.args[0])
+
+    def test_key_lookup_error_exists(self):
+        # Test exists() when key lookup fails
+        set_module_args(dict(
+            name='test_cert',
+            state='absent'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.client.get.side_effect = [
+            dict(code=200, contents={}),  # cert lookup succeeds
+            dict(code=500, contents='key error')  # key lookup fails
+        ]
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exists()
+        self.assertIn('key error', err.exception.args[0])
+
+    def test_install_error_missing_source(self):
+        # Test install fails when source file is missing
+        set_module_args(dict(
+            name='test_cert',
+            source='/var/fake/nonexistent.p12',
+            cert_pass='nopass'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.client.plugin = Mock()
+        mm.client.plugin.upload_file = Mock(side_effect=F5ModuleError('file not found'))
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+        self.assertIn('Failed to upload the file', err.exception.args[0])
+
+    def test_install_post_error(self):
+        # Test install fails when POST to pkcs12 endpoint fails
+        set_module_args(dict(
+            name='test_cert',
+            source='/var/fake/fake.p12',
+            cert_pass='nopass'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.client.plugin = Mock()
+        mm.client.plugin.upload_file = Mock()
+        mm.client.post.return_value = dict(code=400, contents='bad request')
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+        self.assertIn('bad request', err.exception.args[0])
+
+    def test_remove_cert_error(self):
+        # Test remove fails when deleting certificate
+        set_module_args(dict(
+            name='test_cert',
+            state='absent'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.delete.return_value = dict(code=403, contents='forbidden')
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+        self.assertIn('forbidden', err.exception.args[0])
+
+    def test_remove_key_error(self):
+        # Test remove fails when deleting key
+        set_module_args(dict(
+            name='test_cert',
+            state='absent'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=True)
+        mm.client.delete.side_effect = [
+            dict(code=200, contents={}),  # cert delete succeeds
+            dict(code=403, contents='key error')  # key delete fails
+        ]
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+        self.assertIn('key error', err.exception.args[0])
+
+    def test_remove_temp_file_error(self):
+        # Test cleanup fails when removing temporary file
+        set_module_args(dict(
+            name='test_cert',
+            source='/var/fake/fake.p12',
+            cert_pass='nopass'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.client.plugin = Mock()
+        mm.client.plugin.upload_file = Mock()
+        mm.client.post.side_effect = [
+            dict(code=200, contents={}),  # install succeeds
+            dict(code=500, contents='cleanup failed')  # temp file removal fails
+        ]
+
+        with self.assertRaises(F5ModuleError) as err:
+            mm.exec_module()
+        self.assertIn('cleanup failed', err.exception.args[0])
+
+    def test_check_mode_no_changes(self):
+        # Test check mode doesn't make actual changes
+        set_module_args(dict(
+            name='test_cert',
+            source='/var/fake/fake.p12',
+            cert_pass='nopass'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        module.check_mode = True
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        mm.client.plugin.upload_file.assert_not_called()
+
+    def test_passphrase_none_not_sent(self):
+        # Test that passphrase is not sent if not provided
+        set_module_args(dict(
+            name='no_pass_cert',
+            source='/var/fake/fake.p12'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.client.plugin = Mock()
+        mm.client.plugin.upload_file = Mock()
+        mm.client.post.return_value = dict(code=200, contents={})
+
+        results = mm.exec_module()
+
+        self.assertTrue(results['changed'])
+        # Verify passphrase was NOT passed to install
+        call_args = mm.client.post.call_args_list[0]
+        self.assertNotIn('passphrase', call_args[1]['data'])
+
+    def test_pkcs12_present_idempotent(self, *args):
+        manager = ModuleManager.__new__(ModuleManager)
+        manager.exists = Mock(return_value=True)
+        manager.want = Mock(force=False)
+        manager.module = Mock(check_mode=False)
+
+        # When cert/key already exists and force=False, present() should return False (no changes)
+        assert manager.present() is False

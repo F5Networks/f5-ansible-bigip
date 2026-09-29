@@ -17,8 +17,10 @@ if sys.version_info < (2, 7):
 from ansible.module_utils.basic import AnsibleModule
 
 from ansible_collections.f5networks.f5_bigip.plugins.modules.bigip_vcmp_guest import (
-    ModuleParameters, ApiParameters, ModuleManager, ArgumentSpec
+    ModuleParameters, ApiParameters, Difference, ModuleManager, ArgumentSpec
 )
+from ansible_collections.f5networks.f5_bigip.plugins.modules import bigip_vcmp_guest
+from ansible_collections.f5networks.f5_bigip.plugins.module_utils.common import F5ModuleError
 from ansible_collections.f5networks.f5_bigip.tests.compat import unittest
 from ansible_collections.f5networks.f5_bigip.tests.compat.mock import Mock, patch
 from ansible_collections.f5networks.f5_bigip.tests.modules.utils import set_module_args
@@ -153,6 +155,48 @@ class TestParameters(unittest.TestCase):
         assert '/Common/vlan1' in p.vlans
         assert '/Common/vlan2' in p.vlans
 
+    def test_invalid_management_route_and_address_raise(self):
+        route = ModuleParameters(client=Mock(), params=dict(mgmt_route='not-an-ip'))
+        with self.assertRaisesRegex(F5ModuleError, 'mgmt_route'):
+            route.mgmt_route
+
+        address = ModuleParameters(client=Mock(), params=dict(mgmt_address='not-an-ip'))
+        with self.assertRaisesRegex(F5ModuleError, 'mgmt_address'):
+            address.mgmt_address
+
+    def test_malformed_management_address_tuple_raises(self):
+        p = ModuleParameters(client=Mock(), params=dict(mgmt_address='1.2.3.4/24/extra'))
+
+        with self.assertRaisesRegex(F5ModuleError, 'mgmt_address is malformed'):
+            p.mgmt_tuple
+
+    def test_missing_initial_image_and_hotfix_raise(self):
+        image = ModuleParameters(client=Mock(), params=dict(initial_image='missing.iso'))
+        image.initial_image_exists = Mock(return_value=False)
+        with self.assertRaisesRegex(F5ModuleError, 'initial_image'):
+            image.initial_image
+
+        hotfix = ModuleParameters(client=Mock(), params=dict(initial_hotfix='missing.iso'))
+        hotfix.initial_hotfix_exists = Mock(return_value=False)
+        with self.assertRaisesRegex(F5ModuleError, 'initial_hotfix'):
+            hotfix.initial_hotfix
+
+    def test_initial_image_and_hotfix_lookup_errors_raise(self):
+        p = ModuleParameters(client=Mock(), params={})
+        p.client.get = Mock(return_value=dict(code=500, contents='lookup failed'))
+
+        with self.assertRaisesRegex(F5ModuleError, 'lookup failed'):
+            p.initial_image_exists('image.iso')
+        with self.assertRaisesRegex(F5ModuleError, 'lookup failed'):
+            p.initial_hotfix_exists('hotfix.iso')
+
+    def test_state_and_argument_choices(self):
+        assert ModuleParameters(params=dict(state='present')).state == 'deployed'
+        assert ModuleParameters(params=dict(state='disabled')).state == 'configured'
+        spec = ArgumentSpec()
+        assert spec.argument_spec['mgmt_network']['choices'] == ['bridged', 'isolated', 'host only']
+        assert spec.argument_spec['state']['choices'] == ['configured', 'disabled', 'provisioned', 'absent', 'present']
+
 
 class TestManager(unittest.TestCase):
     def setUp(self):
@@ -228,3 +272,121 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['name'] == 'guest2'
+
+    def test_update_idempotent(self):
+        manager = ModuleManager.__new__(ModuleManager)
+        manager.read_current_from_device = Mock()
+        manager.should_update = Mock(return_value=False)
+        manager.module = Mock(check_mode=False)
+
+        assert manager.update() is False
+        manager.read_current_from_device.assert_called_once()
+
+    def test_update_changes_and_lifecycle_states(self):
+        for state, action in (('configured', 'configure'), ('provisioned', 'provision'), ('deployed', 'deploy')):
+            manager = ModuleManager.__new__(ModuleManager)
+            manager.read_current_from_device = Mock()
+            manager.should_update = Mock(return_value=True)
+            manager.module = Mock(check_mode=False)
+            manager.changes = Mock(cores_per_slot=None)
+            manager.want = Mock(state=state)
+            manager.update_on_device = Mock()
+            manager.configure = Mock()
+            manager.provision = Mock()
+            manager.deploy = Mock()
+
+            assert manager.update() is True
+            manager.update_on_device.assert_called_once()
+            getattr(manager, action).assert_called_once()
+
+    def test_absent_state_and_failed_delete(self):
+        manager = ModuleManager.__new__(ModuleManager)
+        manager.exists = Mock(return_value=False)
+        assert manager.absent() is False
+
+        manager.module = Mock(check_mode=False)
+        manager.want = Mock(delete_virtual_disk=False)
+        manager.remove_from_device = Mock()
+        manager.exists = Mock(return_value=True)
+        with self.assertRaisesRegex(F5ModuleError, 'Failed to delete'):
+            manager.remove()
+
+    def test_update_management_address_requires_subnet(self):
+        want = Mock(mgmt_tuple=Mock(subnet=None))
+        diff = Difference(want, Mock())
+
+        with self.assertRaisesRegex(F5ModuleError, 'subnet must be specified'):
+            diff.mgmt_address
+
+    def test_manager_transport_errors_raise(self):
+        manager = ModuleManager.__new__(ModuleManager)
+        manager.want = Mock(name='guest1')
+        manager.client = Mock(get=Mock(return_value=dict(code=500, contents='request failed')))
+
+        with self.assertRaisesRegex(F5ModuleError, 'request failed'):
+            manager.exists()
+        with self.assertRaisesRegex(F5ModuleError, 'request failed'):
+            manager.read_current_from_device()
+        with self.assertRaisesRegex(F5ModuleError, 'request failed'):
+            manager.get_virtual_disks_on_device()
+        with self.assertRaisesRegex(F5ModuleError, 'request failed'):
+            manager.is_configured()
+        with self.assertRaisesRegex(F5ModuleError, 'request failed'):
+            manager.is_provisioned()
+        with self.assertRaisesRegex(F5ModuleError, 'request failed'):
+            manager.is_deployed()
+
+    def test_manager_mutation_errors_raise(self):
+        manager = ModuleManager.__new__(ModuleManager)
+        manager.want = Mock(name='guest1')
+        manager.changes = Mock(api_params=Mock(return_value={}))
+        manager.client = Mock(
+            post=Mock(return_value=dict(code=500, contents='mutation failed')),
+            patch=Mock(return_value=dict(code=500, contents='mutation failed')),
+            delete=Mock(return_value=dict(code=500, contents='mutation failed')),
+            get=Mock(return_value=dict(code=200, contents={'items': [dict(name='guest1.img')]}))
+        )
+        manager.have = Mock(virtual_disk='guest1.img')
+
+        for operation in (manager.create_on_device, manager.update_on_device, manager.remove_from_device,
+                          manager.configure_on_device, manager.provision_on_device, manager.deploy_on_device,
+                          manager.remove_virtual_disk_from_device):
+            with self.assertRaisesRegex(F5ModuleError, 'mutation failed'):
+                operation()
+
+    def test_delete_virtual_disk_and_state_checks(self):
+        manager = ModuleManager.__new__(ModuleManager)
+        manager.want = Mock(name='guest1')
+        manager.have = Mock(virtual_disk='guest1.img')
+        manager.get_virtual_disks_on_device = Mock(return_value={'items': [dict(name='guest1.img/1')]})
+        manager.client = Mock(delete=Mock(return_value=dict(code=200, contents={})))
+
+        assert manager.remove_virtual_disk() is True
+        manager.client.delete.assert_called_once_with('/mgmt/tm/vcmp/virtual-disk/guest1.img~1')
+
+        manager.client.get = Mock(return_value=dict(code=404, contents={}))
+        assert manager.is_configured() is True
+        assert manager.is_provisioned() is False
+        assert manager.is_deployed() is False
+
+    def test_main_function_success(self):
+        module = Mock(_socket_path='/tmp/socket')
+        manager = Mock()
+        manager.exec_module.return_value = {'changed': False}
+        with patch.object(bigip_vcmp_guest, 'AnsibleModule', return_value=module), \
+                patch.object(bigip_vcmp_guest, 'Connection'), \
+                patch.object(bigip_vcmp_guest, 'ModuleManager', return_value=manager):
+            bigip_vcmp_guest.main()
+
+        module.exit_json.assert_called_once_with(changed=False)
+
+    def test_main_function_failed(self):
+        module = Mock(_socket_path='/tmp/socket')
+        manager = Mock()
+        manager.exec_module.side_effect = F5ModuleError('guest failed')
+        with patch.object(bigip_vcmp_guest, 'AnsibleModule', return_value=module), \
+                patch.object(bigip_vcmp_guest, 'Connection'), \
+                patch.object(bigip_vcmp_guest, 'ModuleManager', return_value=manager):
+            bigip_vcmp_guest.main()
+
+        module.fail_json.assert_called_once_with(msg='guest failed')
